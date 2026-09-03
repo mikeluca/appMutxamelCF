@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../home/home_page.dart';
-import '../news/news_page.dart';
+import '../matches/pages/matches_page.dart';
+import '../news/pages/news_page.dart';
+import '../teams/pages/teams_page.dart';
 
 class PublicShellPage extends StatefulWidget {
   const PublicShellPage({super.key});
@@ -14,56 +16,66 @@ class _PublicShellPageState extends State<PublicShellPage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = const [
-  HomePage(),
-  NewsPage(),
-  Center(
-    child: Text(
-      'Partidos',
-      style: TextStyle(fontSize: 28),
-    ),
-  ),
-  Center(
-    child: Text(
-      'Área Club',
-      style: TextStyle(fontSize: 28),
-    ),
-  ),
-];
+    HomePage(),
+    NewsPage(),
+    MatchesPage(),
+    TeamsPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_currentIndex],
+      extendBody: true,
 
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Inicio',
+      body: IndexedStack(index: _currentIndex, children: _pages),
+
+      bottomNavigationBar: _buildFloatingNavigationBar(),
+    );
+  }
+
+  Widget _buildFloatingNavigationBar() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
+      child: Material(
+        elevation: 8,
+        borderRadius: BorderRadius.circular(20),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.76),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: NavigationBar(
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            height: 54,
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: 'Inicio',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.article_outlined),
+                selectedIcon: Icon(Icons.article),
+                label: 'Noticias',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.sports_soccer_outlined),
+                selectedIcon: Icon(Icons.sports_soccer),
+                label: 'Partidos',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.groups_outlined),
+                selectedIcon: Icon(Icons.groups),
+                label: 'Equipos',
+              ),
+            ],
           ),
-          NavigationDestination(
-            icon: Icon(Icons.article_outlined),
-            selectedIcon: Icon(Icons.article),
-            label: 'Noticias',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.sports_soccer_outlined),
-            selectedIcon: Icon(Icons.sports_soccer),
-            label: 'Partidos',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.lock_outline),
-            selectedIcon: Icon(Icons.lock),
-            label: 'Área Club',
-          ),
-        ],
+        ),
       ),
     );
   }

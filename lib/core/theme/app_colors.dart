@@ -3,15 +3,28 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  static const Color primary = Color(0xFF000000);
-  static const Color secondary = Color(0xFFFFFFFF);
+  // ============================================================
+  // COLORES CORPORATIVOS MUTXAMEL CF
+  // ============================================================
 
-  static const Color background = Color(0xFFF5F5F5);
-  static const Color surface = Color(0xFFFFFFFF);
+  static const Color azulOscuro = Color(0xFF0B3D5C);
+  static const Color azul = Color(0xFF1976B8);
+  static const Color fondo = Color(0xFFF5F1E9);
+  static const Color dorado = Color(0xFFE5A928);
 
-  static const Color textPrimary = Color(0xFF212121);
-  static const Color textSecondary = Color(0xFF757575);
+  // ============================================================
+  // COLORES AUXILIARES
+  // ============================================================
 
-  static const Color error = Color(0xFFD32F2F);
-  static const Color success = Color(0xFF2E7D32);
+  static const Color texto = Color(0xFF18252B);
+  static const Color blancoCalido = Color(0xFFFFFDF8);
+
+  // ============================================================
+  // ALIAS
+  // Mantienen compatibilidad con código existente
+  // ============================================================
+
+  static const Color primary = azul;
+  static const Color primaryDark = azulOscuro;
+  static const Color secondary = dorado;
 }

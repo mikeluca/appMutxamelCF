@@ -1,183 +1,259 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
+import '../../core/config/app_config.dart';
+import '../../core/theme/app_colors.dart';
+import '../matches/models/match_model.dart';
+import '../matches/services/match_service.dart';
+import '../news/models/news_model.dart';
+import '../news/pages/news_detail_page.dart';
+import '../news/services/news_services.dart';
+import '../../../routing/app_routes.dart';
+import '../auth/services/auth_manager.dart';
+import '../matches/widgets/match_card.dart';
+
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final MatchService _matchService = MatchService();
+  final NewsService _newsService = NewsService();
+
+  late Future<MatchModel?> _futureMatch;
+  late Future<List<NewsModel>> _futureNews;
+
+  ColorScheme get _colors => Theme.of(context).colorScheme;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _futureMatch = _matchService.obtenerResultadoPrimerEquipo();
+
+    _futureNews = _newsService.obtenerNoticias();
+  }
+
+  Future<void> _recargar() async {
+    setState(() {
+      _futureMatch = _matchService.obtenerResultadoPrimerEquipo();
+
+      _futureNews = _newsService.obtenerNoticias();
+    });
+
+    await Future.wait([_futureMatch, _futureNews]);
+  }
+
+  Future<void> _abrirAreaClub() async {
+    final sesionValida = await AuthManager.restaurarSesion();
+
+    if (!mounted) return;
+
+    if (sesionValida) {
+      Navigator.pushNamed(context, AppRoutes.club);
+    } else {
+      Navigator.pushNamed(context, AppRoutes.login);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mutxamel CF'),
+        automaticallyImplyLeading: false,
+        titleSpacing: 16,
+        title: Align(
+          alignment: Alignment.centerLeft,
+          child: Image.asset(
+            'assets/images/escudo.png',
+            width: 30,
+            height: 38,
+            fit: BoxFit.contain,
+          ),
+        ),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_none),
+          TextButton.icon(
+            onPressed: _abrirAreaClub,
+            icon: const Icon(Icons.login, color: Colors.white, size: 19),
+            label: const Text(
+              'Área Club',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildWelcome(),
+      body: RefreshIndicator(
+        onRefresh: _recargar,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FutureBuilder<MatchModel?>(
+                future: _futureMatch,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const _MatchLoadingCard();
+                  }
 
-            const SizedBox(height: 24),
+                  if (snapshot.hasError) {
+                    return _MatchErrorCard(
+                      onRetry: () {
+                        setState(() {
+                          _futureMatch = _matchService
+                              .obtenerResultadoPrimerEquipo();
+                        });
+                      },
+                    );
+                  }
 
-            _buildSectionTitle('Últimas noticias'),
+                  final match = snapshot.data;
 
-            const SizedBox(height: 12),
+                  if (match == null) {
+                    return const _MatchUnavailableCard();
+                  }
 
-            _buildMainNews(),
+                  return MatchCard(match: match);
+                },
+              ),
 
-            const SizedBox(height: 28),
+              const SizedBox(height: 28),
 
-            _buildSectionTitle('Próximos partidos'),
+              _buildSectionTitle('Últimas noticias'),
 
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            _buildNextMatch(),
-          ],
+              _buildMainNews(),
+            ],
+          ),
         ),
       ),
-    );
-  }
-
-  Widget _buildWelcome() {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Hola 👋',
-          style: TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 4),
-        Text(
-          'Bienvenido al Mutxamel CF',
-          style: TextStyle(
-            fontSize: 16,
-          ),
-        ),
-      ],
     );
   }
 
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 20,
+      style: TextStyle(
+        fontSize: 21,
         fontWeight: FontWeight.bold,
+        color: _colors.onSurface,
       ),
     );
   }
 
   Widget _buildMainNews() {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 170,
-            width: double.infinity,
-            color: Colors.grey.shade300,
-            child: const Center(
-              child: Icon(
-                Icons.image,
-                size: 60,
-                color: Colors.grey,
+    return FutureBuilder<List<NewsModel>>(
+      future: _futureNews,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Card(
+            child: SizedBox(
+              height: 180,
+              child: Center(child: CircularProgressIndicator()),
+            ),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Card(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  const Icon(Icons.error_outline, size: 42),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'No se han podido cargar las noticias.',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton(
+                    onPressed: () {
+                      setState(() {
+                        _futureNews = _newsService.obtenerNoticias();
+                      });
+                    },
+                    child: const Text('Reintentar'),
+                  ),
+                ],
               ),
             ),
-          ),
+          );
+        }
 
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Últimas noticias del club',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+        final noticias = snapshot.data ?? [];
 
-                SizedBox(height: 8),
-
-                Text(
-                  'Consulta todas las novedades, noticias y comunicados del Mutxamel CF.',
-                  style: TextStyle(
-                    fontSize: 14,
-                  ),
-                ),
-              ],
+        if (noticias.isEmpty) {
+          return const Card(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Center(child: Text('No hay noticias disponibles.')),
             ),
-          ),
-        ],
-      ),
+          );
+        }
+
+        final noticiasMostrar = noticias.take(3).toList();
+
+        return Column(
+          children: noticiasMostrar
+              .map(
+                (noticia) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _buildNewsCard(noticia),
+                ),
+              )
+              .toList(),
+        );
+      },
     );
   }
 
-  Widget _buildNextMatch() {
+  Widget _buildNewsCard(NewsModel noticia) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NewsDetailPage(noticia: noticia),
+            ),
+          );
+        },
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'PRÓXIMO PARTIDO',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildTeam(
-                  'Mutxamel CF',
-                  Icons.shield,
+            if (noticia.imagenUrl != null)
+              Image.network(
+                '${AppConfig.mediaBaseUrl}'
+                '${noticia.imagenUrl}',
+                height: 170,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return _buildNewsImagePlaceholder();
+                },
+              )
+            else
+              _buildNewsImagePlaceholder(),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                noticia.titulo,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: _colors.onSurface,
                 ),
-
-                const Text(
-                  'VS',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                _buildTeam(
-                  'Rival',
-                  Icons.shield_outlined,
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            const Text(
-              'Sábado · 18:00',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-
-            const SizedBox(height: 4),
-
-            const Text(
-              'Campo Municipal',
-              style: TextStyle(
-                fontSize: 14,
               ),
             ),
           ],
@@ -186,26 +262,84 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTeam(String name, IconData icon) {
-    return SizedBox(
-      width: 100,
-      child: Column(
-        children: [
-          Icon(
-            icon,
-            size: 45,
+  Widget _buildNewsImagePlaceholder() {
+    return Container(
+      height: 170,
+      width: double.infinity,
+      color: AppColors.azulOscuro.withValues(alpha: 0.08),
+      child: const Center(
+        child: Icon(Icons.article_outlined, size: 50, color: AppColors.azul),
+      ),
+    );
+  }
+}
+
+class _MatchLoadingCard extends StatelessWidget {
+  const _MatchLoadingCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Card(
+      child: SizedBox(
+        height: 240,
+        width: double.infinity,
+        child: Center(child: CircularProgressIndicator()),
+      ),
+    );
+  }
+}
+
+class _MatchErrorCard extends StatelessWidget {
+  final VoidCallback onRetry;
+
+  const _MatchErrorCard({required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              const Icon(Icons.error_outline, size: 42),
+              const SizedBox(height: 12),
+              const Text(
+                'No se ha podido cargar el partido.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton(
+                onPressed: onRetry,
+                child: const Text('Reintentar'),
+              ),
+            ],
           ),
+        ),
+      ),
+    );
+  }
+}
 
-          const SizedBox(height: 8),
+class _MatchUnavailableCard extends StatelessWidget {
+  const _MatchUnavailableCard();
 
-          Text(
-            name,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
+  @override
+  Widget build(BuildContext context) {
+    return const Card(
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Center(
+            child: Text(
+              'No hay información disponible '
+              'sobre el próximo partido.',
+              textAlign: TextAlign.center,
             ),
           ),
-        ],
+        ),
       ),
     );
   }
