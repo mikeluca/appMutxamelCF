@@ -15,12 +15,21 @@ class PublicShellPage extends StatefulWidget {
 class _PublicShellPageState extends State<PublicShellPage> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = const [
-    HomePage(),
-    NewsPage(),
-    MatchesPage(),
-    TeamsPage(),
-  ];
+  final GlobalKey<HomePageState> _homeKey = GlobalKey<HomePageState>();
+
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _pages = [
+      HomePage(key: _homeKey),
+      const NewsPage(),
+      const MatchesPage(),
+      const TeamsPage(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +57,10 @@ class _PublicShellPageState extends State<PublicShellPage> {
               setState(() {
                 _currentIndex = index;
               });
+
+              if (index == 0) {
+                _homeKey.currentState?.actualizarContadorNotificaciones();
+              }
             },
             height: 54,
             elevation: 0,

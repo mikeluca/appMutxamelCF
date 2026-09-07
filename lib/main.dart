@@ -8,6 +8,8 @@ import 'features/public/public_shell_page.dart';
 import 'features/splash/splash_page.dart';
 
 import 'routing/app_routes.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'features/auth/pages/login_page.dart';
 import 'features/auth/pages/club_page.dart';
@@ -16,9 +18,19 @@ import 'features/auth/pages/mis_jugadores_page.dart';
 import 'features/auth/pages/mis_partidos_page.dart';
 import 'features/auth/pages/mis_equipos_page.dart';
 import 'features/auth/pages/ajustes_page.dart';
+import 'core/notifications/services/push_notification_service.dart';
+import 'features/auth/pages/comunicaciones_page.dart';
+import 'core/navigation/app_navigator.dart';
+import 'core/notifications/services/local_notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await LocalNotificationService.inicializar();
+
+  await PushNotificationService.inicializar();
 
   final temaGuardado = await AppPreferences.obtenerTema();
 
@@ -42,6 +54,10 @@ class _MutxamelCfAppState extends State<MutxamelCfApp> {
     super.initState();
 
     _temaActual = widget.temaInicial;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      PushNotificationService.procesarNotificacionInicial();
+    });
   }
 
   ThemeMode get _themeMode {
@@ -74,6 +90,8 @@ class _MutxamelCfAppState extends State<MutxamelCfApp> {
       title: 'appMTX',
       debugShowCheckedModeBanner: false,
 
+      navigatorKey: AppNavigator.navigatorKey,
+
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
 
@@ -94,6 +112,7 @@ class _MutxamelCfAppState extends State<MutxamelCfApp> {
         AppRoutes.myTeams: (context) => const MisEquiposPage(),
         AppRoutes.settings: (context) =>
             AjustesPage(temaActual: _temaActual, onTemaChanged: _cambiarTema),
+        AppRoutes.communication: (context) => const ComunicacionesPage(),
       },
     );
   }

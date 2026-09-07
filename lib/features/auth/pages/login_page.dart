@@ -4,6 +4,7 @@ import '../services/auth_service.dart';
 import '../services/auth_session.dart';
 import '../services/auth_manager.dart';
 import '../../../routing/app_routes.dart';
+import '../../../core/notifications/services/push_notification_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -48,6 +49,8 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       await AuthSession.guardarSesion(loginResponse);
+
+      await PushNotificationService.registrarDispositivoActual();
 
       final usuario = await AuthService.obtenerUsuarioActual();
 

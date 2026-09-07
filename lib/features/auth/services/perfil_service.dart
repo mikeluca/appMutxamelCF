@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../../../core/config/app_config.dart';
+import '../../../core/network/api_client.dart';
 import '../models/perfil_app.dart';
 import 'auth_session.dart';
 
@@ -17,8 +17,9 @@ class PerfilService {
     }
 
     final response = await http.get(
-      Uri.parse('${AppConfig.apiBaseUrl}/app/perfil'),
+      Uri.parse('${ApiClient.baseUrl}/app/perfil'),
       headers: {
+        ...ApiClient.jsonHeaders,
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },

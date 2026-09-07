@@ -86,7 +86,7 @@ class ClubPage extends StatelessWidget {
             titulo: 'Comunicaciones',
             descripcion: 'Avisos y comunicaciones del club',
             onTap: () {
-              // Lo implementaremos posteriormente.
+              Navigator.pushNamed(context, AppRoutes.communication);
             },
           ),
 

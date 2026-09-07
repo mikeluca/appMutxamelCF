@@ -2,17 +2,19 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../../../core/config/app_config.dart';
+import '../../../core/network/api_client.dart';
 import '../models/match_model.dart';
 
 class MatchService {
   Future<MatchModel?> obtenerResultadoPrimerEquipo() async {
     final url = Uri.parse(
-      '${AppConfig.apiBaseUrl}/public/resultados/primer-equipo',
+      '${ApiClient.baseUrl}/public/resultados/primer-equipo',
     );
 
-    final response = await http.get(url);
-
+    final response = await http.get(
+      url,
+      headers: ApiClient.jsonHeaders,
+    );
     if (response.statusCode == 404) {
       return null;
     }
@@ -30,10 +32,12 @@ class MatchService {
   }
 
   Future<List<MatchModel>> obtenerResultados() async {
-    final url = Uri.parse('${AppConfig.apiBaseUrl}/public/resultados');
+    final url = Uri.parse('${ApiClient.baseUrl}/public/resultados');
 
-    final response = await http.get(url);
-
+    final response = await http.get(
+      url,
+      headers: ApiClient.jsonHeaders,
+    );
     if (response.statusCode != 200) {
       throw Exception(
         'Error al obtener los resultados: '

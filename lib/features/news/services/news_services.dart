@@ -2,16 +2,16 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../../../core/config/app_config.dart';
+import '../../../core/network/api_client.dart';
 import '../models/news_model.dart';
 
 class NewsService {
   Future<List<NewsModel>> obtenerNoticias() async {
     final url = Uri.parse(
-      '${AppConfig.apiBaseUrl}/public/noticias',
+      '${ApiClient.baseUrl}/public/noticias',
     );
 
-    final response = await http.get(url);
+    final response = await http.get(url, headers: ApiClient.jsonHeaders);
 
     if (response.statusCode != 200) {
       throw Exception(

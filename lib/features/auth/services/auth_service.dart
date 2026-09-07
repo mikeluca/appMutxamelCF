@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../../../core/config/app_config.dart';
+import '../../../core/network/api_client.dart';
 import '../models/login_request.dart';
 import '../models/login_response.dart';
 
@@ -22,8 +22,11 @@ class AuthService {
     );
 
     final response = await http.post(
-      Uri.parse('${AppConfig.apiBaseUrl}/app/auth/login'),
-      headers: {'Content-Type': 'application/json'},
+      Uri.parse('${ApiClient.baseUrl}/app/auth/login'),
+      headers: {
+        ...ApiClient.jsonHeaders,
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode(request.toJson()),
     );
 
@@ -53,8 +56,9 @@ class AuthService {
     }
 
     final response = await http.get(
-      Uri.parse('${AppConfig.apiBaseUrl}/app/auth/me'),
+      Uri.parse('${ApiClient.baseUrl}/app/auth/me'),
       headers: {
+        ...ApiClient.jsonHeaders,
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },

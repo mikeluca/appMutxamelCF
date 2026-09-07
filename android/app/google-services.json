@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "824756150035",
+    "project_id": "mutxamelcf-4b1dd",
+    "storage_bucket": "mutxamelcf-4b1dd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:824756150035:android:3f83d48d19dcb8d6c404e6",
+        "android_client_info": {
+          "package_name": "com.mutxamelcf.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLKt7TL3mQSXEMxeJvqRzxnJYT1ES82Yg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,16 +2,16 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../../../core/config/app_config.dart';
+import '../../../core/network/api_client.dart';
 import '../models/player_model.dart';
 import '../models/staff_model.dart';
 import '../models/team_model.dart';
 
 class TeamService {
   Future<List<TeamModel>> obtenerEquipos() async {
-    final url = Uri.parse('${AppConfig.apiBaseUrl}/public/equipos');
+    final url = Uri.parse('${ApiClient.baseUrl}/public/equipos');
 
-    final response = await http.get(url);
+    final response = await http.get(url, headers: ApiClient.jsonHeaders);
 
     if (response.statusCode != 200) {
       throw Exception(
@@ -28,9 +28,9 @@ class TeamService {
   }
 
   Future<TeamModel?> obtenerEquipo(int id) async {
-    final url = Uri.parse('${AppConfig.apiBaseUrl}/public/equipos/$id');
+    final url = Uri.parse('${ApiClient.baseUrl}/public/equipos/$id');
 
-    final response = await http.get(url);
+    final response = await http.get(url, headers: ApiClient.jsonHeaders);
 
     if (response.statusCode == 404) {
       return null;
@@ -50,11 +50,11 @@ class TeamService {
 
   Future<List<PlayerModel>> obtenerJugadores(int equipoId) async {
     final url = Uri.parse(
-      '${AppConfig.apiBaseUrl}/public/equipos/'
+      '${ApiClient.baseUrl}/public/equipos/'
       '$equipoId/jugadores',
     );
 
-    final response = await http.get(url);
+    final response = await http.get(url, headers: ApiClient.jsonHeaders);
 
     if (response.statusCode != 200) {
       throw Exception(
@@ -72,11 +72,11 @@ class TeamService {
 
   Future<List<StaffModel>> obtenerCuerpoTecnico(int equipoId) async {
     final url = Uri.parse(
-      '${AppConfig.apiBaseUrl}/public/equipos/'
+      '${ApiClient.baseUrl}/public/equipos/'
       '$equipoId/cuerpo-tecnico',
     );
 
-    final response = await http.get(url);
+    final response = await http.get(url, headers: ApiClient.jsonHeaders);
 
     if (response.statusCode != 200) {
       throw Exception(

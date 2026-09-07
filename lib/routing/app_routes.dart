@@ -13,4 +13,5 @@ class AppRoutes {
   static const String myMatches = '/my-matches';
   static const String myTeams = '/my-teams';
   static const String settings = '/settings';
+  static const String communication = '/communication';
 }

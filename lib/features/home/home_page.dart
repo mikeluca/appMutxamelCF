@@ -10,17 +10,21 @@ import '../news/services/news_services.dart';
 import '../../../routing/app_routes.dart';
 import '../auth/services/auth_manager.dart';
 import '../matches/widgets/match_card.dart';
+import '../auth/services/notificacion_service.dart';
+import '../auth/pages/notificaciones_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   final MatchService _matchService = MatchService();
   final NewsService _newsService = NewsService();
+
+  int _notificacionesNoLeidas = 0;
 
   late Future<MatchModel?> _futureMatch;
   late Future<List<NewsModel>> _futureNews;
@@ -34,6 +38,27 @@ class _HomePageState extends State<HomePage> {
     _futureMatch = _matchService.obtenerResultadoPrimerEquipo();
 
     _futureNews = _newsService.obtenerNoticias();
+
+    _cargarContadorNotificaciones();
+  }
+
+  Future<void> _cargarContadorNotificaciones() async {
+    try {
+      final cantidad = await NotificacionService.contarNoLeidas();
+
+      if (!mounted) return;
+
+      setState(() {
+        _notificacionesNoLeidas = cantidad;
+      });
+    } catch (_) {
+      // Si falla el contador no impedimos
+      // que funcione el resto de la pantalla.
+    }
+  }
+
+  Future<void> actualizarContadorNotificaciones() async {
+    await _cargarContadorNotificaciones();
   }
 
   Future<void> _recargar() async {
@@ -43,7 +68,11 @@ class _HomePageState extends State<HomePage> {
       _futureNews = _newsService.obtenerNoticias();
     });
 
-    await Future.wait([_futureMatch, _futureNews]);
+    await Future.wait([
+      _futureMatch,
+      _futureNews,
+      _cargarContadorNotificaciones(),
+    ]);
   }
 
   Future<void> _abrirAreaClub() async {
@@ -74,6 +103,58 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         actions: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              IconButton(
+                tooltip: 'Notificaciones',
+                icon: const Icon(
+                  Icons.notifications_outlined,
+                  color: Colors.white,
+                ),
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const NotificacionesPage(),
+                    ),
+                  );
+
+                  _cargarContadorNotificaciones();
+                },
+              ),
+              if (_notificacionesNoLeidas > 0)
+                Positioned(
+                  right: 5,
+                  top: 5,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 2,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 18,
+                      minHeight: 18,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.dorado,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      _notificacionesNoLeidas > 99
+                          ? '99+'
+                          : '$_notificacionesNoLeidas',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
           TextButton.icon(
             onPressed: _abrirAreaClub,
             icon: const Icon(Icons.login, color: Colors.white, size: 19),
