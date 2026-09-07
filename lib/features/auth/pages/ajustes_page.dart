@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/config/app_preferences.dart';
 import '../../../core/theme/app_colors.dart';
+import '../models/preferencias_notificacion_model.dart';
+import '../services/preferencias_notificacion_service.dart';
 
 class AjustesPage extends StatefulWidget {
   final String temaActual;
@@ -18,7 +19,10 @@ class AjustesPage extends StatefulWidget {
 }
 
 class _AjustesPageState extends State<AjustesPage> {
-  bool _notificacionesActivadas = true;
+  PreferenciasNotificacionModel? _preferencias;
+
+  bool _cargandoPreferencias = true;
+  bool _guardandoPreferencias = false;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
 
@@ -29,13 +33,86 @@ class _AjustesPageState extends State<AjustesPage> {
   }
 
   Future<void> _cargarPreferencias() async {
-    final notificaciones = await AppPreferences.obtenerNotificaciones();
+    try {
+      final preferencias =
+          await PreferenciasNotificacionService.obtenerPreferencias();
 
-    if (!mounted) return;
+      if (!mounted) return;
+
+      setState(() {
+        _preferencias = preferencias;
+        _cargandoPreferencias = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _cargandoPreferencias = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No se han podido cargar las preferencias'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _actualizarPreferencias({
+    bool? notificacionesActivadas,
+    bool? noticiasActivadas,
+    bool? comunicacionesActivadas,
+    bool? mensajesActivados,
+    bool? resultadosActivados,
+  }) async {
+    final actuales = _preferencias;
+
+    if (actuales == null || _guardandoPreferencias) {
+      return;
+    }
+
+    final nuevas = PreferenciasNotificacionModel(
+      usuarioAppId: actuales.usuarioAppId,
+      notificacionesActivadas:
+          notificacionesActivadas ?? actuales.notificacionesActivadas,
+      noticiasActivadas: noticiasActivadas ?? actuales.noticiasActivadas,
+      comunicacionesActivadas:
+          comunicacionesActivadas ?? actuales.comunicacionesActivadas,
+      mensajesActivados: mensajesActivados ?? actuales.mensajesActivados,
+      resultadosActivados: resultadosActivados ?? actuales.resultadosActivados,
+    );
 
     setState(() {
-      _notificacionesActivadas = notificaciones;
+      _preferencias = nuevas;
+      _guardandoPreferencias = true;
     });
+
+    try {
+      final actualizadas =
+          await PreferenciasNotificacionService.actualizarPreferencias(nuevas);
+
+      if (!mounted) return;
+
+      setState(() {
+        _preferencias = actualizadas;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _preferencias = actuales;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se ha podido guardar la preferencia')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _guardandoPreferencias = false;
+        });
+      }
+    }
   }
 
   @override
@@ -49,30 +126,94 @@ class _AjustesPageState extends State<AjustesPage> {
             titulo: 'Notificaciones',
             icono: Icons.notifications_none_outlined,
             children: [
-              _construirSwitch(
-                icono: Icons.notifications_outlined,
-                titulo: 'Notificaciones',
-                subtitulo: _notificacionesActivadas
-                    ? 'Recibir comunicaciones del club'
-                    : 'No recibir notificaciones',
-                valor: _notificacionesActivadas,
-                onChanged: (valor) async {
-                  setState(() {
-                    _notificacionesActivadas = valor;
-                  });
+              if (_cargandoPreferencias)
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: _colors.surface,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Center(child: CircularProgressIndicator()),
+                )
+              else if (_preferencias != null) ...[
+                _construirSwitch(
+                  icono: Icons.notifications_outlined,
+                  titulo: 'Notificaciones',
+                  subtitulo: _preferencias!.notificacionesActivadas
+                      ? 'Recibir notificaciones del club'
+                      : 'No recibir notificaciones',
+                  valor: _preferencias!.notificacionesActivadas,
+                  onChanged: (valor) {
+                    _actualizarPreferencias(notificacionesActivadas: valor);
+                  },
+                ),
 
-                  await AppPreferences.guardarNotificaciones(valor);
-                },
-              ),
+                const SizedBox(height: 10),
+
+                _construirSwitch(
+                  icono: Icons.article_outlined,
+                  titulo: 'Noticias',
+                  subtitulo: 'Recibir avisos sobre nuevas noticias',
+                  valor: _preferencias!.noticiasActivadas,
+                  onChanged: _preferencias!.notificacionesActivadas
+                      ? (valor) {
+                          _actualizarPreferencias(noticiasActivadas: valor);
+                        }
+                      : null,
+                ),
+
+                const SizedBox(height: 10),
+
+                _construirSwitch(
+                  icono: Icons.chat_bubble_outline,
+                  titulo: 'Mensajes',
+                  subtitulo: 'Recibir avisos de nuevos mensajes',
+                  valor: _preferencias!.mensajesActivados,
+                  onChanged: _preferencias!.notificacionesActivadas
+                      ? (valor) {
+                          _actualizarPreferencias(mensajesActivados: valor);
+                        }
+                      : null,
+                ),
+
+                const SizedBox(height: 10),
+
+                _construirSwitch(
+                  icono: Icons.sports_soccer_outlined,
+                  titulo: 'Resultados',
+                  subtitulo: 'Recibir avisos sobre resultados',
+                  valor: _preferencias!.resultadosActivados,
+                  onChanged: _preferencias!.notificacionesActivadas
+                      ? (valor) {
+                          _actualizarPreferencias(resultadosActivados: valor);
+                        }
+                      : null,
+                ),
+
+                if (_guardandoPreferencias) ...[
+                  const SizedBox(height: 12),
+                  const Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                ],
+              ],
             ],
           ),
+
           const SizedBox(height: 24),
+
           _construirSeccion(
             titulo: 'Aplicación',
             icono: Icons.phone_android_outlined,
             children: [
               _construirOpcionApariencia(),
+
               const SizedBox(height: 10),
+
               _construirOpcion(
                 icono: Icons.info_outline,
                 titulo: 'Acerca de appMTX',
@@ -108,7 +249,9 @@ class _AjustesPageState extends State<AjustesPage> {
             ),
           ],
         ),
+
         const SizedBox(height: 12),
+
         ...children,
       ],
     );
@@ -119,7 +262,7 @@ class _AjustesPageState extends State<AjustesPage> {
     required String titulo,
     required String subtitulo,
     required bool valor,
-    required ValueChanged<bool> onChanged,
+    required ValueChanged<bool>? onChanged,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -138,7 +281,9 @@ class _AjustesPageState extends State<AjustesPage> {
             ),
             child: Icon(icono, color: _colors.primary, size: 24),
           ),
+
           const SizedBox(width: 14),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,7 +296,9 @@ class _AjustesPageState extends State<AjustesPage> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+
                 const SizedBox(height: 3),
+
                 Text(
                   subtitulo,
                   style: TextStyle(
@@ -162,6 +309,7 @@ class _AjustesPageState extends State<AjustesPage> {
               ],
             ),
           ),
+
           Switch(
             value: valor,
             onChanged: onChanged,
@@ -194,7 +342,9 @@ class _AjustesPageState extends State<AjustesPage> {
               size: 24,
             ),
           ),
+
           const SizedBox(width: 14),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,7 +357,9 @@ class _AjustesPageState extends State<AjustesPage> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(height: 3),
+
+                const SizedBox(height: 3),
+
                 Text(
                   'Elige cómo quieres ver la aplicación',
                   style: TextStyle(
@@ -218,6 +370,7 @@ class _AjustesPageState extends State<AjustesPage> {
               ],
             ),
           ),
+
           DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: widget.temaActual,
@@ -263,7 +416,9 @@ class _AjustesPageState extends State<AjustesPage> {
                 ),
                 child: Icon(icono, color: _colors.primary, size: 24),
               ),
+
               const SizedBox(width: 14),
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,7 +431,9 @@ class _AjustesPageState extends State<AjustesPage> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+
                     const SizedBox(height: 3),
+
                     Text(
                       subtitulo,
                       style: TextStyle(
@@ -287,6 +444,7 @@ class _AjustesPageState extends State<AjustesPage> {
                   ],
                 ),
               ),
+
               Icon(Icons.chevron_right, color: _colors.onSurfaceVariant),
             ],
           ),
