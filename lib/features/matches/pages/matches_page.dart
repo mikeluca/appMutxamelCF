@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/club_app_bar_title.dart';
 import '../models/match_model.dart';
 import '../services/match_service.dart';
 
@@ -36,7 +37,7 @@ class _MatchesPageState extends State<MatchesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Partidos')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Partidos')),
       body: FutureBuilder<List<MatchModel>>(
         future: _matchesFuture,
         builder: (context, snapshot) {

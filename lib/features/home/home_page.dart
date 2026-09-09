@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../core/config/app_config.dart';
+import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widget/club_app_bar_title.dart';
 import '../matches/models/match_model.dart';
 import '../matches/services/match_service.dart';
 import '../news/models/news_model.dart';
@@ -92,26 +94,14 @@ class HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        titleSpacing: 16,
-        title: Align(
-          alignment: Alignment.centerLeft,
-          child: Image.asset(
-            'assets/images/escudo.png',
-            width: 30,
-            height: 38,
-            fit: BoxFit.contain,
-          ),
-        ),
+        title: ClubAppBarTitle(titulo: AppConstants.appName),
         actions: [
           Stack(
             clipBehavior: Clip.none,
             children: [
               IconButton(
                 tooltip: 'Notificaciones',
-                icon: const Icon(
-                  Icons.notifications_outlined,
-                  color: Colors.white,
-                ),
+                icon: const Icon(Icons.notifications_outlined),
                 onPressed: () async {
                   await Navigator.push(
                     context,
@@ -157,14 +147,10 @@ class HomePageState extends State<HomePage> {
           ),
           TextButton.icon(
             onPressed: _abrirAreaClub,
-            icon: const Icon(Icons.login, color: Colors.white, size: 19),
+            icon: const Icon(Icons.login, size: 19),
             label: const Text(
               'Área Club',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -201,7 +187,7 @@ class HomePageState extends State<HomePage> {
                     return const _MatchUnavailableCard();
                   }
 
-                  return MatchCard(match: match);
+                  return MatchCard(match: match, mostrarPrimerEquipo: true);
                 },
               ),
 

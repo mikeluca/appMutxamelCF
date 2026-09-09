@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/club_app_bar_title.dart';
 import '../../../routing/app_routes.dart';
 import '../services/auth_manager.dart';
 
@@ -11,11 +12,7 @@ class ClubPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final usuario = AuthManager.usuarioActual;
 
-    final tieneJugadores =
-        usuario?.tieneRol('FAMILIAR') == true ||
-        usuario?.tieneRol('JUGADOR') == true ||
-        usuario?.tieneRol('COORDINADOR') == true ||
-        usuario?.tieneRol('ADMIN_APP') == true;
+    final tieneJugadores = usuario?.tieneRol('FAMILIAR') == true;
 
     final tieneEquipos =
         usuario?.tieneRol('ENTRENADOR') == true ||
@@ -23,7 +20,10 @@ class ClubPage extends StatelessWidget {
         usuario?.tieneRol('ADMIN_APP') == true;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Área Club'), centerTitle: false),
+      appBar: AppBar(
+        title: ClubAppBarTitle(titulo: 'Área Club'),
+        centerTitle: false,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [

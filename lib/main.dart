@@ -18,22 +18,17 @@ import 'features/auth/pages/mis_jugadores_page.dart';
 import 'features/auth/pages/mis_partidos_page.dart';
 import 'features/auth/pages/mis_equipos_page.dart';
 import 'features/auth/pages/ajustes_page.dart';
-import 'core/notifications/services/push_notification_service.dart';
 import 'features/auth/pages/comunicaciones_page.dart';
 import 'core/navigation/app_navigator.dart';
-import 'core/notifications/services/local_notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await LocalNotificationService.inicializar();
-
-  await PushNotificationService.inicializar();
-
   final temaGuardado = await AppPreferences.obtenerTema();
 
+  // El resto de la inicialización (notificaciones) se hace en SplashPage para no retrasar el primer frame.
   runApp(MutxamelCfApp(temaInicial: temaGuardado));
 }
 
@@ -54,10 +49,6 @@ class _MutxamelCfAppState extends State<MutxamelCfApp> {
     super.initState();
 
     _temaActual = widget.temaInicial;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      PushNotificationService.procesarNotificacionInicial();
-    });
   }
 
   ThemeMode get _themeMode {

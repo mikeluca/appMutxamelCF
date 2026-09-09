@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/club_app_bar_title.dart';
 import '../models/preferencias_notificacion_model.dart';
 import '../services/preferencias_notificacion_service.dart';
 
@@ -118,7 +119,7 @@ class _AjustesPageState extends State<AjustesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ajustes')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Ajustes')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
         children: [

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/club_app_bar_title.dart';
 import '../../../routing/app_routes.dart';
 import '../models/perfil_app.dart';
 import '../services/perfil_service.dart';
@@ -50,7 +51,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Mi perfil')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Mi perfil')),
       body: _construirContenido(),
     );
   }

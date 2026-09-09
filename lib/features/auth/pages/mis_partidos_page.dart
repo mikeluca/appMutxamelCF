@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/club_app_bar_title.dart';
 import '../../matches/models/match_model.dart';
 import '../../matches/services/match_service.dart';
 import '../../matches/widgets/match_card.dart';
@@ -12,6 +13,13 @@ class MisPartidosPage extends StatefulWidget {
 
   @override
   State<MisPartidosPage> createState() => _MisPartidosPageState();
+}
+
+class _EquipoJugador {
+  final String equipo;
+  final String? jugador;
+
+  const _EquipoJugador({required this.equipo, this.jugador});
 }
 
 class _MisPartidosPageState extends State<MisPartidosPage> {
@@ -34,30 +42,41 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
   Future<void> _cargarDatos() async {
     try {
       final perfil = await PerfilService.obtenerPerfil();
+
       final todosLosPartidos = await _matchService.obtenerResultados();
 
-      final nombresEquipos = <String>{};
+      final esCoordinador = perfil.tieneRol('COORDINADOR');
 
-      // Equipos procedentes de los jugadores.
-      for (final jugador in perfil.jugadores) {
-        final equipo = jugador.equipo;
+      final esAdmin = perfil.tieneRol('ADMIN_APP');
 
-        if (equipo != null && equipo.trim().isNotEmpty) {
-          nombresEquipos.add(equipo.trim().toUpperCase());
+      List<MatchModel> partidos;
+
+      if (esCoordinador || esAdmin) {
+        partidos = todosLosPartidos;
+      } else {
+        final nombresEquipos = <String>{};
+
+        // Equipos procedentes de los jugadores.
+        for (final jugador in perfil.jugadores) {
+          final equipo = jugador.equipo;
+
+          if (equipo != null && equipo.trim().isNotEmpty) {
+            nombresEquipos.add(equipo.trim().toUpperCase());
+          }
         }
-      }
 
-      // Equipos procedentes directamente del perfil.
-      // Esto es lo que necesitamos para entrenadores/coordinadores.
-      for (final equipo in perfil.equipos) {
-        if (equipo.nombre.trim().isNotEmpty) {
-          nombresEquipos.add(equipo.nombre.trim().toUpperCase());
+        // Equipos procedentes directamente
+        // del perfil.
+        for (final equipo in perfil.equipos) {
+          if (equipo.nombre.trim().isNotEmpty) {
+            nombresEquipos.add(equipo.nombre.trim().toUpperCase());
+          }
         }
-      }
 
-      final partidos = todosLosPartidos.where((partido) {
-        return nombresEquipos.contains(partido.equipo.trim().toUpperCase());
-      }).toList();
+        partidos = todosLosPartidos.where((partido) {
+          return nombresEquipos.contains(partido.equipo.trim().toUpperCase());
+        }).toList();
+      }
 
       if (!mounted) return;
 
@@ -65,6 +84,7 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
         _perfil = perfil;
         _partidos = partidos;
         _cargando = false;
+        _error = null;
       });
     } catch (e) {
       if (!mounted) return;
@@ -78,8 +98,16 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
 
   @override
   Widget build(BuildContext context) {
+    final esGestionGlobal =
+        _perfil?.tieneRol('COORDINADOR') == true ||
+        _perfil?.tieneRol('ADMIN_APP') == true;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Mis partidos')),
+      appBar: AppBar(
+        title: ClubAppBarTitle(
+          titulo: esGestionGlobal ? 'Todos los partidos' : 'Mis partidos',
+        ),
+      ),
       body: _construirContenido(),
     );
   }
@@ -96,6 +124,10 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
     final equipos = _obtenerEquipos();
 
     if (equipos.isEmpty) {
+      final esGestionGlobal =
+          _perfil?.tieneRol('COORDINADOR') == true ||
+          _perfil?.tieneRol('ADMIN_APP') == true;
+
       return RefreshIndicator(
         onRefresh: _cargarDatos,
         child: ListView(
@@ -111,7 +143,9 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
             const SizedBox(height: 20),
             Center(
               child: Text(
-                'No tienes equipos asociados.',
+                esGestionGlobal
+                    ? 'No hay partidos disponibles.'
+                    : 'No tienes equipos asociados.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 17,
@@ -131,10 +165,10 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
         children: [
-          for (final equipo in equipos) ...[
-            _construirTituloEquipo(equipo),
+          for (final equipoJugador in equipos) ...[
+            _construirTituloEquipo(equipoJugador),
             const SizedBox(height: 10),
-            _construirPartidoEquipo(equipo),
+            _construirPartidoEquipo(equipoJugador.equipo),
             const SizedBox(height: 24),
           ],
         ],
@@ -142,32 +176,85 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
     );
   }
 
-  List<String> _obtenerEquipos() {
-    final nombres = <String, String>{};
+  List<_EquipoJugador> _obtenerEquipos() {
+    final resultado = <_EquipoJugador>[];
+    final equiposProcesados = <String>{};
 
-    // Equipos de jugadores.
-    for (final jugador in _perfil?.jugadores ?? []) {
-      final equipo = jugador.equipo;
+    final perfil = _perfil;
 
-      if (equipo != null && equipo.trim().isNotEmpty) {
-        nombres.putIfAbsent(equipo.trim().toUpperCase(), () => equipo.trim());
-      }
+    if (perfil == null) {
+      return resultado;
     }
 
-    // Equipos directos del perfil.
-    for (final equipo in _perfil?.equipos ?? []) {
-      if (equipo.nombre.trim().isNotEmpty) {
-        nombres.putIfAbsent(
-          equipo.nombre.trim().toUpperCase(),
-          () => equipo.nombre.trim(),
+    final esGestionGlobal =
+        perfil.tieneRol('COORDINADOR') || perfil.tieneRol('ADMIN_APP');
+
+    if (esGestionGlobal) {
+      // Coordinador y administrador ven todos
+      // los equipos que aparecen en los partidos.
+      for (final partido in _partidos) {
+        final equipo = partido.equipo.trim();
+
+        if (equipo.isEmpty) {
+          continue;
+        }
+
+        final clave = equipo.toUpperCase();
+
+        if (equiposProcesados.add(clave)) {
+          resultado.add(_EquipoJugador(equipo: equipo));
+        }
+      }
+
+      return resultado;
+    }
+
+    // Para familiares/jugadores vinculados:
+    // cada jugador mantiene su relación con su equipo.
+    for (final jugador in perfil.jugadores) {
+      final equipo = jugador.equipo;
+
+      if (equipo == null || equipo.trim().isEmpty) {
+        continue;
+      }
+
+      final clave = '${equipo.trim().toUpperCase()}|${jugador.id}';
+
+      if (equiposProcesados.add(clave)) {
+        resultado.add(
+          _EquipoJugador(
+            equipo: equipo.trim(),
+            jugador: jugador.nombreCompleto,
+          ),
         );
       }
     }
 
-    return nombres.values.toList();
+    // Equipos directos del perfil.
+    // Se mantienen para entrenadores.
+    for (final equipo in perfil.equipos) {
+      if (equipo.nombre.trim().isEmpty) {
+        continue;
+      }
+
+      final clave = equipo.nombre.trim().toUpperCase();
+
+      if (equiposProcesados.add(clave)) {
+        resultado.add(_EquipoJugador(equipo: equipo.nombre.trim()));
+      }
+    }
+
+    return resultado;
   }
 
-  Widget _construirTituloEquipo(String equipo) {
+  Widget _construirTituloEquipo(_EquipoJugador equipoJugador) {
+    final titulo =
+        equipoJugador.jugador != null &&
+            equipoJugador.jugador!.trim().isNotEmpty
+        ? '${equipoJugador.equipo} - '
+              '${equipoJugador.jugador}'
+        : equipoJugador.equipo;
+
     return Row(
       children: [
         Container(
@@ -181,7 +268,7 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
         const SizedBox(width: 10),
         Expanded(
           child: Text(
-            equipo,
+            titulo,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -210,14 +297,15 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
         color: _colors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Row(
             children: [
               Icon(Icons.event_busy, color: _colors.primary),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'No hay partidos disponibles para este equipo.',
+                  'No hay partidos disponibles '
+                  'para este equipo.',
                   style: TextStyle(color: _colors.onSurface),
                 ),
               ),
@@ -243,20 +331,25 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
     if (proximos.isNotEmpty) {
       proximos.sort((a, b) {
         final fechaA = a.dia ?? DateTime(9999);
+
         final fechaB = b.dia ?? DateTime(9999);
+
         return fechaA.compareTo(fechaB);
       });
 
       return proximos.first;
     }
 
-    // Si no hay próximo, mostramos el último jugado.
+    // Si no hay próximo, mostramos
+    // el último jugado.
     final jugados = partidos.where((partido) => partido.estaJugado).toList();
 
     if (jugados.isNotEmpty) {
       jugados.sort((a, b) {
         final fechaA = a.dia ?? DateTime(1900);
+
         final fechaB = b.dia ?? DateTime(1900);
+
         return fechaB.compareTo(fechaA);
       });
 
@@ -277,7 +370,8 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
             const Icon(Icons.error_outline, size: 56, color: Colors.redAccent),
             const SizedBox(height: 16),
             Text(
-              'No se han podido cargar tus partidos.',
+              'No se han podido cargar '
+              'los partidos.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 17,

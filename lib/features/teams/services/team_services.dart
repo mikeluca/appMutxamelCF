@@ -6,6 +6,8 @@ import '../../../core/network/api_client.dart';
 import '../models/player_model.dart';
 import '../models/staff_model.dart';
 import '../models/team_model.dart';
+import '../../auth/services/auth_session.dart';
+import '../models/familiar_jugador_model.dart';
 
 class TeamService {
   Future<List<TeamModel>> obtenerEquipos() async {
@@ -89,6 +91,91 @@ class TeamService {
 
     return data
         .map((json) => StaffModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<PlayerModel>> obtenerJugadoresGestion(int equipoId) async {
+    final token = await AuthSession.obtenerToken();
+
+    if (token == null || token.isEmpty) {
+      throw Exception('No hay una sesión autenticada');
+    }
+
+    final url = Uri.parse(
+      '${ApiClient.baseUrl}/app/equipos/jugadores?equipoId=$equipoId',
+    );
+
+    final response = await http.get(
+      url,
+      headers: {...ApiClient.jsonHeaders, 'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 401) {
+      throw Exception('Sesión no válida o expirada');
+    }
+
+    if (response.statusCode == 403) {
+      throw Exception('No tienes permiso para gestionar este equipo');
+    }
+
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Error al obtener los jugadores del equipo: '
+        '${response.statusCode}',
+      );
+    }
+
+    final List<dynamic> data = jsonDecode(response.body);
+
+    return data
+        .map((json) => PlayerModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<FamiliarJugadorModel>> obtenerFamiliaresJugador({
+    required int equipoId,
+    required int jugadorId,
+  }) async {
+    final token = await AuthSession.obtenerToken();
+
+    if (token == null || token.isEmpty) {
+      throw Exception('No hay una sesión autenticada');
+    }
+
+    final url = Uri.parse(
+      '${ApiClient.baseUrl}/app/equipos/'
+      'jugadores/$jugadorId/familiares'
+      '?equipoId=$equipoId',
+    );
+
+    final response = await http.get(
+      url,
+      headers: {...ApiClient.jsonHeaders, 'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 401) {
+      throw Exception('Sesión no válida o expirada');
+    }
+
+    if (response.statusCode == 403) {
+      throw Exception(
+        'No tienes permiso para consultar los familiares de este jugador',
+      );
+    }
+
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Error al obtener los familiares: '
+        '${response.statusCode}',
+      );
+    }
+
+    final List<dynamic> data = jsonDecode(response.body);
+
+    return data
+        .map(
+          (json) => FamiliarJugadorModel.fromJson(json as Map<String, dynamic>),
+        )
         .toList();
   }
 }

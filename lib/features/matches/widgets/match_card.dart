@@ -5,8 +5,13 @@ import '../models/match_model.dart';
 
 class MatchCard extends StatelessWidget {
   final MatchModel match;
+  final bool mostrarPrimerEquipo;
 
-  const MatchCard({super.key, required this.match});
+  const MatchCard({
+    super.key,
+    required this.match,
+    this.mostrarPrimerEquipo = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +35,12 @@ class MatchCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
-          _buildHeader('PRÓXIMO PARTIDO', color: AppColors.azul),
+          _buildHeader(
+            mostrarPrimerEquipo
+                ? 'PRÓXIMO PARTIDO PRIMER EQUIPO'
+                : 'PRÓXIMO PARTIDO',
+            color: AppColors.azul,
+          ),
 
           Padding(
             padding: const EdgeInsets.all(20),
@@ -77,7 +87,12 @@ class MatchCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
-          _buildHeader('ÚLTIMO RESULTADO', color: AppColors.azulOscuro),
+          _buildHeader(
+            mostrarPrimerEquipo
+                ? 'ÚLTIMO RESULTADO PRIMER EQUIPO'
+                : 'ÚLTIMO RESULTADO',
+            color: AppColors.azulOscuro,
+          ),
 
           Padding(
             padding: const EdgeInsets.all(20),
@@ -127,7 +142,7 @@ class MatchCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 10),
             color: AppColors.dorado,
             child: Text(
-              'SIN PARTIDO',
+              mostrarPrimerEquipo ? 'SIN PARTIDO PRIMER EQUIPO' : 'SIN PARTIDO',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSecondary,

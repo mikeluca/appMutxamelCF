@@ -5,6 +5,7 @@ import '../services/auth_session.dart';
 import '../services/auth_manager.dart';
 import '../../../routing/app_routes.dart';
 import '../../../core/notifications/services/push_notification_service.dart';
+import '../../../core/widget/club_app_bar_title.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -82,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Área Club')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Área Club')),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

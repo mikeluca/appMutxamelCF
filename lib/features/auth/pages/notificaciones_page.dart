@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/club_app_bar_title.dart';
 import '../models/notificacion_model.dart';
 import '../services/notificacion_service.dart';
 import 'comunicacion_detail_page.dart';
@@ -35,7 +36,9 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
       if (!mounted) return;
 
       setState(() {
-        _notificaciones = notificaciones;
+        _notificaciones = notificaciones
+            .where((notificacion) => !notificacion.leida)
+            .toList();
         _cargando = false;
       });
     } catch (e) {
@@ -144,7 +147,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Notificaciones'),
+        title: ClubAppBarTitle(titulo: 'Notificaciones'),
         actions: [
           if (_notificaciones.any((n) => !n.leida))
             IconButton(

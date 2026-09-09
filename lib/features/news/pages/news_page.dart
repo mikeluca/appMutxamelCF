@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/config/app_config.dart';
+import '../../../core/widget/club_app_bar_title.dart';
 import '../models/news_model.dart';
 import 'news_detail_page.dart';
 import '../services/news_services.dart';
@@ -26,7 +27,7 @@ class _NewsPageState extends State<NewsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Noticias')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Noticias')),
       body: FutureBuilder<List<NewsModel>>(
         future: _newsFuture,
         builder: (context, snapshot) {

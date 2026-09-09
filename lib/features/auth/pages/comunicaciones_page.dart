@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/club_app_bar_title.dart';
 import '../models/comunicacion_model.dart';
 import '../services/comunicacion_service.dart';
 import 'comunicacion_detail_page.dart';
@@ -50,7 +51,7 @@ class _ComunicacionesPageState extends State<ComunicacionesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Comunicaciones')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Comunicaciones')),
       body: _construirContenido(),
     );
   }

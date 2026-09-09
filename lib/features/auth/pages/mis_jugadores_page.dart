@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/club_app_bar_title.dart';
 import '../../teams/models/player_model.dart';
 import '../../teams/services/team_services.dart';
 import '../models/perfil_app.dart';
@@ -89,7 +90,7 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Mis jugadores')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Mis jugadores')),
       body: _construirContenido(),
     );
   }

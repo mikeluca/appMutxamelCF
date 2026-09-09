@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/club_app_bar_title.dart';
 import '../models/comunicacion_model.dart';
 import '../services/comunicacion_service.dart';
 
@@ -54,7 +55,7 @@ class _ComunicacionDetallePageState extends State<ComunicacionDetallePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Comunicación')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Comunicación')),
       body: _construirContenido(),
     );
   }
@@ -156,7 +157,10 @@ class _ComunicacionDetallePageState extends State<ComunicacionDetallePage> {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(
-        comunicacion.contenido,
+        comunicacion.contenido
+            .replaceAll(r'\r\n', '\n')
+            .replaceAll(r'\n', '\n')
+            .replaceAll(r'\r', '\n'),
         style: TextStyle(color: _colors.onSurface, fontSize: 16, height: 1.5),
       ),
     );

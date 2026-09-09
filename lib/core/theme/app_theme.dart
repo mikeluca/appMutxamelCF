@@ -26,9 +26,10 @@ class AppTheme {
       brightness: Brightness.light,
     ),
 
+    // Mismo color que el fondo de la pantalla (igual que en home_page.dart), con texto legible sobre fondo claro.
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.azul,
-      foregroundColor: Colors.white,
+      backgroundColor: AppColors.fondo,
+      foregroundColor: AppColors.texto,
       centerTitle: true,
       elevation: 0,
     ),
@@ -122,9 +123,10 @@ class AppTheme {
       brightness: Brightness.dark,
     ),
 
+    // Mismo color que el fondo de la pantalla (igual que en home_page.dart), con texto legible sobre fondo oscuro.
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.azulOscuro,
-      foregroundColor: Colors.white,
+      backgroundColor: Color(0xFF10181D),
+      foregroundColor: Color(0xFFE8EEF1),
       centerTitle: true,
       elevation: 0,
     ),

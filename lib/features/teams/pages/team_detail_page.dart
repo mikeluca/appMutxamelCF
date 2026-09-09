@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/club_app_bar_title.dart';
 import '../models/player_model.dart';
 import '../models/staff_model.dart';
 import '../models/team_model.dart';
@@ -47,7 +48,7 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.equipo.nombre)),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: widget.equipo.nombre)),
       body: RefreshIndicator(
         onRefresh: _recargar,
         child: FutureBuilder<List<PlayerModel>>(
@@ -198,27 +199,6 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
                 color: _colors.onSurface,
               ),
             ),
-
-            const SizedBox(height: 6),
-
-            Text(
-              widget.equipo.categoria,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 15,
-                color: AppColors.azul,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-
-            if (widget.equipo.grupo.isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text(
-                widget.equipo.grupo,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14),
-              ),
-            ],
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/config/app_config.dart';
+import '../../../core/widget/club_app_bar_title.dart';
 import '../models/news_model.dart';
 
 class NewsDetailPage extends StatelessWidget {
@@ -13,7 +14,7 @@ class NewsDetailPage extends StatelessWidget {
     final String imagenUrl = noticia.imagenUrl ?? '';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Noticia')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Noticia')),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

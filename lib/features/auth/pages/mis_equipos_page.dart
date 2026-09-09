@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/club_app_bar_title.dart';
 import '../../teams/services/team_services.dart';
 import '../models/perfil_app.dart';
 import '../services/perfil_service.dart';
+import 'equipo_gestion_page.dart';
 
 class MisEquiposPage extends StatefulWidget {
   const MisEquiposPage({super.key});
@@ -14,6 +16,8 @@ class MisEquiposPage extends StatefulWidget {
 
 class _MisEquiposPageState extends State<MisEquiposPage> {
   PerfilApp? _perfil;
+  List<PerfilEquipo> _equipos = [];
+
   bool _cargando = true;
   String? _error;
 
@@ -29,10 +33,34 @@ class _MisEquiposPageState extends State<MisEquiposPage> {
     try {
       final perfil = await PerfilService.obtenerPerfil();
 
+      final esCoordinador = perfil.tieneRol('COORDINADOR');
+      final esAdmin = perfil.tieneRol('ADMIN_APP');
+
+      List<PerfilEquipo> equipos;
+
+      if (esCoordinador || esAdmin) {
+        final todosLosEquipos = await TeamService().obtenerEquipos();
+
+        equipos = todosLosEquipos
+            .map(
+              (equipo) => PerfilEquipo(
+                id: equipo.id,
+                nombre: equipo.nombre,
+                categoria: equipo.categoria,
+                grupo: equipo.grupo,
+                deporte: equipo.deporte,
+              ),
+            )
+            .toList();
+      } else {
+        equipos = perfil.equipos;
+      }
+
       if (!mounted) return;
 
       setState(() {
         _perfil = perfil;
+        _equipos = equipos;
         _cargando = false;
         _error = null;
       });
@@ -48,8 +76,16 @@ class _MisEquiposPageState extends State<MisEquiposPage> {
 
   @override
   Widget build(BuildContext context) {
+    final esGestionGlobal =
+        _perfil?.tieneRol('COORDINADOR') == true ||
+        _perfil?.tieneRol('ADMIN_APP') == true;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Mis equipos')),
+      appBar: AppBar(
+        title: ClubAppBarTitle(
+          titulo: esGestionGlobal ? 'Todos los equipos' : 'Mis equipos',
+        ),
+      ),
       body: _construirContenido(),
     );
   }
@@ -63,7 +99,11 @@ class _MisEquiposPageState extends State<MisEquiposPage> {
       return _construirError();
     }
 
-    final equipos = _perfil?.equipos ?? [];
+    final equipos = _equipos;
+
+    final esGestionGlobal =
+        _perfil?.tieneRol('COORDINADOR') == true ||
+        _perfil?.tieneRol('ADMIN_APP') == true;
 
     if (equipos.isEmpty) {
       return RefreshIndicator(
@@ -72,12 +112,14 @@ class _MisEquiposPageState extends State<MisEquiposPage> {
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(24),
           children: [
-            SizedBox(height: 80),
+            const SizedBox(height: 80),
             Icon(Icons.groups_outlined, size: 64, color: _colors.primary),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Center(
               child: Text(
-                'No tienes equipos asociados.',
+                esGestionGlobal
+                    ? 'No hay equipos disponibles.'
+                    : 'No tienes equipos asociados.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 17,
@@ -111,102 +153,115 @@ class _MisEquiposPageState extends State<MisEquiposPage> {
       margin: EdgeInsets.zero,
       color: _colors.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: AppColors.azulOscuro,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: const Icon(
-                    Icons.groups,
-                    color: Colors.white,
-                    size: 28,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Text(
-                    equipo.nombre,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: _colors.onSurface,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => EquipoGestionPage(equipo: equipo),
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: AppColors.azulOscuro,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.groups,
+                      color: Colors.white,
+                      size: 28,
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 18),
-            const Divider(height: 1),
-            const SizedBox(height: 14),
-            FutureBuilder(
-              future: TeamService().obtenerJugadores(equipo.id),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Row(
-                    children: [
-                      const Icon(
-                        Icons.groups_outlined,
-                        size: 20,
-                        color: AppColors.azul,
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      equipo.nombre,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: _colors.onSurface,
                       ),
-                      const SizedBox(width: 10),
-                      Text(
-                        'Número de jugadores: ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: _colors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(Icons.chevron_right, color: _colors.onSurfaceVariant),
+                ],
+              ),
+              const SizedBox(height: 18),
+              const Divider(height: 1),
+              const SizedBox(height: 14),
+              FutureBuilder(
+                future: TeamService().obtenerJugadores(equipo.id),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Row(
+                      children: [
+                        const Icon(
+                          Icons.groups_outlined,
+                          size: 20,
+                          color: AppColors.azul,
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ],
-                  );
-                }
-
-                if (snapshot.hasError) {
-                  return Row(
-                    children: [
-                      Icon(
-                        Icons.groups_outlined,
-                        size: 20,
-                        color: AppColors.azul,
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        'Número de jugadores: -',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: _colors.onSurface,
+                        const SizedBox(width: 10),
+                        Text(
+                          'Número de jugadores: ',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: _colors.onSurface,
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 16),
+                        const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ],
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Row(
+                      children: [
+                        Icon(
+                          Icons.groups_outlined,
+                          size: 20,
+                          color: AppColors.azul,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Número de jugadores: -',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: _colors.onSurface,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+
+                  final jugadores = snapshot.data ?? [];
+
+                  return _datoEquipo(
+                    Icons.groups_outlined,
+                    'Número de jugadores',
+                    jugadores.length.toString(),
                   );
-                }
-
-                final jugadores = snapshot.data ?? [];
-
-                return _datoEquipo(
-                  Icons.groups_outlined,
-                  'Número de jugadores',
-                  jugadores.length.toString(),
-                );
-              },
-            ),
-          ],
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -244,7 +299,7 @@ class _MisEquiposPageState extends State<MisEquiposPage> {
             const Icon(Icons.error_outline, size: 56, color: Colors.redAccent),
             const SizedBox(height: 16),
             Text(
-              'No se han podido cargar tus equipos.',
+              'No se han podido cargar los equipos.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 17,

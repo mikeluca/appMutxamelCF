@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/club_app_bar_title.dart';
 import '../models/team_model.dart';
 import '../services/team_services.dart';
 import 'team_detail_page.dart';
@@ -39,7 +40,7 @@ class _TeamsPageState extends State<TeamsPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Equipos'),
+        title: ClubAppBarTitle(titulo: 'Equipos'),
       ),
       body: RefreshIndicator(
         onRefresh: _recargar,
@@ -201,17 +202,6 @@ class _TeamsPageState extends State<TeamsPage> {
                         color: _colors.onSurface,
                       ),
                     ),
-
-                    const SizedBox(height: 4),
-
-                    if (equipo.grupo.isNotEmpty)
-                      Text(
-                        equipo.grupo,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: _colors.onSurfaceVariant,
-                        ),
-                      ),
                   ],
                 ),
               ),
