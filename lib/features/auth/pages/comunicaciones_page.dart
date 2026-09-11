@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../models/comunicacion_model.dart';
+import '../models/notificacion_model.dart';
+import '../models/perfil_app.dart';
 import '../services/comunicacion_service.dart';
+import '../services/perfil_service.dart';
 import 'comunicacion_detail_page.dart';
+import 'comunicacion_form_page.dart';
 
 class ComunicacionesPage extends StatefulWidget {
   const ComunicacionesPage({super.key});
@@ -13,28 +16,99 @@ class ComunicacionesPage extends StatefulWidget {
   State<ComunicacionesPage> createState() => _ComunicacionesPageState();
 }
 
-class _ComunicacionesPageState extends State<ComunicacionesPage> {
-  List<ComunicacionModel> _comunicaciones = [];
+class _ComunicacionesPageState extends State<ComunicacionesPage>
+    with SingleTickerProviderStateMixin {
+  List<ComunicacionModel> _comunicacionesRecibidas = [];
+  List<ComunicacionModel> _comunicacionesEnviadas = [];
+
+  final Map<int, bool> _comunicacionesLeidas = {};
+
+  PerfilApp? _perfil;
 
   bool _cargando = true;
   String? _error;
 
+  late TabController _tabController;
+
   ColorScheme get _colors => Theme.of(context).colorScheme;
+
+  bool get _puedeCrear {
+    final perfil = _perfil;
+
+    if (perfil == null) {
+      return false;
+    }
+
+    return perfil.tieneRol('ENTRENADOR') ||
+        perfil.tieneRol('COORDINADOR') ||
+        perfil.tieneRol('ADMIN_APP') ||
+        perfil.tieneRol('JUGADOR') ||
+        perfil.tieneRol('FAMILIAR');
+  }
+
+  bool get _esCoordinadorOAdmin {
+    final perfil = _perfil;
+
+    if (perfil == null) {
+      return false;
+    }
+
+    return perfil.tieneRol('COORDINADOR') || perfil.tieneRol('ADMIN_APP');
+  }
 
   @override
   void initState() {
     super.initState();
-    _cargarComunicaciones();
+
+    _tabController = TabController(length: 2, vsync: this);
+
+    _cargarDatos();
   }
 
-  Future<void> _cargarComunicaciones() async {
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _cargarDatos() async {
     try {
-      final comunicaciones = await ComunicacionService.obtenerComunicaciones();
+      final perfil = await PerfilService.obtenerPerfil();
+
+      final recibidas = await ComunicacionService.obtenerComunicaciones();
+
+      final enviadas =
+          await ComunicacionService.obtenerComunicacionesEnviadas();
+
+      final notificaciones = await ComunicacionService.obtenerNotificaciones();
+
+      final estados = <int, bool>{};
+
+      for (final notificacion in notificaciones) {
+        if (notificacion.tipo.toUpperCase() != 'COMUNICACION') {
+          continue;
+        }
+
+        final referenciaId = notificacion.referenciaId;
+
+        if (referenciaId == null || referenciaId <= 0) {
+          continue;
+        }
+
+        estados[referenciaId] = notificacion.leida;
+      }
 
       if (!mounted) return;
 
       setState(() {
-        _comunicaciones = comunicaciones;
+        _perfil = perfil;
+        _comunicacionesRecibidas = recibidas;
+        _comunicacionesEnviadas = enviadas;
+
+        _comunicacionesLeidas
+          ..clear()
+          ..addAll(estados);
+
         _error = null;
         _cargando = false;
       });
@@ -48,81 +122,277 @@ class _ComunicacionesPageState extends State<ComunicacionesPage> {
     }
   }
 
+  Future<void> _recargar() async {
+    try {
+      final perfil = await PerfilService.obtenerPerfil();
+
+      final recibidas = await ComunicacionService.obtenerComunicaciones();
+
+      final enviadas =
+          await ComunicacionService.obtenerComunicacionesEnviadas();
+
+      final notificaciones = await ComunicacionService.obtenerNotificaciones();
+
+      final estados = <int, bool>{};
+
+      for (final notificacion in notificaciones) {
+        if (notificacion.tipo.toUpperCase() != 'COMUNICACION') {
+          continue;
+        }
+
+        final referenciaId = notificacion.referenciaId;
+
+        if (referenciaId == null || referenciaId <= 0) {
+          continue;
+        }
+
+        estados[referenciaId] = notificacion.leida;
+      }
+
+      if (!mounted) return;
+
+      setState(() {
+        _perfil = perfil;
+        _comunicacionesRecibidas = recibidas;
+        _comunicacionesEnviadas = enviadas;
+
+        _comunicacionesLeidas
+          ..clear()
+          ..addAll(estados);
+
+        _error = null;
+        _cargando = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _error = e.toString().replaceFirst('Exception: ', '');
+        _cargando = false;
+      });
+    }
+  }
+
+  Future<void> _nuevaComunicacion() async {
+    final resultado = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ComunicacionFormPage()),
+    );
+
+    if (resultado == true && mounted) {
+      await _recargar();
+    }
+  }
+
+  Future<void> _abrirComunicacion(
+    ComunicacionModel comunicacion, {
+    required bool enviada,
+  }) async {
+    if (!enviada && !(_comunicacionesLeidas[comunicacion.id] ?? false)) {
+      try {
+        final notificaciones =
+            await ComunicacionService.obtenerNotificaciones();
+
+        NotificacionModel? notificacionEncontrada;
+
+        for (final notificacion in notificaciones) {
+          if (notificacion.tipo.toUpperCase() == 'COMUNICACION' &&
+              notificacion.referenciaId == comunicacion.id &&
+              !notificacion.leida) {
+            notificacionEncontrada = notificacion;
+            break;
+          }
+        }
+
+        if (notificacionEncontrada != null) {
+          await ComunicacionService.marcarNotificacionComoLeida(
+            notificacionEncontrada.id,
+          );
+
+          if (mounted) {
+            setState(() {
+              _comunicacionesLeidas[comunicacion.id] = true;
+            });
+          }
+        }
+      } catch (_) {
+        // No impedimos abrir la comunicación
+        // aunque falle el marcado como leída.
+      }
+    }
+
+    if (!mounted) return;
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            ComunicacionDetallePage(comunicacionId: comunicacion.id),
+      ),
+    );
+
+    if (!mounted) return;
+
+    await _recargar();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Comunicaciones')),
+      appBar: AppBar(
+        title: ClubAppBarTitle(titulo: 'Comunicaciones'),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(icon: Icon(Icons.inbox_outlined), text: 'Recibidas'),
+            Tab(icon: Icon(Icons.send_outlined), text: 'Enviadas'),
+          ],
+        ),
+      ),
+      floatingActionButton: _puedeCrear
+          ? FloatingActionButton.extended(
+              onPressed: _nuevaComunicacion,
+              icon: const Icon(Icons.add),
+              label: const Text('Nueva'),
+            )
+          : null,
       body: _construirContenido(),
     );
   }
 
   Widget _construirContenido() {
     if (_cargando) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.azul),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_error != null) {
       return _construirError();
     }
 
-    if (_comunicaciones.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.notifications_none, size: 64, color: AppColors.azul),
-              SizedBox(height: 16),
-              Text(
-                'No tienes comunicaciones',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Aquí aparecerán las comunicaciones del club.',
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
+    return TabBarView(
+      controller: _tabController,
+      children: [_construirListaRecibidas(), _construirListaEnviadas()],
+    );
+  }
+
+  Widget _construirListaRecibidas() {
+    if (_comunicacionesRecibidas.isEmpty) {
+      return _construirVacio(
+        titulo: 'No tienes comunicaciones',
+        subtitulo: _esCoordinadorOAdmin
+            ? 'Aquí aparecerán las comunicaciones del club.'
+            : 'Aquí aparecerán las comunicaciones de tus equipos.',
+        icono: Icons.inbox_outlined,
       );
     }
 
     return RefreshIndicator(
-      color: AppColors.azul,
-      onRefresh: _cargarComunicaciones,
+      onRefresh: _recargar,
       child: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: _comunicaciones.length,
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
+        itemCount: _comunicacionesRecibidas.length,
         separatorBuilder: (_, _) => const SizedBox(height: 10),
         itemBuilder: (context, index) {
-          final comunicacion = _comunicaciones[index];
+          final comunicacion = _comunicacionesRecibidas[index];
 
-          return _construirComunicacion(comunicacion);
+          return _construirComunicacion(comunicacion, enviada: false);
         },
       ),
     );
   }
 
-  Widget _construirComunicacion(ComunicacionModel comunicacion) {
+  Widget _construirListaEnviadas() {
+    if (_comunicacionesEnviadas.isEmpty) {
+      return _construirVacio(
+        titulo: 'No has enviado comunicaciones',
+        subtitulo: 'Aquí aparecerán las comunicaciones que hayas enviado.',
+        icono: Icons.send_outlined,
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _recargar,
+      child: ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
+        itemCount: _comunicacionesEnviadas.length,
+        separatorBuilder: (_, _) => const SizedBox(height: 10),
+        itemBuilder: (context, index) {
+          final comunicacion = _comunicacionesEnviadas[index];
+
+          return _construirComunicacion(comunicacion, enviada: true);
+        },
+      ),
+    );
+  }
+
+  Widget _construirVacio({
+    required String titulo,
+    required String subtitulo,
+    required IconData icono,
+  }) {
+    return RefreshIndicator(
+      onRefresh: _recargar,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
+        children: [
+          SizedBox(height: MediaQuery.of(context).size.height * 0.25),
+          Icon(icono, size: 64, color: _colors.primary),
+          const SizedBox(height: 16),
+          Text(
+            titulo,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: _colors.onSurface,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            subtitulo,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: _colors.onSurfaceVariant),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _construirComunicacion(
+    ComunicacionModel comunicacion, {
+    required bool enviada,
+  }) {
+    final leida = enviada
+        ? true
+        : (_comunicacionesLeidas[comunicacion.id] ?? false);
+
+    final fondo = enviada
+        ? _colors.surface
+        : leida
+        ? _colors.surface
+        : _colors.primaryContainer.withValues(alpha: 0.35);
+
+    final colorIcono = enviada
+        ? _colors.onSecondaryContainer
+        : leida
+        ? _colors.onSurfaceVariant
+        : _colors.primary;
+
+    final fondoIcono = enviada
+        ? _colors.secondaryContainer
+        : leida
+        ? _colors.surfaceContainerHighest
+        : _colors.primaryContainer;
+
     return Material(
-      color: _colors.surface,
+      color: fondo,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) =>
-                  ComunicacionDetallePage(comunicacionId: comunicacion.id),
-            ),
-          );
-        },
+        onTap: () => _abrirComunicacion(comunicacion, enviada: enviada),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -132,16 +402,22 @@ class _ComunicacionesPageState extends State<ComunicacionesPage> {
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: AppColors.azul.withValues(alpha: 0.10),
+                  color: fondoIcono,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
-                  Icons.notifications_outlined,
-                  color: _colors.primary,
+                  enviada
+                      ? Icons.send_outlined
+                      : leida
+                      ? Icons.mark_email_read_outlined
+                      : Icons.mark_email_unread_outlined,
+                  color: colorIcono,
                   size: 24,
                 ),
               ),
+
               const SizedBox(width: 14),
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,37 +429,71 @@ class _ComunicacionesPageState extends State<ComunicacionesPage> {
                       style: TextStyle(
                         color: _colors.onSurface,
                         fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: leida || enviada
+                            ? FontWeight.w600
+                            : FontWeight.bold,
                       ),
                     ),
+
                     const SizedBox(height: 6),
+
                     Text(
-                      comunicacion.contenido,
+                      _normalizarContenido(comunicacion.contenido),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: _colors.onSurfaceVariant,
                         fontSize: 13,
+                        fontWeight: leida || enviada
+                            ? FontWeight.normal
+                            : FontWeight.w500,
                       ),
                     ),
+
                     const SizedBox(height: 8),
-                    Text(
-                      _formatearFecha(comunicacion.fechaPublicacion),
-                      style: TextStyle(
-                        color: _colors.onSurfaceVariant,
-                        fontSize: 12,
-                      ),
+
+                    Row(
+                      children: [
+                        Text(
+                          _formatearFecha(comunicacion.fechaPublicacion),
+                          style: TextStyle(
+                            color: _colors.onSurfaceVariant,
+                            fontSize: 12,
+                          ),
+                        ),
+
+                        if (!enviada && !leida) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            width: 7,
+                            height: 7,
+                            decoration: BoxDecoration(
+                              color: _colors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ],
                 ),
               ),
+
               const SizedBox(width: 8),
+
               Icon(Icons.chevron_right, color: _colors.onSurfaceVariant),
             ],
           ),
         ),
       ),
     );
+  }
+
+  String _normalizarContenido(String contenido) {
+    return contenido
+        .replaceAll(r'\r\n', '\n')
+        .replaceAll(r'\n', '\n')
+        .replaceAll(r'\r', '\n');
   }
 
   String _formatearFecha(DateTime? fecha) {
@@ -206,7 +516,7 @@ class _ComunicacionesPageState extends State<ComunicacionesPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 60, color: Colors.redAccent),
+            Icon(Icons.error_outline, size: 60, color: _colors.error),
             const SizedBox(height: 16),
             Text(
               _error!,
@@ -221,7 +531,7 @@ class _ComunicacionesPageState extends State<ComunicacionesPage> {
                   _error = null;
                 });
 
-                _cargarComunicaciones();
+                _cargarDatos();
               },
               icon: const Icon(Icons.refresh),
               label: const Text('Reintentar'),

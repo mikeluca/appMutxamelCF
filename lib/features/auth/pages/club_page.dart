@@ -1,12 +1,48 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../core/widget/club_app_bar_title.dart';
 import '../../../routing/app_routes.dart';
 import '../services/auth_manager.dart';
+import '../services/comunicacion_service.dart';
 
-class ClubPage extends StatelessWidget {
+class ClubPage extends StatefulWidget {
   const ClubPage({super.key});
+
+  @override
+  State<ClubPage> createState() => _ClubPageState();
+}
+
+class _ClubPageState extends State<ClubPage> {
+  int _comunicacionesNoLeidas = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarContadorComunicaciones();
+  }
+
+  Future<void> _cargarContadorComunicaciones() async {
+    try {
+      final cantidad = await ComunicacionService.contarComunicacionesNoLeidas();
+
+      if (!mounted) return;
+
+      setState(() {
+        _comunicacionesNoLeidas = cantidad;
+      });
+    } catch (_) {
+      // Si falla el contador, no impedimos
+      // que funcione el Área Club.
+    }
+  }
+
+  Future<void> _abrirComunicaciones() async {
+    await Navigator.pushNamed(context, AppRoutes.communication);
+
+    if (!mounted) return;
+
+    await _cargarContadorComunicaciones();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +56,7 @@ class ClubPage extends StatelessWidget {
         usuario?.tieneRol('ADMIN_APP') == true;
 
     return Scaffold(
-      appBar: AppBar(
-        title: ClubAppBarTitle(titulo: 'Área Club'),
-        centerTitle: false,
-      ),
+      appBar: AppBar(title: const Text('Área Club'), centerTitle: false),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -80,15 +113,7 @@ class ClubPage extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          _construirOpcion(
-            context,
-            icono: Icons.notifications_none,
-            titulo: 'Comunicaciones',
-            descripcion: 'Avisos y comunicaciones del club',
-            onTap: () {
-              Navigator.pushNamed(context, AppRoutes.communication);
-            },
-          ),
+          _construirOpcionComunicaciones(context),
 
           const SizedBox(height: 30),
 
@@ -137,6 +162,94 @@ class ClubPage extends StatelessWidget {
     );
   }
 
+  Widget _construirOpcionComunicaciones(BuildContext context) {
+    return Material(
+      color: Theme.of(context).colorScheme.surface,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: _abrirComunicaciones,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(17),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.azul.withValues(alpha: 0.10),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.notifications_none,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 25,
+                ),
+              ),
+
+              const SizedBox(width: 15),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Comunicaciones',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Avisos y comunicaciones del club',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              if (_comunicacionesNoLeidas > 0) ...[
+                const SizedBox(width: 8),
+                _construirBurbuja(context, _comunicacionesNoLeidas),
+                const SizedBox(width: 8),
+              ],
+
+              Icon(
+                Icons.chevron_right,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _construirBurbuja(BuildContext context, int cantidad) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+      constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+      decoration: BoxDecoration(
+        color: AppColors.dorado,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        cantidad > 99 ? '99+' : '$cantidad',
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
   Widget _construirCabecera(BuildContext context, dynamic usuario) {
     final nombre = usuario?.email ?? 'Miembro del club';
 
@@ -161,7 +274,9 @@ class ClubPage extends StatelessWidget {
               color: AppColors.azulOscuro,
             ),
           ),
+
           const SizedBox(width: 16),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,7 +285,9 @@ class ClubPage extends StatelessWidget {
                   'Área Club',
                   style: TextStyle(color: Colors.white70, fontSize: 14),
                 ),
+
                 const SizedBox(height: 4),
+
                 Text(
                   nombre,
                   style: const TextStyle(
@@ -218,7 +335,9 @@ class ClubPage extends StatelessWidget {
                   size: 25,
                 ),
               ),
+
               const SizedBox(width: 15),
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,7 +350,9 @@ class ClubPage extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+
                     const SizedBox(height: 4),
+
                     Text(
                       descripcion,
                       style: TextStyle(
@@ -242,6 +363,7 @@ class ClubPage extends StatelessWidget {
                   ],
                 ),
               ),
+
               Icon(
                 Icons.chevron_right,
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
