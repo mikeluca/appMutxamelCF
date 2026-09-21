@@ -57,7 +57,31 @@ class PerfilApp {
       return null;
     }
 
-    return DateTime.fromMillisecondsSinceEpoch(value as int);
+    // El backend serializa java.sql.Timestamp como texto ISO-8601
+    // (WRITE_DATES_AS_TIMESTAMPS está deshabilitado en JacksonConfig).
+    if (value is String && value.isNotEmpty) {
+      return DateTime.tryParse(value);
+    }
+
+    // Por si en algún momento llega como epoch millis.
+    if (value is num) {
+      return DateTime.fromMillisecondsSinceEpoch(value.toInt());
+    }
+
+    // Por si en algún momento llega como array [y,m,d,h,mi,s,n]
+    // (formato que usa Jackson para LocalDateTime en otros endpoints).
+    if (value is List && value.length >= 6) {
+      final year = (value[0] as num).toInt();
+      final month = (value[1] as num).toInt();
+      final day = (value[2] as num).toInt();
+      final hour = (value[3] as num).toInt();
+      final minute = (value[4] as num).toInt();
+      final second = (value[5] as num).toInt();
+
+      return DateTime(year, month, day, hour, minute, second);
+    }
+
+    return null;
   }
 
   bool tieneRol(String rol) {

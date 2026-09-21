@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 
-import '../services/auth_service.dart';
-import '../services/auth_manager.dart';
 import '../../../routing/app_routes.dart';
 import '../../../core/widget/club_app_bar_title.dart';
-import 'activar_cuenta_page.dart';
+import '../services/auth_manager.dart';
+import '../services/auth_service.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class ActivarCuentaPage extends StatefulWidget {
+  const ActivarCuentaPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<ActivarCuentaPage> createState() => _ActivarCuentaPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
   final _formKey = GlobalKey<FormState>();
 
-  final _emailController = TextEditingController();
+  final _tokenController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmarPasswordController = TextEditingController();
 
   bool _mostrarPassword = false;
   bool _cargando = false;
@@ -25,12 +25,13 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _tokenController.dispose();
     _passwordController.dispose();
+    _confirmarPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _iniciarSesion() async {
+  Future<void> _activarCuenta() async {
     FocusScope.of(context).unfocus();
 
     if (!_formKey.currentState!.validate()) {
@@ -43,8 +44,8 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
-      final loginResponse = await AuthService.login(
-        email: _emailController.text,
+      final loginResponse = await AuthService.activarCuenta(
+        token: _tokenController.text,
         password: _passwordController.text,
       );
 
@@ -52,7 +53,14 @@ class _LoginPageState extends State<LoginPage> {
 
       if (!mounted) return;
 
-      Navigator.pushReplacementNamed(context, AppRoutes.club);
+      // Entrada directa al Área Club: se limpia toda la pila de
+      // navegación (login + esta pantalla) para que el usuario no
+      // pueda volver atrás a una pantalla de activación ya usada.
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppRoutes.club,
+        (route) => false,
+      );
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -71,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Área Club')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Activar cuenta')),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -88,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 24),
 
                     Text(
-                      'Acceso al Área Club',
+                      'Activa tu cuenta',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.headlineSmall
                           ?.copyWith(
@@ -100,7 +108,8 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 8),
 
                     Text(
-                      'Introduce tus datos para acceder',
+                      'Introduce el código que te ha enviado el club por '
+                      'email y elige tu contraseña de acceso.',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
@@ -108,21 +117,16 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 32),
 
                     TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
+                      controller: _tokenController,
                       textInputAction: TextInputAction.next,
                       autocorrect: false,
                       decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email_outlined),
+                        labelText: 'Código de activación',
+                        prefixIcon: Icon(Icons.vpn_key_outlined),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Introduce tu email';
-                        }
-
-                        if (!value.contains('@')) {
-                          return 'Introduce un email válido';
+                          return 'Introduce el código que te enviamos por email';
                         }
 
                         return null;
@@ -134,14 +138,9 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField(
                       controller: _passwordController,
                       obscureText: !_mostrarPassword,
-                      textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (_) {
-                        if (!_cargando) {
-                          _iniciarSesion();
-                        }
-                      },
+                      textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
-                        labelText: 'Contraseña',
+                        labelText: 'Nueva contraseña',
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -158,7 +157,35 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Introduce tu contraseña';
+                          return 'Elige una contraseña';
+                        }
+
+                        if (value.length < 8) {
+                          return 'Debe tener al menos 8 caracteres';
+                        }
+
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    TextFormField(
+                      controller: _confirmarPasswordController,
+                      obscureText: !_mostrarPassword,
+                      textInputAction: TextInputAction.done,
+                      onFieldSubmitted: (_) {
+                        if (!_cargando) {
+                          _activarCuenta();
+                        }
+                      },
+                      decoration: const InputDecoration(
+                        labelText: 'Repite la contraseña',
+                        prefixIcon: Icon(Icons.lock_outline),
+                      ),
+                      validator: (value) {
+                        if (value != _passwordController.text) {
+                          return 'Las contraseñas no coinciden';
                         }
 
                         return null;
@@ -186,7 +213,7 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(
                       height: 52,
                       child: ElevatedButton(
-                        onPressed: _cargando ? null : _iniciarSesion,
+                        onPressed: _cargando ? null : _activarCuenta,
                         child: _cargando
                             ? const SizedBox(
                                 width: 24,
@@ -195,24 +222,7 @@ class _LoginPageState extends State<LoginPage> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : const Text('Iniciar sesión'),
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    SizedBox(
-                      height: 52,
-                      child: OutlinedButton(
-                        onPressed: _cargando
-                            ? null
-                            : () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const ActivarCuentaPage(),
-                                ),
-                              ),
-                        child: const Text('Activar cuenta'),
+                            : const Text('Activar y entrar'),
                       ),
                     ),
                   ],

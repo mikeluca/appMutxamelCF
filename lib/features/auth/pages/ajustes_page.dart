@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../models/preferencias_notificacion_model.dart';
 import '../services/preferencias_notificacion_service.dart';
+import 'acerca_de_page.dart';
 
 class AjustesPage extends StatefulWidget {
   final String temaActual;
@@ -219,7 +220,10 @@ class _AjustesPageState extends State<AjustesPage> {
                 icono: Icons.info_outline,
                 titulo: 'Acerca de appMTX',
                 subtitulo: 'Información de la aplicación',
-                onTap: _mostrarAcercaDe,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AcercaDePage()),
+                ),
               ),
             ],
           ),
@@ -450,20 +454,6 @@ class _AjustesPageState extends State<AjustesPage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  void _mostrarAcercaDe() {
-    showAboutDialog(
-      context: context,
-      applicationName: 'appMTX',
-      applicationVersion: '1.0.0',
-      applicationLegalese: 'Mutxamel Club de Fútbol',
-      applicationIcon: Image.asset(
-        'assets/images/escudo_icon.png',
-        width: 48,
-        height: 48,
       ),
     );
   }

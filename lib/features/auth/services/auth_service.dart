@@ -41,4 +41,28 @@ class AuthService {
 
     return AuthUser.fromJson(data as Map<String, dynamic>);
   }
+
+  /// Activa la cuenta con el token recibido por email y fija la
+  /// contraseña elegida. El backend, tras activarla, inicia sesión
+  /// directamente: la respuesta es un login válido (mismo formato
+  /// que [login]).
+  static Future<LoginResponse> activarCuenta({
+    required String token,
+    required String password,
+  }) async {
+    try {
+      final data = await ApiClient.post(
+        '/app/auth/activar',
+        body: {'token': token.trim(), 'password': password},
+      );
+
+      return LoginResponse.fromJson(data as Map<String, dynamic>);
+    } on ApiException catch (e) {
+      if (e.statusCode == 409) {
+        throw Exception('Esta cuenta ya está activa. Inicia sesión con tu contraseña.');
+      }
+
+      rethrow;
+    }
+  }
 }
