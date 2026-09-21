@@ -1,8 +1,4 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
-
-import '../../../core/network/api_client.dart';
+import '../../network/api_client.dart';
 import '../../../features/auth/services/auth_session.dart';
 import '../models/dispositivo_app_request.dart';
 
@@ -25,23 +21,10 @@ class DispositivoAppService {
       plataforma: plataforma,
     );
 
-    final url = Uri.parse('${ApiClient.baseUrl}/app/dispositivos');
-
-    final response = await http.post(
-      url,
-      headers: {
-        ...ApiClient.jsonHeaders,
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $tokenSesion',
-      },
-      body: jsonEncode(request.toJson()),
+    await ApiClient.post(
+      '/app/dispositivos',
+      autenticado: true,
+      body: request.toJson(),
     );
-
-    if (response.statusCode != 200) {
-      throw Exception(
-        'Error al registrar el dispositivo: '
-        '${response.statusCode}',
-      );
-    }
   }
 }

@@ -57,11 +57,6 @@ class _LoginPageState extends State<LoginPage> {
 
       await AuthManager.establecerUsuario(usuario);
 
-      debugPrint('LOGIN CORRECTO');
-      debugPrint('Usuario: ${loginResponse.email}');
-      debugPrint('ID: ${loginResponse.usuarioId}');
-      debugPrint('Roles: ${loginResponse.roles}');
-
       if (!mounted) return;
 
       Navigator.pushReplacementNamed(context, AppRoutes.club);

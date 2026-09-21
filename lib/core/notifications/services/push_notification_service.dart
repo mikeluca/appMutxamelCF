@@ -28,8 +28,6 @@ class PushNotificationService {
 
     final token = await _messaging.getToken();
 
-    debugPrint('TOKEN FCM: $token');
-
     if (token != null && token.isNotEmpty) {
       try {
         await DispositivoAppService.registrar(

@@ -1,45 +1,20 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
-
 import '../../../core/network/api_client.dart';
 import '../models/perfil_app.dart';
-import 'auth_session.dart';
 
 class PerfilService {
   PerfilService._();
 
   static Future<PerfilApp> obtenerPerfil() async {
-    final token = await AuthSession.obtenerToken();
+    try {
+      final data = await ApiClient.get('/app/perfil', autenticado: true);
 
-    if (token == null || token.isEmpty) {
-      throw Exception('No hay una sesión activa.');
+      return PerfilApp.fromJson(data as Map<String, dynamic>);
+    } on ApiException catch (e) {
+      if (e.statusCode == 404) {
+        throw Exception('No se ha encontrado el perfil del usuario.');
+      }
+
+      rethrow;
     }
-
-    final response = await http.get(
-      Uri.parse('${ApiClient.baseUrl}/app/perfil'),
-      headers: {
-        ...ApiClient.jsonHeaders,
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data =
-          jsonDecode(response.body) as Map<String, dynamic>;
-
-      return PerfilApp.fromJson(data);
-    }
-
-    if (response.statusCode == 401) {
-      throw Exception('La sesión ha caducado o no es válida.');
-    }
-
-    if (response.statusCode == 404) {
-      throw Exception('No se ha encontrado el perfil del usuario.');
-    }
-
-    throw Exception('Error al obtener el perfil (${response.statusCode}).');
   }
 }

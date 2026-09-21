@@ -1,28 +1,12 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
-
-import '../../../core/config/app_config.dart';
-import '../../auth/services/auth_session.dart';
+import '../../../core/network/api_client.dart';
 import '../model/convocatoria_model.dart';
 
 class ConvocatoriaService {
   Future<List<ConvocatoriaModel>> obtenerPorEquipo(int equipoId) async {
-    final token = await AuthSession.obtenerToken();
-
-    final response = await http.get(
-      Uri.parse('${AppConfig.apiBaseUrl}/app/convocatorias?equipoId=$equipoId'),
-      headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception(
-        'Error al obtener las convocatorias: '
-        '${response.statusCode} ${response.body}',
-      );
-    }
-
-    final data = jsonDecode(response.body) as List<dynamic>;
+    final data = await ApiClient.get(
+      '/app/convocatorias?equipoId=$equipoId',
+      autenticado: true,
+    ) as List<dynamic>;
 
     return data
         .map((item) => ConvocatoriaModel.fromJson(item as Map<String, dynamic>))
@@ -30,23 +14,12 @@ class ConvocatoriaService {
   }
 
   Future<ConvocatoriaModel> obtenerPorId(int convocatoriaId) async {
-    final token = await AuthSession.obtenerToken();
-
-    final response = await http.get(
-      Uri.parse('${AppConfig.apiBaseUrl}/app/convocatorias/$convocatoriaId'),
-      headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
+    final data = await ApiClient.get(
+      '/app/convocatorias/$convocatoriaId',
+      autenticado: true,
     );
 
-    if (response.statusCode != 200) {
-      throw Exception(
-        'Error al obtener la convocatoria: '
-        '${response.statusCode} ${response.body}',
-      );
-    }
-
-    return ConvocatoriaModel.fromJson(
-      jsonDecode(response.body) as Map<String, dynamic>,
-    );
+    return ConvocatoriaModel.fromJson(data as Map<String, dynamic>);
   }
 
   Future<ConvocatoriaModel> crear({
@@ -59,16 +32,10 @@ class ConvocatoriaService {
     required String lugarConvocatoria,
     required List<int> jugadoresIds,
   }) async {
-    final token = await AuthSession.obtenerToken();
-
-    final response = await http.post(
-      Uri.parse('${AppConfig.apiBaseUrl}/app/convocatorias'),
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({
+    final data = await ApiClient.post(
+      '/app/convocatorias',
+      autenticado: true,
+      body: {
         'equipoId': equipoId,
         'rival': rival,
         'campo': campo,
@@ -77,19 +44,10 @@ class ConvocatoriaService {
         'horaConvocatoria': horaConvocatoria,
         'lugarConvocatoria': lugarConvocatoria,
         'jugadoresIds': jugadoresIds,
-      }),
+      },
     );
 
-    if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception(
-        'Error al crear la convocatoria: '
-        '${response.statusCode} ${response.body}',
-      );
-    }
-
-    return ConvocatoriaModel.fromJson(
-      jsonDecode(response.body) as Map<String, dynamic>,
-    );
+    return ConvocatoriaModel.fromJson(data as Map<String, dynamic>);
   }
 
   Future<ConvocatoriaModel> actualizar({
@@ -102,16 +60,10 @@ class ConvocatoriaService {
     required String horaConvocatoria,
     required String lugarConvocatoria,
   }) async {
-    final token = await AuthSession.obtenerToken();
-
-    final response = await http.put(
-      Uri.parse('${AppConfig.apiBaseUrl}/app/convocatorias/$convocatoriaId'),
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({
+    final data = await ApiClient.put(
+      '/app/convocatorias/$convocatoriaId',
+      autenticado: true,
+      body: {
         'equipoId': equipoId,
         'rival': rival,
         'campo': campo,
@@ -119,18 +71,9 @@ class ConvocatoriaService {
         'horaPartido': horaPartido,
         'horaConvocatoria': horaConvocatoria,
         'lugarConvocatoria': lugarConvocatoria,
-      }),
+      },
     );
 
-    if (response.statusCode != 200) {
-      throw Exception(
-        'Error al actualizar la convocatoria: '
-        '${response.statusCode} ${response.body}',
-      );
-    }
-
-    return ConvocatoriaModel.fromJson(
-      jsonDecode(response.body) as Map<String, dynamic>,
-    );
+    return ConvocatoriaModel.fromJson(data as Map<String, dynamic>);
   }
 }

@@ -43,8 +43,18 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/build/
+/android/app/build/
 
 # Widget Preview related
 .widget_preview/
 firebase.json
 .vscode/settings.json
+
+# Volcados de logcat de dispositivos (pueden contener datos sensibles)
+/*.txt
+
+# Firma de release (nunca debe subirse al repositorio)
+android/key.properties
+android/app/*.jks
+android/app/*.keystore

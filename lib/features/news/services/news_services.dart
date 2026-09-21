@@ -1,28 +1,17 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
-
 import '../../../core/network/api_client.dart';
 import '../models/news_model.dart';
 
 class NewsService {
   Future<List<NewsModel>> obtenerNoticias() async {
-    final url = Uri.parse(
-      '${ApiClient.baseUrl}/public/noticias',
-    );
+    final decoded = await ApiClient.get('/public/noticias');
 
-    final response = await http.get(url, headers: ApiClient.jsonHeaders);
-
-    if (response.statusCode != 200) {
-      throw Exception(
-        'Error al obtener las noticias: ${response.statusCode}',
-      );
-    }
-
-    final dynamic decoded = jsonDecode(response.body);
     final List<dynamic> data = decoded is List
         ? decoded
-        : (decoded['content'] ?? decoded['data'] ?? decoded['noticias'] ?? []);
+        : ((decoded as Map<String, dynamic>)['content'] ??
+                  decoded['data'] ??
+                  decoded['noticias'] ??
+                  [])
+              as List<dynamic>;
 
     return data
         .map(

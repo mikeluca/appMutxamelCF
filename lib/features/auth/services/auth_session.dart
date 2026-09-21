@@ -1,11 +1,15 @@
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../models/login_response.dart';
 
 class AuthSession {
   AuthSession._();
+
+  static const _storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
   static const String _tokenKey = 'auth_token';
   static const String _usuarioIdKey = 'auth_usuario_id';
@@ -13,39 +17,41 @@ class AuthSession {
   static const String _rolesKey = 'auth_roles';
 
   static Future<void> guardarSesion(LoginResponse loginResponse) async {
-    final prefs = await SharedPreferences.getInstance();
+    await _storage.write(key: _tokenKey, value: loginResponse.token);
 
-    await prefs.setString(_tokenKey, loginResponse.token);
+    await _storage.write(
+      key: _usuarioIdKey,
+      value: loginResponse.usuarioId.toString(),
+    );
 
-    await prefs.setInt(_usuarioIdKey, loginResponse.usuarioId);
+    await _storage.write(key: _emailKey, value: loginResponse.email);
 
-    await prefs.setString(_emailKey, loginResponse.email);
-
-    await prefs.setString(_rolesKey, jsonEncode(loginResponse.roles));
+    await _storage.write(
+      key: _rolesKey,
+      value: jsonEncode(loginResponse.roles),
+    );
   }
 
-  static Future<String?> obtenerToken() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    return prefs.getString(_tokenKey);
+  static Future<String?> obtenerToken() {
+    return _storage.read(key: _tokenKey);
   }
 
   static Future<int?> obtenerUsuarioId() async {
-    final prefs = await SharedPreferences.getInstance();
+    final valor = await _storage.read(key: _usuarioIdKey);
 
-    return prefs.getInt(_usuarioIdKey);
+    if (valor == null) {
+      return null;
+    }
+
+    return int.tryParse(valor);
   }
 
-  static Future<String?> obtenerEmail() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    return prefs.getString(_emailKey);
+  static Future<String?> obtenerEmail() {
+    return _storage.read(key: _emailKey);
   }
 
   static Future<List<String>> obtenerRoles() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    final rolesJson = prefs.getString(_rolesKey);
+    final rolesJson = await _storage.read(key: _rolesKey);
 
     if (rolesJson == null) {
       return [];
@@ -63,11 +69,9 @@ class AuthSession {
   }
 
   static Future<void> cerrarSesion() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.remove(_tokenKey);
-    await prefs.remove(_usuarioIdKey);
-    await prefs.remove(_emailKey);
-    await prefs.remove(_rolesKey);
+    await _storage.delete(key: _tokenKey);
+    await _storage.delete(key: _usuarioIdKey);
+    await _storage.delete(key: _emailKey);
+    await _storage.delete(key: _rolesKey);
   }
 }
