@@ -19,6 +19,8 @@ import 'features/auth/pages/mis_partidos_page.dart';
 import 'features/auth/pages/mis_equipos_page.dart';
 import 'features/auth/pages/ajustes_page.dart';
 import 'features/auth/pages/comunicaciones_page.dart';
+import 'features/partido_en_vivo/pages/partido_en_vivo_page.dart';
+import 'features/cuotas/pages/cuotas_page.dart';
 import 'core/navigation/app_navigator.dart';
 
 Future<void> main() async {
@@ -104,6 +106,8 @@ class _MutxamelCfAppState extends State<MutxamelCfApp> {
         AppRoutes.settings: (context) =>
             AjustesPage(temaActual: _temaActual, onTemaChanged: _cambiarTema),
         AppRoutes.communication: (context) => const ComunicacionesPage(),
+        AppRoutes.liveMatch: (context) => const PartidoEnVivoPage(),
+        AppRoutes.cuotas: (context) => const CuotasPage(),
       },
     );
   }

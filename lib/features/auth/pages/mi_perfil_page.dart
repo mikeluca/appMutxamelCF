@@ -355,6 +355,10 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
       return 'Coordinador';
     }
 
+    if (perfil.roles.contains('RETRANSMISION')) {
+      return 'Retransmisión';
+    }
+
     if (perfil.roles.contains('ADMIN_APP')) {
       return 'Administrador';
     }
@@ -378,6 +382,8 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
               return 'Entrenador';
             case 'COORDINADOR':
               return 'Coordinador';
+            case 'RETRANSMISION':
+              return 'Retransmisión';
             case 'SOCIO':
               return 'Socio';
             case 'ADMIN_APP':

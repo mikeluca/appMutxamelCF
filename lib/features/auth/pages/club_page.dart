@@ -55,6 +55,8 @@ class _ClubPageState extends State<ClubPage> {
         usuario?.tieneRol('COORDINADOR') == true ||
         usuario?.tieneRol('ADMIN_APP') == true;
 
+    final esRetransmision = usuario?.tieneRol('RETRANSMISION') == true;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Área Club'), centerTitle: false),
       body: ListView(
@@ -88,6 +90,19 @@ class _ClubPageState extends State<ClubPage> {
 
           if (tieneJugadores) const SizedBox(height: 12),
 
+          if (tieneJugadores)
+            _construirOpcion(
+              context,
+              icono: Icons.payments_outlined,
+              titulo: 'Cuotas',
+              descripcion: 'Cuotas de tus jugadores y su estado',
+              onTap: () {
+                Navigator.pushNamed(context, AppRoutes.cuotas);
+              },
+            ),
+
+          if (tieneJugadores) const SizedBox(height: 12),
+
           if (tieneEquipos)
             _construirOpcion(
               context,
@@ -112,6 +127,19 @@ class _ClubPageState extends State<ClubPage> {
           ),
 
           const SizedBox(height: 12),
+
+          if (esRetransmision)
+            _construirOpcion(
+              context,
+              icono: Icons.campaign_outlined,
+              titulo: 'Partido en directo',
+              descripcion: 'Avisos en directo del primer equipo',
+              onTap: () {
+                Navigator.pushNamed(context, AppRoutes.liveMatch);
+              },
+            ),
+
+          if (esRetransmision) const SizedBox(height: 12),
 
           _construirOpcionComunicaciones(context),
 
