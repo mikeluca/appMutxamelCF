@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../routing/app_routes.dart';
 import '../../../core/widget/club_app_bar_title.dart';
@@ -15,7 +16,8 @@ class ActivarCuentaPage extends StatefulWidget {
 class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
   final _formKey = GlobalKey<FormState>();
 
-  final _tokenController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _codigoController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmarPasswordController = TextEditingController();
 
@@ -25,7 +27,8 @@ class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
 
   @override
   void dispose() {
-    _tokenController.dispose();
+    _emailController.dispose();
+    _codigoController.dispose();
     _passwordController.dispose();
     _confirmarPasswordController.dispose();
     super.dispose();
@@ -45,7 +48,8 @@ class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
 
     try {
       final loginResponse = await AuthService.activarCuenta(
-        token: _tokenController.text,
+        email: _emailController.text,
+        codigo: _codigoController.text,
         password: _passwordController.text,
       );
 
@@ -108,8 +112,9 @@ class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
                     const SizedBox(height: 8),
 
                     Text(
-                      'Introduce el código que te ha enviado el club por '
-                      'email y elige tu contraseña de acceso.',
+                      'Introduce tu email y el código de 6 dígitos que te '
+                      'ha enviado el club por correo, y elige tu '
+                      'contraseña de acceso.',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
@@ -117,16 +122,53 @@ class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
                     const SizedBox(height: 32),
 
                     TextFormField(
-                      controller: _tokenController,
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       autocorrect: false,
                       decoration: const InputDecoration(
-                        labelText: 'Código de activación',
+                        labelText: 'Email',
+                        prefixIcon: Icon(Icons.email_outlined),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Introduce tu email';
+                        }
+
+                        if (!value.contains('@')) {
+                          return 'Introduce un email válido';
+                        }
+
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    TextFormField(
+                      controller: _codigoController,
+                      keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.next,
+                      textAlign: TextAlign.center,
+                      maxLength: 6,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      style: const TextStyle(
+                        fontSize: 22,
+                        letterSpacing: 8,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Código de 6 dígitos',
                         prefixIcon: Icon(Icons.vpn_key_outlined),
+                        counterText: '',
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Introduce el código que te enviamos por email';
+                        }
+
+                        if (value.trim().length != 6) {
+                          return 'El código debe tener 6 dígitos';
                         }
 
                         return null;
