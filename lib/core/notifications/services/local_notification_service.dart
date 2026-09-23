@@ -46,13 +46,24 @@ class LocalNotificationService {
       return;
     }
 
-    const prefijo = 'COMUNICACION:';
+    const prefijoPrivada = 'PRIVADA:';
+    const prefijoComunicacion = 'COMUNICACION:';
 
-    if (!payload.startsWith(prefijo)) {
+    if (payload.startsWith(prefijoPrivada)) {
+      final autorId = int.tryParse(payload.substring(prefijoPrivada.length));
+
+      if (autorId != null && autorId > 0) {
+        AppNavigator.abrirChatPrivado(autorId);
+      }
+
       return;
     }
 
-    final idTexto = payload.substring(prefijo.length);
+    if (!payload.startsWith(prefijoComunicacion)) {
+      return;
+    }
+
+    final idTexto = payload.substring(prefijoComunicacion.length);
 
     final comunicacionId = int.tryParse(idTexto);
 
@@ -68,6 +79,8 @@ class LocalNotificationService {
     required String titulo,
     required String mensaje,
     int cantidadNoLeidas = 1,
+    bool esPrivada = false,
+    int? autorId,
   }) async {
     if (comunicacionId <= 0) {
       return;
@@ -90,12 +103,16 @@ class LocalNotificationService {
 
     final notificationDetails = NotificationDetails(android: androidDetails);
 
+    final payload = esPrivada && autorId != null && autorId > 0
+        ? 'PRIVADA:$autorId'
+        : 'COMUNICACION:$comunicacionId';
+
     await _plugin.show(
       id: comunicacionId,
       title: titulo,
       body: mensaje,
       notificationDetails: notificationDetails,
-      payload: 'COMUNICACION:$comunicacionId',
+      payload: payload,
     );
   }
 }

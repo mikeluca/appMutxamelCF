@@ -6,6 +6,7 @@ import '../models/notificacion_model.dart';
 import '../models/perfil_app.dart';
 import '../services/comunicacion_service.dart';
 import '../services/perfil_service.dart';
+import 'chat_privado_page.dart';
 import 'comunicacion_detail_page.dart';
 import 'comunicacion_form_page.dart';
 
@@ -18,6 +19,7 @@ class ComunicacionesPage extends StatefulWidget {
 
 class _ComunicacionesPageState extends State<ComunicacionesPage>
     with SingleTickerProviderStateMixin {
+  List<ComunicacionModel> _conversaciones = [];
   List<ComunicacionModel> _comunicacionesRecibidas = [];
   List<ComunicacionModel> _comunicacionesEnviadas = [];
 
@@ -28,7 +30,7 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
   bool _cargando = true;
   String? _error;
 
-  late TabController _tabController;
+  TabController? _tabController;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
 
@@ -56,24 +58,52 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
     return perfil.tieneRol('COORDINADOR') || perfil.tieneRol('ADMIN_APP');
   }
 
+  /// Solo entrenador/coordinador/admin pueden enviar avisos por
+  /// equipo o categoría (mismas restricciones que el backend). Un
+  /// jugador o familiar sin ninguno de esos roles no tiene nada que
+  /// ver en "Enviadas": solo le aparecen Conversaciones y Recibidas.
+  bool get _puedeEnviarGrupales {
+    final perfil = _perfil;
+
+    if (perfil == null) {
+      return true;
+    }
+
+    return perfil.tieneRol('ENTRENADOR') ||
+        perfil.tieneRol('COORDINADOR') ||
+        perfil.tieneRol('ADMIN_APP');
+  }
+
+  int get _numeroPestanas => _puedeEnviarGrupales ? 3 : 2;
+
   @override
   void initState() {
     super.initState();
 
-    _tabController = TabController(length: 2, vsync: this);
-
     _cargarDatos();
+  }
+
+  /// El número de pestañas depende del rol (ver [_puedeEnviarGrupales]),
+  /// así que el controlador no se crea hasta que se conoce el perfil.
+  /// Un TabController no admite cambiar su número de pestañas en
+  /// caliente una vez que TabBar/TabBarView ya están montados, así
+  /// que se crea una única vez y no se vuelve a tocar.
+  void _inicializarTabControllerSiHaceFalta() {
+    _tabController ??= TabController(length: _numeroPestanas, vsync: this);
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _tabController?.dispose();
     super.dispose();
   }
 
   Future<void> _cargarDatos() async {
     try {
       final perfil = await PerfilService.obtenerPerfil();
+
+      final conversaciones =
+          await ComunicacionService.obtenerConversacionesPrivadas();
 
       final recibidas = await ComunicacionService.obtenerComunicaciones();
 
@@ -102,6 +132,7 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
 
       setState(() {
         _perfil = perfil;
+        _conversaciones = conversaciones;
         _comunicacionesRecibidas = recibidas;
         _comunicacionesEnviadas = enviadas;
 
@@ -111,6 +142,8 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
 
         _error = null;
         _cargando = false;
+
+        _inicializarTabControllerSiHaceFalta();
       });
     } catch (e) {
       if (!mounted) return;
@@ -126,6 +159,9 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
     try {
       final perfil = await PerfilService.obtenerPerfil();
 
+      final conversaciones =
+          await ComunicacionService.obtenerConversacionesPrivadas();
+
       final recibidas = await ComunicacionService.obtenerComunicaciones();
 
       final enviadas =
@@ -153,6 +189,7 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
 
       setState(() {
         _perfil = perfil;
+        _conversaciones = conversaciones;
         _comunicacionesRecibidas = recibidas;
         _comunicacionesEnviadas = enviadas;
 
@@ -162,6 +199,8 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
 
         _error = null;
         _cargando = false;
+
+        _inicializarTabControllerSiHaceFalta();
       });
     } catch (e) {
       if (!mounted) return;
@@ -182,6 +221,29 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
     if (resultado == true && mounted) {
       await _recargar();
     }
+  }
+
+  Future<void> _abrirConversacion(ComunicacionModel conversacion) async {
+    final contraparteId = conversacion.contraparteId;
+
+    if (contraparteId == null) {
+      return;
+    }
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChatPrivadoPage(
+          contraparteId: contraparteId,
+          contraparteNombre: conversacion.contraparteNombre,
+          contraparteRol: conversacion.contraparteRol,
+        ),
+      ),
+    );
+
+    if (!mounted) return;
+
+    await _recargar();
   }
 
   Future<void> _abrirComunicacion(
@@ -238,16 +300,31 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
 
   @override
   Widget build(BuildContext context) {
+    final tabController = _tabController;
+
     return Scaffold(
       appBar: AppBar(
         title: ClubAppBarTitle(titulo: 'Comunicaciones'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.inbox_outlined), text: 'Recibidas'),
-            Tab(icon: Icon(Icons.send_outlined), text: 'Enviadas'),
-          ],
-        ),
+        bottom: tabController == null
+            ? null
+            : TabBar(
+                controller: tabController,
+                tabs: [
+                  const Tab(
+                    icon: Icon(Icons.chat_bubble_outline),
+                    text: 'Conversaciones',
+                  ),
+                  const Tab(
+                    icon: Icon(Icons.inbox_outlined),
+                    text: 'Recibidas',
+                  ),
+                  if (_puedeEnviarGrupales)
+                    const Tab(
+                      icon: Icon(Icons.send_outlined),
+                      text: 'Enviadas',
+                    ),
+                ],
+              ),
       ),
       floatingActionButton: _puedeCrear
           ? FloatingActionButton.extended(
@@ -256,11 +333,11 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
               label: const Text('Nueva'),
             )
           : null,
-      body: _construirContenido(),
+      body: _construirContenido(tabController),
     );
   }
 
-  Widget _construirContenido() {
+  Widget _construirContenido(TabController? tabController) {
     if (_cargando) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -269,9 +346,42 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
       return _construirError();
     }
 
+    if (tabController == null) {
+      // No debería pasar: la carga con éxito siempre inicializa el
+      // controlador. Fallback defensivo por si acaso.
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return TabBarView(
-      controller: _tabController,
-      children: [_construirListaRecibidas(), _construirListaEnviadas()],
+      controller: tabController,
+      children: [
+        _construirListaConversaciones(),
+        _construirListaRecibidas(),
+        if (_puedeEnviarGrupales) _construirListaEnviadas(),
+      ],
+    );
+  }
+
+  Widget _construirListaConversaciones() {
+    if (_conversaciones.isEmpty) {
+      return _construirVacio(
+        titulo: 'No tienes conversaciones',
+        subtitulo: 'Aquí aparecerán tus chats privados.',
+        icono: Icons.chat_bubble_outline,
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: _recargar,
+      child: ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
+        itemCount: _conversaciones.length,
+        separatorBuilder: (_, _) => const SizedBox(height: 10),
+        itemBuilder: (context, index) {
+          return _construirConversacion(_conversaciones[index]);
+        },
+      ),
     );
   }
 
@@ -361,6 +471,153 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
     );
   }
 
+  Widget _construirConversacion(ComunicacionModel conversacion) {
+    final leida = conversacion.leida;
+
+    final fondo = leida
+        ? _colors.surface
+        : _colors.primaryContainer.withValues(alpha: 0.35);
+
+    final colorIcono = leida ? _colors.onSurfaceVariant : _colors.primary;
+
+    final fondoIcono = leida
+        ? _colors.surfaceContainerHighest
+        : _colors.primaryContainer;
+
+    return Material(
+      color: fondo,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => _abrirConversacion(conversacion),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: fondoIcono,
+                  borderRadius: BorderRadius.circular(23),
+                ),
+                child: Icon(
+                  Icons.chat_bubble_outline,
+                  color: colorIcono,
+                  size: 24,
+                ),
+              ),
+
+              const SizedBox(width: 14),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            conversacion.contraparteNombre ?? 'Chat',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: _colors.onSurface,
+                              fontSize: 16,
+                              fontWeight: leida
+                                  ? FontWeight.w600
+                                  : FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        if (conversacion.contraparteRol != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _colors.secondaryContainer,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                conversacion.contraparteRol!,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: _colors.onSecondaryContainer,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    Text(
+                      _normalizarContenido(conversacion.contenido),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: _colors.onSurfaceVariant,
+                        fontSize: 13,
+                        fontWeight: leida ? FontWeight.normal : FontWeight.w500,
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Row(
+                      children: [
+                        Text(
+                          _formatearFecha(conversacion.fechaPublicacion),
+                          style: TextStyle(
+                            color: _colors.onSurfaceVariant,
+                            fontSize: 12,
+                          ),
+                        ),
+
+                        if (conversacion.noLeidos > 0) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 7,
+                              vertical: 1,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _colors.primary,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              '${conversacion.noLeidos}',
+                              style: TextStyle(
+                                color: _colors.onPrimary,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(width: 8),
+
+              Icon(Icons.chevron_right, color: _colors.onSurfaceVariant),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _construirComunicacion(
     ComunicacionModel comunicacion, {
     required bool enviada,
@@ -423,7 +680,7 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      comunicacion.titulo,
+                      comunicacion.titulo ?? '',
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(

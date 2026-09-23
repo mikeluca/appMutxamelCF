@@ -127,7 +127,7 @@ class _ComunicacionDetallePageState extends State<ComunicacionDetallePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  comunicacion.titulo,
+                  comunicacion.titulo ?? '',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 21,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../features/auth/pages/chat_privado_page.dart';
 import '../../../features/auth/pages/comunicacion_detail_page.dart';
 
 class AppNavigator {
@@ -20,6 +21,20 @@ class AppNavigator {
     await navigatorState.push(
       MaterialPageRoute(
         builder: (_) => ComunicacionDetallePage(comunicacionId: comunicacionId),
+      ),
+    );
+  }
+
+  static Future<void> abrirChatPrivado(int contraparteId) async {
+    final navigatorState = navigator;
+
+    if (navigatorState == null) {
+      return;
+    }
+
+    await navigatorState.push(
+      MaterialPageRoute(
+        builder: (_) => ChatPrivadoPage(contraparteId: contraparteId),
       ),
     );
   }

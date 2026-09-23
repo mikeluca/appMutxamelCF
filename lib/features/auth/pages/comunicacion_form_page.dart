@@ -7,6 +7,11 @@ import '../models/perfil_app.dart';
 import '../services/comunicacion_service.dart';
 import '../services/perfil_service.dart';
 
+/// A quién puede dirigirse una comunicación. Los tres modos son
+/// excluyentes entre sí: un mensaje va a categorías, a equipos o a
+/// una única persona en privado, nunca a una mezcla de los tres.
+enum _ModoDestinatario { equipos, categorias, privado }
+
 class ComunicacionFormPage extends StatefulWidget {
   const ComunicacionFormPage({super.key});
 
@@ -32,9 +37,11 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
   List<String> _categoriasDisponibles = [];
   List<DestinatarioComunicacionModel> _destinatariosDisponibles = [];
 
+  _ModoDestinatario? _modoSeleccionado;
+
   final Set<int> _equiposSeleccionados = {};
   final Set<String> _categoriasSeleccionadas = {};
-  final Set<int> _destinatariosSeleccionados = {};
+  int? _destinatarioSeleccionado;
 
   bool _cargando = true;
   bool _guardando = false;
@@ -51,6 +58,12 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
   bool get _esAdmin => _perfil?.tieneRol('ADMIN_APP') ?? false;
 
   bool get _puedeSeleccionarCategorias => _esCoordinador || _esAdmin;
+
+  bool get _puedeSeleccionarEquipos =>
+      (_esEntrenador || _esCoordinador || _esAdmin) &&
+      _equiposDisponibles.isNotEmpty;
+
+  bool get _puedeSeleccionarPrivado => _destinatariosDisponibles.isNotEmpty;
 
   List<DestinatarioComunicacionModel> get _destinatariosFiltrados {
     final texto = _busquedaDestinatarios.trim().toLowerCase();
@@ -157,6 +170,15 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
         _destinatariosDisponibles = destinatarios;
         _cargando = false;
         _error = null;
+
+        // Los getters ya reflejan el perfil y las listas recién
+        // asignadas arriba, así que reutilizamos exactamente la misma
+        // lógica que decide qué modos se muestran en el selector.
+        _modoSeleccionado = _modoPorDefecto(
+          equipos: _puedeSeleccionarEquipos,
+          categorias: _puedeSeleccionarCategorias,
+          privado: _puedeSeleccionarPrivado,
+        );
       });
     } catch (e) {
       if (!mounted) return;
@@ -168,8 +190,36 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
     }
   }
 
+  /// El modo por defecto es el primero disponible, priorizando
+  /// equipos (el caso más habitual: avisar al propio equipo) y
+  /// dejando privado como última opción.
+  _ModoDestinatario? _modoPorDefecto({
+    required bool equipos,
+    required bool categorias,
+    required bool privado,
+  }) {
+    if (equipos) return _ModoDestinatario.equipos;
+    if (categorias) return _ModoDestinatario.categorias;
+    if (privado) return _ModoDestinatario.privado;
+    return null;
+  }
+
   bool _esRolGlobal(PerfilApp perfil) {
     return perfil.tieneRol('COORDINADOR') || perfil.tieneRol('ADMIN_APP');
+  }
+
+  void _cambiarModo(_ModoDestinatario modo) {
+    if (_modoSeleccionado == modo) return;
+
+    setState(() {
+      _modoSeleccionado = modo;
+
+      // Al cambiar de modo se descarta la selección anterior: un
+      // mensaje solo puede ir a un tipo de destinatario.
+      _equiposSeleccionados.clear();
+      _categoriasSeleccionadas.clear();
+      _destinatarioSeleccionado = null;
+    });
   }
 
   Future<void> _guardar() async {
@@ -179,42 +229,43 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
       return;
     }
 
-    if (_equiposSeleccionados.isEmpty &&
-        _categoriasSeleccionadas.isEmpty &&
-        _destinatariosSeleccionados.isEmpty) {
+    final modo = _modoSeleccionado;
+
+    if (modo == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Debes seleccionar al menos un equipo, una categoría '
-            'o un destinatario.',
-          ),
-        ),
+        const SnackBar(content: Text('Selecciona a quién quieres escribir.')),
       );
 
       return;
     }
 
-    /*
-     * Los entrenadores necesitan seleccionar al menos un equipo
-     * cuando utilizan la comunicación por equipos/categorías.
-     *
-     * Si envían únicamente a destinatarios directos, esa
-     * selección no es necesaria.
-     */
-    if (_esEntrenador &&
-        _equiposSeleccionados.isEmpty &&
-        _categoriasSeleccionadas.isEmpty &&
-        _destinatariosSeleccionados.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Debes seleccionar al menos un equipo, '
-            'una categoría o un destinatario.',
-          ),
-        ),
-      );
+    switch (modo) {
+      case _ModoDestinatario.equipos:
+        if (_equiposSeleccionados.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Selecciona al menos un equipo.')),
+          );
+          return;
+        }
+        break;
 
-      return;
+      case _ModoDestinatario.categorias:
+        if (_categoriasSeleccionadas.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Selecciona al menos una categoría.')),
+          );
+          return;
+        }
+        break;
+
+      case _ModoDestinatario.privado:
+        if (_destinatarioSeleccionado == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Selecciona un destinatario.')),
+          );
+          return;
+        }
+        break;
     }
 
     setState(() {
@@ -223,11 +274,19 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
 
     try {
       await ComunicacionService.crearComunicacion(
-        titulo: _tituloController.text,
+        titulo: modo == _ModoDestinatario.privado
+            ? null
+            : _tituloController.text,
         contenido: _contenidoController.text,
-        equipoIds: _equiposSeleccionados.toList(),
-        categorias: _categoriasSeleccionadas.toList(),
-        destinatariosIds: _destinatariosSeleccionados.toList(),
+        equipoIds: modo == _ModoDestinatario.equipos
+            ? _equiposSeleccionados.toList()
+            : const [],
+        categorias: modo == _ModoDestinatario.categorias
+            ? _categoriasSeleccionadas.toList()
+            : const [],
+        destinatariosIds: modo == _ModoDestinatario.privado
+            ? [_destinatarioSeleccionado!]
+            : const [],
       );
 
       if (!mounted) return;
@@ -292,18 +351,16 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
 
                 const SizedBox(height: 12),
 
-                if (_esEntrenador || _esCoordinador || _esAdmin) ...[
-                  _construirEquipos(),
-                ],
-
-                if (_puedeSeleccionarCategorias) ...[
-                  const SizedBox(height: 12),
-                  _construirCategorias(),
-                ],
+                _construirSelectorModo(),
 
                 const SizedBox(height: 12),
 
-                _construirDestinatariosDirectos(),
+                switch (_modoSeleccionado) {
+                  _ModoDestinatario.equipos => _construirEquipos(),
+                  _ModoDestinatario.categorias => _construirCategorias(),
+                  _ModoDestinatario.privado => _construirDestinatariosDirectos(),
+                  null => _construirSinModosDisponibles(),
+                },
               ],
             ),
           ),
@@ -324,25 +381,27 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
         padding: const EdgeInsets.all(18),
         child: Column(
           children: [
-            TextFormField(
-              controller: _tituloController,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                labelText: 'Título',
-                hintText: 'Escribe el título',
-                prefixIcon: Icon(Icons.title_outlined),
-                border: OutlineInputBorder(),
+            if (_modoSeleccionado != _ModoDestinatario.privado) ...[
+              TextFormField(
+                controller: _tituloController,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: const InputDecoration(
+                  labelText: 'Título',
+                  hintText: 'Escribe el título',
+                  prefixIcon: Icon(Icons.title_outlined),
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'El título es obligatorio.';
+                  }
+
+                  return null;
+                },
               ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'El título es obligatorio.';
-                }
 
-                return null;
-              },
-            ),
-
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
+            ],
 
             TextFormField(
               controller: _contenidoController,
@@ -384,46 +443,87 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
     );
   }
 
-  Widget _construirEquipos() {
-    if (_equiposDisponibles.isEmpty) {
-      return Card(
-        margin: EdgeInsets.zero,
-        color: _colors.surface,
-        elevation: 1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Text(
-            'No hay equipos disponibles.',
-            style: TextStyle(color: _colors.onSurfaceVariant),
+  Widget _construirSelectorModo() {
+    final opciones = <ButtonSegment<_ModoDestinatario>>[
+      if (_puedeSeleccionarEquipos)
+        ButtonSegment(
+          value: _ModoDestinatario.equipos,
+          label: Text(
+            _esEntrenador && !_esCoordinador && !_esAdmin
+                ? 'Mis equipos'
+                : 'Equipos',
           ),
+          icon: const Icon(Icons.groups_outlined),
         ),
-      );
+      if (_puedeSeleccionarCategorias)
+        const ButtonSegment(
+          value: _ModoDestinatario.categorias,
+          label: Text('Categorías'),
+          icon: Icon(Icons.category_outlined),
+        ),
+      if (_puedeSeleccionarPrivado)
+        const ButtonSegment(
+          value: _ModoDestinatario.privado,
+          label: Text('Privado'),
+          icon: Icon(Icons.person_outline),
+        ),
+    ];
+
+    if (opciones.isEmpty) {
+      return const SizedBox.shrink();
     }
 
+    return SizedBox(
+      width: double.infinity,
+      child: SegmentedButton<_ModoDestinatario>(
+        segments: opciones,
+        selected: _modoSeleccionado == null ? {} : {_modoSeleccionado!},
+        emptySelectionAllowed: true,
+        onSelectionChanged: _guardando
+            ? null
+            : (seleccion) {
+                if (seleccion.isNotEmpty) {
+                  _cambiarModo(seleccion.first);
+                }
+              },
+      ),
+    );
+  }
+
+  Widget _construirSinModosDisponibles() {
+    return Card(
+      margin: EdgeInsets.zero,
+      color: _colors.surface,
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Text(
+          'No tienes ningún destinatario disponible para escribir una '
+          'comunicación.',
+          style: TextStyle(color: _colors.onSurfaceVariant),
+        ),
+      ),
+    );
+  }
+
+  Widget _construirEquipos() {
     return Card(
       margin: EdgeInsets.zero,
       color: _colors.surface,
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       clipBehavior: Clip.antiAlias,
-      child: ExpansionTile(
-        initiallyExpanded: true,
-        enabled: !_guardando,
-        leading: Icon(Icons.groups_outlined, color: _colors.primary),
-        title: Text(
-          _esEntrenador ? 'Mis equipos' : 'Equipos',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: _colors.onSurface,
-          ),
-        ),
-        subtitle: _equiposSeleccionados.isEmpty
-            ? null
-            : Text('${_equiposSeleccionados.length} seleccionado(s)'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Divider(height: 1),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
+            child: Text(
+              'Elige uno o varios equipos.',
+              style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 13),
+            ),
+          ),
 
           ..._equiposDisponibles.map(
             (equipo) => CheckboxListTile(
@@ -439,8 +539,6 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
                         }
                       });
                     },
-
-              // SOLO mostramos el nombre del equipo.
               title: Text(
                 equipo.nombre,
                 style: TextStyle(
@@ -448,9 +546,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-
               controlAffinity: ListTileControlAffinity.leading,
-
               activeColor: _colors.primary,
             ),
           ),
@@ -460,48 +556,22 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
   }
 
   Widget _construirCategorias() {
-    if (_categoriasDisponibles.isEmpty) {
-      return Card(
-        margin: EdgeInsets.zero,
-        color: _colors.surface,
-        elevation: 1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Text(
-            'No hay categorías disponibles.',
-            style: TextStyle(color: _colors.onSurfaceVariant),
-          ),
-        ),
-      );
-    }
-
     return Card(
       margin: EdgeInsets.zero,
       color: _colors.surface,
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       clipBehavior: Clip.antiAlias,
-      child: ExpansionTile(
-        initiallyExpanded: false,
-        enabled: !_guardando,
-        leading: Icon(Icons.category_outlined, color: _colors.primary),
-        title: Text(
-          'Categorías',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: _colors.onSurface,
-          ),
-        ),
-        subtitle: _categoriasSeleccionadas.isEmpty
-            ? null
-            : Text(
-                '${_categoriasSeleccionadas.length} '
-                'seleccionada(s)',
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Divider(height: 1),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
+            child: Text(
+              'Elige una o varias categorías.',
+              style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 13),
+            ),
+          ),
 
           ..._categoriasDisponibles.map(
             (categoria) => CheckboxListTile(
@@ -534,22 +604,6 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
   }
 
   Widget _construirDestinatariosDirectos() {
-    if (_destinatariosDisponibles.isEmpty) {
-      return Card(
-        margin: EdgeInsets.zero,
-        color: _colors.surface,
-        elevation: 1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Text(
-            'No hay destinatarios directos disponibles.',
-            style: TextStyle(color: _colors.onSurfaceVariant),
-          ),
-        ),
-      );
-    }
-
     final destinatariosFiltrados = _destinatariosFiltrados;
 
     return Card(
@@ -558,29 +612,20 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       clipBehavior: Clip.antiAlias,
-      child: ExpansionTile(
-        initiallyExpanded: false,
-        enabled: !_guardando,
-        leading: Icon(Icons.person_outline, color: _colors.primary),
-        title: Text(
-          'Destinatarios directos',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: _colors.onSurface,
-          ),
-        ),
-        subtitle: _destinatariosSeleccionados.isEmpty
-            ? null
-            : Text(
-                '${_destinatariosSeleccionados.length} '
-                'seleccionado(s)',
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Divider(height: 1),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
+            child: Text(
+              'Elige una única persona; el mensaje será privado solo '
+              'para ella.',
+              style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 13),
+            ),
+          ),
 
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
               controller: _buscadorDestinatariosController,
               enabled: !_guardando,
@@ -613,33 +658,36 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
               ),
             )
           else
-            ...destinatariosFiltrados.map(
-              (destinatario) => CheckboxListTile(
-                value: _destinatariosSeleccionados.contains(destinatario.id),
-                onChanged: _guardando
-                    ? null
-                    : (seleccionado) {
-                        setState(() {
-                          if (seleccionado == true) {
-                            _destinatariosSeleccionados.add(destinatario.id);
-                          } else {
-                            _destinatariosSeleccionados.remove(destinatario.id);
-                          }
-                        });
-                      },
-                title: Text(
-                  destinatario.nombreCompleto,
-                  style: TextStyle(
-                    color: _colors.onSurface,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                subtitle: Text(
-                  destinatario.rol,
-                  style: TextStyle(color: _colors.onSurfaceVariant),
-                ),
-                controlAffinity: ListTileControlAffinity.leading,
-                activeColor: _colors.primary,
+            RadioGroup<int>(
+              groupValue: _destinatarioSeleccionado,
+              onChanged: (seleccionado) {
+                if (_guardando) return;
+
+                setState(() {
+                  _destinatarioSeleccionado = seleccionado;
+                });
+              },
+              child: Column(
+                children: destinatariosFiltrados
+                    .map(
+                      (destinatario) => RadioListTile<int>(
+                        value: destinatario.id,
+                        title: Text(
+                          destinatario.nombreCompleto,
+                          style: TextStyle(
+                            color: _colors.onSurface,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        subtitle: Text(
+                          destinatario.rol,
+                          style: TextStyle(color: _colors.onSurfaceVariant),
+                        ),
+                        controlAffinity: ListTileControlAffinity.leading,
+                        activeColor: _colors.primary,
+                      ),
+                    )
+                    .toList(),
               ),
             ),
         ],

@@ -74,6 +74,9 @@ class PushNotificationService {
 
       final mensaje = message.notification?.body ?? '';
 
+      final esPrivada = message.data['esPrivada'] == 'true';
+      final autorId = int.tryParse(message.data['autorId']?.toString() ?? '');
+
       final cantidadNoLeidas = await NotificacionService.contarNoLeidas();
 
       await LocalNotificationService.mostrarComunicacion(
@@ -81,6 +84,8 @@ class PushNotificationService {
         titulo: titulo,
         mensaje: mensaje,
         cantidadNoLeidas: cantidadNoLeidas,
+        esPrivada: esPrivada,
+        autorId: autorId,
       );
     });
 
@@ -117,11 +122,24 @@ class PushNotificationService {
   static Future<void> _procesarNotificacion(RemoteMessage message) async {
     final tipo = message.data['tipo'];
 
-    final referenciaIdString = message.data['referenciaId'];
-
     if (tipo != 'COMUNICACION') {
       return;
     }
+
+    final esPrivada = message.data['esPrivada'] == 'true';
+
+    if (esPrivada) {
+      final autorId = int.tryParse(message.data['autorId']?.toString() ?? '');
+
+      if (autorId == null || autorId <= 0) {
+        return;
+      }
+
+      await AppNavigator.abrirChatPrivado(autorId);
+      return;
+    }
+
+    final referenciaIdString = message.data['referenciaId'];
 
     final referenciaId = int.tryParse(referenciaIdString?.toString() ?? '');
 
