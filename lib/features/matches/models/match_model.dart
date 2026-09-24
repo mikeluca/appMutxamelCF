@@ -1,4 +1,6 @@
 class MatchModel {
+  final int? id;
+  final int? equipoId;
   final String categoria;
   final String equipo;
   final String rival;
@@ -9,6 +11,8 @@ class MatchModel {
   final String? campo;
 
   const MatchModel({
+    this.id,
+    this.equipoId,
     required this.categoria,
     required this.equipo,
     required this.rival,
@@ -21,6 +25,8 @@ class MatchModel {
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
     return MatchModel(
+      id: json['id'] as int?,
+      equipoId: json['equipoId'] as int?,
       categoria: json['categoria'] ?? '',
       equipo: json['equipo'] ?? '',
       rival: json['rival'] ?? '',
