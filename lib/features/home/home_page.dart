@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/config/app_config.dart';
 import '../../core/constants/app_constants.dart';
@@ -14,6 +15,7 @@ import '../auth/services/auth_manager.dart';
 import '../matches/widgets/match_card.dart';
 import '../auth/services/notificacion_service.dart';
 import '../auth/pages/notificaciones_page.dart';
+import 'models/patrocinador.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -198,6 +200,14 @@ class HomePageState extends State<HomePage> {
               const SizedBox(height: 12),
 
               _buildMainNews(),
+
+              const SizedBox(height: 28),
+
+              _buildSectionTitle('Nuestros patrocinadores'),
+
+              const SizedBox(height: 12),
+
+              _buildPatrocinadores(),
             ],
           ),
         ),
@@ -338,6 +348,105 @@ class HomePageState extends State<HomePage> {
         child: Icon(Icons.article_outlined, size: 50, color: AppColors.azul),
       ),
     );
+  }
+
+  // ============================================================
+  // PATROCINADORES
+  // ============================================================
+
+  Widget _buildPatrocinadores() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Pulsa en las imágenes para conocer más '
+          'acerca de nuestros patrocinadores.',
+          style: TextStyle(fontSize: 12, color: _colors.onSurfaceVariant),
+        ),
+
+        const SizedBox(height: 12),
+
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final columnas = constraints.maxWidth >= 480 ? 3 : 2;
+
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: kPatrocinadores.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columnas,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                childAspectRatio: 1,
+              ),
+              itemBuilder: (context, index) {
+                return _buildPatrocinadorTile(kPatrocinadores[index]);
+              },
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPatrocinadorTile(Patrocinador patrocinador) {
+    final imagenUrl =
+        '${AppConfig.mediaBaseUrl}/images/${patrocinador.imagen}';
+
+    final imagen = SizedBox.expand(
+      child: Image.network(
+        imagenUrl,
+        fit: patrocinador.circular ? BoxFit.cover : BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            color: AppColors.azulOscuro.withValues(alpha: 0.08),
+            alignment: Alignment.center,
+            child: const Icon(
+              Icons.image_not_supported_outlined,
+              color: AppColors.azul,
+            ),
+          );
+        },
+      ),
+    );
+
+    final tarjeta = Card(
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(patrocinador.circular ? 100 : 8),
+          child: imagen,
+        ),
+      ),
+    );
+
+    // El patrocinador 9 (Aresala) no lleva enlace en la web:
+    // se muestra sin acción de tap.
+    if (patrocinador.url == null) {
+      return tarjeta;
+    }
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () => _abrirUrlPatrocinador(patrocinador.url!),
+      child: tarjeta,
+    );
+  }
+
+  Future<void> _abrirUrlPatrocinador(String url) async {
+    final uri = Uri.parse(url);
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('No se ha podido abrir el enlace')));
+    }
   }
 }
 
