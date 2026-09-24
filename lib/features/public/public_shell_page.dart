@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../club/pages/club_info_page.dart';
 import '../home/home_page.dart';
 import '../matches/pages/matches_page.dart';
 import '../news/pages/news_page.dart';
@@ -28,6 +29,7 @@ class _PublicShellPageState extends State<PublicShellPage> {
       const NewsPage(),
       const MatchesPage(),
       const StorePage(),
+      const ClubInfoPage(),
     ];
   }
 
@@ -85,6 +87,11 @@ class _PublicShellPageState extends State<PublicShellPage> {
                 icon: Icon(Icons.storefront_outlined),
                 selectedIcon: Icon(Icons.storefront),
                 label: 'Tienda',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.info_outline),
+                selectedIcon: Icon(Icons.info),
+                label: 'Club',
               ),
             ],
           ),
