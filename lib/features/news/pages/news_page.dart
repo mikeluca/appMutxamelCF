@@ -98,34 +98,38 @@ class _NewsPageState extends State<NewsPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (noticia.imagenUrl != null &&
-                            noticia.imagenUrl!.isNotEmpty)
-                          SizedBox(
-                            width: double.infinity,
-                            height: 180,
-                            child: Image.network(
-                              '${AppConfig.apiBaseUrl}/public/noticias/${noticia.id}/imagen-mini',
-                              fit: BoxFit.cover,
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                    if (loadingProgress == null) {
-                                      return child;
-                                    }
+                        SizedBox(
+                          width: double.infinity,
+                          height: 180,
+                          child: Image.network(
+                            (noticia.imagenUrl != null &&
+                                    noticia.imagenUrl!.isNotEmpty)
+                                ? '${AppConfig.apiBaseUrl}/public/noticias/${noticia.id}/imagen-mini'
+                                // Sin imagen asociada: mismo fallback
+                                // que ya usa la web (noticia3.jpg),
+                                // para que ninguna noticia se quede
+                                // sin imagen al mostrar.
+                                : '${AppConfig.mediaBaseUrl}/images/noticia3.jpg',
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              }
 
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  },
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Center(
-                                  child: Icon(
-                                    Icons.image_not_supported_outlined,
-                                    size: 48,
-                                  ),
-                                );
-                              },
-                            ),
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Center(
+                                child: Icon(
+                                  Icons.image_not_supported_outlined,
+                                  size: 48,
+                                ),
+                              );
+                            },
                           ),
+                        ),
 
                         Padding(
                           padding: const EdgeInsets.all(16),

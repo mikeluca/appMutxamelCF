@@ -23,4 +23,89 @@ class MatchService {
         .map((json) => MatchModel.fromJson(json as Map<String, dynamic>))
         .toList();
   }
+
+  Future<List<MatchModel>> obtenerUltimosPorEquipoId(
+    int equipoId, {
+    int limite = 5,
+  }) async {
+    final data =
+        await ApiClient.get('/public/partidos?equipoId=$equipoId&limite=$limite')
+            as List<dynamic>;
+
+    return data
+        .map((json) => MatchModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<MatchModel>> obtenerUltimosPorEquipoNombre(
+    String equipoNombre, {
+    int limite = 5,
+  }) async {
+    final equipoCodificado = Uri.encodeQueryComponent(equipoNombre);
+
+    final data = await ApiClient.get(
+      '/public/partidos?equipo=$equipoCodificado&limite=$limite',
+    ) as List<dynamic>;
+
+    return data
+        .map((json) => MatchModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<MatchModel> crearPartido({
+    required int equipoId,
+    required String rival,
+    String? dia,
+    String? hora,
+    String? campo,
+    String? resultado,
+    String? tipo,
+  }) async {
+    final data = await ApiClient.post(
+      '/app/partidos',
+      autenticado: true,
+      body: {
+        'equipoId': equipoId,
+        'rival': rival,
+        'dia': dia,
+        'hora': hora,
+        'campo': campo,
+        'resultado': resultado,
+        'tipo': tipo,
+      },
+    );
+
+    return MatchModel.fromJson(data as Map<String, dynamic>);
+  }
+
+  Future<MatchModel> actualizarPartido({
+    required int partidoId,
+    required int equipoId,
+    required String rival,
+    String? dia,
+    String? hora,
+    String? campo,
+    String? resultado,
+    String? tipo,
+  }) async {
+    final data = await ApiClient.put(
+      '/app/partidos/$partidoId',
+      autenticado: true,
+      body: {
+        'equipoId': equipoId,
+        'rival': rival,
+        'dia': dia,
+        'hora': hora,
+        'campo': campo,
+        'resultado': resultado,
+        'tipo': tipo,
+      },
+    );
+
+    return MatchModel.fromJson(data as Map<String, dynamic>);
+  }
+
+  Future<void> eliminarPartido(int partidoId) async {
+    await ApiClient.delete('/app/partidos/$partidoId', autenticado: true);
+  }
 }

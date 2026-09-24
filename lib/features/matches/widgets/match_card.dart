@@ -15,15 +15,79 @@ class MatchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Widget tarjeta;
+
     if (match.estaDescansando) {
-      return _buildRestCard(context);
+      tarjeta = _buildRestCard(context);
+    } else if (match.estaJugado) {
+      tarjeta = _buildPlayedMatchCard(context);
+    } else {
+      tarjeta = _buildUpcomingMatchCard(context);
     }
 
-    if (match.estaJugado) {
-      return _buildPlayedMatchCard(context);
+    return _envolverConEtiquetaTipo(context, tarjeta);
+  }
+
+  // ============================================================
+  // TIPO DE PARTIDO (Liga, Amistoso, Copa, Torneo)
+  // ============================================================
+
+  /// Borde de color según el tipo de partido. Null (sin tratamiento
+  /// especial) si el tipo es desconocido/no informado.
+  ShapeBorder? get _shapeTipo {
+    final color = AppColors.colorTipoPartido(match.tipo);
+
+    if (color == null) return null;
+
+    return RoundedRectangleBorder(
+      borderRadius: const BorderRadius.all(Radius.circular(8)),
+      side: BorderSide(color: color, width: 2),
+    );
+  }
+
+  /// Superpone una pequeña etiqueta con el tipo de partido (Liga,
+  /// Amistoso, Copa, Torneo) en la esquina de la tarjeta, para no
+  /// depender solo del color del borde. No se muestra si el tipo
+  /// es desconocido/no informado.
+  ///
+  /// Se coloca en la esquina INFERIOR derecha (y no en la superior,
+  /// como en la pestaña "Partidos") porque en "Mis Partidos" esta
+  /// misma tarjeta se envuelve, desde fuera, en un botón de editar
+  /// superpuesto arriba a la derecha (ver
+  /// `_EquipoSeccion._construirTarjetaPartido` en mis_partidos_page.dart);
+  /// dejando el globo del tipo abajo se evita que ambos se solapen.
+  Widget _envolverConEtiquetaTipo(BuildContext context, Widget tarjeta) {
+    final etiqueta = AppColors.etiquetaTipoPartido(match.tipo);
+    final color = AppColors.colorTipoPartido(match.tipo);
+
+    if (etiqueta == null || color == null) {
+      return tarjeta;
     }
 
-    return _buildUpcomingMatchCard(context);
+    return Stack(
+      children: [
+        tarjeta,
+        Positioned(
+          bottom: 8,
+          right: 8,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              etiqueta,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   // ============================================================
@@ -33,6 +97,7 @@ class MatchCard extends StatelessWidget {
   Widget _buildUpcomingMatchCard(BuildContext context) {
     return Card(
       clipBehavior: Clip.antiAlias,
+      shape: _shapeTipo,
       child: Column(
         children: [
           _buildHeader(
@@ -85,6 +150,7 @@ class MatchCard extends StatelessWidget {
   Widget _buildPlayedMatchCard(BuildContext context) {
     return Card(
       clipBehavior: Clip.antiAlias,
+      shape: _shapeTipo,
       child: Column(
         children: [
           _buildHeader(
@@ -133,8 +199,19 @@ class MatchCard extends StatelessWidget {
   // ============================================================
 
   Widget _buildRestCard(BuildContext context) {
+    // El club usa 'DESCANSA' para señalar deliberadamente una jornada
+    // de descanso. Si el rival llega vacío es que, sencillamente,
+    // no hay ningún partido registrado para ese equipo.
+    final descansaExplicitamente =
+        match.rival.trim().toUpperCase() == 'DESCANSA';
+
+    final textoCuerpo = descansaExplicitamente
+        ? 'No hay partido esta jornada'
+        : 'No tiene partido';
+
     return Card(
       clipBehavior: Clip.antiAlias,
+      shape: _shapeTipo,
       child: Column(
         children: [
           Container(
@@ -178,10 +255,7 @@ class MatchCard extends StatelessWidget {
 
                 const SizedBox(height: 6),
 
-                const Text(
-                  'No hay partido esta jornada',
-                  style: TextStyle(fontSize: 15),
-                ),
+                Text(textoCuerpo, style: const TextStyle(fontSize: 15)),
               ],
             ),
           ),

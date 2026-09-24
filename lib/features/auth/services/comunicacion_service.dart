@@ -132,12 +132,28 @@ class ComunicacionService {
     );
   }
 
+  /// Trae una página de la conversación con [otroUsuarioId], ordenada
+  /// de más antiguo a más reciente dentro de esa página.
+  ///
+  /// Sin [antesId]: los últimos [limite] mensajes (los más recientes).
+  /// Con [antesId]: los [limite] mensajes inmediatamente anteriores a
+  /// ese id (para "cargar mensajes anteriores" al hacer scroll hacia
+  /// arriba en el chat).
   static Future<List<MensajeConversacionModel>> obtenerConversacion(
-    int otroUsuarioId,
-  ) async {
+    int otroUsuarioId, {
+    int? antesId,
+    int limite = 20,
+  }) async {
+    final params = <String>['limite=$limite'];
+
+    if (antesId != null) {
+      params.add('antesId=$antesId');
+    }
+
     final data =
         await ApiClient.get(
-              '/app/comunicaciones/conversacion/$otroUsuarioId',
+              '/app/comunicaciones/conversacion/$otroUsuarioId'
+              '?${params.join('&')}',
               autenticado: true,
             )
             as List<dynamic>;
