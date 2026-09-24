@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../home/home_page.dart';
 import '../matches/pages/matches_page.dart';
 import '../news/pages/news_page.dart';
-import '../teams/pages/teams_page.dart';
+import '../store/pages/store_page.dart';
 
 class PublicShellPage extends StatefulWidget {
   const PublicShellPage({super.key});
@@ -27,7 +27,7 @@ class _PublicShellPageState extends State<PublicShellPage> {
       HomePage(key: _homeKey),
       const NewsPage(),
       const MatchesPage(),
-      const TeamsPage(),
+      const StorePage(),
     ];
   }
 
@@ -82,9 +82,9 @@ class _PublicShellPageState extends State<PublicShellPage> {
                 label: 'Partidos',
               ),
               NavigationDestination(
-                icon: Icon(Icons.groups_outlined),
-                selectedIcon: Icon(Icons.groups),
-                label: 'Equipos',
+                icon: Icon(Icons.storefront_outlined),
+                selectedIcon: Icon(Icons.storefront),
+                label: 'Tienda',
               ),
             ],
           ),
