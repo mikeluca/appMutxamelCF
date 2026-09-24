@@ -23,13 +23,22 @@ class ChatPrivadoPage extends StatefulWidget {
 }
 
 class _ChatPrivadoPageState extends State<ChatPrivadoPage> {
+  static const int _mensajesPorPagina = 20;
+
   List<MensajeConversacionModel> _mensajes = [];
 
   bool _cargando = true;
   bool _enviando = false;
   String? _error;
 
+  // Paginación por cursor: hasta que una página devuelva menos de
+  // _mensajesPorPagina mensajes, asumimos que puede haber más
+  // antiguos que cargar.
+  bool _hayMasAntiguos = true;
+  bool _cargandoMasAntiguos = false;
+
   final TextEditingController _mensajeController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
 
@@ -37,11 +46,22 @@ class _ChatPrivadoPageState extends State<ChatPrivadoPage> {
   void initState() {
     super.initState();
     _cargarConversacion();
+
+    _scrollController.addListener(() {
+      // La lista usa reverse: true, así que acercarse a
+      // maxScrollExtent es visualmente "llegar arriba del todo",
+      // donde están los mensajes más antiguos ya cargados.
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+        _cargarMensajesAnteriores();
+      }
+    });
   }
 
   @override
   void dispose() {
     _mensajeController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -57,6 +77,7 @@ class _ChatPrivadoPageState extends State<ChatPrivadoPage> {
         _mensajes = mensajes;
         _error = null;
         _cargando = false;
+        _hayMasAntiguos = mensajes.length >= _mensajesPorPagina;
       });
 
       // No bloqueamos la carga del chat por esto.
@@ -70,6 +91,34 @@ class _ChatPrivadoPageState extends State<ChatPrivadoPage> {
         _error = e.toString().replaceFirst('Exception: ', '');
         _cargando = false;
       });
+    }
+  }
+
+  Future<void> _cargarMensajesAnteriores() async {
+    if (!_hayMasAntiguos || _cargandoMasAntiguos || _mensajes.isEmpty) return;
+
+    setState(() => _cargandoMasAntiguos = true);
+
+    try {
+      final anteriores = await ComunicacionService.obtenerConversacion(
+        widget.contraparteId,
+        antesId: _mensajes.first.id,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _mensajes = [...anteriores, ..._mensajes];
+        _hayMasAntiguos = anteriores.length >= _mensajesPorPagina;
+        _cargandoMasAntiguos = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() => _cargandoMasAntiguos = false);
+
+      // No hace falta mostrar error bloqueante: si falla, el usuario
+      // simplemente puede volver a intentar haciendo scroll otra vez.
     }
   }
 
@@ -102,6 +151,10 @@ class _ChatPrivadoPageState extends State<ChatPrivadoPage> {
       setState(() {
         _mensajes = mensajes;
         _enviando = false;
+        // El envío vuelve a traer los últimos _mensajesPorPagina
+        // mensajes, lo que reinicia la paginación (se pierden las
+        // páginas antiguas ya cargadas, es aceptable).
+        _hayMasAntiguos = mensajes.length >= _mensajesPorPagina;
       });
     } catch (e) {
       if (!mounted) return;
@@ -175,11 +228,28 @@ class _ChatPrivadoPageState extends State<ChatPrivadoPage> {
       color: AppColors.azul,
       onRefresh: _cargarConversacion,
       child: ListView.builder(
+        controller: _scrollController,
         reverse: true,
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-        itemCount: mensajesInvertidos.length,
+        itemCount: mensajesInvertidos.length + (_cargandoMasAntiguos ? 1 : 0),
         itemBuilder: (context, index) {
+          if (index == mensajesInvertidos.length) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Center(
+                child: SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.azul,
+                  ),
+                ),
+              ),
+            );
+          }
+
           return _construirBurbuja(mensajesInvertidos[index]);
         },
       ),
