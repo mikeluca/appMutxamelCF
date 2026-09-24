@@ -308,7 +308,7 @@ class HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (noticia.imagenUrl != null)
+            if (noticia.imagenUrl != null && noticia.imagenUrl!.isNotEmpty)
               Image.network(
                 '${AppConfig.mediaBaseUrl}'
                 '${noticia.imagenUrl}',
@@ -320,7 +320,18 @@ class HomePageState extends State<HomePage> {
                 },
               )
             else
-              _buildNewsImagePlaceholder(),
+              // Sin imagen asociada: mismo fallback que ya usa la
+              // web (noticia3.jpg) en vez de un icono generico, para
+              // que ninguna noticia se quede sin imagen al mostrar.
+              Image.network(
+                '${AppConfig.mediaBaseUrl}/images/noticia3.jpg',
+                height: 170,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return _buildNewsImagePlaceholder();
+                },
+              ),
             Padding(
               padding: const EdgeInsets.all(16),
               child: Text(

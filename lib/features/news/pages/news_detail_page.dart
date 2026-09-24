@@ -13,6 +13,13 @@ class NewsDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final String imagenUrl = noticia.imagenUrl ?? '';
 
+    // Sin imagen asociada: mismo fallback que ya usa la web
+    // (noticia3.jpg), para que ninguna noticia se quede sin imagen
+    // al mostrar.
+    final String urlImagenMostrada = imagenUrl.isNotEmpty
+        ? '${AppConfig.apiBaseUrl}/public/noticias/${noticia.id}/imagen-mini'
+        : '${AppConfig.mediaBaseUrl}/images/noticia3.jpg';
+
     return Scaffold(
       appBar: AppBar(title: ClubAppBarTitle(titulo: 'Noticia')),
       body: SingleChildScrollView(
@@ -20,40 +27,39 @@ class NewsDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Imagen de la noticia
-            if (imagenUrl.isNotEmpty)
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
-                ),
-                child: Image.network(
-                  '${AppConfig.apiBaseUrl}/public/noticias/${noticia.id}/imagen-mini',
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) {
-                      return child;
-                    }
-
-                    return const SizedBox(
-                      height: 220,
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return const SizedBox(
-                      height: 220,
-                      width: double.infinity,
-                      child: Center(
-                        child: Icon(
-                          Icons.image_not_supported_outlined,
-                          size: 48,
-                        ),
-                      ),
-                    );
-                  },
-                ),
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(12),
+                bottomRight: Radius.circular(12),
               ),
+              child: Image.network(
+                urlImagenMostrada,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  }
+
+                  return const SizedBox(
+                    height: 220,
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return const SizedBox(
+                    height: 220,
+                    width: double.infinity,
+                    child: Center(
+                      child: Icon(
+                        Icons.image_not_supported_outlined,
+                        size: 48,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
 
             // Contenido de la noticia
             Padding(
