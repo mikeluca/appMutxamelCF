@@ -49,6 +49,13 @@ class MatchCard extends StatelessWidget {
   /// Amistoso, Copa, Torneo) en la esquina de la tarjeta, para no
   /// depender solo del color del borde. No se muestra si el tipo
   /// es desconocido/no informado.
+  ///
+  /// Se coloca en la esquina INFERIOR derecha (y no en la superior,
+  /// como en la pestaña "Partidos") porque en "Mis Partidos" esta
+  /// misma tarjeta se envuelve, desde fuera, en un botón de editar
+  /// superpuesto arriba a la derecha (ver
+  /// `_EquipoSeccion._construirTarjetaPartido` en mis_partidos_page.dart);
+  /// dejando el globo del tipo abajo se evita que ambos se solapen.
   Widget _envolverConEtiquetaTipo(BuildContext context, Widget tarjeta) {
     final etiqueta = AppColors.etiquetaTipoPartido(match.tipo);
     final color = AppColors.colorTipoPartido(match.tipo);
@@ -61,7 +68,7 @@ class MatchCard extends StatelessWidget {
       children: [
         tarjeta,
         Positioned(
-          top: 8,
+          bottom: 8,
           right: 8,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

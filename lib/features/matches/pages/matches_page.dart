@@ -401,16 +401,6 @@ class _MatchCard extends StatelessWidget {
             letterSpacing: 0.8,
           ),
         ),
-
-        const Spacer(),
-
-        Text(
-          partido.categoria,
-          style: TextStyle(
-            color: _colors(context).onSurfaceVariant,
-            fontSize: 12,
-          ),
-        ),
       ],
     );
   }
