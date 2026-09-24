@@ -100,4 +100,8 @@ class MatchService {
 
     return MatchModel.fromJson(data as Map<String, dynamic>);
   }
+
+  Future<void> eliminarPartido(int partidoId) async {
+    await ApiClient.delete('/app/partidos/$partidoId', autenticado: true);
+  }
 }

@@ -133,6 +133,16 @@ class MatchCard extends StatelessWidget {
   // ============================================================
 
   Widget _buildRestCard(BuildContext context) {
+    // El club usa 'DESCANSA' para señalar deliberadamente una jornada
+    // de descanso. Si el rival llega vacío es que, sencillamente,
+    // no hay ningún partido registrado para ese equipo.
+    final descansaExplicitamente =
+        match.rival.trim().toUpperCase() == 'DESCANSA';
+
+    final textoCuerpo = descansaExplicitamente
+        ? 'No hay partido esta jornada'
+        : 'No tiene partido';
+
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -178,10 +188,7 @@ class MatchCard extends StatelessWidget {
 
                 const SizedBox(height: 6),
 
-                const Text(
-                  'No hay partido esta jornada',
-                  style: TextStyle(fontSize: 15),
-                ),
+                Text(textoCuerpo, style: const TextStyle(fontSize: 15)),
               ],
             ),
           ),

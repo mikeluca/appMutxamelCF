@@ -399,7 +399,9 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
 
     if (equipoId == null) return;
 
-    final guardado = await showDialog<bool>(
+    // El diálogo devuelve 'guardado' (creación o edición), 'eliminado'
+    // o null (si se canceló), para poder distinguir el mensaje a mostrar.
+    final resultado = await showDialog<String>(
       context: context,
       builder: (_) => _PartidoFormDialog(
         matchService: widget.matchService,
@@ -408,17 +410,17 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
       ),
     );
 
-    if (!mounted || guardado != true) return;
+    if (!mounted || resultado == null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          partidoExistente == null
+    final mensaje = resultado == 'eliminado'
+        ? 'Partido eliminado correctamente.'
+        : (partidoExistente == null
               ? 'Partido creado correctamente.'
-              : 'Partido actualizado correctamente.',
-        ),
-      ),
-    );
+              : 'Partido actualizado correctamente.');
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(mensaje)));
 
     _cargar();
   }
@@ -491,6 +493,20 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
             icon: const Icon(Icons.refresh),
             label: const Text('Reintentar'),
           ),
+
+          // Aunque la carga haya fallado, si el usuario gestiona este
+          // equipo debe poder seguir creando un partido nuevo.
+          if (widget.puedeGestionar && widget.equipoId != null) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _abrirFormulario(),
+                icon: const Icon(Icons.add),
+                label: const Text('Añadir partido'),
+              ),
+            ),
+          ],
         ],
       );
     }
@@ -718,7 +734,56 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
 
       if (!mounted) return;
 
-      Navigator.pop(context, true);
+      Navigator.pop(context, 'guardado');
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _error = e.toString();
+        _guardando = false;
+      });
+    }
+  }
+
+  Future<void> _eliminar() async {
+    final partido = widget.partidoExistente;
+
+    if (partido == null || partido.id == null) return;
+
+    final confirmado = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar partido'),
+        content: const Text(
+          '¿Eliminar este partido? Esta acción no se puede deshacer.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmado != true || !mounted) return;
+
+    setState(() {
+      _guardando = true;
+      _error = null;
+    });
+
+    try {
+      await widget.matchService.eliminarPartido(partido.id!);
+
+      if (!mounted) return;
+
+      Navigator.pop(context, 'eliminado');
     } catch (e) {
       if (!mounted) return;
 
@@ -814,8 +879,14 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
         ),
       ),
       actions: [
+        if (_esEdicion)
+          TextButton(
+            onPressed: _guardando ? null : _eliminar,
+            style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
+            child: const Text('Eliminar'),
+          ),
         TextButton(
-          onPressed: _guardando ? null : () => Navigator.pop(context, false),
+          onPressed: _guardando ? null : () => Navigator.pop(context),
           child: const Text('Cancelar'),
         ),
         FilledButton(
