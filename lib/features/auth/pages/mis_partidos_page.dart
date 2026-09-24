@@ -608,12 +608,21 @@ class _PartidoFormDialog extends StatefulWidget {
 }
 
 class _PartidoFormDialogState extends State<_PartidoFormDialog> {
+  static const _tiposPartido = ['LIGA', 'AMISTOSO', 'COPA', 'TORNEO'];
+  static const _etiquetasTipoPartido = {
+    'LIGA': 'Liga',
+    'AMISTOSO': 'Amistoso',
+    'COPA': 'Copa',
+    'TORNEO': 'Torneo',
+  };
+
   late final TextEditingController _rivalController;
   late final TextEditingController _horaController;
   late final TextEditingController _campoController;
   late final TextEditingController _resultadoController;
 
   DateTime? _dia;
+  late String _tipo;
   bool _guardando = false;
   String? _error;
 
@@ -632,6 +641,11 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
       text: partido?.resultado ?? '',
     );
     _dia = partido?.dia;
+
+    // 'LIGA' por defecto tanto al crear un partido nuevo como si el
+    // partido existente no trae un tipo reconocido.
+    final tipoExistente = partido?.tipo?.trim().toUpperCase();
+    _tipo = _tiposPartido.contains(tipoExistente) ? tipoExistente! : 'LIGA';
   }
 
   @override
@@ -720,6 +734,7 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
           hora: hora,
           campo: campo,
           resultado: resultado,
+          tipo: _tipo,
         );
       } else {
         await widget.matchService.crearPartido(
@@ -729,6 +744,7 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
           hora: hora,
           campo: campo,
           resultado: resultado,
+          tipo: _tipo,
         );
       }
 
@@ -825,6 +841,31 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
                 labelText: 'Rival',
                 border: OutlineInputBorder(),
               ),
+            ),
+            const SizedBox(height: 14),
+            DropdownButtonFormField<String>(
+              initialValue: _tipo,
+              decoration: const InputDecoration(
+                labelText: 'Tipo de partido',
+                border: OutlineInputBorder(),
+              ),
+              items: _tiposPartido
+                  .map(
+                    (tipo) => DropdownMenuItem(
+                      value: tipo,
+                      child: Text(_etiquetasTipoPartido[tipo] ?? tipo),
+                    ),
+                  )
+                  .toList(),
+              onChanged: _guardando
+                  ? null
+                  : (valor) {
+                      if (valor == null) return;
+
+                      setState(() {
+                        _tipo = valor;
+                      });
+                    },
             ),
             const SizedBox(height: 14),
             InkWell(

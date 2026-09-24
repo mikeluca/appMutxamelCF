@@ -9,6 +9,7 @@ class MatchModel {
   final String? diaFormateado;
   final String? hora;
   final String? campo;
+  final String? tipo;
 
   const MatchModel({
     this.id,
@@ -21,6 +22,7 @@ class MatchModel {
     this.diaFormateado,
     this.hora,
     this.campo,
+    this.tipo,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,7 @@ class MatchModel {
       diaFormateado: json['diaFormateado'],
       hora: json['hora'],
       campo: json['campo'],
+      tipo: json['tipo'],
     );
   }
 

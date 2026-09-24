@@ -3,7 +3,7 @@ import 'package:app_mutxamel_cf/features/matches/models/match_model.dart';
 
 void main() {
   group('MatchModel.fromJson', () {
-    test('parsea un partido completo, incluyendo id y equipoId', () {
+    test('parsea un partido completo, incluyendo id, equipoId y tipo', () {
       final partido = MatchModel.fromJson({
         'id': 123,
         'equipoId': 45,
@@ -15,6 +15,7 @@ void main() {
         'diaFormateado': '05/10/2026',
         'hora': '18:00',
         'campo': 'Campo Municipal',
+        'tipo': 'LIGA',
       });
 
       expect(partido.id, 123);
@@ -27,9 +28,10 @@ void main() {
       expect(partido.diaFormateado, '05/10/2026');
       expect(partido.hora, '18:00');
       expect(partido.campo, 'Campo Municipal');
+      expect(partido.tipo, 'LIGA');
     });
 
-    test('id y equipoId son nulos cuando no vienen en el JSON '
+    test('id, equipoId y tipo son nulos cuando no vienen en el JSON '
         '(endpoints legacy /public/resultados)', () {
       final partido = MatchModel.fromJson({
         'categoria': 'Senior',
@@ -39,6 +41,7 @@ void main() {
 
       expect(partido.id, isNull);
       expect(partido.equipoId, isNull);
+      expect(partido.tipo, isNull);
     });
 
     test('campos opcionales ausentes se convierten en null', () {

@@ -59,6 +59,7 @@ class MatchService {
     String? hora,
     String? campo,
     String? resultado,
+    String? tipo,
   }) async {
     final data = await ApiClient.post(
       '/app/partidos',
@@ -70,6 +71,7 @@ class MatchService {
         'hora': hora,
         'campo': campo,
         'resultado': resultado,
+        'tipo': tipo,
       },
     );
 
@@ -84,6 +86,7 @@ class MatchService {
     String? hora,
     String? campo,
     String? resultado,
+    String? tipo,
   }) async {
     final data = await ApiClient.put(
       '/app/partidos/$partidoId',
@@ -95,6 +98,7 @@ class MatchService {
         'hora': hora,
         'campo': campo,
         'resultado': resultado,
+        'tipo': tipo,
       },
     );
 

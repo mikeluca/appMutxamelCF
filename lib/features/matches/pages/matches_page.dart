@@ -80,11 +80,51 @@ class _MatchesPageState extends State<MatchesPage> {
 
                 const SizedBox(height: 20),
 
-                ...partidos.map((partido) => _MatchCard(partido: partido)),
+                // La lista ya llega del backend agrupada por
+                // categoría y ordenada por fecha descendente dentro
+                // de cada una: aquí solo detectamos los cambios de
+                // categoría para insertar los encabezados de sección,
+                // sin reordenar nada en el cliente.
+                ..._construirListaPartidos(partidos),
               ],
             ),
           );
         },
+      ),
+    );
+  }
+
+  List<Widget> _construirListaPartidos(List<MatchModel> partidos) {
+    final widgets = <Widget>[];
+    String? categoriaAnterior;
+
+    for (final partido in partidos) {
+      if (partido.categoria != categoriaAnterior) {
+        if (categoriaAnterior != null) {
+          widgets.add(const SizedBox(height: 8));
+        }
+
+        widgets.add(_construirEncabezadoCategoria(partido.categoria));
+        categoriaAnterior = partido.categoria;
+      }
+
+      widgets.add(_MatchCard(partido: partido));
+    }
+
+    return widgets;
+  }
+
+  Widget _construirEncabezadoCategoria(String categoria) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, bottom: 10),
+      child: Text(
+        categoria.trim().isEmpty ? 'Sin categoría' : categoria,
+        style: TextStyle(
+          color: _colors.onSurfaceVariant,
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 0.6,
+        ),
       ),
     );
   }
@@ -131,20 +171,77 @@ class _MatchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Widget tarjeta;
+
     if (partido.estaDescansando) {
-      return _buildDescansoCard(context);
+      tarjeta = _buildDescansoCard(context);
+    } else if (partido.estaJugado) {
+      tarjeta = _buildResultadoCard(context);
+    } else {
+      tarjeta = _buildProximoCard(context);
     }
 
-    if (partido.estaJugado) {
-      return _buildResultadoCard(context);
+    return _envolverConEtiquetaTipo(context, tarjeta);
+  }
+
+  // ============================================================
+  // TIPO DE PARTIDO (Liga, Amistoso, Copa, Torneo)
+  // ============================================================
+
+  /// Borde de color según el tipo de partido. Null (sin tratamiento
+  /// especial) si el tipo es desconocido/no informado.
+  ShapeBorder? get _shapeTipo {
+    final color = AppColors.colorTipoPartido(partido.tipo);
+
+    if (color == null) return null;
+
+    return RoundedRectangleBorder(
+      borderRadius: const BorderRadius.all(Radius.circular(8)),
+      side: BorderSide(color: color, width: 2),
+    );
+  }
+
+  /// Superpone una pequeña etiqueta con el tipo de partido en la
+  /// esquina de la tarjeta, para no depender solo del color del
+  /// borde. No se muestra si el tipo es desconocido/no informado.
+  Widget _envolverConEtiquetaTipo(BuildContext context, Widget tarjeta) {
+    final etiqueta = AppColors.etiquetaTipoPartido(partido.tipo);
+    final color = AppColors.colorTipoPartido(partido.tipo);
+
+    if (etiqueta == null || color == null) {
+      return tarjeta;
     }
 
-    return _buildProximoCard(context);
+    return Stack(
+      children: [
+        tarjeta,
+        Positioned(
+          top: 8,
+          right: 8,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              etiqueta,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildProximoCard(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
+      shape: _shapeTipo,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -183,6 +280,7 @@ class _MatchCard extends StatelessWidget {
   Widget _buildResultadoCard(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
+      shape: _shapeTipo,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -246,6 +344,7 @@ class _MatchCard extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
+      shape: _shapeTipo,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
