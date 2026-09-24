@@ -19,7 +19,8 @@ class AppColors {
   static const Color texto = Color(0xFF18252B);
   static const Color blancoCalido = Color(0xFFFFFDF8);
   static const Color gris = Color(0xFF9E9E9E);
-  static const Color morado = Color(0xFF7B3FA0);
+  // Mismo tono que usa la web para "Torneo" (#6f42c1).
+  static const Color morado = Color(0xFF6F42C1);
 
   // ============================================================
   // ALIAS
