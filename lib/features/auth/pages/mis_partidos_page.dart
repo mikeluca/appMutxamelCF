@@ -184,8 +184,13 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
         perfil.tieneRol('COORDINADOR') || perfil.tieneRol('ADMIN_APP');
 
     if (esGestionGlobal) {
-      // Coordinador y administrador ven todos
-      // los equipos que aparecen en los partidos.
+      // Coordinador y administrador ven todos los equipos que
+      // aparecen en los partidos, y pueden gestionar cualquiera de
+      // ellos (el backend ya lo permite vía
+      // EquipoGestionDao.puedeGestionarEquipo). El id de equipo viene
+      // directamente en cada partido; solo recurrimos a buscarlo en
+      // perfil.equipos como último recurso si por lo que sea no
+      // viniera informado.
       for (final partido in _partidos) {
         final equipo = partido.equipo.trim();
 
@@ -199,7 +204,7 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
           resultado.add(
             _EquipoJugador(
               equipo: equipo,
-              equipoId: _buscarEquipoId(equipo),
+              equipoId: partido.equipoId ?? _buscarEquipoId(equipo),
               puedeGestionar: true,
             ),
           );
