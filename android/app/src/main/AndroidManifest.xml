@@ -1,4 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Sin esto, las compilaciones release (a diferencia de debug,
+         donde Flutter la añade automáticamente) no tendrían acceso
+         a red y fallaría CUALQUIER llamada de red de la app, no solo
+         los enlaces de "Club". -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:label="appMTX"
         android:name="${applicationName}"
@@ -40,6 +46,35 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+
+        <!-- Necesario en Android 11+ (API 30+) para que
+             url_launcher pueda comprobar y abrir enlaces web
+             (mapa, página web del club), llamadas y correos
+             desde la pantalla "Club" (y el resto de la app):
+             sin estas declaraciones, canLaunchUrl() devuelve
+             false aunque el usuario tenga navegador/marcador/
+             correo instalados, por las restricciones de
+             visibilidad de paquetes. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="http"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.DIAL"/>
+            <data android:scheme="tel"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SENDTO"/>
+            <data android:scheme="mailto"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="geo"/>
         </intent>
     </queries>
 </manifest>
