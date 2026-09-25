@@ -362,7 +362,30 @@ class _MapaEmbebidoState extends State<_MapaEmbebido> {
           },
         ),
       )
-      ..loadRequest(Uri.parse(widget.url));
+      ..loadHtmlString(_htmlConIframe(widget.url));
+  }
+
+  /// La API de Google Maps Embed comprueba que se está cargando
+  /// dentro de un <iframe> (window.top != window.self) y, si no,
+  /// muestra el error "The Google Maps Embed API must be used in an
+  /// iframe" en vez del mapa. Cargar la URL directamente con
+  /// loadRequest la deja como documento de nivel superior del
+  /// WebView, así que falla esa comprobación. Envolviéndola en un
+  /// HTML mínimo con un <iframe> de verdad, la página del mapa sí
+  /// se considera embebida y se muestra con normalidad.
+  static String _htmlConIframe(String url) {
+    return '''
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>html, body, iframe { margin: 0; padding: 0; width: 100%; height: 100%; border: 0; }</style>
+  </head>
+  <body>
+    <iframe src="$url" allowfullscreen loading="lazy"></iframe>
+  </body>
+</html>
+''';
   }
 
   @override
