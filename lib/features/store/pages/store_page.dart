@@ -508,49 +508,70 @@ class _StorePageState extends State<StorePage> {
   Widget _construirGuiaTallas() {
     return Card(
       margin: const EdgeInsets.only(bottom: 4),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Guía de tallas',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: _colors.onSurface,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
+      clipBehavior: Clip.antiAlias,
+      child: ExpansionTile(
+        title: Text(
+          'Guía de tallas',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: _colors.onSurface,
+          ),
+        ),
+        initiallyExpanded: false,
+        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
               'Mide una prenda que te quede bien y compara con estas '
               'medidas aproximadas.',
               style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 13),
             ),
-            const SizedBox(height: 12),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                headingRowHeight: 36,
-                dataRowMinHeight: 32,
-                dataRowMaxHeight: 36,
-                columns: const [
-                  DataColumn(label: Text('Talla')),
-                  DataColumn(label: Text('Pecho (cm)')),
-                  DataColumn(label: Text('Largo (cm)')),
-                ],
-                rows: _guiaTallas
-                    .map(
-                      (fila) => DataRow(
-                        cells: fila
-                            .map((valor) => DataCell(Text(valor)))
-                            .toList(),
-                      ),
-                    )
-                    .toList(),
-              ),
+          ),
+          const SizedBox(height: 12),
+          Table(
+            columnWidths: const {
+              0: FlexColumnWidth(1),
+              1: FlexColumnWidth(1),
+              2: FlexColumnWidth(1),
+            },
+            border: TableBorder(
+              horizontalInside: BorderSide(color: _colors.outlineVariant),
             ),
-          ],
+            children: [
+              TableRow(
+                children: [
+                  _construirCeldaGuiaTallas('Talla', esCabecera: true),
+                  _construirCeldaGuiaTallas('Pecho (cm)', esCabecera: true),
+                  _construirCeldaGuiaTallas('Largo (cm)', esCabecera: true),
+                ],
+              ),
+              for (final fila in _guiaTallas)
+                TableRow(
+                  children: [
+                    _construirCeldaGuiaTallas(fila[0]),
+                    _construirCeldaGuiaTallas(fila[1]),
+                    _construirCeldaGuiaTallas(fila[2]),
+                  ],
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _construirCeldaGuiaTallas(String texto, {bool esCabecera = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      child: Text(
+        texto,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: _colors.onSurface,
+          fontWeight: esCabecera ? FontWeight.bold : FontWeight.normal,
+          fontSize: 13,
         ),
       ),
     );

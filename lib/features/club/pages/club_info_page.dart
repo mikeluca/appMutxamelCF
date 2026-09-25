@@ -20,6 +20,15 @@ class ClubInfoPage extends StatelessWidget {
   static const String _telefonoVisible = '+34 623 17 68 18';
   static const String _telefonoTel = '+34623176818';
   static const String _email = 'mutxamelcf.gestion@gmail.com';
+  static const String _urlWeb = 'https://mutxamelcf.es';
+
+  // Coordenadas de la sede del club (Calle los Olmos S/N, Mutxamel),
+  // sacadas del iframe de Google Maps que ya usa contacto.html en la
+  // web.
+  static const String _mapaEstaticoUrl =
+      'https://staticmap.openstreetmap.de/staticmap.php'
+      '?center=38.407683,-0.445294&zoom=17&size=600x300'
+      '&markers=38.407683,-0.445294,red-pushpin';
 
   Future<void> _abrirUrl(BuildContext context, String url) async {
     final uri = Uri.parse(url);
@@ -76,6 +85,16 @@ class ClubInfoPage extends StatelessWidget {
                 titulo: 'Dirección',
                 subtitulo: _direccion,
                 onTap: () => _abrirMapa(context),
+              ),
+              const SizedBox(height: 10),
+              _construirMapa(context),
+              const SizedBox(height: 10),
+              _construirOpcion(
+                context,
+                icono: Icons.language,
+                titulo: 'Página web',
+                subtitulo: 'mutxamelcf.es',
+                onTap: () => _abrirUrl(context, _urlWeb),
               ),
               const SizedBox(height: 10),
               _construirOpcion(
@@ -140,7 +159,7 @@ class ClubInfoPage extends StatelessWidget {
           const SizedBox(height: 14),
 
           const Text(
-            'Mutxamel CF',
+            'Mutxamel Club de Fútbol',
             style: TextStyle(
               color: Colors.white,
               fontSize: 24,
@@ -251,6 +270,58 @@ class ClubInfoPage extends StatelessWidget {
               ),
 
               Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _construirMapa(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(14),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _abrirMapa(context),
+          child: Image.network(
+            _mapaEstaticoUrl,
+            width: double.infinity,
+            height: 180,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return _construirMapaRespaldo(context);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Respaldo si el servicio de mapa estático (sin API key) fallara:
+  /// una tarjeta pulsable que abre igualmente Google Maps.
+  Widget _construirMapaRespaldo(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return SizedBox(
+      width: double.infinity,
+      height: 180,
+      child: Material(
+        color: colors.surfaceContainerHighest,
+        child: InkWell(
+          onTap: () => _abrirMapa(context),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.map_outlined, size: 36, color: colors.primary),
+              const SizedBox(height: 8),
+              Text(
+                'Ver en Google Maps',
+                style: TextStyle(
+                  color: colors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
         ),
