@@ -259,5 +259,19 @@
   "noCommunicationsReceivedSubtitleGlobal": "Ací apareixeran les comunicacions del club.",
   "noCommunicationsReceivedSubtitleTeam": "Ací apareixeran les comunicacions dels teus equips.",
   "noCommunicationsSent": "No has enviat comunicacions",
-  "noCommunicationsSentSubtitle": "Ací apareixeran les comunicacions que hages enviat."
+  "noCommunicationsSentSubtitle": "Ací apareixeran les comunicacions que hages enviat.",
+
+  "splashTagline": "L'app oficial del club",
+
+  "activateHeading": "Activa el teu compte",
+  "activateSubtitle": "Introdueix el teu correu electrònic i el codi de 6 dígits que t'ha enviat el club per correu, i tria la teua contrasenya d'accés.",
+  "codeLabel": "Codi de 6 dígits",
+  "codeRequired": "Introdueix el codi que t'hem enviat per correu",
+  "codeLength": "El codi ha de tindre 6 dígits",
+  "newPasswordLabel": "Contrasenya nova",
+  "passwordChooseRequired": "Tria una contrasenya",
+  "passwordMinLength": "Ha de tindre almenys 8 caràcters",
+  "repeatPasswordLabel": "Repeteix la contrasenya",
+  "passwordsDontMatch": "Les contrasenyes no coincideixen",
+  "activateAndEnterButton": "Activa i entra"
 }

@@ -259,5 +259,19 @@
   "noCommunicationsReceivedSubtitleGlobal": "Aquí aparecerán las comunicaciones del club.",
   "noCommunicationsReceivedSubtitleTeam": "Aquí aparecerán las comunicaciones de tus equipos.",
   "noCommunicationsSent": "No has enviado comunicaciones",
-  "noCommunicationsSentSubtitle": "Aquí aparecerán las comunicaciones que hayas enviado."
+  "noCommunicationsSentSubtitle": "Aquí aparecerán las comunicaciones que hayas enviado.",
+
+  "splashTagline": "La app oficial del club",
+
+  "activateHeading": "Activa tu cuenta",
+  "activateSubtitle": "Introduce tu email y el código de 6 dígitos que te ha enviado el club por correo, y elige tu contraseña de acceso.",
+  "codeLabel": "Código de 6 dígitos",
+  "codeRequired": "Introduce el código que te enviamos por email",
+  "codeLength": "El código debe tener 6 dígitos",
+  "newPasswordLabel": "Nueva contraseña",
+  "passwordChooseRequired": "Elige una contraseña",
+  "passwordMinLength": "Debe tener al menos 8 caracteres",
+  "repeatPasswordLabel": "Repite la contraseña",
+  "passwordsDontMatch": "Las contraseñas no coinciden",
+  "activateAndEnterButton": "Activar y entrar"
 }

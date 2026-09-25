@@ -697,4 +697,41 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get noCommunicationsSentSubtitle =>
       'Aquí aparecerán las comunicaciones que hayas enviado.';
+
+  @override
+  String get splashTagline => 'La app oficial del club';
+
+  @override
+  String get activateHeading => 'Activa tu cuenta';
+
+  @override
+  String get activateSubtitle =>
+      'Introduce tu email y el código de 6 dígitos que te ha enviado el club por correo, y elige tu contraseña de acceso.';
+
+  @override
+  String get codeLabel => 'Código de 6 dígitos';
+
+  @override
+  String get codeRequired => 'Introduce el código que te enviamos por email';
+
+  @override
+  String get codeLength => 'El código debe tener 6 dígitos';
+
+  @override
+  String get newPasswordLabel => 'Nueva contraseña';
+
+  @override
+  String get passwordChooseRequired => 'Elige una contraseña';
+
+  @override
+  String get passwordMinLength => 'Debe tener al menos 8 caracteres';
+
+  @override
+  String get repeatPasswordLabel => 'Repite la contraseña';
+
+  @override
+  String get passwordsDontMatch => 'Las contraseñas no coinciden';
+
+  @override
+  String get activateAndEnterButton => 'Activar y entrar';
 }

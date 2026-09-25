@@ -1327,6 +1327,78 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Aquí aparecerán las comunicaciones que hayas enviado.'**
   String get noCommunicationsSentSubtitle;
+
+  /// No description provided for @splashTagline.
+  ///
+  /// In es, this message translates to:
+  /// **'La app oficial del club'**
+  String get splashTagline;
+
+  /// No description provided for @activateHeading.
+  ///
+  /// In es, this message translates to:
+  /// **'Activa tu cuenta'**
+  String get activateHeading;
+
+  /// No description provided for @activateSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce tu email y el código de 6 dígitos que te ha enviado el club por correo, y elige tu contraseña de acceso.'**
+  String get activateSubtitle;
+
+  /// No description provided for @codeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Código de 6 dígitos'**
+  String get codeLabel;
+
+  /// No description provided for @codeRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce el código que te enviamos por email'**
+  String get codeRequired;
+
+  /// No description provided for @codeLength.
+  ///
+  /// In es, this message translates to:
+  /// **'El código debe tener 6 dígitos'**
+  String get codeLength;
+
+  /// No description provided for @newPasswordLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva contraseña'**
+  String get newPasswordLabel;
+
+  /// No description provided for @passwordChooseRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige una contraseña'**
+  String get passwordChooseRequired;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In es, this message translates to:
+  /// **'Debe tener al menos 8 caracteres'**
+  String get passwordMinLength;
+
+  /// No description provided for @repeatPasswordLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Repite la contraseña'**
+  String get repeatPasswordLabel;
+
+  /// No description provided for @passwordsDontMatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Las contraseñas no coinciden'**
+  String get passwordsDontMatch;
+
+  /// No description provided for @activateAndEnterButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Activar y entrar'**
+  String get activateAndEnterButton;
 }
 
 class _AppLocalizationsDelegate

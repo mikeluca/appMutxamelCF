@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../../routing/app_routes.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../services/auth_manager.dart';
 import '../services/auth_service.dart';
 
@@ -82,8 +83,12 @@ class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Activar cuenta')),
+      appBar: AppBar(
+        title: ClubAppBarTitle(titulo: t.activateAccountButton),
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -100,7 +105,7 @@ class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
                     const SizedBox(height: 24),
 
                     Text(
-                      'Activa tu cuenta',
+                      t.activateHeading,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.headlineSmall
                           ?.copyWith(
@@ -112,9 +117,7 @@ class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
                     const SizedBox(height: 8),
 
                     Text(
-                      'Introduce tu email y el código de 6 dígitos que te '
-                      'ha enviado el club por correo, y elige tu '
-                      'contraseña de acceso.',
+                      t.activateSubtitle,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
@@ -126,17 +129,17 @@ class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       autocorrect: false,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email_outlined),
+                      decoration: InputDecoration(
+                        labelText: t.storeEmailLabel,
+                        prefixIcon: const Icon(Icons.email_outlined),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Introduce tu email';
+                          return t.loginEmailRequired;
                         }
 
                         if (!value.contains('@')) {
-                          return 'Introduce un email válido';
+                          return t.loginEmailInvalid;
                         }
 
                         return null;
@@ -157,18 +160,18 @@ class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
                         letterSpacing: 8,
                         fontWeight: FontWeight.bold,
                       ),
-                      decoration: const InputDecoration(
-                        labelText: 'Código de 6 dígitos',
-                        prefixIcon: Icon(Icons.vpn_key_outlined),
+                      decoration: InputDecoration(
+                        labelText: t.codeLabel,
+                        prefixIcon: const Icon(Icons.vpn_key_outlined),
                         counterText: '',
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Introduce el código que te enviamos por email';
+                          return t.codeRequired;
                         }
 
                         if (value.trim().length != 6) {
-                          return 'El código debe tener 6 dígitos';
+                          return t.codeLength;
                         }
 
                         return null;
@@ -182,7 +185,7 @@ class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
                       obscureText: !_mostrarPassword,
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
-                        labelText: 'Nueva contraseña',
+                        labelText: t.newPasswordLabel,
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -199,11 +202,11 @@ class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Elige una contraseña';
+                          return t.passwordChooseRequired;
                         }
 
                         if (value.length < 8) {
-                          return 'Debe tener al menos 8 caracteres';
+                          return t.passwordMinLength;
                         }
 
                         return null;
@@ -221,13 +224,13 @@ class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
                           _activarCuenta();
                         }
                       },
-                      decoration: const InputDecoration(
-                        labelText: 'Repite la contraseña',
-                        prefixIcon: Icon(Icons.lock_outline),
+                      decoration: InputDecoration(
+                        labelText: t.repeatPasswordLabel,
+                        prefixIcon: const Icon(Icons.lock_outline),
                       ),
                       validator: (value) {
                         if (value != _passwordController.text) {
-                          return 'Las contraseñas no coinciden';
+                          return t.passwordsDontMatch;
                         }
 
                         return null;
@@ -264,7 +267,7 @@ class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : const Text('Activar y entrar'),
+                            : Text(t.activateAndEnterButton),
                       ),
                     ),
                   ],

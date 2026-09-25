@@ -692,4 +692,41 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get noCommunicationsSentSubtitle =>
       'Ací apareixeran les comunicacions que hages enviat.';
+
+  @override
+  String get splashTagline => 'L\'app oficial del club';
+
+  @override
+  String get activateHeading => 'Activa el teu compte';
+
+  @override
+  String get activateSubtitle =>
+      'Introdueix el teu correu electrònic i el codi de 6 dígits que t\'ha enviat el club per correu, i tria la teua contrasenya d\'accés.';
+
+  @override
+  String get codeLabel => 'Codi de 6 dígits';
+
+  @override
+  String get codeRequired => 'Introdueix el codi que t\'hem enviat per correu';
+
+  @override
+  String get codeLength => 'El codi ha de tindre 6 dígits';
+
+  @override
+  String get newPasswordLabel => 'Contrasenya nova';
+
+  @override
+  String get passwordChooseRequired => 'Tria una contrasenya';
+
+  @override
+  String get passwordMinLength => 'Ha de tindre almenys 8 caràcters';
+
+  @override
+  String get repeatPasswordLabel => 'Repeteix la contrasenya';
+
+  @override
+  String get passwordsDontMatch => 'Les contrasenyes no coincideixen';
+
+  @override
+  String get activateAndEnterButton => 'Activa i entra';
 }
