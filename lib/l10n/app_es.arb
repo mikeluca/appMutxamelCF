@@ -243,5 +243,9 @@
   "feeStatusOverdue": "Vencida",
   "feeStatusPaid": "Pagada",
   "feeStatusPartial": "Pago parcial",
-  "feeStatusPending": "Pendiente"
+  "feeStatusPending": "Pendiente",
+
+  "chatDefaultTitle": "Chat",
+  "chatNoMessages": "Aún no hay mensajes. Escribe el primero.",
+  "chatMessageHint": "Escribe un mensaje..."
 }

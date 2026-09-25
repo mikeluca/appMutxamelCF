@@ -652,4 +652,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get feeStatusPending => 'Pendiente';
+
+  @override
+  String get chatDefaultTitle => 'Chat';
+
+  @override
+  String get chatNoMessages => 'Aún no hay mensajes. Escribe el primero.';
+
+  @override
+  String get chatMessageHint => 'Escribe un mensaje...';
 }

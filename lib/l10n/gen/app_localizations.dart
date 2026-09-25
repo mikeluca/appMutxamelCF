@@ -1243,6 +1243,24 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Pendiente'**
   String get feeStatusPending;
+
+  /// No description provided for @chatDefaultTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Chat'**
+  String get chatDefaultTitle;
+
+  /// No description provided for @chatNoMessages.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hay mensajes. Escribe el primero.'**
+  String get chatNoMessages;
+
+  /// No description provided for @chatMessageHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe un mensaje...'**
+  String get chatMessageHint;
 }
 
 class _AppLocalizationsDelegate

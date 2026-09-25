@@ -243,5 +243,9 @@
   "feeStatusOverdue": "Vençuda",
   "feeStatusPaid": "Pagada",
   "feeStatusPartial": "Pagament parcial",
-  "feeStatusPending": "Pendent"
+  "feeStatusPending": "Pendent",
+
+  "chatDefaultTitle": "Xat",
+  "chatNoMessages": "Encara no hi ha missatges. Escriu el primer.",
+  "chatMessageHint": "Escriu un missatge..."
 }
