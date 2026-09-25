@@ -5,6 +5,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../routing/app_routes.dart';
 import '../models/red_social.dart';
 
 /// Ficha pública de contacto del club (dirección, teléfono, email y
@@ -72,7 +73,7 @@ class ClubInfoPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
         children: [
-          _construirCabecera(),
+          _construirCabecera(context),
 
           const SizedBox(height: 24),
 
@@ -146,38 +147,53 @@ class ClubInfoPage extends StatelessWidget {
     );
   }
 
-  Widget _construirCabecera() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
-      decoration: BoxDecoration(
-        color: AppColors.azulOscuro,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        children: [
-          Image.asset('assets/images/escudo.png', height: 80),
-
-          const SizedBox(height: 14),
-
-          const Text(
-            'Mutxamel Club de Fútbol',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+  Widget _construirCabecera(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 24),
+          decoration: BoxDecoration(
+            color: AppColors.azulOscuro,
+            borderRadius: BorderRadius.circular(20),
           ),
+          child: Column(
+            children: [
+              Image.asset('assets/images/escudo.png', height: 80),
 
-          const SizedBox(height: 6),
+              const SizedBox(height: 14),
 
-          const Text(
-            'Dónde estamos y cómo contactar con el club',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white70, fontSize: 14),
+              const Text(
+                'Mutxamel Club de Fútbol',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 6),
+
+              const Text(
+                'Dónde estamos y cómo contactar con el club',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white70, fontSize: 14),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+
+        Positioned(
+          top: 4,
+          right: 4,
+          child: IconButton(
+            icon: const Icon(Icons.settings_outlined, color: Colors.white),
+            tooltip: 'Ajustes',
+            onPressed: () =>
+                Navigator.pushNamed(context, AppRoutes.settings),
+          ),
+        ),
+      ],
     );
   }
 
