@@ -751,6 +751,234 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Información de la aplicación'**
   String get settingsAboutAppSubtitle;
+
+  /// No description provided for @loginHeading.
+  ///
+  /// In es, this message translates to:
+  /// **'Acceso al Área Club'**
+  String get loginHeading;
+
+  /// No description provided for @loginSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce tus datos para acceder'**
+  String get loginSubtitle;
+
+  /// No description provided for @loginEmailRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce tu email'**
+  String get loginEmailRequired;
+
+  /// No description provided for @loginEmailInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce un email válido'**
+  String get loginEmailInvalid;
+
+  /// No description provided for @loginPasswordLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña'**
+  String get loginPasswordLabel;
+
+  /// No description provided for @loginPasswordRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce tu contraseña'**
+  String get loginPasswordRequired;
+
+  /// No description provided for @loginButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Iniciar sesión'**
+  String get loginButton;
+
+  /// No description provided for @activateAccountButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Activar cuenta'**
+  String get activateAccountButton;
+
+  /// No description provided for @clubPageDefaultMember.
+  ///
+  /// In es, this message translates to:
+  /// **'Miembro del club'**
+  String get clubPageDefaultMember;
+
+  /// No description provided for @clubPageSectionClub.
+  ///
+  /// In es, this message translates to:
+  /// **'Club'**
+  String get clubPageSectionClub;
+
+  /// No description provided for @clubPageMyPlayers.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis jugadores'**
+  String get clubPageMyPlayers;
+
+  /// No description provided for @clubPageMyPlayersDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Jugadores vinculados a tu cuenta'**
+  String get clubPageMyPlayersDesc;
+
+  /// No description provided for @clubPageFees.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuotas'**
+  String get clubPageFees;
+
+  /// No description provided for @clubPageFeesDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuotas de tus jugadores y su estado'**
+  String get clubPageFeesDesc;
+
+  /// No description provided for @clubPageMyTeams.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis equipos'**
+  String get clubPageMyTeams;
+
+  /// No description provided for @clubPageMyTeamsDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipos vinculados a tu actividad en el club'**
+  String get clubPageMyTeamsDesc;
+
+  /// No description provided for @clubPageMyMatches.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis partidos'**
+  String get clubPageMyMatches;
+
+  /// No description provided for @clubPageMyMatchesDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Próximos partidos y resultados'**
+  String get clubPageMyMatchesDesc;
+
+  /// No description provided for @clubPageLiveMatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Partido en directo'**
+  String get clubPageLiveMatch;
+
+  /// No description provided for @clubPageLiveMatchDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Avisos en directo del primer equipo'**
+  String get clubPageLiveMatchDesc;
+
+  /// No description provided for @clubPageCommunications.
+  ///
+  /// In es, this message translates to:
+  /// **'Comunicaciones'**
+  String get clubPageCommunications;
+
+  /// No description provided for @clubPageCommunicationsDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Avisos y comunicaciones del club'**
+  String get clubPageCommunicationsDesc;
+
+  /// No description provided for @clubPageSectionAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi cuenta'**
+  String get clubPageSectionAccount;
+
+  /// No description provided for @clubPageMyProfile.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi perfil'**
+  String get clubPageMyProfile;
+
+  /// No description provided for @clubPageMyProfileDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Tus datos personales y configuración'**
+  String get clubPageMyProfileDesc;
+
+  /// No description provided for @clubPageLogout.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar sesión'**
+  String get clubPageLogout;
+
+  /// No description provided for @aboutVersionText.
+  ///
+  /// In es, this message translates to:
+  /// **'Versión {version}'**
+  String aboutVersionText(String version);
+
+  /// No description provided for @aboutVersionTextWithBuild.
+  ///
+  /// In es, this message translates to:
+  /// **'Versión {version} ({build})'**
+  String aboutVersionTextWithBuild(String version, String build);
+
+  /// No description provided for @aboutSectionClub.
+  ///
+  /// In es, this message translates to:
+  /// **'El club'**
+  String get aboutSectionClub;
+
+  /// No description provided for @aboutClubDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'La aplicación oficial del Mutxamel Club de Fútbol te mantiene al día de convocatorias, entrenamientos, resultados y comunicaciones del club, estés donde estés.'**
+  String get aboutClubDescription;
+
+  /// No description provided for @aboutSectionContact.
+  ///
+  /// In es, this message translates to:
+  /// **'Contacto'**
+  String get aboutSectionContact;
+
+  /// No description provided for @aboutSectionLegal.
+  ///
+  /// In es, this message translates to:
+  /// **'Legal'**
+  String get aboutSectionLegal;
+
+  /// No description provided for @aboutPrivacyPolicy.
+  ///
+  /// In es, this message translates to:
+  /// **'Política de privacidad'**
+  String get aboutPrivacyPolicy;
+
+  /// No description provided for @aboutPrivacyPolicySubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cómo tratamos tus datos'**
+  String get aboutPrivacyPolicySubtitle;
+
+  /// No description provided for @aboutThirdPartyLicenses.
+  ///
+  /// In es, this message translates to:
+  /// **'Licencias de terceros'**
+  String get aboutThirdPartyLicenses;
+
+  /// No description provided for @aboutThirdPartyLicensesSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Software libre utilizado en la aplicación'**
+  String get aboutThirdPartyLicensesSubtitle;
+
+  /// No description provided for @aboutAppTagline.
+  ///
+  /// In es, this message translates to:
+  /// **'Aplicación oficial del Mutxamel Club de Fútbol'**
+  String get aboutAppTagline;
+
+  /// No description provided for @mailAppOpenError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se puede abrir la aplicación de correo'**
+  String get mailAppOpenError;
 }
 
 class _AppLocalizationsDelegate

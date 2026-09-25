@@ -4,6 +4,7 @@ import '../services/auth_service.dart';
 import '../services/auth_manager.dart';
 import '../../../routing/app_routes.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import 'activar_cuenta_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -70,8 +71,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Área Club')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: t.homeAreaClub)),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -88,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 24),
 
                     Text(
-                      'Acceso al Área Club',
+                      t.loginHeading,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.headlineSmall
                           ?.copyWith(
@@ -100,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 8),
 
                     Text(
-                      'Introduce tus datos para acceder',
+                      t.loginSubtitle,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
@@ -112,17 +115,17 @@ class _LoginPageState extends State<LoginPage> {
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       autocorrect: false,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email_outlined),
+                      decoration: InputDecoration(
+                        labelText: t.storeEmailLabel,
+                        prefixIcon: const Icon(Icons.email_outlined),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Introduce tu email';
+                          return t.loginEmailRequired;
                         }
 
                         if (!value.contains('@')) {
-                          return 'Introduce un email válido';
+                          return t.loginEmailInvalid;
                         }
 
                         return null;
@@ -141,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                         }
                       },
                       decoration: InputDecoration(
-                        labelText: 'Contraseña',
+                        labelText: t.loginPasswordLabel,
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -158,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Introduce tu contraseña';
+                          return t.loginPasswordRequired;
                         }
 
                         return null;
@@ -195,7 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : const Text('Iniciar sesión'),
+                            : Text(t.loginButton),
                       ),
                     ),
 
@@ -212,7 +215,7 @@ class _LoginPageState extends State<LoginPage> {
                                   builder: (_) => const ActivarCuentaPage(),
                                 ),
                               ),
-                        child: const Text('Activar cuenta'),
+                        child: Text(t.activateAccountButton),
                       ),
                     ),
                   ],

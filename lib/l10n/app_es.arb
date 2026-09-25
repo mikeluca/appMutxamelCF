@@ -126,5 +126,55 @@
   "settingsLanguageSpanish": "Castellano",
   "settingsLanguageValencian": "Valencià",
   "settingsAboutApp": "Acerca de appMTX",
-  "settingsAboutAppSubtitle": "Información de la aplicación"
+  "settingsAboutAppSubtitle": "Información de la aplicación",
+
+  "loginHeading": "Acceso al Área Club",
+  "loginSubtitle": "Introduce tus datos para acceder",
+  "loginEmailRequired": "Introduce tu email",
+  "loginEmailInvalid": "Introduce un email válido",
+  "loginPasswordLabel": "Contraseña",
+  "loginPasswordRequired": "Introduce tu contraseña",
+  "loginButton": "Iniciar sesión",
+  "activateAccountButton": "Activar cuenta",
+
+  "clubPageDefaultMember": "Miembro del club",
+  "clubPageSectionClub": "Club",
+  "clubPageMyPlayers": "Mis jugadores",
+  "clubPageMyPlayersDesc": "Jugadores vinculados a tu cuenta",
+  "clubPageFees": "Cuotas",
+  "clubPageFeesDesc": "Cuotas de tus jugadores y su estado",
+  "clubPageMyTeams": "Mis equipos",
+  "clubPageMyTeamsDesc": "Equipos vinculados a tu actividad en el club",
+  "clubPageMyMatches": "Mis partidos",
+  "clubPageMyMatchesDesc": "Próximos partidos y resultados",
+  "clubPageLiveMatch": "Partido en directo",
+  "clubPageLiveMatchDesc": "Avisos en directo del primer equipo",
+  "clubPageCommunications": "Comunicaciones",
+  "clubPageCommunicationsDesc": "Avisos y comunicaciones del club",
+  "clubPageSectionAccount": "Mi cuenta",
+  "clubPageMyProfile": "Mi perfil",
+  "clubPageMyProfileDesc": "Tus datos personales y configuración",
+  "clubPageLogout": "Cerrar sesión",
+
+  "aboutVersionText": "Versión {version}",
+  "@aboutVersionText": {
+    "placeholders": { "version": { "type": "String" } }
+  },
+  "aboutVersionTextWithBuild": "Versión {version} ({build})",
+  "@aboutVersionTextWithBuild": {
+    "placeholders": {
+      "version": { "type": "String" },
+      "build": { "type": "String" }
+    }
+  },
+  "aboutSectionClub": "El club",
+  "aboutClubDescription": "La aplicación oficial del Mutxamel Club de Fútbol te mantiene al día de convocatorias, entrenamientos, resultados y comunicaciones del club, estés donde estés.",
+  "aboutSectionContact": "Contacto",
+  "aboutSectionLegal": "Legal",
+  "aboutPrivacyPolicy": "Política de privacidad",
+  "aboutPrivacyPolicySubtitle": "Cómo tratamos tus datos",
+  "aboutThirdPartyLicenses": "Licencias de terceros",
+  "aboutThirdPartyLicensesSubtitle": "Software libre utilizado en la aplicación",
+  "aboutAppTagline": "Aplicación oficial del Mutxamel Club de Fútbol",
+  "mailAppOpenError": "No se puede abrir la aplicación de correo"
 }

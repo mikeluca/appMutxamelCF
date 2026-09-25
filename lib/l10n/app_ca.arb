@@ -126,5 +126,55 @@
   "settingsLanguageSpanish": "Castellà",
   "settingsLanguageValencian": "Valencià",
   "settingsAboutApp": "Sobre appMTX",
-  "settingsAboutAppSubtitle": "Informació de l'aplicació"
+  "settingsAboutAppSubtitle": "Informació de l'aplicació",
+
+  "loginHeading": "Accés a l'Àrea Club",
+  "loginSubtitle": "Introdueix les teues dades per a accedir",
+  "loginEmailRequired": "Introdueix el teu correu electrònic",
+  "loginEmailInvalid": "Introdueix un correu electrònic vàlid",
+  "loginPasswordLabel": "Contrasenya",
+  "loginPasswordRequired": "Introdueix la teua contrasenya",
+  "loginButton": "Inicia sessió",
+  "activateAccountButton": "Activa el compte",
+
+  "clubPageDefaultMember": "Membre del club",
+  "clubPageSectionClub": "Club",
+  "clubPageMyPlayers": "Els meus jugadors",
+  "clubPageMyPlayersDesc": "Jugadors vinculats al teu compte",
+  "clubPageFees": "Quotes",
+  "clubPageFeesDesc": "Quotes dels teus jugadors i el seu estat",
+  "clubPageMyTeams": "Els meus equips",
+  "clubPageMyTeamsDesc": "Equips vinculats a la teua activitat al club",
+  "clubPageMyMatches": "Els meus partits",
+  "clubPageMyMatchesDesc": "Pròxims partits i resultats",
+  "clubPageLiveMatch": "Partit en directe",
+  "clubPageLiveMatchDesc": "Avisos en directe del primer equip",
+  "clubPageCommunications": "Comunicacions",
+  "clubPageCommunicationsDesc": "Avisos i comunicacions del club",
+  "clubPageSectionAccount": "El meu compte",
+  "clubPageMyProfile": "El meu perfil",
+  "clubPageMyProfileDesc": "Les teues dades personals i configuració",
+  "clubPageLogout": "Tanca la sessió",
+
+  "aboutVersionText": "Versió {version}",
+  "@aboutVersionText": {
+    "placeholders": { "version": { "type": "String" } }
+  },
+  "aboutVersionTextWithBuild": "Versió {version} ({build})",
+  "@aboutVersionTextWithBuild": {
+    "placeholders": {
+      "version": { "type": "String" },
+      "build": { "type": "String" }
+    }
+  },
+  "aboutSectionClub": "El club",
+  "aboutClubDescription": "L'aplicació oficial del Mutxamel Club de Futbol et manté al dia de convocatòries, entrenaments, resultats i comunicacions del club, estigues on estigues.",
+  "aboutSectionContact": "Contacte",
+  "aboutSectionLegal": "Legal",
+  "aboutPrivacyPolicy": "Política de privacitat",
+  "aboutPrivacyPolicySubtitle": "Com tractem les teues dades",
+  "aboutThirdPartyLicenses": "Llicències de tercers",
+  "aboutThirdPartyLicensesSubtitle": "Programari lliure utilitzat en l'aplicació",
+  "aboutAppTagline": "Aplicació oficial del Mutxamel Club de Futbol",
+  "mailAppOpenError": "No es pot obrir l'aplicació de correu"
 }

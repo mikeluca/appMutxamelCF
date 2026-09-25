@@ -358,4 +358,126 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get settingsAboutAppSubtitle => 'Informació de l\'aplicació';
+
+  @override
+  String get loginHeading => 'Accés a l\'Àrea Club';
+
+  @override
+  String get loginSubtitle => 'Introdueix les teues dades per a accedir';
+
+  @override
+  String get loginEmailRequired => 'Introdueix el teu correu electrònic';
+
+  @override
+  String get loginEmailInvalid => 'Introdueix un correu electrònic vàlid';
+
+  @override
+  String get loginPasswordLabel => 'Contrasenya';
+
+  @override
+  String get loginPasswordRequired => 'Introdueix la teua contrasenya';
+
+  @override
+  String get loginButton => 'Inicia sessió';
+
+  @override
+  String get activateAccountButton => 'Activa el compte';
+
+  @override
+  String get clubPageDefaultMember => 'Membre del club';
+
+  @override
+  String get clubPageSectionClub => 'Club';
+
+  @override
+  String get clubPageMyPlayers => 'Els meus jugadors';
+
+  @override
+  String get clubPageMyPlayersDesc => 'Jugadors vinculats al teu compte';
+
+  @override
+  String get clubPageFees => 'Quotes';
+
+  @override
+  String get clubPageFeesDesc => 'Quotes dels teus jugadors i el seu estat';
+
+  @override
+  String get clubPageMyTeams => 'Els meus equips';
+
+  @override
+  String get clubPageMyTeamsDesc =>
+      'Equips vinculats a la teua activitat al club';
+
+  @override
+  String get clubPageMyMatches => 'Els meus partits';
+
+  @override
+  String get clubPageMyMatchesDesc => 'Pròxims partits i resultats';
+
+  @override
+  String get clubPageLiveMatch => 'Partit en directe';
+
+  @override
+  String get clubPageLiveMatchDesc => 'Avisos en directe del primer equip';
+
+  @override
+  String get clubPageCommunications => 'Comunicacions';
+
+  @override
+  String get clubPageCommunicationsDesc => 'Avisos i comunicacions del club';
+
+  @override
+  String get clubPageSectionAccount => 'El meu compte';
+
+  @override
+  String get clubPageMyProfile => 'El meu perfil';
+
+  @override
+  String get clubPageMyProfileDesc =>
+      'Les teues dades personals i configuració';
+
+  @override
+  String get clubPageLogout => 'Tanca la sessió';
+
+  @override
+  String aboutVersionText(String version) {
+    return 'Versió $version';
+  }
+
+  @override
+  String aboutVersionTextWithBuild(String version, String build) {
+    return 'Versió $version ($build)';
+  }
+
+  @override
+  String get aboutSectionClub => 'El club';
+
+  @override
+  String get aboutClubDescription =>
+      'L\'aplicació oficial del Mutxamel Club de Futbol et manté al dia de convocatòries, entrenaments, resultats i comunicacions del club, estigues on estigues.';
+
+  @override
+  String get aboutSectionContact => 'Contacte';
+
+  @override
+  String get aboutSectionLegal => 'Legal';
+
+  @override
+  String get aboutPrivacyPolicy => 'Política de privacitat';
+
+  @override
+  String get aboutPrivacyPolicySubtitle => 'Com tractem les teues dades';
+
+  @override
+  String get aboutThirdPartyLicenses => 'Llicències de tercers';
+
+  @override
+  String get aboutThirdPartyLicensesSubtitle =>
+      'Programari lliure utilitzat en l\'aplicació';
+
+  @override
+  String get aboutAppTagline => 'Aplicació oficial del Mutxamel Club de Futbol';
+
+  @override
+  String get mailAppOpenError => 'No es pot obrir l\'aplicació de correu';
 }

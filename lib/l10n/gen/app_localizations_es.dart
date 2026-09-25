@@ -363,4 +363,126 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsAboutAppSubtitle => 'Información de la aplicación';
+
+  @override
+  String get loginHeading => 'Acceso al Área Club';
+
+  @override
+  String get loginSubtitle => 'Introduce tus datos para acceder';
+
+  @override
+  String get loginEmailRequired => 'Introduce tu email';
+
+  @override
+  String get loginEmailInvalid => 'Introduce un email válido';
+
+  @override
+  String get loginPasswordLabel => 'Contraseña';
+
+  @override
+  String get loginPasswordRequired => 'Introduce tu contraseña';
+
+  @override
+  String get loginButton => 'Iniciar sesión';
+
+  @override
+  String get activateAccountButton => 'Activar cuenta';
+
+  @override
+  String get clubPageDefaultMember => 'Miembro del club';
+
+  @override
+  String get clubPageSectionClub => 'Club';
+
+  @override
+  String get clubPageMyPlayers => 'Mis jugadores';
+
+  @override
+  String get clubPageMyPlayersDesc => 'Jugadores vinculados a tu cuenta';
+
+  @override
+  String get clubPageFees => 'Cuotas';
+
+  @override
+  String get clubPageFeesDesc => 'Cuotas de tus jugadores y su estado';
+
+  @override
+  String get clubPageMyTeams => 'Mis equipos';
+
+  @override
+  String get clubPageMyTeamsDesc =>
+      'Equipos vinculados a tu actividad en el club';
+
+  @override
+  String get clubPageMyMatches => 'Mis partidos';
+
+  @override
+  String get clubPageMyMatchesDesc => 'Próximos partidos y resultados';
+
+  @override
+  String get clubPageLiveMatch => 'Partido en directo';
+
+  @override
+  String get clubPageLiveMatchDesc => 'Avisos en directo del primer equipo';
+
+  @override
+  String get clubPageCommunications => 'Comunicaciones';
+
+  @override
+  String get clubPageCommunicationsDesc => 'Avisos y comunicaciones del club';
+
+  @override
+  String get clubPageSectionAccount => 'Mi cuenta';
+
+  @override
+  String get clubPageMyProfile => 'Mi perfil';
+
+  @override
+  String get clubPageMyProfileDesc => 'Tus datos personales y configuración';
+
+  @override
+  String get clubPageLogout => 'Cerrar sesión';
+
+  @override
+  String aboutVersionText(String version) {
+    return 'Versión $version';
+  }
+
+  @override
+  String aboutVersionTextWithBuild(String version, String build) {
+    return 'Versión $version ($build)';
+  }
+
+  @override
+  String get aboutSectionClub => 'El club';
+
+  @override
+  String get aboutClubDescription =>
+      'La aplicación oficial del Mutxamel Club de Fútbol te mantiene al día de convocatorias, entrenamientos, resultados y comunicaciones del club, estés donde estés.';
+
+  @override
+  String get aboutSectionContact => 'Contacto';
+
+  @override
+  String get aboutSectionLegal => 'Legal';
+
+  @override
+  String get aboutPrivacyPolicy => 'Política de privacidad';
+
+  @override
+  String get aboutPrivacyPolicySubtitle => 'Cómo tratamos tus datos';
+
+  @override
+  String get aboutThirdPartyLicenses => 'Licencias de terceros';
+
+  @override
+  String get aboutThirdPartyLicensesSubtitle =>
+      'Software libre utilizado en la aplicación';
+
+  @override
+  String get aboutAppTagline =>
+      'Aplicación oficial del Mutxamel Club de Fútbol';
+
+  @override
+  String get mailAppOpenError => 'No se puede abrir la aplicación de correo';
 }

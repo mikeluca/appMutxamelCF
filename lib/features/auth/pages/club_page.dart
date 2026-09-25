@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../../../routing/app_routes.dart';
 import '../services/auth_manager.dart';
 import '../services/comunicacion_service.dart';
@@ -57,8 +58,10 @@ class _ClubPageState extends State<ClubPage> {
 
     final esRetransmision = usuario?.tieneRol('RETRANSMISION') == true;
 
+    final t = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Área Club'), centerTitle: false),
+      appBar: AppBar(title: Text(t.homeAreaClub), centerTitle: false),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
@@ -67,7 +70,7 @@ class _ClubPageState extends State<ClubPage> {
           const SizedBox(height: 28),
 
           Text(
-            'Club',
+            t.clubPageSectionClub,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
               fontSize: 20,
@@ -81,8 +84,8 @@ class _ClubPageState extends State<ClubPage> {
             _construirOpcion(
               context,
               icono: Icons.sports_soccer,
-              titulo: 'Mis jugadores',
-              descripcion: 'Jugadores vinculados a tu cuenta',
+              titulo: t.clubPageMyPlayers,
+              descripcion: t.clubPageMyPlayersDesc,
               onTap: () {
                 Navigator.pushNamed(context, AppRoutes.players);
               },
@@ -94,8 +97,8 @@ class _ClubPageState extends State<ClubPage> {
             _construirOpcion(
               context,
               icono: Icons.payments_outlined,
-              titulo: 'Cuotas',
-              descripcion: 'Cuotas de tus jugadores y su estado',
+              titulo: t.clubPageFees,
+              descripcion: t.clubPageFeesDesc,
               onTap: () {
                 Navigator.pushNamed(context, AppRoutes.cuotas);
               },
@@ -107,8 +110,8 @@ class _ClubPageState extends State<ClubPage> {
             _construirOpcion(
               context,
               icono: Icons.groups_outlined,
-              titulo: 'Mis equipos',
-              descripcion: 'Equipos vinculados a tu actividad en el club',
+              titulo: t.clubPageMyTeams,
+              descripcion: t.clubPageMyTeamsDesc,
               onTap: () {
                 Navigator.pushNamed(context, AppRoutes.myTeams);
               },
@@ -119,8 +122,8 @@ class _ClubPageState extends State<ClubPage> {
           _construirOpcion(
             context,
             icono: Icons.calendar_month_outlined,
-            titulo: 'Mis partidos',
-            descripcion: 'Próximos partidos y resultados',
+            titulo: t.clubPageMyMatches,
+            descripcion: t.clubPageMyMatchesDesc,
             onTap: () {
               Navigator.pushNamed(context, AppRoutes.myMatches);
             },
@@ -132,8 +135,8 @@ class _ClubPageState extends State<ClubPage> {
             _construirOpcion(
               context,
               icono: Icons.campaign_outlined,
-              titulo: 'Partido en directo',
-              descripcion: 'Avisos en directo del primer equipo',
+              titulo: t.clubPageLiveMatch,
+              descripcion: t.clubPageLiveMatchDesc,
               onTap: () {
                 Navigator.pushNamed(context, AppRoutes.liveMatch);
               },
@@ -146,7 +149,7 @@ class _ClubPageState extends State<ClubPage> {
           const SizedBox(height: 30),
 
           Text(
-            'Mi cuenta',
+            t.clubPageSectionAccount,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
               fontSize: 20,
@@ -159,8 +162,8 @@ class _ClubPageState extends State<ClubPage> {
           _construirOpcion(
             context,
             icono: Icons.person_outline,
-            titulo: 'Mi perfil',
-            descripcion: 'Tus datos personales y configuración',
+            titulo: t.clubPageMyProfile,
+            descripcion: t.clubPageMyProfileDesc,
             onTap: () {
               Navigator.pushNamed(context, AppRoutes.profile);
             },
@@ -181,7 +184,7 @@ class _ClubPageState extends State<ClubPage> {
               );
             },
             icon: const Icon(Icons.logout),
-            label: const Text('Cerrar sesión'),
+            label: Text(t.clubPageLogout),
           ),
 
           const SizedBox(height: 20),
@@ -222,7 +225,7 @@ class _ClubPageState extends State<ClubPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Comunicaciones',
+                      AppLocalizations.of(context).clubPageCommunications,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 16,
@@ -231,7 +234,7 @@ class _ClubPageState extends State<ClubPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Avisos y comunicaciones del club',
+                      AppLocalizations.of(context).clubPageCommunicationsDesc,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontSize: 13,
@@ -279,7 +282,8 @@ class _ClubPageState extends State<ClubPage> {
   }
 
   Widget _construirCabecera(BuildContext context, dynamic usuario) {
-    final nombre = usuario?.email ?? 'Miembro del club';
+    final nombre =
+        usuario?.email ?? AppLocalizations.of(context).clubPageDefaultMember;
 
     return Container(
       padding: const EdgeInsets.all(22),
@@ -309,9 +313,9 @@ class _ClubPageState extends State<ClubPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Área Club',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                Text(
+                  AppLocalizations.of(context).homeAreaClub,
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
                 ),
 
                 const SizedBox(height: 4),
