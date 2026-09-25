@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/config/app_preferences.dart';
+import '../../../core/notifications/services/push_notification_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../models/preferencias_notificacion_model.dart';
+import '../services/auth_manager.dart';
 import '../services/preferencias_notificacion_service.dart';
 import 'acerca_de_page.dart';
 
@@ -26,12 +29,68 @@ class _AjustesPageState extends State<AjustesPage> {
   bool _cargandoPreferencias = true;
   bool _guardandoPreferencias = false;
 
+  // Preferencias "anónimas" (sin sesión iniciada): guardadas en el
+  // dispositivo, no ligadas a ninguna cuenta.
+  bool _notifNoticiasAnonimo = false;
+  bool _notifResultadosAnonimo = false;
+  bool _cargandoPreferenciasAnonimas = true;
+
   ColorScheme get _colors => Theme.of(context).colorScheme;
 
   @override
   void initState() {
     super.initState();
-    _cargarPreferencias();
+
+    if (AuthManager.estaAutenticado) {
+      _cargarPreferencias();
+    } else {
+      _cargarPreferenciasAnonimas();
+    }
+  }
+
+  Future<void> _cargarPreferenciasAnonimas() async {
+    final noticias = await AppPreferences.obtenerNotifNoticias();
+    final resultados = await AppPreferences.obtenerNotifResultados();
+
+    if (!mounted) return;
+
+    setState(() {
+      _notifNoticiasAnonimo = noticias;
+      _notifResultadosAnonimo = resultados;
+      _cargandoPreferenciasAnonimas = false;
+    });
+  }
+
+  Future<void> _cambiarNotifNoticiasAnonimo(bool valor) async {
+    setState(() => _notifNoticiasAnonimo = valor);
+
+    if (valor) {
+      await PushNotificationService.suscribirATopic(
+        PushNotificationService.topicNoticias,
+      );
+    } else {
+      await PushNotificationService.desuscribirDeTopic(
+        PushNotificationService.topicNoticias,
+      );
+    }
+
+    await AppPreferences.guardarNotifNoticias(valor);
+  }
+
+  Future<void> _cambiarNotifResultadosAnonimo(bool valor) async {
+    setState(() => _notifResultadosAnonimo = valor);
+
+    if (valor) {
+      await PushNotificationService.suscribirATopic(
+        PushNotificationService.topicResultados,
+      );
+    } else {
+      await PushNotificationService.desuscribirDeTopic(
+        PushNotificationService.topicResultados,
+      );
+    }
+
+    await AppPreferences.guardarNotifResultados(valor);
   }
 
   Future<void> _cargarPreferencias() async {
@@ -121,114 +180,169 @@ class _AjustesPageState extends State<AjustesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: ClubAppBarTitle(titulo: 'Ajustes')),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
-        children: [
-          _construirSeccion(
-            titulo: 'Notificaciones',
-            icono: Icons.notifications_none_outlined,
-            children: [
-              if (_cargandoPreferencias)
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: _colors.surface,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: const Center(child: CircularProgressIndicator()),
-                )
-              else if (_preferencias != null) ...[
-                _construirSwitch(
-                  icono: Icons.notifications_outlined,
-                  titulo: 'Notificaciones',
-                  subtitulo: _preferencias!.notificacionesActivadas
-                      ? 'Recibir notificaciones del club'
-                      : 'No recibir notificaciones',
-                  valor: _preferencias!.notificacionesActivadas,
-                  onChanged: (valor) {
-                    _actualizarPreferencias(notificacionesActivadas: valor);
-                  },
+      body: AuthManager.estaAutenticado
+          ? _construirContenidoConSesion()
+          : _construirContenidoAnonimo(),
+    );
+  }
+
+  Widget _construirContenidoAnonimo() {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+      children: [
+        Text(
+          'Actívalas aunque no tengas una cuenta en el club.',
+          style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 13),
+        ),
+
+        const SizedBox(height: 16),
+
+        _construirSeccion(
+          titulo: 'Notificaciones',
+          icono: Icons.notifications_none_outlined,
+          children: [
+            if (_cargandoPreferenciasAnonimas)
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: _colors.surface,
+                  borderRadius: BorderRadius.circular(14),
                 ),
-
-                const SizedBox(height: 10),
-
-                _construirSwitch(
-                  icono: Icons.article_outlined,
-                  titulo: 'Noticias',
-                  subtitulo: 'Recibir avisos sobre nuevas noticias',
-                  valor: _preferencias!.noticiasActivadas,
-                  onChanged: _preferencias!.notificacionesActivadas
-                      ? (valor) {
-                          _actualizarPreferencias(noticiasActivadas: valor);
-                        }
-                      : null,
-                ),
-
-                const SizedBox(height: 10),
-
-                _construirSwitch(
-                  icono: Icons.chat_bubble_outline,
-                  titulo: 'Mensajes',
-                  subtitulo: 'Recibir avisos de nuevos mensajes',
-                  valor: _preferencias!.mensajesActivados,
-                  onChanged: _preferencias!.notificacionesActivadas
-                      ? (valor) {
-                          _actualizarPreferencias(mensajesActivados: valor);
-                        }
-                      : null,
-                ),
-
-                const SizedBox(height: 10),
-
-                _construirSwitch(
-                  icono: Icons.sports_soccer_outlined,
-                  titulo: 'Resultados',
-                  subtitulo: 'Recibir avisos sobre resultados',
-                  valor: _preferencias!.resultadosActivados,
-                  onChanged: _preferencias!.notificacionesActivadas
-                      ? (valor) {
-                          _actualizarPreferencias(resultadosActivados: valor);
-                        }
-                      : null,
-                ),
-
-                if (_guardandoPreferencias) ...[
-                  const SizedBox(height: 12),
-                  const Center(
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  ),
-                ],
-              ],
-            ],
-          ),
-
-          const SizedBox(height: 24),
-
-          _construirSeccion(
-            titulo: 'Aplicación',
-            icono: Icons.phone_android_outlined,
-            children: [
-              _construirOpcionApariencia(),
+                child: const Center(child: CircularProgressIndicator()),
+              )
+            else ...[
+              _construirSwitch(
+                icono: Icons.article_outlined,
+                titulo: 'Noticias',
+                subtitulo: 'Recibir avisos de nuevas noticias',
+                valor: _notifNoticiasAnonimo,
+                onChanged: (valor) => _cambiarNotifNoticiasAnonimo(valor),
+              ),
 
               const SizedBox(height: 10),
 
-              _construirOpcion(
-                icono: Icons.info_outline,
-                titulo: 'Acerca de appMTX',
-                subtitulo: 'Información de la aplicación',
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AcercaDePage()),
-                ),
+              _construirSwitch(
+                icono: Icons.sports_soccer_outlined,
+                titulo: 'Resultados en directo del primer equipo',
+                subtitulo: 'Avisos de goles y resultados en directo',
+                valor: _notifResultadosAnonimo,
+                onChanged: (valor) => _cambiarNotifResultadosAnonimo(valor),
               ),
             ],
-          ),
-        ],
-      ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _construirContenidoConSesion() {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+      children: [
+        _construirSeccion(
+          titulo: 'Notificaciones',
+          icono: Icons.notifications_none_outlined,
+          children: [
+            if (_cargandoPreferencias)
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: _colors.surface,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Center(child: CircularProgressIndicator()),
+              )
+            else if (_preferencias != null) ...[
+              _construirSwitch(
+                icono: Icons.notifications_outlined,
+                titulo: 'Notificaciones',
+                subtitulo: _preferencias!.notificacionesActivadas
+                    ? 'Recibir notificaciones del club'
+                    : 'No recibir notificaciones',
+                valor: _preferencias!.notificacionesActivadas,
+                onChanged: (valor) {
+                  _actualizarPreferencias(notificacionesActivadas: valor);
+                },
+              ),
+
+              const SizedBox(height: 10),
+
+              _construirSwitch(
+                icono: Icons.article_outlined,
+                titulo: 'Noticias',
+                subtitulo: 'Recibir avisos sobre nuevas noticias',
+                valor: _preferencias!.noticiasActivadas,
+                onChanged: _preferencias!.notificacionesActivadas
+                    ? (valor) {
+                        _actualizarPreferencias(noticiasActivadas: valor);
+                      }
+                    : null,
+              ),
+
+              const SizedBox(height: 10),
+
+              _construirSwitch(
+                icono: Icons.chat_bubble_outline,
+                titulo: 'Mensajes',
+                subtitulo: 'Recibir avisos de nuevos mensajes',
+                valor: _preferencias!.mensajesActivados,
+                onChanged: _preferencias!.notificacionesActivadas
+                    ? (valor) {
+                        _actualizarPreferencias(mensajesActivados: valor);
+                      }
+                    : null,
+              ),
+
+              const SizedBox(height: 10),
+
+              _construirSwitch(
+                icono: Icons.sports_soccer_outlined,
+                titulo: 'Resultados',
+                subtitulo: 'Recibir avisos sobre resultados',
+                valor: _preferencias!.resultadosActivados,
+                onChanged: _preferencias!.notificacionesActivadas
+                    ? (valor) {
+                        _actualizarPreferencias(resultadosActivados: valor);
+                      }
+                    : null,
+              ),
+
+              if (_guardandoPreferencias) ...[
+                const SizedBox(height: 12),
+                const Center(
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+              ],
+            ],
+          ],
+        ),
+
+        const SizedBox(height: 24),
+
+        _construirSeccion(
+          titulo: 'Aplicación',
+          icono: Icons.phone_android_outlined,
+          children: [
+            _construirOpcionApariencia(),
+
+            const SizedBox(height: 10),
+
+            _construirOpcion(
+              icono: Icons.info_outline,
+              titulo: 'Acerca de appMTX',
+              subtitulo: 'Información de la aplicación',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AcercaDePage()),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

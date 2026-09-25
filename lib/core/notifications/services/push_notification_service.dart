@@ -14,6 +14,29 @@ class PushNotificationService {
 
   static RemoteMessage? _notificacionInicial;
 
+  // Topics de FCM para notificaciones "anónimas" (sin sesión
+  // iniciada, sin cuenta): la suscripción es 100% cliente, vía el
+  // propio SDK de Firebase, sin llamar a la API. Los nombres deben
+  // coincidir exactamente con lo que publica el backend.
+  static const String topicNoticias = 'noticias';
+  static const String topicResultados = 'resultados';
+
+  static Future<void> suscribirATopic(String topic) =>
+      _messaging.subscribeToTopic(topic);
+
+  static Future<void> desuscribirDeTopic(String topic) =>
+      _messaging.unsubscribeFromTopic(topic);
+
+  /// Se llama al iniciar sesión: quien tiene cuenta recibe los
+  /// avisos de resultados por el canal personal existente (ver
+  /// PartidoEnVivoServiceImpl.difundirATodos en el backend), así que
+  /// hay que desuscribirlo de los topics anónimos para que no le
+  /// lleguen duplicados.
+  static Future<void> desuscribirDeTopicsAnonimos() async {
+    await desuscribirDeTopic(topicNoticias);
+    await desuscribirDeTopic(topicResultados);
+  }
+
   static Future<void> inicializar() async {
     final settings = await _messaging.requestPermission(
       alert: true,

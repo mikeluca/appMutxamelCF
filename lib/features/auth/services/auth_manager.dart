@@ -1,3 +1,4 @@
+import '../../../core/config/app_preferences.dart';
 import '../../../core/notifications/services/push_notification_service.dart';
 import '../models/auth_user.dart';
 import '../models/login_response.dart';
@@ -20,6 +21,14 @@ class AuthManager {
     await AuthSession.guardarSesion(loginResponse);
 
     await PushNotificationService.registrarDispositivoActual();
+
+    // Quien inicia sesión recibe los avisos por el canal personal de
+    // su cuenta: se desuscribe de los topics anónimos para que no le
+    // lleguen duplicados, y se deja el estado local coherente por si
+    // vuelve a ver los interruptores anónimos tras cerrar sesión.
+    await PushNotificationService.desuscribirDeTopicsAnonimos();
+    await AppPreferences.guardarNotifNoticias(false);
+    await AppPreferences.guardarNotifResultados(false);
 
     final usuario = await AuthService.obtenerUsuarioActual();
 
