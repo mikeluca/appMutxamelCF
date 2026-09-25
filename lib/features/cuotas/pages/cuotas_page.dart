@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../models/cuota_familiar_model.dart';
 import '../models/pago_cuota_model.dart';
 import '../services/cuota_familiar_service.dart';
@@ -20,6 +21,7 @@ class _CuotasPageState extends State<CuotasPage> {
   String? _error;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -61,7 +63,7 @@ class _CuotasPageState extends State<CuotasPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Cuotas')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: _t.clubPageFees)),
       body: _construirContenido(),
     );
   }
@@ -86,7 +88,7 @@ class _CuotasPageState extends State<CuotasPage> {
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Text(
-                  'No hay cuotas registradas para tus jugadores.',
+                  _t.noFeesRegistered,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
@@ -110,7 +112,7 @@ class _CuotasPageState extends State<CuotasPage> {
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
         children: [
           Text(
-            'Cuotas',
+            _t.clubPageFees,
             style: TextStyle(
               color: _colors.onSurface,
               fontSize: 22,
@@ -119,7 +121,7 @@ class _CuotasPageState extends State<CuotasPage> {
           ),
           const SizedBox(height: 6),
           Text(
-            '${grupos.length} jugador${grupos.length == 1 ? '' : 'es'}',
+            _t.playersCountSimple(grupos.length),
             style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 14),
           ),
           const SizedBox(height: 16),
@@ -155,9 +157,8 @@ class _CuotasPageState extends State<CuotasPage> {
             ),
           ),
           subtitle: Text(
-            pendientes == 0
-                ? '${cuotas.length} cuota${cuotas.length == 1 ? '' : 's'} · todas pagadas'
-                : '${cuotas.length} cuota${cuotas.length == 1 ? '' : 's'} · $pendientes por pagar',
+            '${_t.feesCountLabel(cuotas.length)}'
+            '${pendientes == 0 ? _t.feesAllPaidSuffix : _t.feesPendingSuffix(pendientes)}',
             style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 13),
           ),
           leading: CircleAvatar(
@@ -218,9 +219,7 @@ class _CuotasPageState extends State<CuotasPage> {
   void _mostrarPagos(CuotaFamiliarModel cuota) {
     if (cuota.pagos.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Esta cuota todavía no tiene ningún pago registrado.'),
-        ),
+        SnackBar(content: Text(_t.noPaymentRegistered)),
       );
       return;
     }
@@ -244,7 +243,7 @@ class _CuotasPageState extends State<CuotasPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cerrar'),
+            child: Text(_t.close),
           ),
         ],
       ),
@@ -267,13 +266,13 @@ class _CuotasPageState extends State<CuotasPage> {
         const SizedBox(height: 6),
         _construirDatoPago(
           Icons.event_outlined,
-          pago.fechaPagoFormateada ?? 'Sin fecha registrada',
+          pago.fechaPagoFormateada ?? _t.noDateRegistered,
         ),
         const SizedBox(height: 4),
         _construirDatoPago(
           Icons.payments_outlined,
           (pago.metodoPago == null || pago.metodoPago!.isEmpty)
-              ? 'Método no indicado'
+              ? _t.methodNotIndicated
               : pago.metodoPago!,
         ),
       ],
@@ -315,16 +314,16 @@ class _CuotasPageState extends State<CuotasPage> {
 
   (String, Color) _estiloEstado(CuotaFamiliarModel cuota) {
     if (cuota.vencida) {
-      return ('Vencida', Colors.redAccent);
+      return (_t.feeStatusOverdue, Colors.redAccent);
     }
 
     switch (cuota.estado) {
       case 'PAGADO':
-        return ('Pagada', Colors.green.shade600);
+        return (_t.feeStatusPaid, Colors.green.shade600);
       case 'PARCIAL':
-        return ('Pago parcial', AppColors.azul);
+        return (_t.feeStatusPartial, AppColors.azul);
       default:
-        return ('Pendiente', AppColors.dorado);
+        return (_t.feeStatusPending, AppColors.dorado);
     }
   }
 
@@ -353,7 +352,7 @@ class _CuotasPageState extends State<CuotasPage> {
                 _cargarCuotas();
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
+              label: Text(_t.retry),
             ),
           ],
         ),

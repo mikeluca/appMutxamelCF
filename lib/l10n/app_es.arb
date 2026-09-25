@@ -220,5 +220,28 @@
   "yesterdayAt": "Ayer, {time}",
   "@yesterdayAt": {
     "placeholders": { "time": { "type": "String" } }
-  }
+  },
+
+  "noFeesRegistered": "No hay cuotas registradas para tus jugadores.",
+  "playersCountSimple": "{count, plural, one{{count} jugador} other{{count} jugadores}}",
+  "@playersCountSimple": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "feesCountLabel": "{count, plural, one{{count} cuota} other{{count} cuotas}}",
+  "@feesCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "feesAllPaidSuffix": " · todas pagadas",
+  "feesPendingSuffix": " · {pending} por pagar",
+  "@feesPendingSuffix": {
+    "placeholders": { "pending": { "type": "int" } }
+  },
+  "noPaymentRegistered": "Esta cuota todavía no tiene ningún pago registrado.",
+  "close": "Cerrar",
+  "noDateRegistered": "Sin fecha registrada",
+  "methodNotIndicated": "Método no indicado",
+  "feeStatusOverdue": "Vencida",
+  "feeStatusPaid": "Pagada",
+  "feeStatusPartial": "Pago parcial",
+  "feeStatusPending": "Pendiente"
 }

@@ -1165,6 +1165,84 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Ayer, {time}'**
   String yesterdayAt(String time);
+
+  /// No description provided for @noFeesRegistered.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay cuotas registradas para tus jugadores.'**
+  String get noFeesRegistered;
+
+  /// No description provided for @playersCountSimple.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, one{{count} jugador} other{{count} jugadores}}'**
+  String playersCountSimple(int count);
+
+  /// No description provided for @feesCountLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, one{{count} cuota} other{{count} cuotas}}'**
+  String feesCountLabel(int count);
+
+  /// No description provided for @feesAllPaidSuffix.
+  ///
+  /// In es, this message translates to:
+  /// **' · todas pagadas'**
+  String get feesAllPaidSuffix;
+
+  /// No description provided for @feesPendingSuffix.
+  ///
+  /// In es, this message translates to:
+  /// **' · {pending} por pagar'**
+  String feesPendingSuffix(int pending);
+
+  /// No description provided for @noPaymentRegistered.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta cuota todavía no tiene ningún pago registrado.'**
+  String get noPaymentRegistered;
+
+  /// No description provided for @close.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar'**
+  String get close;
+
+  /// No description provided for @noDateRegistered.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin fecha registrada'**
+  String get noDateRegistered;
+
+  /// No description provided for @methodNotIndicated.
+  ///
+  /// In es, this message translates to:
+  /// **'Método no indicado'**
+  String get methodNotIndicated;
+
+  /// No description provided for @feeStatusOverdue.
+  ///
+  /// In es, this message translates to:
+  /// **'Vencida'**
+  String get feeStatusOverdue;
+
+  /// No description provided for @feeStatusPaid.
+  ///
+  /// In es, this message translates to:
+  /// **'Pagada'**
+  String get feeStatusPaid;
+
+  /// No description provided for @feeStatusPartial.
+  ///
+  /// In es, this message translates to:
+  /// **'Pago parcial'**
+  String get feeStatusPartial;
+
+  /// No description provided for @feeStatusPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendiente'**
+  String get feeStatusPending;
 }
 
 class _AppLocalizationsDelegate

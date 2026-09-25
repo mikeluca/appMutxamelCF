@@ -220,5 +220,28 @@
   "yesterdayAt": "Ahir, {time}",
   "@yesterdayAt": {
     "placeholders": { "time": { "type": "String" } }
-  }
+  },
+
+  "noFeesRegistered": "No hi ha quotes registrades per als teus jugadors.",
+  "playersCountSimple": "{count, plural, one{{count} jugador} other{{count} jugadors}}",
+  "@playersCountSimple": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "feesCountLabel": "{count, plural, one{{count} quota} other{{count} quotes}}",
+  "@feesCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "feesAllPaidSuffix": " · totes pagades",
+  "feesPendingSuffix": " · {pending} per pagar",
+  "@feesPendingSuffix": {
+    "placeholders": { "pending": { "type": "int" } }
+  },
+  "noPaymentRegistered": "Esta quota encara no té cap pagament registrat.",
+  "close": "Tanca",
+  "noDateRegistered": "Sense data registrada",
+  "methodNotIndicated": "Mètode no indicat",
+  "feeStatusOverdue": "Vençuda",
+  "feeStatusPaid": "Pagada",
+  "feeStatusPartial": "Pagament parcial",
+  "feeStatusPending": "Pendent"
 }

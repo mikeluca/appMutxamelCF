@@ -587,4 +587,63 @@ class AppLocalizationsCa extends AppLocalizations {
   String yesterdayAt(String time) {
     return 'Ahir, $time';
   }
+
+  @override
+  String get noFeesRegistered =>
+      'No hi ha quotes registrades per als teus jugadors.';
+
+  @override
+  String playersCountSimple(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jugadors',
+      one: '$count jugador',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String feesCountLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count quotes',
+      one: '$count quota',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get feesAllPaidSuffix => ' · totes pagades';
+
+  @override
+  String feesPendingSuffix(int pending) {
+    return ' · $pending per pagar';
+  }
+
+  @override
+  String get noPaymentRegistered =>
+      'Esta quota encara no té cap pagament registrat.';
+
+  @override
+  String get close => 'Tanca';
+
+  @override
+  String get noDateRegistered => 'Sense data registrada';
+
+  @override
+  String get methodNotIndicated => 'Mètode no indicat';
+
+  @override
+  String get feeStatusOverdue => 'Vençuda';
+
+  @override
+  String get feeStatusPaid => 'Pagada';
+
+  @override
+  String get feeStatusPartial => 'Pagament parcial';
+
+  @override
+  String get feeStatusPending => 'Pendent';
 }
