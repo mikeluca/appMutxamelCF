@@ -485,4 +485,73 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get mailAppOpenError => 'No se puede abrir la aplicación de correo';
+
+  @override
+  String get profileLoadError => 'No se ha podido cargar el perfil.';
+
+  @override
+  String get defaultUser => 'Usuario';
+
+  @override
+  String get profileSectionMyData => 'Mis datos';
+
+  @override
+  String get profileSectionSettings => 'Configuración';
+
+  @override
+  String get profileSettingsSubtitle =>
+      'Notificaciones, apariencia y aplicación';
+
+  @override
+  String get profileRole => 'Rol';
+
+  @override
+  String get roleFamiliar => 'Familiar';
+
+  @override
+  String get roleJugador => 'Jugador';
+
+  @override
+  String get roleEntrenador => 'Entrenador';
+
+  @override
+  String get roleCoordinador => 'Coordinador';
+
+  @override
+  String get roleRetransmision => 'Retransmisión';
+
+  @override
+  String get roleAdministrador => 'Administrador';
+
+  @override
+  String get roleSocio => 'Socio';
+
+  @override
+  String get noPlayersLinked => 'No tienes jugadores vinculados a tu cuenta.';
+
+  @override
+  String playersLinkedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jugadores vinculados',
+      one: '$count jugador vinculado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get fieldTeam => 'Equipo';
+
+  @override
+  String get fieldSport => 'Deporte';
+
+  @override
+  String get sportFootball => 'Fútbol';
+
+  @override
+  String get fieldDorsal => 'Dorsal';
+
+  @override
+  String get fieldPosition => 'Posición';
 }

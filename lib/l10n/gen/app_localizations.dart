@@ -979,6 +979,126 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No se puede abrir la aplicación de correo'**
   String get mailAppOpenError;
+
+  /// No description provided for @profileLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido cargar el perfil.'**
+  String get profileLoadError;
+
+  /// No description provided for @defaultUser.
+  ///
+  /// In es, this message translates to:
+  /// **'Usuario'**
+  String get defaultUser;
+
+  /// No description provided for @profileSectionMyData.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis datos'**
+  String get profileSectionMyData;
+
+  /// No description provided for @profileSectionSettings.
+  ///
+  /// In es, this message translates to:
+  /// **'Configuración'**
+  String get profileSectionSettings;
+
+  /// No description provided for @profileSettingsSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Notificaciones, apariencia y aplicación'**
+  String get profileSettingsSubtitle;
+
+  /// No description provided for @profileRole.
+  ///
+  /// In es, this message translates to:
+  /// **'Rol'**
+  String get profileRole;
+
+  /// No description provided for @roleFamiliar.
+  ///
+  /// In es, this message translates to:
+  /// **'Familiar'**
+  String get roleFamiliar;
+
+  /// No description provided for @roleJugador.
+  ///
+  /// In es, this message translates to:
+  /// **'Jugador'**
+  String get roleJugador;
+
+  /// No description provided for @roleEntrenador.
+  ///
+  /// In es, this message translates to:
+  /// **'Entrenador'**
+  String get roleEntrenador;
+
+  /// No description provided for @roleCoordinador.
+  ///
+  /// In es, this message translates to:
+  /// **'Coordinador'**
+  String get roleCoordinador;
+
+  /// No description provided for @roleRetransmision.
+  ///
+  /// In es, this message translates to:
+  /// **'Retransmisión'**
+  String get roleRetransmision;
+
+  /// No description provided for @roleAdministrador.
+  ///
+  /// In es, this message translates to:
+  /// **'Administrador'**
+  String get roleAdministrador;
+
+  /// No description provided for @roleSocio.
+  ///
+  /// In es, this message translates to:
+  /// **'Socio'**
+  String get roleSocio;
+
+  /// No description provided for @noPlayersLinked.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes jugadores vinculados a tu cuenta.'**
+  String get noPlayersLinked;
+
+  /// No description provided for @playersLinkedCount.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, one{{count} jugador vinculado} other{{count} jugadores vinculados}}'**
+  String playersLinkedCount(int count);
+
+  /// No description provided for @fieldTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipo'**
+  String get fieldTeam;
+
+  /// No description provided for @fieldSport.
+  ///
+  /// In es, this message translates to:
+  /// **'Deporte'**
+  String get fieldSport;
+
+  /// No description provided for @sportFootball.
+  ///
+  /// In es, this message translates to:
+  /// **'Fútbol'**
+  String get sportFootball;
+
+  /// No description provided for @fieldDorsal.
+  ///
+  /// In es, this message translates to:
+  /// **'Dorsal'**
+  String get fieldDorsal;
+
+  /// No description provided for @fieldPosition.
+  ///
+  /// In es, this message translates to:
+  /// **'Posición'**
+  String get fieldPosition;
 }
 
 class _AppLocalizationsDelegate

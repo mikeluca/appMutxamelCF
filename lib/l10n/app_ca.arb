@@ -176,5 +176,30 @@
   "aboutThirdPartyLicenses": "Llicències de tercers",
   "aboutThirdPartyLicensesSubtitle": "Programari lliure utilitzat en l'aplicació",
   "aboutAppTagline": "Aplicació oficial del Mutxamel Club de Futbol",
-  "mailAppOpenError": "No es pot obrir l'aplicació de correu"
+  "mailAppOpenError": "No es pot obrir l'aplicació de correu",
+
+  "profileLoadError": "No s'ha pogut carregar el perfil.",
+  "defaultUser": "Usuari",
+  "profileSectionMyData": "Les meues dades",
+  "profileSectionSettings": "Configuració",
+  "profileSettingsSubtitle": "Notificacions, aparença i aplicació",
+  "profileRole": "Rol",
+  "roleFamiliar": "Familiar",
+  "roleJugador": "Jugador",
+  "roleEntrenador": "Entrenador",
+  "roleCoordinador": "Coordinador",
+  "roleRetransmision": "Retransmissió",
+  "roleAdministrador": "Administrador",
+  "roleSocio": "Soci",
+
+  "noPlayersLinked": "No tens jugadors vinculats al teu compte.",
+  "playersLinkedCount": "{count, plural, one{{count} jugador vinculat} other{{count} jugadors vinculats}}",
+  "@playersLinkedCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "fieldTeam": "Equip",
+  "fieldSport": "Esport",
+  "sportFootball": "Futbol",
+  "fieldDorsal": "Dorsal",
+  "fieldPosition": "Posició"
 }
