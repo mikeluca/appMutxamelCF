@@ -36,7 +36,12 @@ class _PublicShellPageState extends State<PublicShellPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
+      // false (el valor por defecto) para que el Scaffold reserve el
+      // espacio exacto que ocupa la barra de navegación flotante:
+      // con extendBody: true el body se extendía por debajo de ella
+      // y el contenido que llegaba hasta el final de cada página
+      // (p.ej. el botón "Crear pedido" de la Tienda) quedaba tapado.
+      extendBody: false,
 
       body: IndexedStack(index: _currentIndex, children: _pages),
 
