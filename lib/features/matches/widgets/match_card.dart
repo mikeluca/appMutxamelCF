@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../models/match_model.dart';
 
 class MatchCard extends StatelessWidget {
@@ -95,6 +96,8 @@ class MatchCard extends StatelessWidget {
   // ============================================================
 
   Widget _buildUpcomingMatchCard(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: _shapeTipo,
@@ -102,8 +105,8 @@ class MatchCard extends StatelessWidget {
         children: [
           _buildHeader(
             mostrarPrimerEquipo
-                ? 'PRÓXIMO PARTIDO PRIMER EQUIPO'
-                : 'PRÓXIMO PARTIDO',
+                ? t.matchUpcomingFirstTeam
+                : t.matchUpcoming,
             color: AppColors.azul,
           ),
 
@@ -116,11 +119,11 @@ class MatchCard extends StatelessWidget {
                   children: [
                     _buildTeam(context, match.equipo, isHomeTeam: true),
 
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
-                        'VS',
-                        style: TextStyle(
+                        t.matchVs,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: AppColors.dorado,
@@ -148,6 +151,8 @@ class MatchCard extends StatelessWidget {
   // ============================================================
 
   Widget _buildPlayedMatchCard(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: _shapeTipo,
@@ -155,8 +160,8 @@ class MatchCard extends StatelessWidget {
         children: [
           _buildHeader(
             mostrarPrimerEquipo
-                ? 'ÚLTIMO RESULTADO PRIMER EQUIPO'
-                : 'ÚLTIMO RESULTADO',
+                ? t.matchLastResultFirstTeam
+                : t.matchLastResult,
             color: AppColors.azulOscuro,
           ),
 
@@ -199,6 +204,8 @@ class MatchCard extends StatelessWidget {
   // ============================================================
 
   Widget _buildRestCard(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
     // El club usa 'DESCANSA' para señalar deliberadamente una jornada
     // de descanso. Si el rival llega vacío es que, sencillamente,
     // no hay ningún partido registrado para ese equipo.
@@ -206,8 +213,8 @@ class MatchCard extends StatelessWidget {
         match.rival.trim().toUpperCase() == 'DESCANSA';
 
     final textoCuerpo = descansaExplicitamente
-        ? 'No hay partido esta jornada'
-        : 'No tiene partido';
+        ? t.matchNoMatchThisRound
+        : t.matchTeamHasNoMatch;
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -219,7 +226,7 @@ class MatchCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 10),
             color: AppColors.dorado,
             child: Text(
-              mostrarPrimerEquipo ? 'SIN PARTIDO PRIMER EQUIPO' : 'SIN PARTIDO',
+              mostrarPrimerEquipo ? t.matchNoMatchFirstTeam : t.matchNoMatch,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSecondary,

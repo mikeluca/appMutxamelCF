@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'core/config/app_preferences.dart';
 import 'core/theme/app_theme.dart';
+import 'l10n/gen/app_localizations.dart';
 
 import 'features/matches/pages/matches_page.dart';
 import 'features/public/public_shell_page.dart';
@@ -29,15 +30,23 @@ Future<void> main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final temaGuardado = await AppPreferences.obtenerTema();
+  final idiomaGuardado = await AppPreferences.obtenerIdioma();
 
   // El resto de la inicialización (notificaciones) se hace en SplashPage para no retrasar el primer frame.
-  runApp(MutxamelCfApp(temaInicial: temaGuardado));
+  runApp(
+    MutxamelCfApp(temaInicial: temaGuardado, idiomaInicial: idiomaGuardado),
+  );
 }
 
 class MutxamelCfApp extends StatefulWidget {
   final String temaInicial;
+  final String idiomaInicial;
 
-  const MutxamelCfApp({super.key, required this.temaInicial});
+  const MutxamelCfApp({
+    super.key,
+    required this.temaInicial,
+    required this.idiomaInicial,
+  });
 
   @override
   State<MutxamelCfApp> createState() => _MutxamelCfAppState();
@@ -45,12 +54,14 @@ class MutxamelCfApp extends StatefulWidget {
 
 class _MutxamelCfAppState extends State<MutxamelCfApp> {
   late String _temaActual;
+  late String _idiomaActual;
 
   @override
   void initState() {
     super.initState();
 
     _temaActual = widget.temaInicial;
+    _idiomaActual = widget.idiomaInicial;
   }
 
   ThemeMode get _themeMode {
@@ -77,6 +88,16 @@ class _MutxamelCfAppState extends State<MutxamelCfApp> {
     });
   }
 
+  Future<void> _cambiarIdioma(String idioma) async {
+    await AppPreferences.guardarIdioma(idioma);
+
+    if (!mounted) return;
+
+    setState(() {
+      _idiomaActual = idioma;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -89,6 +110,10 @@ class _MutxamelCfAppState extends State<MutxamelCfApp> {
       darkTheme: AppTheme.darkTheme,
 
       themeMode: _themeMode,
+
+      locale: Locale(_idiomaActual),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
 
       initialRoute: AppRoutes.splash,
 
@@ -103,8 +128,12 @@ class _MutxamelCfAppState extends State<MutxamelCfApp> {
         AppRoutes.players: (context) => const MisJugadoresPage(),
         AppRoutes.myMatches: (context) => const MisPartidosPage(),
         AppRoutes.myTeams: (context) => const MisEquiposPage(),
-        AppRoutes.settings: (context) =>
-            AjustesPage(temaActual: _temaActual, onTemaChanged: _cambiarTema),
+        AppRoutes.settings: (context) => AjustesPage(
+          temaActual: _temaActual,
+          onTemaChanged: _cambiarTema,
+          idiomaActual: _idiomaActual,
+          onIdiomaChanged: _cambiarIdioma,
+        ),
         AppRoutes.communication: (context) => const ComunicacionesPage(),
         AppRoutes.liveMatch: (context) => const PartidoEnVivoPage(),
         AppRoutes.cuotas: (context) => const CuotasPage(),

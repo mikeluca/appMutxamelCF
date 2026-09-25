@@ -5,6 +5,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../../../routing/app_routes.dart';
 import '../models/red_social.dart';
 
@@ -42,7 +43,7 @@ class ClubInfoPage extends StatelessWidget {
       if (!context.mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se ha podido abrir el enlace')),
+        SnackBar(content: Text(AppLocalizations.of(context).linkOpenError)),
       );
     }
   }
@@ -67,9 +68,10 @@ class ClubInfoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Club')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: t.clubTitle)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
         children: [
@@ -79,13 +81,13 @@ class ClubInfoPage extends StatelessWidget {
 
           _construirSeccion(
             context,
-            titulo: 'Dónde estamos',
+            titulo: t.clubWhereWeAre,
             icono: Icons.place_outlined,
             children: [
               _construirOpcion(
                 context,
                 icono: Icons.location_on_outlined,
-                titulo: 'Dirección',
+                titulo: t.clubAddress,
                 subtitulo: _direccion,
                 onTap: () => _abrirMapa(context),
               ),
@@ -95,7 +97,7 @@ class ClubInfoPage extends StatelessWidget {
               _construirOpcion(
                 context,
                 icono: Icons.language,
-                titulo: 'Página web',
+                titulo: t.clubWebsite,
                 subtitulo: 'mutxamelcf.es',
                 onTap: () => _abrirUrl(context, _urlWeb),
               ),
@@ -103,7 +105,7 @@ class ClubInfoPage extends StatelessWidget {
               _construirOpcion(
                 context,
                 icono: Icons.phone_outlined,
-                titulo: 'Teléfono',
+                titulo: t.clubPhone,
                 subtitulo: _telefonoVisible,
                 onTap: () => _llamar(context),
               ),
@@ -111,7 +113,7 @@ class ClubInfoPage extends StatelessWidget {
               _construirOpcion(
                 context,
                 icono: Icons.email_outlined,
-                titulo: 'Email',
+                titulo: t.clubEmail,
                 subtitulo: _email,
                 onTap: () => _enviarEmail(context),
               ),
@@ -122,7 +124,7 @@ class ClubInfoPage extends StatelessWidget {
 
           _construirSeccion(
             context,
-            titulo: 'Síguenos',
+            titulo: t.clubFollowUs,
             icono: Icons.share_outlined,
             children: [
               Row(
@@ -138,7 +140,7 @@ class ClubInfoPage extends StatelessWidget {
 
           Center(
             child: Text(
-              '© ${DateTime.now().year} Mutxamel Club de Fútbol',
+              t.clubCopyright(DateTime.now().year),
               style: TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
             ),
           ),
@@ -148,6 +150,8 @@ class ClubInfoPage extends StatelessWidget {
   }
 
   Widget _construirCabecera(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
     return Stack(
       children: [
         Container(
@@ -163,9 +167,9 @@ class ClubInfoPage extends StatelessWidget {
 
               const SizedBox(height: 14),
 
-              const Text(
-                'Mutxamel Club de Fútbol',
-                style: TextStyle(
+              Text(
+                t.clubFullName,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -174,10 +178,10 @@ class ClubInfoPage extends StatelessWidget {
 
               const SizedBox(height: 6),
 
-              const Text(
-                'Dónde estamos y cómo contactar con el club',
+              Text(
+                t.clubTagline,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white70, fontSize: 14),
+                style: const TextStyle(color: Colors.white70, fontSize: 14),
               ),
             ],
           ),
@@ -188,7 +192,7 @@ class ClubInfoPage extends StatelessWidget {
           right: 4,
           child: IconButton(
             icon: const Icon(Icons.settings_outlined, color: Colors.white),
-            tooltip: 'Ajustes',
+            tooltip: t.clubSettingsTooltip,
             onPressed: () =>
                 Navigator.pushNamed(context, AppRoutes.settings),
           ),
@@ -426,7 +430,7 @@ class _MapaEmbebidoState extends State<_MapaEmbebido> {
             Icon(Icons.map_outlined, size: 36, color: colors.primary),
             const SizedBox(height: 8),
             Text(
-              'Ver en Google Maps',
+              AppLocalizations.of(context).clubViewOnGoogleMaps,
               style: TextStyle(
                 color: colors.primary,
                 fontWeight: FontWeight.w600,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/gen/app_localizations.dart';
 import '../club/pages/club_info_page.dart';
 import '../home/home_page.dart';
 import '../matches/pages/matches_page.dart';
@@ -50,6 +51,8 @@ class _PublicShellPageState extends State<PublicShellPage> {
   }
 
   Widget _buildFloatingNavigationBar() {
+    final t = AppLocalizations.of(context);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 10),
       child: Material(
@@ -72,31 +75,31 @@ class _PublicShellPageState extends State<PublicShellPage> {
             height: 54,
             elevation: 0,
             backgroundColor: Colors.transparent,
-            destinations: const [
+            destinations: [
               NavigationDestination(
-                icon: Icon(Icons.home_outlined),
-                selectedIcon: Icon(Icons.home),
-                label: 'Inicio',
+                icon: const Icon(Icons.home_outlined),
+                selectedIcon: const Icon(Icons.home),
+                label: t.navHome,
               ),
               NavigationDestination(
-                icon: Icon(Icons.article_outlined),
-                selectedIcon: Icon(Icons.article),
-                label: 'Noticias',
+                icon: const Icon(Icons.article_outlined),
+                selectedIcon: const Icon(Icons.article),
+                label: t.navNews,
               ),
               NavigationDestination(
-                icon: Icon(Icons.sports_soccer_outlined),
-                selectedIcon: Icon(Icons.sports_soccer),
-                label: 'Partidos',
+                icon: const Icon(Icons.sports_soccer_outlined),
+                selectedIcon: const Icon(Icons.sports_soccer),
+                label: t.navMatches,
               ),
               NavigationDestination(
-                icon: Icon(Icons.storefront_outlined),
-                selectedIcon: Icon(Icons.storefront),
-                label: 'Tienda',
+                icon: const Icon(Icons.storefront_outlined),
+                selectedIcon: const Icon(Icons.storefront),
+                label: t.navStore,
               ),
               NavigationDestination(
-                icon: Icon(Icons.info_outline),
-                selectedIcon: Icon(Icons.info),
-                label: 'Club',
+                icon: const Icon(Icons.info_outline),
+                selectedIcon: const Icon(Icons.info),
+                label: t.navClub,
               ),
             ],
           ),

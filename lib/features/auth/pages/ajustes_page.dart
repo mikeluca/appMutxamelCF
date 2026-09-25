@@ -4,6 +4,7 @@ import '../../../core/config/app_preferences.dart';
 import '../../../core/notifications/services/push_notification_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../models/preferencias_notificacion_model.dart';
 import '../services/auth_manager.dart';
 import '../services/preferencias_notificacion_service.dart';
@@ -12,11 +13,15 @@ import 'acerca_de_page.dart';
 class AjustesPage extends StatefulWidget {
   final String temaActual;
   final ValueChanged<String> onTemaChanged;
+  final String idiomaActual;
+  final ValueChanged<String> onIdiomaChanged;
 
   const AjustesPage({
     super.key,
     required this.temaActual,
     required this.onTemaChanged,
+    required this.idiomaActual,
+    required this.onIdiomaChanged,
   });
 
   @override
@@ -36,6 +41,7 @@ class _AjustesPageState extends State<AjustesPage> {
   bool _cargandoPreferenciasAnonimas = true;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -112,9 +118,7 @@ class _AjustesPageState extends State<AjustesPage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No se han podido cargar las preferencias'),
-        ),
+        SnackBar(content: Text(_t.settingsPreferencesLoadError)),
       );
     }
   }
@@ -165,7 +169,7 @@ class _AjustesPageState extends State<AjustesPage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se ha podido guardar la preferencia')),
+        SnackBar(content: Text(_t.settingsPreferenceSaveError)),
       );
     } finally {
       if (mounted) {
@@ -179,7 +183,7 @@ class _AjustesPageState extends State<AjustesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Ajustes')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: _t.settingsTitle)),
       body: AuthManager.estaAutenticado
           ? _construirContenidoConSesion()
           : _construirContenidoAnonimo(),
@@ -191,14 +195,14 @@ class _AjustesPageState extends State<AjustesPage> {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
       children: [
         Text(
-          'Actívalas aunque no tengas una cuenta en el club.',
+          _t.settingsNotifAnonymousHint,
           style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 13),
         ),
 
         const SizedBox(height: 16),
 
         _construirSeccion(
-          titulo: 'Notificaciones',
+          titulo: _t.settingsSectionNotifications,
           icono: Icons.notifications_none_outlined,
           children: [
             if (_cargandoPreferenciasAnonimas)
@@ -213,8 +217,8 @@ class _AjustesPageState extends State<AjustesPage> {
             else ...[
               _construirSwitch(
                 icono: Icons.article_outlined,
-                titulo: 'Noticias',
-                subtitulo: 'Recibir avisos de nuevas noticias',
+                titulo: _t.settingsNotifNewsAnon,
+                subtitulo: _t.settingsNotifNewsAnonSubtitle,
                 valor: _notifNoticiasAnonimo,
                 onChanged: (valor) => _cambiarNotifNoticiasAnonimo(valor),
               ),
@@ -223,13 +227,21 @@ class _AjustesPageState extends State<AjustesPage> {
 
               _construirSwitch(
                 icono: Icons.sports_soccer_outlined,
-                titulo: 'Resultados en directo del primer equipo',
-                subtitulo: 'Avisos de goles y resultados en directo',
+                titulo: _t.settingsNotifResultsFirstTeam,
+                subtitulo: _t.settingsNotifResultsFirstTeamSubtitle,
                 valor: _notifResultadosAnonimo,
                 onChanged: (valor) => _cambiarNotifResultadosAnonimo(valor),
               ),
             ],
           ],
+        ),
+
+        const SizedBox(height: 24),
+
+        _construirSeccion(
+          titulo: _t.settingsLanguage,
+          icono: Icons.translate_outlined,
+          children: [_construirOpcionIdioma()],
         ),
       ],
     );
@@ -240,7 +252,7 @@ class _AjustesPageState extends State<AjustesPage> {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
       children: [
         _construirSeccion(
-          titulo: 'Notificaciones',
+          titulo: _t.settingsSectionNotifications,
           icono: Icons.notifications_none_outlined,
           children: [
             if (_cargandoPreferencias)
@@ -255,10 +267,10 @@ class _AjustesPageState extends State<AjustesPage> {
             else if (_preferencias != null) ...[
               _construirSwitch(
                 icono: Icons.notifications_outlined,
-                titulo: 'Notificaciones',
+                titulo: _t.settingsNotifGeneral,
                 subtitulo: _preferencias!.notificacionesActivadas
-                    ? 'Recibir notificaciones del club'
-                    : 'No recibir notificaciones',
+                    ? _t.settingsNotifGeneralSubtitleOn
+                    : _t.settingsNotifGeneralSubtitleOff,
                 valor: _preferencias!.notificacionesActivadas,
                 onChanged: (valor) {
                   _actualizarPreferencias(notificacionesActivadas: valor);
@@ -269,8 +281,8 @@ class _AjustesPageState extends State<AjustesPage> {
 
               _construirSwitch(
                 icono: Icons.article_outlined,
-                titulo: 'Noticias',
-                subtitulo: 'Recibir avisos sobre nuevas noticias',
+                titulo: _t.settingsNotifNews,
+                subtitulo: _t.settingsNotifNewsSubtitle,
                 valor: _preferencias!.noticiasActivadas,
                 onChanged: _preferencias!.notificacionesActivadas
                     ? (valor) {
@@ -283,8 +295,8 @@ class _AjustesPageState extends State<AjustesPage> {
 
               _construirSwitch(
                 icono: Icons.chat_bubble_outline,
-                titulo: 'Mensajes',
-                subtitulo: 'Recibir avisos de nuevos mensajes',
+                titulo: _t.settingsNotifMessages,
+                subtitulo: _t.settingsNotifMessagesSubtitle,
                 valor: _preferencias!.mensajesActivados,
                 onChanged: _preferencias!.notificacionesActivadas
                     ? (valor) {
@@ -297,8 +309,8 @@ class _AjustesPageState extends State<AjustesPage> {
 
               _construirSwitch(
                 icono: Icons.sports_soccer_outlined,
-                titulo: 'Resultados',
-                subtitulo: 'Recibir avisos sobre resultados',
+                titulo: _t.settingsNotifResults,
+                subtitulo: _t.settingsNotifResultsSubtitle,
                 valor: _preferencias!.resultadosActivados,
                 onChanged: _preferencias!.notificacionesActivadas
                     ? (valor) {
@@ -324,17 +336,21 @@ class _AjustesPageState extends State<AjustesPage> {
         const SizedBox(height: 24),
 
         _construirSeccion(
-          titulo: 'Aplicación',
+          titulo: _t.settingsSectionApplication,
           icono: Icons.phone_android_outlined,
           children: [
             _construirOpcionApariencia(),
 
             const SizedBox(height: 10),
 
+            _construirOpcionIdioma(),
+
+            const SizedBox(height: 10),
+
             _construirOpcion(
               icono: Icons.info_outline,
-              titulo: 'Acerca de appMTX',
-              subtitulo: 'Información de la aplicación',
+              titulo: _t.settingsAboutApp,
+              subtitulo: _t.settingsAboutAppSubtitle,
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const AcercaDePage()),
@@ -469,7 +485,7 @@ class _AjustesPageState extends State<AjustesPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Apariencia',
+                  _t.settingsAppearance,
                   style: TextStyle(
                     color: _colors.onSurface,
                     fontSize: 16,
@@ -480,7 +496,7 @@ class _AjustesPageState extends State<AjustesPage> {
                 const SizedBox(height: 3),
 
                 Text(
-                  'Elige cómo quieres ver la aplicación',
+                  _t.settingsAppearanceSubtitle,
                   style: TextStyle(
                     color: _colors.onSurfaceVariant,
                     fontSize: 13,
@@ -493,15 +509,100 @@ class _AjustesPageState extends State<AjustesPage> {
           DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: widget.temaActual,
-              items: const [
-                DropdownMenuItem(value: 'system', child: Text('Automático')),
-                DropdownMenuItem(value: 'light', child: Text('Claro')),
-                DropdownMenuItem(value: 'dark', child: Text('Oscuro')),
+              items: [
+                DropdownMenuItem(
+                  value: 'system',
+                  child: Text(_t.settingsThemeAuto),
+                ),
+                DropdownMenuItem(
+                  value: 'light',
+                  child: Text(_t.settingsThemeLight),
+                ),
+                DropdownMenuItem(
+                  value: 'dark',
+                  child: Text(_t.settingsThemeDark),
+                ),
               ],
               onChanged: (valor) {
                 if (valor == null) return;
 
                 widget.onTemaChanged(valor);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _construirOpcionIdioma() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _colors.surface,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: AppColors.azul.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.translate_outlined,
+              color: _colors.primary,
+              size: 24,
+            ),
+          ),
+
+          const SizedBox(width: 14),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _t.settingsLanguage,
+                  style: TextStyle(
+                    color: _colors.onSurface,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+
+                const SizedBox(height: 3),
+
+                Text(
+                  _t.settingsLanguageSubtitle,
+                  style: TextStyle(
+                    color: _colors.onSurfaceVariant,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: widget.idiomaActual,
+              items: [
+                DropdownMenuItem(
+                  value: 'es',
+                  child: Text(_t.settingsLanguageSpanish),
+                ),
+                DropdownMenuItem(
+                  value: 'ca',
+                  child: Text(_t.settingsLanguageValencian),
+                ),
+              ],
+              onChanged: (valor) {
+                if (valor == null) return;
+
+                widget.onIdiomaChanged(valor);
               },
             ),
           ),
