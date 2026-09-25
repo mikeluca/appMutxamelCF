@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../models/notificacion_model.dart';
 import '../services/notificacion_service.dart';
 import 'comunicacion_detail_page.dart';
@@ -92,7 +93,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'No se pudieron marcar las notificaciones como leídas.',
+            AppLocalizations.of(context).markAllReadError,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onInverseSurface,
             ),
@@ -102,7 +103,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
     }
   }
 
-  String _formatearFecha(DateTime? fecha) {
+  String _formatearFecha(BuildContext context, DateTime? fecha) {
     if (fecha == null) {
       return '';
     }
@@ -114,14 +115,14 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
       final hora = fecha.hour.toString().padLeft(2, '0');
       final minuto = fecha.minute.toString().padLeft(2, '0');
 
-      return 'Hoy, $hora:$minuto';
+      return AppLocalizations.of(context).todayAt('$hora:$minuto');
     }
 
     if (diferencia.inDays == 1) {
       final hora = fecha.hour.toString().padLeft(2, '0');
       final minuto = fecha.minute.toString().padLeft(2, '0');
 
-      return 'Ayer, $hora:$minuto';
+      return AppLocalizations.of(context).yesterdayAt('$hora:$minuto');
     }
 
     final dia = fecha.day.toString().padLeft(2, '0');
@@ -143,15 +144,16 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final t = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: ClubAppBarTitle(titulo: 'Notificaciones'),
+        title: ClubAppBarTitle(titulo: t.settingsSectionNotifications),
         actions: [
           if (_notificaciones.any((n) => !n.leida))
             IconButton(
-              tooltip: 'Marcar todas como leídas',
+              tooltip: t.markAllReadTooltip,
               icon: const Icon(Icons.done_all),
               onPressed: _marcarTodasComoLeidas,
             ),
@@ -164,6 +166,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
   Widget _construirContenido() {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final t = AppLocalizations.of(context);
 
     if (_cargando) {
       return const Center(child: CircularProgressIndicator());
@@ -179,7 +182,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
               Icon(Icons.error_outline, size: 48, color: colors.error),
               const SizedBox(height: 16),
               Text(
-                'No se pudieron cargar las notificaciones.',
+                t.notificationsLoadError,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
@@ -188,7 +191,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _cargarNotificaciones,
-                child: const Text('Reintentar'),
+                child: Text(t.retry),
               ),
             ],
           ),
@@ -211,7 +214,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
             const SizedBox(height: 16),
             Center(
               child: Text(
-                'No tienes notificaciones.',
+                t.noNotifications,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontSize: 17,
                   fontWeight: FontWeight.w600,
@@ -234,7 +237,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
 
           return _NotificacionCard(
             notificacion: notificacion,
-            fecha: _formatearFecha(notificacion.fecha),
+            fecha: _formatearFecha(context, notificacion.fecha),
             icono: _iconoNotificacion(notificacion.tipo),
             onTap: () => _abrirNotificacion(notificacion),
           );

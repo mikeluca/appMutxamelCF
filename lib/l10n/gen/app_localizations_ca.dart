@@ -548,4 +548,43 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get fieldPosition => 'Posició';
+
+  @override
+  String get allTeamsTitle => 'Tots els equips';
+
+  @override
+  String get noTeamsAvailable => 'No hi ha equips disponibles.';
+
+  @override
+  String get noTeamsAssociated => 'No tens equips associats.';
+
+  @override
+  String get playerCountLabel => 'Nombre de jugadors';
+
+  @override
+  String get teamsLoadError => 'No s\'han pogut carregar els equips.';
+
+  @override
+  String get markAllReadTooltip => 'Marca-les totes com a llegides';
+
+  @override
+  String get notificationsLoadError =>
+      'No s\'han pogut carregar les notificacions.';
+
+  @override
+  String get noNotifications => 'No tens notificacions.';
+
+  @override
+  String get markAllReadError =>
+      'No s\'han pogut marcar les notificacions com a llegides.';
+
+  @override
+  String todayAt(String time) {
+    return 'Hui, $time';
+  }
+
+  @override
+  String yesterdayAt(String time) {
+    return 'Ahir, $time';
+  }
 }

@@ -201,5 +201,24 @@
   "fieldSport": "Deporte",
   "sportFootball": "Fútbol",
   "fieldDorsal": "Dorsal",
-  "fieldPosition": "Posición"
+  "fieldPosition": "Posición",
+
+  "allTeamsTitle": "Todos los equipos",
+  "noTeamsAvailable": "No hay equipos disponibles.",
+  "noTeamsAssociated": "No tienes equipos asociados.",
+  "playerCountLabel": "Número de jugadores",
+  "teamsLoadError": "No se han podido cargar los equipos.",
+
+  "markAllReadTooltip": "Marcar todas como leídas",
+  "notificationsLoadError": "No se pudieron cargar las notificaciones.",
+  "noNotifications": "No tienes notificaciones.",
+  "markAllReadError": "No se pudieron marcar las notificaciones como leídas.",
+  "todayAt": "Hoy, {time}",
+  "@todayAt": {
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "yesterdayAt": "Ayer, {time}",
+  "@yesterdayAt": {
+    "placeholders": { "time": { "type": "String" } }
+  }
 }

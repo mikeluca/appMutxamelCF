@@ -201,5 +201,24 @@
   "fieldSport": "Esport",
   "sportFootball": "Futbol",
   "fieldDorsal": "Dorsal",
-  "fieldPosition": "Posició"
+  "fieldPosition": "Posició",
+
+  "allTeamsTitle": "Tots els equips",
+  "noTeamsAvailable": "No hi ha equips disponibles.",
+  "noTeamsAssociated": "No tens equips associats.",
+  "playerCountLabel": "Nombre de jugadors",
+  "teamsLoadError": "No s'han pogut carregar els equips.",
+
+  "markAllReadTooltip": "Marca-les totes com a llegides",
+  "notificationsLoadError": "No s'han pogut carregar les notificacions.",
+  "noNotifications": "No tens notificacions.",
+  "markAllReadError": "No s'han pogut marcar les notificacions com a llegides.",
+  "todayAt": "Hui, {time}",
+  "@todayAt": {
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "yesterdayAt": "Ahir, {time}",
+  "@yesterdayAt": {
+    "placeholders": { "time": { "type": "String" } }
+  }
 }

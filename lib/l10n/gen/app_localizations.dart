@@ -1099,6 +1099,72 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Posición'**
   String get fieldPosition;
+
+  /// No description provided for @allTeamsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Todos los equipos'**
+  String get allTeamsTitle;
+
+  /// No description provided for @noTeamsAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay equipos disponibles.'**
+  String get noTeamsAvailable;
+
+  /// No description provided for @noTeamsAssociated.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes equipos asociados.'**
+  String get noTeamsAssociated;
+
+  /// No description provided for @playerCountLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Número de jugadores'**
+  String get playerCountLabel;
+
+  /// No description provided for @teamsLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se han podido cargar los equipos.'**
+  String get teamsLoadError;
+
+  /// No description provided for @markAllReadTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Marcar todas como leídas'**
+  String get markAllReadTooltip;
+
+  /// No description provided for @notificationsLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudieron cargar las notificaciones.'**
+  String get notificationsLoadError;
+
+  /// No description provided for @noNotifications.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes notificaciones.'**
+  String get noNotifications;
+
+  /// No description provided for @markAllReadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudieron marcar las notificaciones como leídas.'**
+  String get markAllReadError;
+
+  /// No description provided for @todayAt.
+  ///
+  /// In es, this message translates to:
+  /// **'Hoy, {time}'**
+  String todayAt(String time);
+
+  /// No description provided for @yesterdayAt.
+  ///
+  /// In es, this message translates to:
+  /// **'Ayer, {time}'**
+  String yesterdayAt(String time);
 }
 
 class _AppLocalizationsDelegate
