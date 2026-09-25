@@ -247,5 +247,17 @@
 
   "chatDefaultTitle": "Xat",
   "chatNoMessages": "Encara no hi ha missatges. Escriu el primer.",
-  "chatMessageHint": "Escriu un missatge..."
+  "chatMessageHint": "Escriu un missatge...",
+
+  "tabConversations": "Converses",
+  "tabReceived": "Rebudes",
+  "tabSent": "Enviades",
+  "newButton": "Nova",
+  "noConversations": "No tens converses",
+  "noConversationsSubtitle": "Ací apareixeran els teus xats privats.",
+  "noCommunicationsReceived": "No tens comunicacions",
+  "noCommunicationsReceivedSubtitleGlobal": "Ací apareixeran les comunicacions del club.",
+  "noCommunicationsReceivedSubtitleTeam": "Ací apareixeran les comunicacions dels teus equips.",
+  "noCommunicationsSent": "No has enviat comunicacions",
+  "noCommunicationsSentSubtitle": "Ací apareixeran les comunicacions que hages enviat."
 }

@@ -661,4 +661,40 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get chatMessageHint => 'Escribe un mensaje...';
+
+  @override
+  String get tabConversations => 'Conversaciones';
+
+  @override
+  String get tabReceived => 'Recibidas';
+
+  @override
+  String get tabSent => 'Enviadas';
+
+  @override
+  String get newButton => 'Nueva';
+
+  @override
+  String get noConversations => 'No tienes conversaciones';
+
+  @override
+  String get noConversationsSubtitle => 'Aquí aparecerán tus chats privados.';
+
+  @override
+  String get noCommunicationsReceived => 'No tienes comunicaciones';
+
+  @override
+  String get noCommunicationsReceivedSubtitleGlobal =>
+      'Aquí aparecerán las comunicaciones del club.';
+
+  @override
+  String get noCommunicationsReceivedSubtitleTeam =>
+      'Aquí aparecerán las comunicaciones de tus equipos.';
+
+  @override
+  String get noCommunicationsSent => 'No has enviado comunicaciones';
+
+  @override
+  String get noCommunicationsSentSubtitle =>
+      'Aquí aparecerán las comunicaciones que hayas enviado.';
 }

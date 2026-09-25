@@ -1261,6 +1261,72 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Escribe un mensaje...'**
   String get chatMessageHint;
+
+  /// No description provided for @tabConversations.
+  ///
+  /// In es, this message translates to:
+  /// **'Conversaciones'**
+  String get tabConversations;
+
+  /// No description provided for @tabReceived.
+  ///
+  /// In es, this message translates to:
+  /// **'Recibidas'**
+  String get tabReceived;
+
+  /// No description provided for @tabSent.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviadas'**
+  String get tabSent;
+
+  /// No description provided for @newButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva'**
+  String get newButton;
+
+  /// No description provided for @noConversations.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes conversaciones'**
+  String get noConversations;
+
+  /// No description provided for @noConversationsSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Aquí aparecerán tus chats privados.'**
+  String get noConversationsSubtitle;
+
+  /// No description provided for @noCommunicationsReceived.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes comunicaciones'**
+  String get noCommunicationsReceived;
+
+  /// No description provided for @noCommunicationsReceivedSubtitleGlobal.
+  ///
+  /// In es, this message translates to:
+  /// **'Aquí aparecerán las comunicaciones del club.'**
+  String get noCommunicationsReceivedSubtitleGlobal;
+
+  /// No description provided for @noCommunicationsReceivedSubtitleTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'Aquí aparecerán las comunicaciones de tus equipos.'**
+  String get noCommunicationsReceivedSubtitleTeam;
+
+  /// No description provided for @noCommunicationsSent.
+  ///
+  /// In es, this message translates to:
+  /// **'No has enviado comunicaciones'**
+  String get noCommunicationsSent;
+
+  /// No description provided for @noCommunicationsSentSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Aquí aparecerán las comunicaciones que hayas enviado.'**
+  String get noCommunicationsSentSubtitle;
 }
 
 class _AppLocalizationsDelegate

@@ -655,4 +655,41 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get chatMessageHint => 'Escriu un missatge...';
+
+  @override
+  String get tabConversations => 'Converses';
+
+  @override
+  String get tabReceived => 'Rebudes';
+
+  @override
+  String get tabSent => 'Enviades';
+
+  @override
+  String get newButton => 'Nova';
+
+  @override
+  String get noConversations => 'No tens converses';
+
+  @override
+  String get noConversationsSubtitle =>
+      'Ací apareixeran els teus xats privats.';
+
+  @override
+  String get noCommunicationsReceived => 'No tens comunicacions';
+
+  @override
+  String get noCommunicationsReceivedSubtitleGlobal =>
+      'Ací apareixeran les comunicacions del club.';
+
+  @override
+  String get noCommunicationsReceivedSubtitleTeam =>
+      'Ací apareixeran les comunicacions dels teus equips.';
+
+  @override
+  String get noCommunicationsSent => 'No has enviat comunicacions';
+
+  @override
+  String get noCommunicationsSentSubtitle =>
+      'Ací apareixeran les comunicacions que hages enviat.';
 }

@@ -247,5 +247,17 @@
 
   "chatDefaultTitle": "Chat",
   "chatNoMessages": "Aún no hay mensajes. Escribe el primero.",
-  "chatMessageHint": "Escribe un mensaje..."
+  "chatMessageHint": "Escribe un mensaje...",
+
+  "tabConversations": "Conversaciones",
+  "tabReceived": "Recibidas",
+  "tabSent": "Enviadas",
+  "newButton": "Nueva",
+  "noConversations": "No tienes conversaciones",
+  "noConversationsSubtitle": "Aquí aparecerán tus chats privados.",
+  "noCommunicationsReceived": "No tienes comunicaciones",
+  "noCommunicationsReceivedSubtitleGlobal": "Aquí aparecerán las comunicaciones del club.",
+  "noCommunicationsReceivedSubtitleTeam": "Aquí aparecerán las comunicaciones de tus equipos.",
+  "noCommunicationsSent": "No has enviado comunicaciones",
+  "noCommunicationsSentSubtitle": "Aquí aparecerán las comunicaciones que hayas enviado."
 }
