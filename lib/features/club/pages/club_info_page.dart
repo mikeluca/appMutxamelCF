@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../../core/config/app_config.dart';
 import '../../../core/theme/app_colors.dart';
@@ -22,13 +23,14 @@ class ClubInfoPage extends StatelessWidget {
   static const String _email = 'mutxamelcf.gestion@gmail.com';
   static const String _urlWeb = 'https://mutxamelcf.es';
 
-  // Coordenadas de la sede del club (Calle los Olmos S/N, Mutxamel),
-  // sacadas del iframe de Google Maps que ya usa contacto.html en la
-  // web.
-  static const String _mapaEstaticoUrl =
-      'https://staticmap.openstreetmap.de/staticmap.php'
-      '?center=38.407683,-0.445294&zoom=17&size=600x300'
-      '&markers=38.407683,-0.445294,red-pushpin';
+  // Mismo iframe de Google Maps (URL pública de "embed", sin API
+  // key) que ya usa contacto.html en la web, apuntando a la sede del
+  // club (Calle los Olmos S/N, Mutxamel).
+  static const String _mapaEmbedUrl =
+      'https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d957.0062670822804'
+      '!2d-0.44529438041417635!3d38.407682941178706!2m3!1f0!2f0!3f0'
+      '!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMzjCsDI0JzI5LjAiTiAwwrAyNic0MS4zIlc'
+      '!5e1!3m2!1ses!2ses!4v1754845797624!5m2!1ses!2ses';
 
   Future<void> _abrirUrl(BuildContext context, String url) async {
     final uri = Uri.parse(url);
@@ -280,50 +282,12 @@ class ClubInfoPage extends StatelessWidget {
   Widget _construirMapa(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(14),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => _abrirMapa(context),
-          child: Image.network(
-            _mapaEstaticoUrl,
-            width: double.infinity,
-            height: 180,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return _construirMapaRespaldo(context);
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Respaldo si el servicio de mapa estático (sin API key) fallara:
-  /// una tarjeta pulsable que abre igualmente Google Maps.
-  Widget _construirMapaRespaldo(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-
-    return SizedBox(
-      width: double.infinity,
-      height: 180,
-      child: Material(
-        color: colors.surfaceContainerHighest,
-        child: InkWell(
-          onTap: () => _abrirMapa(context),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.map_outlined, size: 36, color: colors.primary),
-              const SizedBox(height: 8),
-              Text(
-                'Ver en Google Maps',
-                style: TextStyle(
-                  color: colors.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
+      child: SizedBox(
+        width: double.infinity,
+        height: 180,
+        child: _MapaEmbebido(
+          url: _mapaEmbedUrl,
+          onErrorAbrirMapa: () => _abrirMapa(context),
         ),
       ),
     );
@@ -354,6 +318,82 @@ class ClubInfoPage extends StatelessWidget {
               child: Icon(Icons.public, color: colors.primary),
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+/// Mapa de la sede del club incrustado con un WebView cargando la
+/// URL pública de "embed" de Google Maps (la misma que usa la web
+/// dentro de un `<iframe>`), sin necesidad de API key.
+///
+/// Si el WebView fallara al cargar (p.ej. sin conexión), cae a una
+/// tarjeta de respaldo pulsable que abre Google Maps en una app
+/// externa, para no dejar nunca la sección sin ninguna forma de ver
+/// el mapa.
+class _MapaEmbebido extends StatefulWidget {
+  final String url;
+  final VoidCallback onErrorAbrirMapa;
+
+  const _MapaEmbebido({required this.url, required this.onErrorAbrirMapa});
+
+  @override
+  State<_MapaEmbebido> createState() => _MapaEmbebidoState();
+}
+
+class _MapaEmbebidoState extends State<_MapaEmbebido> {
+  late final WebViewController _controller;
+
+  bool _error = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onWebResourceError: (error) {
+            if (!mounted) return;
+
+            setState(() => _error = true);
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(widget.url));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_error) {
+      return _construirRespaldo(context);
+    }
+
+    return WebViewWidget(controller: _controller);
+  }
+
+  Widget _construirRespaldo(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return Material(
+      color: colors.surfaceContainerHighest,
+      child: InkWell(
+        onTap: widget.onErrorAbrirMapa,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.map_outlined, size: 36, color: colors.primary),
+            const SizedBox(height: 8),
+            Text(
+              'Ver en Google Maps',
+              style: TextStyle(
+                color: colors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
       ),
     );
