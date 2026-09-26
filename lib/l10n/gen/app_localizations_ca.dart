@@ -901,4 +901,180 @@ class AppLocalizationsCa extends AppLocalizations {
   String liveSendError(String error) {
     return 'No s\'ha pogut enviar l\'avís: $error';
   }
+
+  @override
+  String get weekdayMonday => 'Dilluns';
+
+  @override
+  String get weekdayTuesday => 'Dimarts';
+
+  @override
+  String get weekdayWednesday => 'Dimecres';
+
+  @override
+  String get weekdayThursday => 'Dijous';
+
+  @override
+  String get weekdayFriday => 'Divendres';
+
+  @override
+  String get weekdaySaturday => 'Dissabte';
+
+  @override
+  String get weekdaySunday => 'Diumenge';
+
+  @override
+  String get trainingsTitle => 'Entrenaments';
+
+  @override
+  String get newMasculineButton => 'Nou';
+
+  @override
+  String get noTrainingsYet => 'Encara no hi ha entrenaments.';
+
+  @override
+  String get createFirstTrainingHint => 'Crea el primer prement el botó Nou.';
+
+  @override
+  String get trainingsLoadError => 'No s\'han pogut carregar els entrenaments.';
+
+  @override
+  String get editTrainingTitle => 'Edita l\'entrenament';
+
+  @override
+  String get newTrainingTitle => 'Nou entrenament';
+
+  @override
+  String get noPlayersForTraining =>
+      'No hi ha jugadors per a registrar l\'entrenament.';
+
+  @override
+  String get trainingDateFutureError =>
+      'La data de l\'entrenament no pot ser posterior a hui.';
+
+  @override
+  String get trainingUpdatedSuccess => 'Entrenament actualitzat correctament.';
+
+  @override
+  String get trainingSavedSuccess => 'Entrenament guardat correctament.';
+
+  @override
+  String trainingSaveError(String error) {
+    return 'No s\'ha pogut guardar: $error';
+  }
+
+  @override
+  String get trainingDateLabel => 'Data de l\'entrenament';
+
+  @override
+  String get attendanceTitle => 'Assistència';
+
+  @override
+  String get attendanceHint => 'Marca l\'estat de cada jugador';
+
+  @override
+  String get attendanceStatusPresent => 'Present';
+
+  @override
+  String get attendanceStatusAbsent => 'Falta';
+
+  @override
+  String get attendanceStatusLate => 'Retard';
+
+  @override
+  String get attendanceStatusJustifiedAbsence => 'Falta justificada';
+
+  @override
+  String get attendanceStatusMisconduct => 'Mal comportament';
+
+  @override
+  String get saveChangesButton => 'Guarda els canvis';
+
+  @override
+  String get saveTrainingButton => 'Guarda l\'entrenament';
+
+  @override
+  String get noPlayersAvailableForTeam =>
+      'No hi ha jugadors disponibles per a aquest equip.';
+
+  @override
+  String get playersLoadError => 'No s\'han pogut carregar els jugadors.';
+
+  @override
+  String get callupsTitle => 'Convocatòries';
+
+  @override
+  String get noCallupsYet => 'Encara no hi ha convocatòries.';
+
+  @override
+  String get createFirstCallupHint => 'Crea la primera prement el botó Nova.';
+
+  @override
+  String get callupsLoadError => 'No s\'han pogut carregar les convocatòries.';
+
+  @override
+  String get editCallupTitle => 'Edita la convocatòria';
+
+  @override
+  String get newCallupTitle => 'Nova convocatòria';
+
+  @override
+  String get rivalLabel => 'Rival';
+
+  @override
+  String get fieldLabelCampo => 'Camp';
+
+  @override
+  String get matchTimeLabel => 'Hora del partit';
+
+  @override
+  String get callupTimeLabel => 'Hora de convocatòria';
+
+  @override
+  String get callupPlaceLabel => 'Lloc de convocatòria';
+
+  @override
+  String get matchDateLabel => 'Data del partit';
+
+  @override
+  String get callupPlayersTitle => 'Jugadors convocats';
+
+  @override
+  String get notModifiable => 'No modificables';
+
+  @override
+  String selectedCountLabel(int count) {
+    return '$count seleccionats';
+  }
+
+  @override
+  String get saveCallupButton => 'Guarda la convocatòria';
+
+  @override
+  String get enterRivalError => 'Introdueix el rival.';
+
+  @override
+  String get enterFieldError => 'Introdueix el camp.';
+
+  @override
+  String get enterCallupPlaceError => 'Introdueix el lloc de convocatòria.';
+
+  @override
+  String get selectAtLeastOnePlayerError => 'Selecciona almenys un jugador.';
+
+  @override
+  String get callupUpdatedSuccess => 'Convocatòria actualitzada correctament.';
+
+  @override
+  String get callupCreatedSuccess => 'Convocatòria creada correctament.';
+
+  @override
+  String callupUpdateError(String error) {
+    return 'No s\'ha pogut actualitzar la convocatòria: $error';
+  }
+
+  @override
+  String callupCreateError(String error) {
+    return 'No s\'ha pogut crear la convocatòria: $error';
+  }
 }

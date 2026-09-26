@@ -339,5 +339,75 @@
   "liveSendError": "No s'ha pogut enviar l'avís: {error}",
   "@liveSendError": {
     "placeholders": { "error": { "type": "String" } }
+  },
+
+  "weekdayMonday": "Dilluns",
+  "weekdayTuesday": "Dimarts",
+  "weekdayWednesday": "Dimecres",
+  "weekdayThursday": "Dijous",
+  "weekdayFriday": "Divendres",
+  "weekdaySaturday": "Dissabte",
+  "weekdaySunday": "Diumenge",
+
+  "trainingsTitle": "Entrenaments",
+  "newMasculineButton": "Nou",
+  "noTrainingsYet": "Encara no hi ha entrenaments.",
+  "createFirstTrainingHint": "Crea el primer prement el botó Nou.",
+  "trainingsLoadError": "No s'han pogut carregar els entrenaments.",
+  "editTrainingTitle": "Edita l'entrenament",
+  "newTrainingTitle": "Nou entrenament",
+  "noPlayersForTraining": "No hi ha jugadors per a registrar l'entrenament.",
+  "trainingDateFutureError": "La data de l'entrenament no pot ser posterior a hui.",
+  "trainingUpdatedSuccess": "Entrenament actualitzat correctament.",
+  "trainingSavedSuccess": "Entrenament guardat correctament.",
+  "trainingSaveError": "No s'ha pogut guardar: {error}",
+  "@trainingSaveError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "trainingDateLabel": "Data de l'entrenament",
+  "attendanceTitle": "Assistència",
+  "attendanceHint": "Marca l'estat de cada jugador",
+  "attendanceStatusPresent": "Present",
+  "attendanceStatusAbsent": "Falta",
+  "attendanceStatusLate": "Retard",
+  "attendanceStatusJustifiedAbsence": "Falta justificada",
+  "attendanceStatusMisconduct": "Mal comportament",
+  "saveChangesButton": "Guarda els canvis",
+  "saveTrainingButton": "Guarda l'entrenament",
+  "noPlayersAvailableForTeam": "No hi ha jugadors disponibles per a aquest equip.",
+  "playersLoadError": "No s'han pogut carregar els jugadors.",
+
+  "callupsTitle": "Convocatòries",
+  "noCallupsYet": "Encara no hi ha convocatòries.",
+  "createFirstCallupHint": "Crea la primera prement el botó Nova.",
+  "callupsLoadError": "No s'han pogut carregar les convocatòries.",
+  "editCallupTitle": "Edita la convocatòria",
+  "newCallupTitle": "Nova convocatòria",
+  "rivalLabel": "Rival",
+  "fieldLabelCampo": "Camp",
+  "matchTimeLabel": "Hora del partit",
+  "callupTimeLabel": "Hora de convocatòria",
+  "callupPlaceLabel": "Lloc de convocatòria",
+  "matchDateLabel": "Data del partit",
+  "callupPlayersTitle": "Jugadors convocats",
+  "notModifiable": "No modificables",
+  "selectedCountLabel": "{count} seleccionats",
+  "@selectedCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "saveCallupButton": "Guarda la convocatòria",
+  "enterRivalError": "Introdueix el rival.",
+  "enterFieldError": "Introdueix el camp.",
+  "enterCallupPlaceError": "Introdueix el lloc de convocatòria.",
+  "selectAtLeastOnePlayerError": "Selecciona almenys un jugador.",
+  "callupUpdatedSuccess": "Convocatòria actualitzada correctament.",
+  "callupCreatedSuccess": "Convocatòria creada correctament.",
+  "callupUpdateError": "No s'ha pogut actualitzar la convocatòria: {error}",
+  "@callupUpdateError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "callupCreateError": "No s'ha pogut crear la convocatòria: {error}",
+  "@callupCreateError": {
+    "placeholders": { "error": { "type": "String" } }
   }
 }

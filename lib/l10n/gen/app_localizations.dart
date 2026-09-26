@@ -1723,6 +1723,336 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No se ha podido enviar el aviso: {error}'**
   String liveSendError(String error);
+
+  /// No description provided for @weekdayMonday.
+  ///
+  /// In es, this message translates to:
+  /// **'Lunes'**
+  String get weekdayMonday;
+
+  /// No description provided for @weekdayTuesday.
+  ///
+  /// In es, this message translates to:
+  /// **'Martes'**
+  String get weekdayTuesday;
+
+  /// No description provided for @weekdayWednesday.
+  ///
+  /// In es, this message translates to:
+  /// **'Miércoles'**
+  String get weekdayWednesday;
+
+  /// No description provided for @weekdayThursday.
+  ///
+  /// In es, this message translates to:
+  /// **'Jueves'**
+  String get weekdayThursday;
+
+  /// No description provided for @weekdayFriday.
+  ///
+  /// In es, this message translates to:
+  /// **'Viernes'**
+  String get weekdayFriday;
+
+  /// No description provided for @weekdaySaturday.
+  ///
+  /// In es, this message translates to:
+  /// **'Sábado'**
+  String get weekdaySaturday;
+
+  /// No description provided for @weekdaySunday.
+  ///
+  /// In es, this message translates to:
+  /// **'Domingo'**
+  String get weekdaySunday;
+
+  /// No description provided for @trainingsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Entrenamientos'**
+  String get trainingsTitle;
+
+  /// No description provided for @newMasculineButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo'**
+  String get newMasculineButton;
+
+  /// No description provided for @noTrainingsYet.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay entrenamientos.'**
+  String get noTrainingsYet;
+
+  /// No description provided for @createFirstTrainingHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Crea el primero pulsando el botón Nuevo.'**
+  String get createFirstTrainingHint;
+
+  /// No description provided for @trainingsLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se han podido cargar los entrenamientos.'**
+  String get trainingsLoadError;
+
+  /// No description provided for @editTrainingTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar entrenamiento'**
+  String get editTrainingTitle;
+
+  /// No description provided for @newTrainingTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo entrenamiento'**
+  String get newTrainingTitle;
+
+  /// No description provided for @noPlayersForTraining.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay jugadores para registrar el entrenamiento.'**
+  String get noPlayersForTraining;
+
+  /// No description provided for @trainingDateFutureError.
+  ///
+  /// In es, this message translates to:
+  /// **'La fecha del entrenamiento no puede ser posterior a hoy.'**
+  String get trainingDateFutureError;
+
+  /// No description provided for @trainingUpdatedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Entrenamiento actualizado correctamente.'**
+  String get trainingUpdatedSuccess;
+
+  /// No description provided for @trainingSavedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Entrenamiento guardado correctamente.'**
+  String get trainingSavedSuccess;
+
+  /// No description provided for @trainingSaveError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido guardar: {error}'**
+  String trainingSaveError(String error);
+
+  /// No description provided for @trainingDateLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha del entrenamiento'**
+  String get trainingDateLabel;
+
+  /// No description provided for @attendanceTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Asistencia'**
+  String get attendanceTitle;
+
+  /// No description provided for @attendanceHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Marca el estado de cada jugador'**
+  String get attendanceHint;
+
+  /// No description provided for @attendanceStatusPresent.
+  ///
+  /// In es, this message translates to:
+  /// **'Presente'**
+  String get attendanceStatusPresent;
+
+  /// No description provided for @attendanceStatusAbsent.
+  ///
+  /// In es, this message translates to:
+  /// **'Falta'**
+  String get attendanceStatusAbsent;
+
+  /// No description provided for @attendanceStatusLate.
+  ///
+  /// In es, this message translates to:
+  /// **'Retraso'**
+  String get attendanceStatusLate;
+
+  /// No description provided for @attendanceStatusJustifiedAbsence.
+  ///
+  /// In es, this message translates to:
+  /// **'Falta justificada'**
+  String get attendanceStatusJustifiedAbsence;
+
+  /// No description provided for @attendanceStatusMisconduct.
+  ///
+  /// In es, this message translates to:
+  /// **'Mal comportamiento'**
+  String get attendanceStatusMisconduct;
+
+  /// No description provided for @saveChangesButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar cambios'**
+  String get saveChangesButton;
+
+  /// No description provided for @saveTrainingButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar entrenamiento'**
+  String get saveTrainingButton;
+
+  /// No description provided for @noPlayersAvailableForTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay jugadores disponibles para este equipo.'**
+  String get noPlayersAvailableForTeam;
+
+  /// No description provided for @playersLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se han podido cargar los jugadores.'**
+  String get playersLoadError;
+
+  /// No description provided for @callupsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Convocatorias'**
+  String get callupsTitle;
+
+  /// No description provided for @noCallupsYet.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay convocatorias.'**
+  String get noCallupsYet;
+
+  /// No description provided for @createFirstCallupHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Crea la primera pulsando el botón Nueva.'**
+  String get createFirstCallupHint;
+
+  /// No description provided for @callupsLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se han podido cargar las convocatorias.'**
+  String get callupsLoadError;
+
+  /// No description provided for @editCallupTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar convocatoria'**
+  String get editCallupTitle;
+
+  /// No description provided for @newCallupTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva convocatoria'**
+  String get newCallupTitle;
+
+  /// No description provided for @rivalLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Rival'**
+  String get rivalLabel;
+
+  /// No description provided for @fieldLabelCampo.
+  ///
+  /// In es, this message translates to:
+  /// **'Campo'**
+  String get fieldLabelCampo;
+
+  /// No description provided for @matchTimeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora del partido'**
+  String get matchTimeLabel;
+
+  /// No description provided for @callupTimeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora de convocatoria'**
+  String get callupTimeLabel;
+
+  /// No description provided for @callupPlaceLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Lugar de convocatoria'**
+  String get callupPlaceLabel;
+
+  /// No description provided for @matchDateLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha del partido'**
+  String get matchDateLabel;
+
+  /// No description provided for @callupPlayersTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Jugadores convocados'**
+  String get callupPlayersTitle;
+
+  /// No description provided for @notModifiable.
+  ///
+  /// In es, this message translates to:
+  /// **'No modificables'**
+  String get notModifiable;
+
+  /// No description provided for @selectedCountLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'{count} seleccionados'**
+  String selectedCountLabel(int count);
+
+  /// No description provided for @saveCallupButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar convocatoria'**
+  String get saveCallupButton;
+
+  /// No description provided for @enterRivalError.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce el rival.'**
+  String get enterRivalError;
+
+  /// No description provided for @enterFieldError.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce el campo.'**
+  String get enterFieldError;
+
+  /// No description provided for @enterCallupPlaceError.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce el lugar de convocatoria.'**
+  String get enterCallupPlaceError;
+
+  /// No description provided for @selectAtLeastOnePlayerError.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona al menos un jugador.'**
+  String get selectAtLeastOnePlayerError;
+
+  /// No description provided for @callupUpdatedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Convocatoria actualizada correctamente.'**
+  String get callupUpdatedSuccess;
+
+  /// No description provided for @callupCreatedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Convocatoria creada correctamente.'**
+  String get callupCreatedSuccess;
+
+  /// No description provided for @callupUpdateError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido actualizar la convocatoria: {error}'**
+  String callupUpdateError(String error);
+
+  /// No description provided for @callupCreateError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido crear la convocatoria: {error}'**
+  String callupCreateError(String error);
 }
 
 class _AppLocalizationsDelegate

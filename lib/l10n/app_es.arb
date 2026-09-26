@@ -339,5 +339,75 @@
   "liveSendError": "No se ha podido enviar el aviso: {error}",
   "@liveSendError": {
     "placeholders": { "error": { "type": "String" } }
+  },
+
+  "weekdayMonday": "Lunes",
+  "weekdayTuesday": "Martes",
+  "weekdayWednesday": "Miércoles",
+  "weekdayThursday": "Jueves",
+  "weekdayFriday": "Viernes",
+  "weekdaySaturday": "Sábado",
+  "weekdaySunday": "Domingo",
+
+  "trainingsTitle": "Entrenamientos",
+  "newMasculineButton": "Nuevo",
+  "noTrainingsYet": "Todavía no hay entrenamientos.",
+  "createFirstTrainingHint": "Crea el primero pulsando el botón Nuevo.",
+  "trainingsLoadError": "No se han podido cargar los entrenamientos.",
+  "editTrainingTitle": "Editar entrenamiento",
+  "newTrainingTitle": "Nuevo entrenamiento",
+  "noPlayersForTraining": "No hay jugadores para registrar el entrenamiento.",
+  "trainingDateFutureError": "La fecha del entrenamiento no puede ser posterior a hoy.",
+  "trainingUpdatedSuccess": "Entrenamiento actualizado correctamente.",
+  "trainingSavedSuccess": "Entrenamiento guardado correctamente.",
+  "trainingSaveError": "No se ha podido guardar: {error}",
+  "@trainingSaveError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "trainingDateLabel": "Fecha del entrenamiento",
+  "attendanceTitle": "Asistencia",
+  "attendanceHint": "Marca el estado de cada jugador",
+  "attendanceStatusPresent": "Presente",
+  "attendanceStatusAbsent": "Falta",
+  "attendanceStatusLate": "Retraso",
+  "attendanceStatusJustifiedAbsence": "Falta justificada",
+  "attendanceStatusMisconduct": "Mal comportamiento",
+  "saveChangesButton": "Guardar cambios",
+  "saveTrainingButton": "Guardar entrenamiento",
+  "noPlayersAvailableForTeam": "No hay jugadores disponibles para este equipo.",
+  "playersLoadError": "No se han podido cargar los jugadores.",
+
+  "callupsTitle": "Convocatorias",
+  "noCallupsYet": "Todavía no hay convocatorias.",
+  "createFirstCallupHint": "Crea la primera pulsando el botón Nueva.",
+  "callupsLoadError": "No se han podido cargar las convocatorias.",
+  "editCallupTitle": "Editar convocatoria",
+  "newCallupTitle": "Nueva convocatoria",
+  "rivalLabel": "Rival",
+  "fieldLabelCampo": "Campo",
+  "matchTimeLabel": "Hora del partido",
+  "callupTimeLabel": "Hora de convocatoria",
+  "callupPlaceLabel": "Lugar de convocatoria",
+  "matchDateLabel": "Fecha del partido",
+  "callupPlayersTitle": "Jugadores convocados",
+  "notModifiable": "No modificables",
+  "selectedCountLabel": "{count} seleccionados",
+  "@selectedCountLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "saveCallupButton": "Guardar convocatoria",
+  "enterRivalError": "Introduce el rival.",
+  "enterFieldError": "Introduce el campo.",
+  "enterCallupPlaceError": "Introduce el lugar de convocatoria.",
+  "selectAtLeastOnePlayerError": "Selecciona al menos un jugador.",
+  "callupUpdatedSuccess": "Convocatoria actualizada correctamente.",
+  "callupCreatedSuccess": "Convocatoria creada correctamente.",
+  "callupUpdateError": "No se ha podido actualizar la convocatoria: {error}",
+  "@callupUpdateError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "callupCreateError": "No se ha podido crear la convocatoria: {error}",
+  "@callupCreateError": {
+    "placeholders": { "error": { "type": "String" } }
   }
 }

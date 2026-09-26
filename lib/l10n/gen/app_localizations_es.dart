@@ -906,4 +906,184 @@ class AppLocalizationsEs extends AppLocalizations {
   String liveSendError(String error) {
     return 'No se ha podido enviar el aviso: $error';
   }
+
+  @override
+  String get weekdayMonday => 'Lunes';
+
+  @override
+  String get weekdayTuesday => 'Martes';
+
+  @override
+  String get weekdayWednesday => 'Miércoles';
+
+  @override
+  String get weekdayThursday => 'Jueves';
+
+  @override
+  String get weekdayFriday => 'Viernes';
+
+  @override
+  String get weekdaySaturday => 'Sábado';
+
+  @override
+  String get weekdaySunday => 'Domingo';
+
+  @override
+  String get trainingsTitle => 'Entrenamientos';
+
+  @override
+  String get newMasculineButton => 'Nuevo';
+
+  @override
+  String get noTrainingsYet => 'Todavía no hay entrenamientos.';
+
+  @override
+  String get createFirstTrainingHint =>
+      'Crea el primero pulsando el botón Nuevo.';
+
+  @override
+  String get trainingsLoadError =>
+      'No se han podido cargar los entrenamientos.';
+
+  @override
+  String get editTrainingTitle => 'Editar entrenamiento';
+
+  @override
+  String get newTrainingTitle => 'Nuevo entrenamiento';
+
+  @override
+  String get noPlayersForTraining =>
+      'No hay jugadores para registrar el entrenamiento.';
+
+  @override
+  String get trainingDateFutureError =>
+      'La fecha del entrenamiento no puede ser posterior a hoy.';
+
+  @override
+  String get trainingUpdatedSuccess =>
+      'Entrenamiento actualizado correctamente.';
+
+  @override
+  String get trainingSavedSuccess => 'Entrenamiento guardado correctamente.';
+
+  @override
+  String trainingSaveError(String error) {
+    return 'No se ha podido guardar: $error';
+  }
+
+  @override
+  String get trainingDateLabel => 'Fecha del entrenamiento';
+
+  @override
+  String get attendanceTitle => 'Asistencia';
+
+  @override
+  String get attendanceHint => 'Marca el estado de cada jugador';
+
+  @override
+  String get attendanceStatusPresent => 'Presente';
+
+  @override
+  String get attendanceStatusAbsent => 'Falta';
+
+  @override
+  String get attendanceStatusLate => 'Retraso';
+
+  @override
+  String get attendanceStatusJustifiedAbsence => 'Falta justificada';
+
+  @override
+  String get attendanceStatusMisconduct => 'Mal comportamiento';
+
+  @override
+  String get saveChangesButton => 'Guardar cambios';
+
+  @override
+  String get saveTrainingButton => 'Guardar entrenamiento';
+
+  @override
+  String get noPlayersAvailableForTeam =>
+      'No hay jugadores disponibles para este equipo.';
+
+  @override
+  String get playersLoadError => 'No se han podido cargar los jugadores.';
+
+  @override
+  String get callupsTitle => 'Convocatorias';
+
+  @override
+  String get noCallupsYet => 'Todavía no hay convocatorias.';
+
+  @override
+  String get createFirstCallupHint =>
+      'Crea la primera pulsando el botón Nueva.';
+
+  @override
+  String get callupsLoadError => 'No se han podido cargar las convocatorias.';
+
+  @override
+  String get editCallupTitle => 'Editar convocatoria';
+
+  @override
+  String get newCallupTitle => 'Nueva convocatoria';
+
+  @override
+  String get rivalLabel => 'Rival';
+
+  @override
+  String get fieldLabelCampo => 'Campo';
+
+  @override
+  String get matchTimeLabel => 'Hora del partido';
+
+  @override
+  String get callupTimeLabel => 'Hora de convocatoria';
+
+  @override
+  String get callupPlaceLabel => 'Lugar de convocatoria';
+
+  @override
+  String get matchDateLabel => 'Fecha del partido';
+
+  @override
+  String get callupPlayersTitle => 'Jugadores convocados';
+
+  @override
+  String get notModifiable => 'No modificables';
+
+  @override
+  String selectedCountLabel(int count) {
+    return '$count seleccionados';
+  }
+
+  @override
+  String get saveCallupButton => 'Guardar convocatoria';
+
+  @override
+  String get enterRivalError => 'Introduce el rival.';
+
+  @override
+  String get enterFieldError => 'Introduce el campo.';
+
+  @override
+  String get enterCallupPlaceError => 'Introduce el lugar de convocatoria.';
+
+  @override
+  String get selectAtLeastOnePlayerError => 'Selecciona al menos un jugador.';
+
+  @override
+  String get callupUpdatedSuccess => 'Convocatoria actualizada correctamente.';
+
+  @override
+  String get callupCreatedSuccess => 'Convocatoria creada correctamente.';
+
+  @override
+  String callupUpdateError(String error) {
+    return 'No se ha podido actualizar la convocatoria: $error';
+  }
+
+  @override
+  String callupCreateError(String error) {
+    return 'No se ha podido crear la convocatoria: $error';
+  }
 }
