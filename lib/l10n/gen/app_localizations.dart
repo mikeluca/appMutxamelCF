@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_ca.dart';
+import 'app_localizations_en.dart';
 import 'app_localizations_es.dart';
 
 // ignore_for_file: type=lint
@@ -95,6 +96,7 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('ca'),
+    Locale('en'),
     Locale('es'),
   ];
 
@@ -739,6 +741,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Valencià'**
   String get settingsLanguageValencian;
+
+  /// No description provided for @settingsLanguageEnglish.
+  ///
+  /// In es, this message translates to:
+  /// **'Inglés'**
+  String get settingsLanguageEnglish;
 
   /// No description provided for @settingsAboutApp.
   ///
@@ -2342,7 +2350,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['ca', 'es'].contains(locale.languageCode);
+      <String>['ca', 'en', 'es'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -2353,6 +2361,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'ca':
       return AppLocalizationsCa();
+    case 'en':
+      return AppLocalizationsEn();
     case 'es':
       return AppLocalizationsEs();
   }

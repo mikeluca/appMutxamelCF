@@ -598,6 +598,10 @@ class _AjustesPageState extends State<AjustesPage> {
                   value: 'ca',
                   child: Text(_t.settingsLanguageValencian),
                 ),
+                DropdownMenuItem(
+                  value: 'en',
+                  child: Text(_t.settingsLanguageEnglish),
+                ),
               ],
               onChanged: (valor) {
                 if (valor == null) return;
