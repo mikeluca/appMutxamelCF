@@ -729,4 +729,176 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get activateAndEnterButton => 'Activa i entra';
+
+  @override
+  String get commDetailTitle => 'Comunicació';
+
+  @override
+  String get commLoadError => 'No s\'ha pogut carregar la comunicació.';
+
+  @override
+  String get commNewTitle => 'Nova comunicació';
+
+  @override
+  String get commSelectRecipientError => 'Selecciona a qui vols escriure.';
+
+  @override
+  String get commSelectTeamError => 'Selecciona almenys un equip.';
+
+  @override
+  String get commSelectCategoryError => 'Selecciona almenys una categoria.';
+
+  @override
+  String get commSelectRecipientPersonError => 'Selecciona un destinatari.';
+
+  @override
+  String get commCreatedSuccess => 'Comunicació creada correctament.';
+
+  @override
+  String commCreateError(String error) {
+    return 'No s\'ha pogut crear la comunicació: $error';
+  }
+
+  @override
+  String get titleLabel => 'Títol';
+
+  @override
+  String get titleHint => 'Escriu el títol';
+
+  @override
+  String get titleRequired => 'El títol és obligatori.';
+
+  @override
+  String get messageLabel => 'Missatge';
+
+  @override
+  String get messageHint => 'Escriu el contingut de la comunicació';
+
+  @override
+  String get messageRequired => 'El missatge és obligatori.';
+
+  @override
+  String get recipientsTitle => 'Destinataris';
+
+  @override
+  String get teamsSegment => 'Equips';
+
+  @override
+  String get categoriesSegment => 'Categories';
+
+  @override
+  String get privateSegment => 'Privat';
+
+  @override
+  String get noRecipientsAvailable =>
+      'No tens cap destinatari disponible per a escriure una comunicació.';
+
+  @override
+  String get chooseTeamsHint => 'Tria un o diversos equips.';
+
+  @override
+  String get chooseCategoriesHint => 'Tria una o diverses categories.';
+
+  @override
+  String get choosePrivateRecipientHint =>
+      'Tria una única persona; el missatge serà privat només per a ella.';
+
+  @override
+  String get searchRecipientLabel => 'Cercar destinatari';
+
+  @override
+  String get searchRecipientHint => 'Nom o cognoms';
+
+  @override
+  String get noRecipientsFound => 'No s\'han trobat destinataris.';
+
+  @override
+  String get savingButton => 'Guardant...';
+
+  @override
+  String get saveCommunicationButton => 'Guardar comunicació';
+
+  @override
+  String get recipientsLoadError =>
+      'No s\'han pogut carregar els destinataris.';
+
+  @override
+  String get liveMatchTitle => 'Partit en directe';
+
+  @override
+  String get liveMatchWarning =>
+      'Cada botó envia un avís en directe a tots els usuaris de l\'app. Revisa-ho bé abans de prémer: no es pot desfer.';
+
+  @override
+  String get liveEventKickoff => 'Inici de partit';
+
+  @override
+  String get liveConfirmKickoff => 'Avisar que comença el partit?';
+
+  @override
+  String get liveEventGoalAgainst => 'Gol en contra';
+
+  @override
+  String get liveConfirmGoalAgainst => 'Avisar d\'un gol en contra?';
+
+  @override
+  String get liveEventHalftime => 'Descans';
+
+  @override
+  String get liveConfirmHalftime => 'Avisar del descans?';
+
+  @override
+  String get liveEventSecondHalf => 'Segona part';
+
+  @override
+  String get liveConfirmSecondHalf => 'Avisar de l\'inici de la segona part?';
+
+  @override
+  String get liveEventFulltime => 'Final de partit';
+
+  @override
+  String get liveConfirmFulltime => 'Avisar que ha finalitzat el partit?';
+
+  @override
+  String get liveLineupButton => 'Alineació';
+
+  @override
+  String get liveGoalForButton => 'Gol a favor';
+
+  @override
+  String get cancel => 'Cancel·la';
+
+  @override
+  String get send => 'Envia';
+
+  @override
+  String get liveStartingLineupLabel => 'Onze inicial';
+
+  @override
+  String get liveSubstitutesLabel => 'Suplents';
+
+  @override
+  String get liveFillLineupError => 'Omple l\'onze inicial i els suplents.';
+
+  @override
+  String get liveLineupSentMessage => 'Alineació enviada.';
+
+  @override
+  String get liveGoalAuthorLabel => 'Autor del gol';
+
+  @override
+  String get liveEnterGoalAuthorError => 'Escriu l\'autor del gol.';
+
+  @override
+  String get liveGoalSentMessage => 'Gol enviat.';
+
+  @override
+  String liveNotificationSentMessage(String titulo) {
+    return 'Avís de \"$titulo\" enviat.';
+  }
+
+  @override
+  String liveSendError(String error) {
+    return 'No s\'ha pogut enviar l\'avís: $error';
+  }
 }

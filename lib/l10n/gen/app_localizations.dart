@@ -1399,6 +1399,330 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Activar y entrar'**
   String get activateAndEnterButton;
+
+  /// No description provided for @commDetailTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Comunicación'**
+  String get commDetailTitle;
+
+  /// No description provided for @commLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido cargar la comunicación.'**
+  String get commLoadError;
+
+  /// No description provided for @commNewTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva comunicación'**
+  String get commNewTitle;
+
+  /// No description provided for @commSelectRecipientError.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona a quién quieres escribir.'**
+  String get commSelectRecipientError;
+
+  /// No description provided for @commSelectTeamError.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona al menos un equipo.'**
+  String get commSelectTeamError;
+
+  /// No description provided for @commSelectCategoryError.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona al menos una categoría.'**
+  String get commSelectCategoryError;
+
+  /// No description provided for @commSelectRecipientPersonError.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona un destinatario.'**
+  String get commSelectRecipientPersonError;
+
+  /// No description provided for @commCreatedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Comunicación creada correctamente.'**
+  String get commCreatedSuccess;
+
+  /// No description provided for @commCreateError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido crear la comunicación: {error}'**
+  String commCreateError(String error);
+
+  /// No description provided for @titleLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Título'**
+  String get titleLabel;
+
+  /// No description provided for @titleHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe el título'**
+  String get titleHint;
+
+  /// No description provided for @titleRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'El título es obligatorio.'**
+  String get titleRequired;
+
+  /// No description provided for @messageLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Mensaje'**
+  String get messageLabel;
+
+  /// No description provided for @messageHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe el contenido de la comunicación'**
+  String get messageHint;
+
+  /// No description provided for @messageRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'El mensaje es obligatorio.'**
+  String get messageRequired;
+
+  /// No description provided for @recipientsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Destinatarios'**
+  String get recipientsTitle;
+
+  /// No description provided for @teamsSegment.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipos'**
+  String get teamsSegment;
+
+  /// No description provided for @categoriesSegment.
+  ///
+  /// In es, this message translates to:
+  /// **'Categorías'**
+  String get categoriesSegment;
+
+  /// No description provided for @privateSegment.
+  ///
+  /// In es, this message translates to:
+  /// **'Privado'**
+  String get privateSegment;
+
+  /// No description provided for @noRecipientsAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes ningún destinatario disponible para escribir una comunicación.'**
+  String get noRecipientsAvailable;
+
+  /// No description provided for @chooseTeamsHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige uno o varios equipos.'**
+  String get chooseTeamsHint;
+
+  /// No description provided for @chooseCategoriesHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige una o varias categorías.'**
+  String get chooseCategoriesHint;
+
+  /// No description provided for @choosePrivateRecipientHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige una única persona; el mensaje será privado solo para ella.'**
+  String get choosePrivateRecipientHint;
+
+  /// No description provided for @searchRecipientLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar destinatario'**
+  String get searchRecipientLabel;
+
+  /// No description provided for @searchRecipientHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre o apellidos'**
+  String get searchRecipientHint;
+
+  /// No description provided for @noRecipientsFound.
+  ///
+  /// In es, this message translates to:
+  /// **'No se han encontrado destinatarios.'**
+  String get noRecipientsFound;
+
+  /// No description provided for @savingButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardando...'**
+  String get savingButton;
+
+  /// No description provided for @saveCommunicationButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar comunicación'**
+  String get saveCommunicationButton;
+
+  /// No description provided for @recipientsLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se han podido cargar los destinatarios.'**
+  String get recipientsLoadError;
+
+  /// No description provided for @liveMatchTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Partido en directo'**
+  String get liveMatchTitle;
+
+  /// No description provided for @liveMatchWarning.
+  ///
+  /// In es, this message translates to:
+  /// **'Cada botón manda un aviso en directo a todos los usuarios de la app. Revisa bien antes de pulsar: no se puede deshacer.'**
+  String get liveMatchWarning;
+
+  /// No description provided for @liveEventKickoff.
+  ///
+  /// In es, this message translates to:
+  /// **'Inicio de partido'**
+  String get liveEventKickoff;
+
+  /// No description provided for @liveConfirmKickoff.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Avisar de que empieza el partido?'**
+  String get liveConfirmKickoff;
+
+  /// No description provided for @liveEventGoalAgainst.
+  ///
+  /// In es, this message translates to:
+  /// **'Gol en contra'**
+  String get liveEventGoalAgainst;
+
+  /// No description provided for @liveConfirmGoalAgainst.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Avisar de un gol en contra?'**
+  String get liveConfirmGoalAgainst;
+
+  /// No description provided for @liveEventHalftime.
+  ///
+  /// In es, this message translates to:
+  /// **'Descanso'**
+  String get liveEventHalftime;
+
+  /// No description provided for @liveConfirmHalftime.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Avisar del descanso?'**
+  String get liveConfirmHalftime;
+
+  /// No description provided for @liveEventSecondHalf.
+  ///
+  /// In es, this message translates to:
+  /// **'Segunda parte'**
+  String get liveEventSecondHalf;
+
+  /// No description provided for @liveConfirmSecondHalf.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Avisar del inicio de la segunda parte?'**
+  String get liveConfirmSecondHalf;
+
+  /// No description provided for @liveEventFulltime.
+  ///
+  /// In es, this message translates to:
+  /// **'Final de partido'**
+  String get liveEventFulltime;
+
+  /// No description provided for @liveConfirmFulltime.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Avisar de que ha finalizado el partido?'**
+  String get liveConfirmFulltime;
+
+  /// No description provided for @liveLineupButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Alineación'**
+  String get liveLineupButton;
+
+  /// No description provided for @liveGoalForButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Gol a favor'**
+  String get liveGoalForButton;
+
+  /// No description provided for @cancel.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar'**
+  String get cancel;
+
+  /// No description provided for @send.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar'**
+  String get send;
+
+  /// No description provided for @liveStartingLineupLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Once inicial'**
+  String get liveStartingLineupLabel;
+
+  /// No description provided for @liveSubstitutesLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Suplentes'**
+  String get liveSubstitutesLabel;
+
+  /// No description provided for @liveFillLineupError.
+  ///
+  /// In es, this message translates to:
+  /// **'Rellena el once inicial y los suplentes.'**
+  String get liveFillLineupError;
+
+  /// No description provided for @liveLineupSentMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Alineación enviada.'**
+  String get liveLineupSentMessage;
+
+  /// No description provided for @liveGoalAuthorLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Autor del gol'**
+  String get liveGoalAuthorLabel;
+
+  /// No description provided for @liveEnterGoalAuthorError.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe el autor del gol.'**
+  String get liveEnterGoalAuthorError;
+
+  /// No description provided for @liveGoalSentMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Gol enviado.'**
+  String get liveGoalSentMessage;
+
+  /// No description provided for @liveNotificationSentMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Aviso de \"{titulo}\" enviado.'**
+  String liveNotificationSentMessage(String titulo);
+
+  /// No description provided for @liveSendError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido enviar el aviso: {error}'**
+  String liveSendError(String error);
 }
 
 class _AppLocalizationsDelegate

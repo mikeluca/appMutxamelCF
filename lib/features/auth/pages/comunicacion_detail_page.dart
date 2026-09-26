@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../models/comunicacion_model.dart';
 import '../services/comunicacion_service.dart';
 
@@ -22,6 +23,7 @@ class _ComunicacionDetallePageState extends State<ComunicacionDetallePage> {
   String? _error;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -55,7 +57,7 @@ class _ComunicacionDetallePageState extends State<ComunicacionDetallePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Comunicación')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: _t.commDetailTitle)),
       body: _construirContenido(),
     );
   }
@@ -72,9 +74,7 @@ class _ComunicacionDetallePageState extends State<ComunicacionDetallePage> {
     }
 
     if (_comunicacion == null) {
-      return const Center(
-        child: Text('No se ha podido cargar la comunicación.'),
-      );
+      return Center(child: Text(_t.commLoadError));
     }
 
     final comunicacion = _comunicacion!;
@@ -208,7 +208,7 @@ class _ComunicacionDetallePageState extends State<ComunicacionDetallePage> {
                 _cargarComunicacion();
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
+              label: Text(_t.retry),
             ),
           ],
         ),

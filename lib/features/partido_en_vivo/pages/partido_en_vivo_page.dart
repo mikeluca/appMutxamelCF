@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../services/partido_en_vivo_service.dart';
 
 class PartidoEnVivoPage extends StatefulWidget {
@@ -16,19 +17,19 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
   bool _enviando = false;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const ClubAppBarTitle(titulo: 'Partido en directo'),
+        title: ClubAppBarTitle(titulo: _t.liveMatchTitle),
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           Text(
-            'Cada botón manda un aviso en directo a todos los usuarios de '
-            'la app. Revisa bien antes de pulsar: no se puede deshacer.',
+            _t.liveMatchWarning,
             style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 13),
           ),
           const SizedBox(height: 20),
@@ -36,8 +37,8 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
           const SizedBox(height: 12),
           _construirBotonConfirmacion(
             icono: Icons.sports_soccer,
-            titulo: 'Inicio de partido',
-            mensajeConfirmacion: '¿Avisar de que empieza el partido?',
+            titulo: _t.liveEventKickoff,
+            mensajeConfirmacion: _t.liveConfirmKickoff,
             accion: _service.enviarInicioPartido,
           ),
           const SizedBox(height: 12),
@@ -45,29 +46,29 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
           const SizedBox(height: 12),
           _construirBotonConfirmacion(
             icono: Icons.sentiment_dissatisfied_outlined,
-            titulo: 'Gol en contra',
-            mensajeConfirmacion: '¿Avisar de un gol en contra?',
+            titulo: _t.liveEventGoalAgainst,
+            mensajeConfirmacion: _t.liveConfirmGoalAgainst,
             accion: _service.enviarGolContra,
           ),
           const SizedBox(height: 12),
           _construirBotonConfirmacion(
             icono: Icons.pause_circle_outline,
-            titulo: 'Descanso',
-            mensajeConfirmacion: '¿Avisar del descanso?',
+            titulo: _t.liveEventHalftime,
+            mensajeConfirmacion: _t.liveConfirmHalftime,
             accion: _service.enviarDescanso,
           ),
           const SizedBox(height: 12),
           _construirBotonConfirmacion(
             icono: Icons.play_circle_outline,
-            titulo: 'Segunda parte',
-            mensajeConfirmacion: '¿Avisar del inicio de la segunda parte?',
+            titulo: _t.liveEventSecondHalf,
+            mensajeConfirmacion: _t.liveConfirmSecondHalf,
             accion: _service.enviarSegundaParte,
           ),
           const SizedBox(height: 12),
           _construirBotonConfirmacion(
             icono: Icons.flag_outlined,
-            titulo: 'Final de partido',
-            mensajeConfirmacion: '¿Avisar de que ha finalizado el partido?',
+            titulo: _t.liveEventFulltime,
+            mensajeConfirmacion: _t.liveConfirmFulltime,
             accion: _service.enviarFinalPartido,
           ),
         ],
@@ -107,7 +108,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
   Widget _construirBotonAlineacion() {
     return _construirBoton(
       icono: Icons.list_alt,
-      titulo: 'Alineación',
+      titulo: _t.liveLineupButton,
       onPressed: _abrirDialogoAlineacion,
     );
   }
@@ -115,7 +116,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
   Widget _construirBotonGolFavor() {
     return _construirBoton(
       icono: Icons.emoji_events_outlined,
-      titulo: 'Gol a favor',
+      titulo: _t.liveGoalForButton,
       onPressed: _abrirDialogoGolFavor,
     );
   }
@@ -129,7 +130,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
 
     if (confirmado != true) return;
 
-    await _ejecutar(accion, 'Aviso de "$titulo" enviado.');
+    await _ejecutar(accion, _t.liveNotificationSentMessage(titulo));
   }
 
   Future<bool?> _mostrarConfirmacion(String titulo, String mensaje) {
@@ -141,11 +142,11 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: Text(_t.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Enviar'),
+            child: Text(_t.send),
           ),
         ],
       ),
@@ -159,7 +160,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
     final confirmado = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Alineación'),
+        title: Text(_t.liveLineupButton),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -168,9 +169,9 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
                 controller: onceController,
                 minLines: 2,
                 maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Once inicial',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: _t.liveStartingLineupLabel,
+                  border: const OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 14),
@@ -178,9 +179,9 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
                 controller: suplentesController,
                 minLines: 2,
                 maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Suplentes',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: _t.liveSubstitutesLabel,
+                  border: const OutlineInputBorder(),
                 ),
               ),
             ],
@@ -189,11 +190,11 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: Text(_t.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Enviar'),
+            child: Text(_t.send),
           ),
         ],
       ),
@@ -203,7 +204,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
 
     if (onceController.text.trim().isEmpty ||
         suplentesController.text.trim().isEmpty) {
-      _mostrarMensaje('Rellena el once inicial y los suplentes.');
+      _mostrarMensaje(_t.liveFillLineupError);
       return;
     }
 
@@ -212,7 +213,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
         onceInicial: onceController.text.trim(),
         suplentes: suplentesController.text.trim(),
       ),
-      'Alineación enviada.',
+      _t.liveLineupSentMessage,
     );
   }
 
@@ -222,23 +223,23 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
     final confirmado = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Gol a favor'),
+        title: Text(_t.liveGoalForButton),
         content: TextField(
           controller: autorController,
           autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'Autor del gol',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: _t.liveGoalAuthorLabel,
+            border: const OutlineInputBorder(),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: Text(_t.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Enviar'),
+            child: Text(_t.send),
           ),
         ],
       ),
@@ -247,13 +248,13 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
     if (confirmado != true) return;
 
     if (autorController.text.trim().isEmpty) {
-      _mostrarMensaje('Escribe el autor del gol.');
+      _mostrarMensaje(_t.liveEnterGoalAuthorError);
       return;
     }
 
     await _ejecutar(
       () => _service.enviarGolFavor(autorController.text.trim()),
-      'Gol enviado.',
+      _t.liveGoalSentMessage,
     );
   }
 
@@ -272,7 +273,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage> {
     } catch (e) {
       if (!mounted) return;
 
-      _mostrarMensaje('No se ha podido enviar el aviso: $e');
+      _mostrarMensaje(_t.liveSendError(e.toString()));
     } finally {
       if (mounted) {
         setState(() => _enviando = false);
