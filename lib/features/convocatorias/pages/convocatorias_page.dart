@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
 import '../model/convocatoria_model.dart';
 import '../services/convocatoria_service.dart';
@@ -21,6 +22,7 @@ class _ConvocatoriasPageState extends State<ConvocatoriasPage> {
   late Future<List<ConvocatoriaModel>> _futureConvocatorias;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -40,7 +42,7 @@ class _ConvocatoriasPageState extends State<ConvocatoriasPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Convocatorias')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: _t.callupsTitle)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           final resultado = await Navigator.push(
@@ -55,7 +57,7 @@ class _ConvocatoriasPageState extends State<ConvocatoriasPage> {
           }
         },
         icon: const Icon(Icons.add),
-        label: const Text('Nueva'),
+        label: Text(_t.newButton),
       ),
       body: RefreshIndicator(
         onRefresh: _recargar,
@@ -178,7 +180,7 @@ class _ConvocatoriasPageState extends State<ConvocatoriasPage> {
         Icon(Icons.sports_soccer_outlined, size: 64, color: _colors.primary),
         const SizedBox(height: 20),
         Text(
-          'Todavía no hay convocatorias.',
+          _t.noCallupsYet,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 18,
@@ -188,7 +190,7 @@ class _ConvocatoriasPageState extends State<ConvocatoriasPage> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Crea la primera pulsando el botón Nueva.',
+          _t.createFirstCallupHint,
           textAlign: TextAlign.center,
           style: TextStyle(color: _colors.onSurfaceVariant),
         ),
@@ -206,7 +208,7 @@ class _ConvocatoriasPageState extends State<ConvocatoriasPage> {
             const Icon(Icons.error_outline, size: 56, color: Colors.redAccent),
             const SizedBox(height: 16),
             Text(
-              'No se han podido cargar las convocatorias.',
+              _t.callupsLoadError,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 17,
@@ -226,7 +228,7 @@ class _ConvocatoriasPageState extends State<ConvocatoriasPage> {
                 setState(_cargar);
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
+              label: Text(_t.retry),
             ),
           ],
         ),
@@ -247,14 +249,14 @@ class _ConvocatoriasPageState extends State<ConvocatoriasPage> {
 
     final date = DateTime(ano, mes, dia);
 
-    const diasSemana = [
-      'Lunes',
-      'Martes',
-      'Miércoles',
-      'Jueves',
-      'Viernes',
-      'Sábado',
-      'Domingo',
+    final diasSemana = [
+      _t.weekdayMonday,
+      _t.weekdayTuesday,
+      _t.weekdayWednesday,
+      _t.weekdayThursday,
+      _t.weekdayFriday,
+      _t.weekdaySaturday,
+      _t.weekdaySunday,
     ];
 
     final diaSemana = diasSemana[date.weekday - 1];
