@@ -409,5 +409,31 @@
   "callupCreateError": "No se ha podido crear la convocatoria: {error}",
   "@callupCreateError": {
     "placeholders": { "error": { "type": "String" } }
-  }
+  },
+
+  "teamManagementTitle": "Gestión del equipo",
+  "trainingsDesc": "Crear y consultar entrenamientos y asistencia",
+  "callupsDesc": "Crear y consultar convocatorias de partidos",
+  "playersMenuLabel": "Jugadores",
+  "playersMenuDesc": "Consultar los jugadores del equipo",
+
+  "teamsPageTitle": "Equipos",
+  "ourTeamsTitle": "Nuestros equipos",
+  "teamsSubtitle": "Consulta las plantillas y la información de cada equipo del club.",
+
+  "noPlayersInTeam": "No hay jugadores en este equipo.",
+
+  "squadTitle": "Plantilla",
+  "staffTitle": "Cuerpo técnico",
+  "staffLoadError": "No se ha podido cargar el cuerpo técnico.",
+  "noStaffAvailableForTeam": "No hay cuerpo técnico disponible para este equipo.",
+  "squadLoadError": "No se ha podido cargar la plantilla.",
+
+  "familiesTitle": "Familiares",
+  "phoneAppOpenError": "No se puede abrir la aplicación de teléfono",
+  "whatsappOpenError": "No se puede abrir WhatsApp",
+  "noFamiliesRegistered": "Este jugador no tiene familiares registrados",
+  "callButton": "Llamar",
+  "emailButton": "Email",
+  "whatsappButton": "WhatsApp"
 }

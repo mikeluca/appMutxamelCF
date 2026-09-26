@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
 import '../../teams/models/player_model.dart';
 import '../../teams/services/team_services.dart';
@@ -23,6 +24,7 @@ class _JugadoresEquipoPageState extends State<JugadoresEquipoPage> {
   late Future<List<PlayerModel>> _futureJugadores;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -41,7 +43,7 @@ class _JugadoresEquipoPageState extends State<JugadoresEquipoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Jugadores')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: _t.playersMenuLabel)),
       body: RefreshIndicator(
         onRefresh: _recargar,
         child: FutureBuilder<List<PlayerModel>>(
@@ -66,7 +68,7 @@ class _JugadoresEquipoPageState extends State<JugadoresEquipoPage> {
                   Icon(Icons.groups_outlined, size: 64, color: _colors.primary),
                   const SizedBox(height: 20),
                   Text(
-                    'No hay jugadores en este equipo.',
+                    _t.noPlayersInTeam,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 17,
@@ -225,7 +227,7 @@ class _JugadoresEquipoPageState extends State<JugadoresEquipoPage> {
                   Icon(Icons.error_outline, size: 52, color: _colors.error),
                   const SizedBox(height: 16),
                   Text(
-                    'No se han podido cargar los jugadores.',
+                    _t.playersLoadError,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 17,
@@ -237,7 +239,7 @@ class _JugadoresEquipoPageState extends State<JugadoresEquipoPage> {
                   OutlinedButton.icon(
                     onPressed: _recargar,
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Reintentar'),
+                    label: Text(_t.retry),
                   ),
                 ],
               ),

@@ -1077,4 +1077,69 @@ class AppLocalizationsCa extends AppLocalizations {
   String callupCreateError(String error) {
     return 'No s\'ha pogut crear la convocatòria: $error';
   }
+
+  @override
+  String get teamManagementTitle => 'Gestió de l\'equip';
+
+  @override
+  String get trainingsDesc => 'Crear i consultar entrenaments i assistència';
+
+  @override
+  String get callupsDesc => 'Crear i consultar convocatòries de partits';
+
+  @override
+  String get playersMenuLabel => 'Jugadors';
+
+  @override
+  String get playersMenuDesc => 'Consultar els jugadors de l\'equip';
+
+  @override
+  String get teamsPageTitle => 'Equips';
+
+  @override
+  String get ourTeamsTitle => 'Els nostres equips';
+
+  @override
+  String get teamsSubtitle =>
+      'Consulta les plantilles i la informació de cada equip del club.';
+
+  @override
+  String get noPlayersInTeam => 'No hi ha jugadors en aquest equip.';
+
+  @override
+  String get squadTitle => 'Plantilla';
+
+  @override
+  String get staffTitle => 'Cos tècnic';
+
+  @override
+  String get staffLoadError => 'No s\'ha pogut carregar el cos tècnic.';
+
+  @override
+  String get noStaffAvailableForTeam =>
+      'No hi ha cos tècnic disponible per a aquest equip.';
+
+  @override
+  String get squadLoadError => 'No s\'ha pogut carregar la plantilla.';
+
+  @override
+  String get familiesTitle => 'Familiars';
+
+  @override
+  String get phoneAppOpenError => 'No es pot obrir l\'aplicació de telèfon';
+
+  @override
+  String get whatsappOpenError => 'No es pot obrir WhatsApp';
+
+  @override
+  String get noFamiliesRegistered => 'Este jugador no té familiars registrats';
+
+  @override
+  String get callButton => 'Truca';
+
+  @override
+  String get emailButton => 'Correu';
+
+  @override
+  String get whatsappButton => 'WhatsApp';
 }

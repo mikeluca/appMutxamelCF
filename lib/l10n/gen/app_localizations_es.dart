@@ -1086,4 +1086,70 @@ class AppLocalizationsEs extends AppLocalizations {
   String callupCreateError(String error) {
     return 'No se ha podido crear la convocatoria: $error';
   }
+
+  @override
+  String get teamManagementTitle => 'Gestión del equipo';
+
+  @override
+  String get trainingsDesc => 'Crear y consultar entrenamientos y asistencia';
+
+  @override
+  String get callupsDesc => 'Crear y consultar convocatorias de partidos';
+
+  @override
+  String get playersMenuLabel => 'Jugadores';
+
+  @override
+  String get playersMenuDesc => 'Consultar los jugadores del equipo';
+
+  @override
+  String get teamsPageTitle => 'Equipos';
+
+  @override
+  String get ourTeamsTitle => 'Nuestros equipos';
+
+  @override
+  String get teamsSubtitle =>
+      'Consulta las plantillas y la información de cada equipo del club.';
+
+  @override
+  String get noPlayersInTeam => 'No hay jugadores en este equipo.';
+
+  @override
+  String get squadTitle => 'Plantilla';
+
+  @override
+  String get staffTitle => 'Cuerpo técnico';
+
+  @override
+  String get staffLoadError => 'No se ha podido cargar el cuerpo técnico.';
+
+  @override
+  String get noStaffAvailableForTeam =>
+      'No hay cuerpo técnico disponible para este equipo.';
+
+  @override
+  String get squadLoadError => 'No se ha podido cargar la plantilla.';
+
+  @override
+  String get familiesTitle => 'Familiares';
+
+  @override
+  String get phoneAppOpenError => 'No se puede abrir la aplicación de teléfono';
+
+  @override
+  String get whatsappOpenError => 'No se puede abrir WhatsApp';
+
+  @override
+  String get noFamiliesRegistered =>
+      'Este jugador no tiene familiares registrados';
+
+  @override
+  String get callButton => 'Llamar';
+
+  @override
+  String get emailButton => 'Email';
+
+  @override
+  String get whatsappButton => 'WhatsApp';
 }

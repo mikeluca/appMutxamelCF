@@ -2053,6 +2053,132 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No se ha podido crear la convocatoria: {error}'**
   String callupCreateError(String error);
+
+  /// No description provided for @teamManagementTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Gestión del equipo'**
+  String get teamManagementTitle;
+
+  /// No description provided for @trainingsDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear y consultar entrenamientos y asistencia'**
+  String get trainingsDesc;
+
+  /// No description provided for @callupsDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear y consultar convocatorias de partidos'**
+  String get callupsDesc;
+
+  /// No description provided for @playersMenuLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Jugadores'**
+  String get playersMenuLabel;
+
+  /// No description provided for @playersMenuDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Consultar los jugadores del equipo'**
+  String get playersMenuDesc;
+
+  /// No description provided for @teamsPageTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipos'**
+  String get teamsPageTitle;
+
+  /// No description provided for @ourTeamsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuestros equipos'**
+  String get ourTeamsTitle;
+
+  /// No description provided for @teamsSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Consulta las plantillas y la información de cada equipo del club.'**
+  String get teamsSubtitle;
+
+  /// No description provided for @noPlayersInTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay jugadores en este equipo.'**
+  String get noPlayersInTeam;
+
+  /// No description provided for @squadTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Plantilla'**
+  String get squadTitle;
+
+  /// No description provided for @staffTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuerpo técnico'**
+  String get staffTitle;
+
+  /// No description provided for @staffLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido cargar el cuerpo técnico.'**
+  String get staffLoadError;
+
+  /// No description provided for @noStaffAvailableForTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay cuerpo técnico disponible para este equipo.'**
+  String get noStaffAvailableForTeam;
+
+  /// No description provided for @squadLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido cargar la plantilla.'**
+  String get squadLoadError;
+
+  /// No description provided for @familiesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Familiares'**
+  String get familiesTitle;
+
+  /// No description provided for @phoneAppOpenError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se puede abrir la aplicación de teléfono'**
+  String get phoneAppOpenError;
+
+  /// No description provided for @whatsappOpenError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se puede abrir WhatsApp'**
+  String get whatsappOpenError;
+
+  /// No description provided for @noFamiliesRegistered.
+  ///
+  /// In es, this message translates to:
+  /// **'Este jugador no tiene familiares registrados'**
+  String get noFamiliesRegistered;
+
+  /// No description provided for @callButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Llamar'**
+  String get callButton;
+
+  /// No description provided for @emailButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Email'**
+  String get emailButton;
+
+  /// No description provided for @whatsappButton.
+  ///
+  /// In es, this message translates to:
+  /// **'WhatsApp'**
+  String get whatsappButton;
 }
 
 class _AppLocalizationsDelegate
