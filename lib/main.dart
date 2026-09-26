@@ -30,11 +30,36 @@ Future<void> main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final temaGuardado = await AppPreferences.obtenerTema();
-  final idiomaGuardado = await AppPreferences.obtenerIdioma();
+
+  String idiomaInicial;
+
+  if (await AppPreferences.existeIdiomaGuardado()) {
+    // El usuario ya tiene una preferencia (elegida en Ajustes o detectada
+    // en un arranque anterior): se respeta siempre, sin volver a detectar.
+    idiomaInicial = await AppPreferences.obtenerIdioma();
+  } else {
+    // Primer arranque (app recién instalada, sin preferencia guardada):
+    // se detecta el idioma del dispositivo y se fija para el futuro.
+    final idiomaDispositivo =
+        WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+
+    switch (idiomaDispositivo) {
+      case 'es':
+        idiomaInicial = 'es';
+        break;
+      case 'ca':
+        idiomaInicial = 'ca';
+        break;
+      default:
+        idiomaInicial = 'en';
+    }
+
+    await AppPreferences.guardarIdioma(idiomaInicial);
+  }
 
   // El resto de la inicialización (notificaciones) se hace en SplashPage para no retrasar el primer frame.
   runApp(
-    MutxamelCfApp(temaInicial: temaGuardado, idiomaInicial: idiomaGuardado),
+    MutxamelCfApp(temaInicial: temaGuardado, idiomaInicial: idiomaInicial),
   );
 }
 

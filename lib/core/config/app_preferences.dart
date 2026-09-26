@@ -25,12 +25,25 @@ class AppPreferences {
     await prefs.setString(_claveTema, tema);
   }
 
-  /// Código de idioma ('es' o 'ca' — 'ca' es el código ISO 639 que
+  /// Código de idioma ('es', 'ca' o 'en' — 'ca' es el código ISO 639 que
   /// también se usa para el valenciano, no hay uno separado oficial).
   static Future<String> obtenerIdioma() async {
     final prefs = await SharedPreferences.getInstance();
 
     return prefs.getString(_claveIdioma) ?? 'es';
+  }
+
+  /// Indica si ya se ha guardado alguna vez una preferencia de idioma
+  /// (bien porque el usuario la cambió en Ajustes, bien porque ya se
+  /// detectó una vez el idioma del dispositivo en un arranque anterior).
+  /// Permite distinguir el "primer arranque" (sin nada guardado, momento
+  /// en que se debe detectar el idioma del sistema) de arranques
+  /// posteriores, en los que la preferencia guardada debe respetarse
+  /// siempre y no se debe volver a detectar.
+  static Future<bool> existeIdiomaGuardado() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.containsKey(_claveIdioma);
   }
 
   static Future<void> guardarIdioma(String idioma) async {

@@ -354,6 +354,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get settingsLanguageValencian => 'Valencià';
 
   @override
+  String get settingsLanguageEnglish => 'Anglès';
+
+  @override
   String get settingsAboutApp => 'Sobre appMTX';
 
   @override
