@@ -23,6 +23,18 @@ void main() {
     });
   });
 
+  group('AppPreferences.existeIdiomaGuardado', () {
+    test('es false cuando nunca se ha guardado un idioma', () async {
+      expect(await AppPreferences.existeIdiomaGuardado(), isFalse);
+    });
+
+    test('es true despues de guardar un idioma', () async {
+      await AppPreferences.guardarIdioma('en');
+
+      expect(await AppPreferences.existeIdiomaGuardado(), isTrue);
+    });
+  });
+
   group('AppPreferences.obtenerNotifResultados/guardarNotifResultados', () {
     test('por defecto es false (opt-in explicito)', () async {
       expect(await AppPreferences.obtenerNotifResultados(), isFalse);
