@@ -1152,4 +1152,83 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get whatsappButton => 'WhatsApp';
+
+  @override
+  String get allMatchesTitle => 'Todos los partidos';
+
+  @override
+  String get matchDeletedSuccess => 'Partido eliminado correctamente.';
+
+  @override
+  String get matchCreatedSuccess => 'Partido creado correctamente.';
+
+  @override
+  String get matchUpdatedSuccess => 'Partido actualizado correctamente.';
+
+  @override
+  String get teamMatchesLoadError =>
+      'No se han podido cargar los partidos de este equipo.';
+
+  @override
+  String get addMatchButton => 'Añadir partido';
+
+  @override
+  String get teamNoMatchesAvailable =>
+      'No hay partidos disponibles para este equipo.';
+
+  @override
+  String get editMatchTooltip => 'Editar partido';
+
+  @override
+  String get matchTypeLiga => 'Liga';
+
+  @override
+  String get matchTypeAmistoso => 'Amistoso';
+
+  @override
+  String get matchTypeCopa => 'Copa';
+
+  @override
+  String get matchTypeTorneo => 'Torneo';
+
+  @override
+  String get resultFormatError =>
+      'El resultado debe tener el formato N-N (ej. 2-1).';
+
+  @override
+  String get rivalRequiredError => 'El rival es obligatorio.';
+
+  @override
+  String get deleteMatchTitle => 'Eliminar partido';
+
+  @override
+  String get deleteMatchConfirm =>
+      '¿Eliminar este partido? Esta acción no se puede deshacer.';
+
+  @override
+  String get delete => 'Eliminar';
+
+  @override
+  String get editMatchTitle => 'Editar partido';
+
+  @override
+  String get newMatchTitle => 'Nuevo partido';
+
+  @override
+  String get matchTypeLabel => 'Tipo de partido';
+
+  @override
+  String get noDateSelected => 'Sin fecha';
+
+  @override
+  String get dateLabel => 'Fecha';
+
+  @override
+  String get hourLabelHint => 'Hora (ej. 18:00)';
+
+  @override
+  String get resultLabelHint => 'Resultado (ej. 2-1)';
+
+  @override
+  String get save => 'Guardar';
 }

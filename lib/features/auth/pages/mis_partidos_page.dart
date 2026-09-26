@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../../matches/models/match_model.dart';
 import '../../matches/services/match_service.dart';
 import '../../matches/widgets/match_card.dart';
@@ -43,6 +44,7 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
   int _generacion = 0;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -87,7 +89,7 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
     return Scaffold(
       appBar: AppBar(
         title: ClubAppBarTitle(
-          titulo: esGestionGlobal ? 'Todos los partidos' : 'Mis partidos',
+          titulo: esGestionGlobal ? _t.allMatchesTitle : _t.clubPageMyMatches,
         ),
       ),
       body: _construirContenido(),
@@ -126,8 +128,8 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
             Center(
               child: Text(
                 esGestionGlobal
-                    ? 'No hay partidos disponibles.'
-                    : 'No tienes equipos asociados.',
+                    ? _t.matchesNoMatchesAvailable
+                    : _t.noTeamsAssociated,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 17,
@@ -305,8 +307,7 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
             const Icon(Icons.error_outline, size: 56, color: Colors.redAccent),
             const SizedBox(height: 16),
             Text(
-              'No se han podido cargar '
-              'los partidos.',
+              _t.matchesLoadError,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 17,
@@ -325,7 +326,7 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
                 _cargarDatos();
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
+              label: Text(_t.retry),
             ),
           ],
         ),
@@ -365,6 +366,7 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
   List<MatchModel> _partidos = [];
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   Future<void> _cargar() async {
     setState(() {
@@ -418,10 +420,10 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
     if (!mounted || resultado == null) return;
 
     final mensaje = resultado == 'eliminado'
-        ? 'Partido eliminado correctamente.'
+        ? _t.matchDeletedSuccess
         : (partidoExistente == null
-              ? 'Partido creado correctamente.'
-              : 'Partido actualizado correctamente.');
+              ? _t.matchCreatedSuccess
+              : _t.matchUpdatedSuccess);
 
     ScaffoldMessenger.of(
       context,
@@ -488,7 +490,7 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
       return Column(
         children: [
           Text(
-            'No se han podido cargar los partidos de este equipo.',
+            _t.teamMatchesLoadError,
             textAlign: TextAlign.center,
             style: TextStyle(color: _colors.onSurface),
           ),
@@ -496,7 +498,7 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
           TextButton.icon(
             onPressed: _cargar,
             icon: const Icon(Icons.refresh),
-            label: const Text('Reintentar'),
+            label: Text(_t.retry),
           ),
 
           // Aunque la carga haya fallado, si el usuario gestiona este
@@ -508,7 +510,7 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
               child: OutlinedButton.icon(
                 onPressed: () => _abrirFormulario(),
                 icon: const Icon(Icons.add),
-                label: const Text('Añadir partido'),
+                label: Text(_t.addMatchButton),
               ),
             ),
           ],
@@ -538,8 +540,7 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'No hay partidos disponibles '
-                      'para este equipo.',
+                      _t.teamNoMatchesAvailable,
                       style: TextStyle(color: _colors.onSurface),
                     ),
                   ),
@@ -559,7 +560,7 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
             child: OutlinedButton.icon(
               onPressed: () => _abrirFormulario(),
               icon: const Icon(Icons.add),
-              label: const Text('Añadir partido'),
+              label: Text(_t.addMatchButton),
             ),
           ),
       ],
@@ -583,7 +584,7 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
             elevation: 2,
             child: IconButton(
               icon: const Icon(Icons.edit, size: 20),
-              tooltip: 'Editar partido',
+              tooltip: _t.editMatchTooltip,
               onPressed: () => _abrirFormulario(partidoExistente: partido),
             ),
           ),
@@ -614,12 +615,23 @@ class _PartidoFormDialog extends StatefulWidget {
 
 class _PartidoFormDialogState extends State<_PartidoFormDialog> {
   static const _tiposPartido = ['LIGA', 'AMISTOSO', 'COPA', 'TORNEO'];
-  static const _etiquetasTipoPartido = {
-    'LIGA': 'Liga',
-    'AMISTOSO': 'Amistoso',
-    'COPA': 'Copa',
-    'TORNEO': 'Torneo',
-  };
+
+  AppLocalizations get _t => AppLocalizations.of(context);
+
+  String _etiquetaTipoPartido(String tipo) {
+    switch (tipo) {
+      case 'LIGA':
+        return _t.matchTypeLiga;
+      case 'AMISTOSO':
+        return _t.matchTypeAmistoso;
+      case 'COPA':
+        return _t.matchTypeCopa;
+      case 'TORNEO':
+        return _t.matchTypeTorneo;
+      default:
+        return tipo;
+    }
+  }
 
   late final TextEditingController _rivalController;
   late final TextEditingController _horaController;
@@ -689,7 +701,7 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
     final regex = RegExp(r'^\d+-\d+$');
 
     if (!regex.hasMatch(valor)) {
-      return 'El resultado debe tener el formato N-N (ej. 2-1).';
+      return _t.resultFormatError;
     }
 
     return null;
@@ -700,7 +712,7 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
 
     if (rival.isEmpty) {
       setState(() {
-        _error = 'El rival es obligatorio.';
+        _error = _t.rivalRequiredError;
       });
       return;
     }
@@ -774,19 +786,17 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
     final confirmado = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminar partido'),
-        content: const Text(
-          '¿Eliminar este partido? Esta acción no se puede deshacer.',
-        ),
+        title: Text(_t.deleteMatchTitle),
+        content: Text(_t.deleteMatchConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child: Text(_t.cancel),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Eliminar'),
+            child: Text(_t.delete),
           ),
         ],
       ),
@@ -834,7 +844,7 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(_esEdicion ? 'Editar partido' : 'Nuevo partido'),
+      title: Text(_esEdicion ? _t.editMatchTitle : _t.newMatchTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -842,23 +852,23 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
             TextField(
               controller: _rivalController,
               enabled: !_guardando,
-              decoration: const InputDecoration(
-                labelText: 'Rival',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: _t.rivalLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 14),
             DropdownButtonFormField<String>(
               initialValue: _tipo,
-              decoration: const InputDecoration(
-                labelText: 'Tipo de partido',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: _t.matchTypeLabel,
+                border: const OutlineInputBorder(),
               ),
               items: _tiposPartido
                   .map(
                     (tipo) => DropdownMenuItem(
                       value: tipo,
-                      child: Text(_etiquetasTipoPartido[tipo] ?? tipo),
+                      child: Text(_etiquetaTipoPartido(tipo)),
                     ),
                   )
                   .toList(),
@@ -877,13 +887,15 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
               borderRadius: BorderRadius.circular(4),
               onTap: _guardando ? null : _seleccionarFecha,
               child: InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: 'Fecha',
-                  border: OutlineInputBorder(),
-                  suffixIcon: Icon(Icons.calendar_today_outlined),
+                decoration: InputDecoration(
+                  labelText: _t.dateLabel,
+                  border: const OutlineInputBorder(),
+                  suffixIcon: const Icon(Icons.calendar_today_outlined),
                 ),
                 child: Text(
-                  _dia == null ? 'Sin fecha' : _formatearFechaVisible(_dia!),
+                  _dia == null
+                      ? _t.noDateSelected
+                      : _formatearFechaVisible(_dia!),
                 ),
               ),
             ),
@@ -891,27 +903,27 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
             TextField(
               controller: _horaController,
               enabled: !_guardando,
-              decoration: const InputDecoration(
-                labelText: 'Hora (ej. 18:00)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: _t.hourLabelHint,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 14),
             TextField(
               controller: _campoController,
               enabled: !_guardando,
-              decoration: const InputDecoration(
-                labelText: 'Campo',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: _t.fieldLabelCampo,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 14),
             TextField(
               controller: _resultadoController,
               enabled: !_guardando,
-              decoration: const InputDecoration(
-                labelText: 'Resultado (ej. 2-1)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: _t.resultLabelHint,
+                border: const OutlineInputBorder(),
               ),
             ),
             if (_error != null) ...[
@@ -929,11 +941,11 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
           TextButton(
             onPressed: _guardando ? null : _eliminar,
             style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
-            child: const Text('Eliminar'),
+            child: Text(_t.delete),
           ),
         TextButton(
           onPressed: _guardando ? null : () => Navigator.pop(context),
-          child: const Text('Cancelar'),
+          child: Text(_t.cancel),
         ),
         FilledButton(
           onPressed: _guardando ? null : _guardar,
@@ -943,7 +955,7 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
                   height: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Guardar'),
+              : Text(_t.save),
         ),
       ],
     );

@@ -2179,6 +2179,156 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'WhatsApp'**
   String get whatsappButton;
+
+  /// No description provided for @allMatchesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Todos los partidos'**
+  String get allMatchesTitle;
+
+  /// No description provided for @matchDeletedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Partido eliminado correctamente.'**
+  String get matchDeletedSuccess;
+
+  /// No description provided for @matchCreatedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Partido creado correctamente.'**
+  String get matchCreatedSuccess;
+
+  /// No description provided for @matchUpdatedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Partido actualizado correctamente.'**
+  String get matchUpdatedSuccess;
+
+  /// No description provided for @teamMatchesLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se han podido cargar los partidos de este equipo.'**
+  String get teamMatchesLoadError;
+
+  /// No description provided for @addMatchButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir partido'**
+  String get addMatchButton;
+
+  /// No description provided for @teamNoMatchesAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay partidos disponibles para este equipo.'**
+  String get teamNoMatchesAvailable;
+
+  /// No description provided for @editMatchTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar partido'**
+  String get editMatchTooltip;
+
+  /// No description provided for @matchTypeLiga.
+  ///
+  /// In es, this message translates to:
+  /// **'Liga'**
+  String get matchTypeLiga;
+
+  /// No description provided for @matchTypeAmistoso.
+  ///
+  /// In es, this message translates to:
+  /// **'Amistoso'**
+  String get matchTypeAmistoso;
+
+  /// No description provided for @matchTypeCopa.
+  ///
+  /// In es, this message translates to:
+  /// **'Copa'**
+  String get matchTypeCopa;
+
+  /// No description provided for @matchTypeTorneo.
+  ///
+  /// In es, this message translates to:
+  /// **'Torneo'**
+  String get matchTypeTorneo;
+
+  /// No description provided for @resultFormatError.
+  ///
+  /// In es, this message translates to:
+  /// **'El resultado debe tener el formato N-N (ej. 2-1).'**
+  String get resultFormatError;
+
+  /// No description provided for @rivalRequiredError.
+  ///
+  /// In es, this message translates to:
+  /// **'El rival es obligatorio.'**
+  String get rivalRequiredError;
+
+  /// No description provided for @deleteMatchTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar partido'**
+  String get deleteMatchTitle;
+
+  /// No description provided for @deleteMatchConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Eliminar este partido? Esta acción no se puede deshacer.'**
+  String get deleteMatchConfirm;
+
+  /// No description provided for @delete.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar'**
+  String get delete;
+
+  /// No description provided for @editMatchTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar partido'**
+  String get editMatchTitle;
+
+  /// No description provided for @newMatchTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo partido'**
+  String get newMatchTitle;
+
+  /// No description provided for @matchTypeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Tipo de partido'**
+  String get matchTypeLabel;
+
+  /// No description provided for @noDateSelected.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin fecha'**
+  String get noDateSelected;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha'**
+  String get dateLabel;
+
+  /// No description provided for @hourLabelHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora (ej. 18:00)'**
+  String get hourLabelHint;
+
+  /// No description provided for @resultLabelHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Resultado (ej. 2-1)'**
+  String get resultLabelHint;
+
+  /// No description provided for @save.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get save;
 }
 
 class _AppLocalizationsDelegate

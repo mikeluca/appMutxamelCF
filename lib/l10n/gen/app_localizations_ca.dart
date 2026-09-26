@@ -1142,4 +1142,83 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get whatsappButton => 'WhatsApp';
+
+  @override
+  String get allMatchesTitle => 'Tots els partits';
+
+  @override
+  String get matchDeletedSuccess => 'Partit eliminat correctament.';
+
+  @override
+  String get matchCreatedSuccess => 'Partit creat correctament.';
+
+  @override
+  String get matchUpdatedSuccess => 'Partit actualitzat correctament.';
+
+  @override
+  String get teamMatchesLoadError =>
+      'No s\'han pogut carregar els partits d\'este equip.';
+
+  @override
+  String get addMatchButton => 'Afig un partit';
+
+  @override
+  String get teamNoMatchesAvailable =>
+      'No hi ha partits disponibles per a este equip.';
+
+  @override
+  String get editMatchTooltip => 'Edita el partit';
+
+  @override
+  String get matchTypeLiga => 'Lliga';
+
+  @override
+  String get matchTypeAmistoso => 'Amistós';
+
+  @override
+  String get matchTypeCopa => 'Copa';
+
+  @override
+  String get matchTypeTorneo => 'Torneig';
+
+  @override
+  String get resultFormatError =>
+      'El resultat ha de tindre el format N-N (ex. 2-1).';
+
+  @override
+  String get rivalRequiredError => 'El rival és obligatori.';
+
+  @override
+  String get deleteMatchTitle => 'Elimina el partit';
+
+  @override
+  String get deleteMatchConfirm =>
+      'Vols eliminar este partit? Esta acció no es pot desfer.';
+
+  @override
+  String get delete => 'Elimina';
+
+  @override
+  String get editMatchTitle => 'Edita el partit';
+
+  @override
+  String get newMatchTitle => 'Nou partit';
+
+  @override
+  String get matchTypeLabel => 'Tipus de partit';
+
+  @override
+  String get noDateSelected => 'Sense data';
+
+  @override
+  String get dateLabel => 'Data';
+
+  @override
+  String get hourLabelHint => 'Hora (ex. 18:00)';
+
+  @override
+  String get resultLabelHint => 'Resultat (ex. 2-1)';
+
+  @override
+  String get save => 'Guarda';
 }
