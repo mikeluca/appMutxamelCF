@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/config/app_config.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../models/news_model.dart';
 
 class NewsDetailPage extends StatelessWidget {
@@ -21,7 +22,11 @@ class NewsDetailPage extends StatelessWidget {
         : '${AppConfig.mediaBaseUrl}/images/noticia3.jpg';
 
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Noticia')),
+      appBar: AppBar(
+        title: ClubAppBarTitle(
+          titulo: AppLocalizations.of(context).newsDetailTitle,
+        ),
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

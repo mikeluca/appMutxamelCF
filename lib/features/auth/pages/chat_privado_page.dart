@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../models/mensaje_conversacion_model.dart';
 import '../services/comunicacion_service.dart';
 
@@ -41,6 +42,7 @@ class _ChatPrivadoPageState extends State<ChatPrivadoPage> {
   final ScrollController _scrollController = ScrollController();
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -178,7 +180,7 @@ class _ChatPrivadoPageState extends State<ChatPrivadoPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              widget.contraparteNombre ?? 'Chat',
+              widget.contraparteNombre ?? _t.chatDefaultTitle,
               style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
             ),
             if (widget.contraparteRol != null)
@@ -214,7 +216,7 @@ class _ChatPrivadoPageState extends State<ChatPrivadoPage> {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Text(
-            'Aún no hay mensajes. Escribe el primero.',
+            _t.chatNoMessages,
             textAlign: TextAlign.center,
             style: TextStyle(color: _colors.onSurfaceVariant),
           ),
@@ -315,7 +317,7 @@ class _ChatPrivadoPageState extends State<ChatPrivadoPage> {
                 maxLines: 4,
                 textCapitalization: TextCapitalization.sentences,
                 decoration: InputDecoration(
-                  hintText: 'Escribe un mensaje...',
+                  hintText: _t.chatMessageHint,
                   filled: true,
                   fillColor: _colors.surfaceContainerHighest,
                   contentPadding: const EdgeInsets.symmetric(
@@ -387,7 +389,7 @@ class _ChatPrivadoPageState extends State<ChatPrivadoPage> {
                 _cargarConversacion();
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
+              label: Text(_t.retry),
             ),
           ],
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../models/comunicacion_model.dart';
 import '../models/notificacion_model.dart';
 import '../models/perfil_app.dart';
@@ -33,6 +34,7 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
   TabController? _tabController;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   bool get _puedeCrear {
     final perfil = _perfil;
@@ -304,24 +306,24 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
 
     return Scaffold(
       appBar: AppBar(
-        title: ClubAppBarTitle(titulo: 'Comunicaciones'),
+        title: ClubAppBarTitle(titulo: _t.clubPageCommunications),
         bottom: tabController == null
             ? null
             : TabBar(
                 controller: tabController,
                 tabs: [
-                  const Tab(
-                    icon: Icon(Icons.chat_bubble_outline),
-                    text: 'Conversaciones',
+                  Tab(
+                    icon: const Icon(Icons.chat_bubble_outline),
+                    text: _t.tabConversations,
                   ),
-                  const Tab(
-                    icon: Icon(Icons.inbox_outlined),
-                    text: 'Recibidas',
+                  Tab(
+                    icon: const Icon(Icons.inbox_outlined),
+                    text: _t.tabReceived,
                   ),
                   if (_puedeEnviarGrupales)
-                    const Tab(
-                      icon: Icon(Icons.send_outlined),
-                      text: 'Enviadas',
+                    Tab(
+                      icon: const Icon(Icons.send_outlined),
+                      text: _t.tabSent,
                     ),
                 ],
               ),
@@ -330,7 +332,7 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
           ? FloatingActionButton.extended(
               onPressed: _nuevaComunicacion,
               icon: const Icon(Icons.add),
-              label: const Text('Nueva'),
+              label: Text(_t.newButton),
             )
           : null,
       body: _construirContenido(tabController),
@@ -365,8 +367,8 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
   Widget _construirListaConversaciones() {
     if (_conversaciones.isEmpty) {
       return _construirVacio(
-        titulo: 'No tienes conversaciones',
-        subtitulo: 'Aquí aparecerán tus chats privados.',
+        titulo: _t.noConversations,
+        subtitulo: _t.noConversationsSubtitle,
         icono: Icons.chat_bubble_outline,
       );
     }
@@ -388,10 +390,10 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
   Widget _construirListaRecibidas() {
     if (_comunicacionesRecibidas.isEmpty) {
       return _construirVacio(
-        titulo: 'No tienes comunicaciones',
+        titulo: _t.noCommunicationsReceived,
         subtitulo: _esCoordinadorOAdmin
-            ? 'Aquí aparecerán las comunicaciones del club.'
-            : 'Aquí aparecerán las comunicaciones de tus equipos.',
+            ? _t.noCommunicationsReceivedSubtitleGlobal
+            : _t.noCommunicationsReceivedSubtitleTeam,
         icono: Icons.inbox_outlined,
       );
     }
@@ -415,8 +417,8 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
   Widget _construirListaEnviadas() {
     if (_comunicacionesEnviadas.isEmpty) {
       return _construirVacio(
-        titulo: 'No has enviado comunicaciones',
-        subtitulo: 'Aquí aparecerán las comunicaciones que hayas enviado.',
+        titulo: _t.noCommunicationsSent,
+        subtitulo: _t.noCommunicationsSentSubtitle,
         icono: Icons.send_outlined,
       );
     }
@@ -519,7 +521,8 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
                       children: [
                         Expanded(
                           child: Text(
-                            conversacion.contraparteNombre ?? 'Chat',
+                            conversacion.contraparteNombre ??
+                                _t.chatDefaultTitle,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -791,7 +794,7 @@ class _ComunicacionesPageState extends State<ComunicacionesPage>
                 _cargarDatos();
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
+              label: Text(_t.retry),
             ),
           ],
         ),

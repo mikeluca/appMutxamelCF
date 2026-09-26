@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
 import '../../teams/models/player_model.dart';
 import '../../teams/services/team_services.dart';
@@ -42,6 +43,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
   final Set<int> _jugadoresSeleccionados = {};
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   bool get _esEdicion => widget.convocatoria != null;
 
@@ -163,7 +165,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
     return Scaffold(
       appBar: AppBar(
         title: ClubAppBarTitle(
-          titulo: _esEdicion ? 'Editar convocatoria' : 'Nueva convocatoria',
+          titulo: _esEdicion ? _t.editCallupTitle : _t.newCallupTitle,
         ),
       ),
       body: FutureBuilder<List<PlayerModel>>(
@@ -226,42 +228,42 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
             const SizedBox(height: 18),
             TextField(
               controller: _rivalController,
-              decoration: const InputDecoration(
-                labelText: 'Rival',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.sports_soccer),
+              decoration: InputDecoration(
+                labelText: _t.rivalLabel,
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.sports_soccer),
               ),
             ),
             const SizedBox(height: 14),
             TextField(
               controller: _campoController,
-              decoration: const InputDecoration(
-                labelText: 'Campo',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.stadium_outlined),
+              decoration: InputDecoration(
+                labelText: _t.fieldLabelCampo,
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.stadium_outlined),
               ),
             ),
             const SizedBox(height: 14),
             _construirSelectorFecha(),
             const SizedBox(height: 14),
             _construirSelectorHora(
-              titulo: 'Hora del partido',
+              titulo: _t.matchTimeLabel,
               hora: _horaPartido,
               onTap: _seleccionarHoraPartido,
             ),
             const SizedBox(height: 14),
             _construirSelectorHora(
-              titulo: 'Hora de convocatoria',
+              titulo: _t.callupTimeLabel,
               hora: _horaConvocatoria,
               onTap: _seleccionarHoraConvocatoria,
             ),
             const SizedBox(height: 14),
             TextField(
               controller: _lugarController,
-              decoration: const InputDecoration(
-                labelText: 'Lugar de convocatoria',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.location_on_outlined),
+              decoration: InputDecoration(
+                labelText: _t.callupPlaceLabel,
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.location_on_outlined),
               ),
             ),
           ],
@@ -275,10 +277,10 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       borderRadius: BorderRadius.circular(12),
       onTap: _seleccionarFecha,
       child: InputDecorator(
-        decoration: const InputDecoration(
-          labelText: 'Fecha del partido',
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(Icons.calendar_today_outlined),
+        decoration: InputDecoration(
+          labelText: _t.matchDateLabel,
+          border: const OutlineInputBorder(),
+          prefixIcon: const Icon(Icons.calendar_today_outlined),
         ),
         child: Text(
           _formatearFechaVisible(_fechaPartido),
@@ -312,7 +314,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       children: [
         Expanded(
           child: Text(
-            'Jugadores convocados',
+            _t.callupPlayersTitle,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -322,8 +324,8 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
         ),
         Text(
           _esEdicion
-              ? 'No modificables'
-              : '${_jugadoresSeleccionados.length} seleccionados',
+              ? _t.notModifiable
+              : _t.selectedCountLabel(_jugadoresSeleccionados.length),
           style: TextStyle(fontSize: 12, color: _colors.onSurfaceVariant),
         ),
       ],
@@ -408,7 +410,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
             onPressed: _guardar,
             icon: const Icon(Icons.save_outlined),
             label: Text(
-              _esEdicion ? 'Guardar cambios' : 'Guardar convocatoria',
+              _esEdicion ? _t.saveChangesButton : _t.saveCallupButton,
             ),
           ),
         ),
@@ -418,22 +420,22 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
 
   Future<void> _guardar() async {
     if (_rivalController.text.trim().isEmpty) {
-      _mostrarMensaje('Introduce el rival.');
+      _mostrarMensaje(_t.enterRivalError);
       return;
     }
 
     if (_campoController.text.trim().isEmpty) {
-      _mostrarMensaje('Introduce el campo.');
+      _mostrarMensaje(_t.enterFieldError);
       return;
     }
 
     if (_lugarController.text.trim().isEmpty) {
-      _mostrarMensaje('Introduce el lugar de convocatoria.');
+      _mostrarMensaje(_t.enterCallupPlaceError);
       return;
     }
 
     if (_jugadoresSeleccionados.isEmpty) {
-      _mostrarMensaje('Selecciona al menos un jugador.');
+      _mostrarMensaje(_t.selectAtLeastOnePlayerError);
       return;
     }
 
@@ -481,8 +483,8 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
         SnackBar(
           content: Text(
             _esEdicion
-                ? 'Convocatoria actualizada correctamente.'
-                : 'Convocatoria creada correctamente.',
+                ? _t.callupUpdatedSuccess
+                : _t.callupCreatedSuccess,
           ),
         ),
       );
@@ -493,8 +495,8 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
 
       _mostrarMensaje(
         _esEdicion
-            ? 'No se ha podido actualizar la convocatoria: $e'
-            : 'No se ha podido crear la convocatoria: $e',
+            ? _t.callupUpdateError(e.toString())
+            : _t.callupCreateError(e.toString()),
       );
     }
   }
@@ -510,7 +512,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Text(
-          'No hay jugadores disponibles para este equipo.',
+          _t.noPlayersAvailableForTeam,
           textAlign: TextAlign.center,
           style: TextStyle(color: _colors.onSurfaceVariant),
         ),
@@ -528,7 +530,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
             const Icon(Icons.error_outline, size: 56, color: Colors.redAccent),
             const SizedBox(height: 16),
             Text(
-              'No se han podido cargar los jugadores.',
+              _t.playersLoadError,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 17,

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../models/player_model.dart';
 import '../models/staff_model.dart';
 import '../models/team_model.dart';
@@ -25,6 +26,7 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
   late Future<List<StaffModel>> _futureStaff;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -99,17 +101,16 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
 
         const SizedBox(height: 28),
 
-        _buildSectionTitle('Plantilla'),
+        _buildSectionTitle(_t.squadTitle),
 
         const SizedBox(height: 14),
 
         if (jugadores.isEmpty)
-          const Card(
+          Card(
             child: Padding(
-              padding: EdgeInsets.all(24),
+              padding: const EdgeInsets.all(24),
               child: Text(
-                'No hay jugadores disponibles '
-                'para este equipo.',
+                _t.noPlayersAvailableForTeam,
                 textAlign: TextAlign.center,
               ),
             ),
@@ -119,28 +120,23 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
 
         const SizedBox(height: 24),
 
-        _buildSectionTitle('Cuerpo técnico'),
+        _buildSectionTitle(_t.staffTitle),
 
         const SizedBox(height: 14),
 
         if (errorStaff)
-          const Card(
+          Card(
             child: Padding(
-              padding: EdgeInsets.all(24),
-              child: Text(
-                'No se ha podido cargar el '
-                'cuerpo técnico.',
-                textAlign: TextAlign.center,
-              ),
+              padding: const EdgeInsets.all(24),
+              child: Text(_t.staffLoadError, textAlign: TextAlign.center),
             ),
           )
         else if (staff.isEmpty)
-          const Card(
+          Card(
             child: Padding(
-              padding: EdgeInsets.all(24),
+              padding: const EdgeInsets.all(24),
               child: Text(
-                'No hay cuerpo técnico disponible '
-                'para este equipo.',
+                _t.noStaffAvailableForTeam,
                 textAlign: TextAlign.center,
               ),
             ),
@@ -406,17 +402,13 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
 
                   const SizedBox(height: 14),
 
-                  const Text(
-                    'No se ha podido cargar '
-                    'la plantilla.',
-                    textAlign: TextAlign.center,
-                  ),
+                  Text(_t.squadLoadError, textAlign: TextAlign.center),
 
                   const SizedBox(height: 14),
 
                   OutlinedButton(
                     onPressed: _recargar,
-                    child: const Text('Reintentar'),
+                    child: Text(_t.retry),
                   ),
                 ],
               ),

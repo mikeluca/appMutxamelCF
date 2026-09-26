@@ -4,6 +4,7 @@ class AppPreferences {
   AppPreferences._();
 
   static const String _claveTema = 'tema_aplicacion';
+  static const String _claveIdioma = 'idioma_aplicacion';
 
   // Preferencias de notificaciones "anónimas" (sin sesión iniciada,
   // sin cuenta): se guardan solo en el dispositivo, no en el
@@ -22,6 +23,20 @@ class AppPreferences {
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.setString(_claveTema, tema);
+  }
+
+  /// Código de idioma ('es' o 'ca' — 'ca' es el código ISO 639 que
+  /// también se usa para el valenciano, no hay uno separado oficial).
+  static Future<String> obtenerIdioma() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString(_claveIdioma) ?? 'es';
+  }
+
+  static Future<void> guardarIdioma(String idioma) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString(_claveIdioma, idioma);
   }
 
   static Future<bool> obtenerNotifNoticias() async {

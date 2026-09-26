@@ -5,17 +5,19 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../models/tienda_pedido_item.dart';
 import '../services/tienda_service.dart';
 
 class _ProductoTienda {
-  /// Valor EXACTO que espera el backend en el campo 'prenda'.
+  /// Valor EXACTO que espera el backend en el campo 'prenda'. No se
+  /// traduce: es contenido enviado a la API, no texto de interfaz.
   final String prenda;
-  final String titulo;
+  final String Function(AppLocalizations t) titulo;
   final String precio;
-  final String descripcion;
+  final String Function(AppLocalizations t) descripcion;
   final String imagenUrl;
-  final String? nota;
+  final String Function(AppLocalizations t)? nota;
 
   const _ProductoTienda({
     required this.prenda,
@@ -99,29 +101,22 @@ class _StorePageState extends State<StorePage> {
     _productos = [
       _ProductoTienda(
         prenda: 'Camiseta oficial',
-        titulo: 'Camiseta oficial',
+        titulo: (t) => t.storeProductShirtTitle,
         precio: '30 €',
-        descripcion:
-            'La esencia del Mutxamel CF, un año más, vestida de azul. '
-            'Nuestra primera equipación combina la tradición y la '
-            'identidad del club con un diseño moderno.',
+        descripcion: (t) => t.storeProductShirtDescription,
         // El nombre exacto del fichero en el servidor lleva tilde
         // en la "o" (no en la "i"): segunda_equipacón.jpeg.
         imagenUrl: '${AppConfig.mediaBaseUrl}/images/primera_equipacion.jpeg',
       ),
       _ProductoTienda(
         prenda: 'Segunda equipacion - colaboracion AECC',
-        titulo: 'Segunda equipación',
+        titulo: (t) => t.storeProductSecondKitTitle,
         precio: '30 €',
-        descripcion:
-            'Mucho más que una camiseta. Nuestra segunda equipación, de '
-            'color rosa, nace de una colaboración muy especial con la '
-            'Asociación Española Contra el Cáncer, uniendo deporte, '
-            'compromiso y solidaridad.',
+        descripcion: (t) => t.storeProductSecondKitDescription,
         imagenUrl: Uri.encodeFull(
           '${AppConfig.mediaBaseUrl}/images/segunda_equipacón.jpeg',
         ),
-        nota: 'Colaboración con la Asociación Española Contra el Cáncer',
+        nota: (t) => t.storeProductSecondKitNote,
       ),
     ];
 
@@ -191,21 +186,22 @@ class _StorePageState extends State<StorePage> {
     final nombre = _nombreController.text.trim();
     final telefono = _telefonoController.text.trim();
     final email = _emailController.text.trim();
+    final t = AppLocalizations.of(context);
 
     if (nombre.isEmpty) {
-      _mostrarError('Introduce tu nombre y apellidos.');
+      _mostrarError(t.storeErrorEnterName);
       return;
     }
 
     final emailValido = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email);
 
     if (!emailValido) {
-      _mostrarError('Introduce un email válido.');
+      _mostrarError(t.storeErrorInvalidEmail);
       return;
     }
 
     if (!_aceptaPrivacidad) {
-      _mostrarError('Debes aceptar la política de privacidad.');
+      _mostrarError(t.storeErrorAcceptPrivacy);
       return;
     }
 
@@ -220,7 +216,7 @@ class _StorePageState extends State<StorePage> {
 
       if (tallas.any((talla) => talla == null || talla.isEmpty)) {
         _mostrarError(
-          'Selecciona la talla de cada unidad de "${producto.titulo}".',
+          t.storeErrorSelectSizeForProduct(producto.titulo(t)),
         );
         return;
       }
@@ -235,7 +231,7 @@ class _StorePageState extends State<StorePage> {
     }
 
     if (items.isEmpty) {
-      _mostrarError('Selecciona al menos una prenda y sus unidades.');
+      _mostrarError(t.storeErrorSelectAtLeastOne);
       return;
     }
 
@@ -254,12 +250,9 @@ class _StorePageState extends State<StorePage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Pedido enviado. Nos pondremos en contacto contigo para '
-            'confirmar el pago y la recogida/envío.',
-          ),
-          duration: Duration(seconds: 5),
+        SnackBar(
+          content: Text(t.storeOrderSentMessage),
+          duration: const Duration(seconds: 5),
         ),
       );
 
@@ -280,7 +273,9 @@ class _StorePageState extends State<StorePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Tienda')),
+      appBar: AppBar(
+        title: ClubAppBarTitle(titulo: AppLocalizations.of(context).storeTitle),
+      ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
         children: [
@@ -296,6 +291,8 @@ class _StorePageState extends State<StorePage> {
   }
 
   Widget _construirHero() {
+    final t = AppLocalizations.of(context);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -306,9 +303,9 @@ class _StorePageState extends State<StorePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'MUTXAMEL CF',
-            style: TextStyle(
+          Text(
+            t.storeHeroKicker,
+            style: const TextStyle(
               color: Colors.white70,
               fontSize: 12,
               fontWeight: FontWeight.bold,
@@ -316,19 +313,22 @@ class _StorePageState extends State<StorePage> {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Viste los colores',
-            style: TextStyle(
+          Text(
+            t.storeHeroTitle,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 26,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 10),
-          const Text(
-            'La nueva colección del club ya está aquí. Elige tu prenda, '
-            'selecciona tus tallas y haznos llegar tu pedido.',
-            style: TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
+          Text(
+            t.storeHeroSubtitle,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 14,
+              height: 1.4,
+            ),
           ),
         ],
       ),
@@ -337,6 +337,7 @@ class _StorePageState extends State<StorePage> {
 
   Widget _construirTarjetaProducto(_ProductoTienda producto) {
     final cantidad = _cantidades[producto.prenda] ?? 0;
+    final t = AppLocalizations.of(context);
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -372,7 +373,7 @@ class _StorePageState extends State<StorePage> {
                   children: [
                     Expanded(
                       child: Text(
-                        producto.titulo,
+                        producto.titulo(t),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -392,7 +393,7 @@ class _StorePageState extends State<StorePage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  producto.descripcion,
+                  producto.descripcion(t),
                   style: TextStyle(
                     color: _colors.onSurfaceVariant,
                     height: 1.35,
@@ -410,7 +411,7 @@ class _StorePageState extends State<StorePage> {
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
-                          producto.nota!,
+                          producto.nota!(t),
                           style: TextStyle(
                             fontSize: 13,
                             fontStyle: FontStyle.italic,
@@ -425,7 +426,7 @@ class _StorePageState extends State<StorePage> {
                 Row(
                   children: [
                     Text(
-                      'Unidades',
+                      t.storeUnits,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: _colors.onSurface,
@@ -483,7 +484,7 @@ class _StorePageState extends State<StorePage> {
               initialValue: tallas[i],
               isDense: true,
               decoration: InputDecoration(
-                labelText: 'Talla unidad ${i + 1}',
+                labelText: AppLocalizations.of(context).storeSizeUnitLabel(i + 1),
                 border: const OutlineInputBorder(),
               ),
               items: _tallas
@@ -506,12 +507,14 @@ class _StorePageState extends State<StorePage> {
   }
 
   Widget _construirGuiaTallas() {
+    final t = AppLocalizations.of(context);
+
     return Card(
       margin: const EdgeInsets.only(bottom: 4),
       clipBehavior: Clip.antiAlias,
       child: ExpansionTile(
         title: Text(
-          'Guía de tallas',
+          t.storeSizeGuideTitle,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -524,8 +527,7 @@ class _StorePageState extends State<StorePage> {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              'Mide una prenda que te quede bien y compara con estas '
-              'medidas aproximadas.',
+              t.storeSizeGuideHint,
               style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 13),
             ),
           ),
@@ -542,9 +544,18 @@ class _StorePageState extends State<StorePage> {
             children: [
               TableRow(
                 children: [
-                  _construirCeldaGuiaTallas('Talla', esCabecera: true),
-                  _construirCeldaGuiaTallas('Pecho (cm)', esCabecera: true),
-                  _construirCeldaGuiaTallas('Largo (cm)', esCabecera: true),
+                  _construirCeldaGuiaTallas(
+                    t.storeSizeGuideSize,
+                    esCabecera: true,
+                  ),
+                  _construirCeldaGuiaTallas(
+                    t.storeSizeGuideChest,
+                    esCabecera: true,
+                  ),
+                  _construirCeldaGuiaTallas(
+                    t.storeSizeGuideLength,
+                    esCabecera: true,
+                  ),
                 ],
               ),
               for (final fila in _guiaTallas)
@@ -578,6 +589,8 @@ class _StorePageState extends State<StorePage> {
   }
 
   Widget _construirFormularioCliente() {
+    final t = AppLocalizations.of(context);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -585,7 +598,7 @@ class _StorePageState extends State<StorePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Tus datos',
+              t.storeCustomerDataTitle,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -594,16 +607,16 @@ class _StorePageState extends State<StorePage> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Te escribiremos para confirmar disponibilidad y forma de pago.',
+              t.storeCustomerDataHint,
               style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 13),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _nombreController,
               enabled: !_enviando,
-              decoration: const InputDecoration(
-                labelText: 'Nombre y apellidos',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: t.storeFullNameLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 12),
@@ -611,9 +624,9 @@ class _StorePageState extends State<StorePage> {
               controller: _telefonoController,
               enabled: !_enviando,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: 'Teléfono (opcional)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: t.storePhoneLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 12),
@@ -621,9 +634,9 @@ class _StorePageState extends State<StorePage> {
               controller: _emailController,
               enabled: !_enviando,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: t.storeEmailLabel,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 14),
@@ -650,12 +663,9 @@ class _StorePageState extends State<StorePage> {
                           color: _colors.onSurface,
                         ),
                         children: [
-                          const TextSpan(
-                            text: 'Acepto el tratamiento de mis datos '
-                                'según la ',
-                          ),
+                          TextSpan(text: t.storePrivacyAcceptPrefix),
                           TextSpan(
-                            text: 'política de privacidad',
+                            text: t.storePrivacyPolicyLink,
                             style: const TextStyle(
                               color: AppColors.azul,
                               fontWeight: FontWeight.w600,
@@ -688,7 +698,9 @@ class _StorePageState extends State<StorePage> {
                         ),
                       )
                     : const Icon(Icons.arrow_outward),
-                label: Text(_enviando ? 'Enviando...' : 'CREAR PEDIDO'),
+                label: Text(
+                  _enviando ? t.storeSendingButton : t.storeCreateOrderButton,
+                ),
               ),
             ),
           ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../../teams/services/team_services.dart';
 import '../models/perfil_app.dart';
 import '../services/perfil_service.dart';
@@ -22,6 +23,7 @@ class _MisEquiposPageState extends State<MisEquiposPage> {
   String? _error;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -83,7 +85,7 @@ class _MisEquiposPageState extends State<MisEquiposPage> {
     return Scaffold(
       appBar: AppBar(
         title: ClubAppBarTitle(
-          titulo: esGestionGlobal ? 'Todos los equipos' : 'Mis equipos',
+          titulo: esGestionGlobal ? _t.allTeamsTitle : _t.clubPageMyTeams,
         ),
       ),
       body: _construirContenido(),
@@ -117,9 +119,7 @@ class _MisEquiposPageState extends State<MisEquiposPage> {
             const SizedBox(height: 20),
             Center(
               child: Text(
-                esGestionGlobal
-                    ? 'No hay equipos disponibles.'
-                    : 'No tienes equipos asociados.',
+                esGestionGlobal ? _t.noTeamsAvailable : _t.noTeamsAssociated,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 17,
@@ -215,7 +215,7 @@ class _MisEquiposPageState extends State<MisEquiposPage> {
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          'Número de jugadores: ',
+                          '${_t.playerCountLabel}: ',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: _colors.onSurface,
@@ -241,7 +241,7 @@ class _MisEquiposPageState extends State<MisEquiposPage> {
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          'Número de jugadores: -',
+                          '${_t.playerCountLabel}: -',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             color: _colors.onSurface,
@@ -255,7 +255,7 @@ class _MisEquiposPageState extends State<MisEquiposPage> {
 
                   return _datoEquipo(
                     Icons.groups_outlined,
-                    'Número de jugadores',
+                    _t.playerCountLabel,
                     jugadores.length.toString(),
                   );
                 },
@@ -299,7 +299,7 @@ class _MisEquiposPageState extends State<MisEquiposPage> {
             const Icon(Icons.error_outline, size: 56, color: Colors.redAccent),
             const SizedBox(height: 16),
             Text(
-              'No se han podido cargar los equipos.',
+              _t.teamsLoadError,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 17,
@@ -318,7 +318,7 @@ class _MisEquiposPageState extends State<MisEquiposPage> {
                 _cargarPerfil();
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
+              label: Text(_t.retry),
             ),
           ],
         ),

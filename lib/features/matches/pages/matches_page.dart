@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../models/match_model.dart';
 import '../services/match_service.dart';
 
@@ -18,6 +19,7 @@ class _MatchesPageState extends State<MatchesPage> {
   late Future<List<MatchModel>> _matchesFuture;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -37,7 +39,7 @@ class _MatchesPageState extends State<MatchesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Partidos')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: _t.navMatches)),
       body: FutureBuilder<List<MatchModel>>(
         future: _matchesFuture,
         builder: (context, snapshot) {
@@ -52,7 +54,7 @@ class _MatchesPageState extends State<MatchesPage> {
           final partidos = snapshot.data ?? [];
 
           if (partidos.isEmpty) {
-            return const Center(child: Text('No hay partidos disponibles.'));
+            return Center(child: Text(_t.matchesNoMatchesAvailable));
           }
 
           return RefreshIndicator(
@@ -62,7 +64,7 @@ class _MatchesPageState extends State<MatchesPage> {
               padding: const EdgeInsets.all(16),
               children: [
                 Text(
-                  'CALENDARIO',
+                  _t.matchesCalendarTitle,
                   style: TextStyle(
                     color: _colors.onSurface,
                     fontSize: 22,
@@ -74,7 +76,7 @@ class _MatchesPageState extends State<MatchesPage> {
                 const SizedBox(height: 6),
 
                 Text(
-                  'Partidos y resultados de nuestros equipos',
+                  _t.matchesCalendarSubtitle,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
 
@@ -118,7 +120,7 @@ class _MatchesPageState extends State<MatchesPage> {
     return Padding(
       padding: const EdgeInsets.only(top: 4, bottom: 10),
       child: Text(
-        categoria.trim().isEmpty ? 'Sin categoría' : categoria,
+        categoria.trim().isEmpty ? _t.matchesNoCategory : categoria,
         style: TextStyle(
           color: _colors.onSurfaceVariant,
           fontSize: 15,
@@ -140,10 +142,7 @@ class _MatchesPageState extends State<MatchesPage> {
 
             const SizedBox(height: 16),
 
-            const Text(
-              'No se han podido cargar los partidos.',
-              textAlign: TextAlign.center,
-            ),
+            Text(_t.matchesLoadError, textAlign: TextAlign.center),
 
             const SizedBox(height: 16),
 
@@ -153,7 +152,7 @@ class _MatchesPageState extends State<MatchesPage> {
                   _matchesFuture = _matchService.obtenerResultados();
                 });
               },
-              child: const Text('Reintentar'),
+              child: Text(_t.retry),
             ),
           ],
         ),
@@ -247,7 +246,11 @@ class _MatchCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(context, 'PRÓXIMO PARTIDO', Icons.sports_soccer),
+            _buildHeader(
+              context,
+              AppLocalizations.of(context).matchUpcoming,
+              Icons.sports_soccer,
+            ),
 
             const SizedBox(height: 16),
 
@@ -285,7 +288,11 @@ class _MatchCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _buildHeader(context, 'RESULTADO', Icons.sports_soccer),
+            _buildHeader(
+              context,
+              AppLocalizations.of(context).matchesResult,
+              Icons.sports_soccer,
+            ),
 
             const SizedBox(height: 16),
 
@@ -338,9 +345,11 @@ class _MatchCard extends StatelessWidget {
     final descansaExplicitamente =
         partido.rival.trim().toUpperCase() == 'DESCANSA';
 
+    final t = AppLocalizations.of(context);
+
     final texto = descansaExplicitamente
-        ? 'Descansa esta jornada'
-        : 'No tiene partido';
+        ? t.matchesRestsThisRound
+        : t.matchTeamHasNoMatch;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -420,11 +429,11 @@ class _MatchCard extends StatelessWidget {
           ),
         ),
 
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
-            'VS',
-            style: TextStyle(
+            AppLocalizations.of(context).matchVs,
+            style: const TextStyle(
               color: AppColors.dorado,
               fontWeight: FontWeight.bold,
               fontSize: 16,

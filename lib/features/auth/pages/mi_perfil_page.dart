@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../../../routing/app_routes.dart';
 import '../models/perfil_app.dart';
 import '../services/perfil_service.dart';
@@ -20,6 +21,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
   String? _error;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -51,7 +53,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Mi perfil')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: _t.clubPageMyProfile)),
       body: _construirContenido(),
     );
   }
@@ -68,7 +70,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
     }
 
     if (_perfil == null) {
-      return const Center(child: Text('No se ha podido cargar el perfil.'));
+      return Center(child: Text(_t.profileLoadError));
     }
 
     return RefreshIndicator(
@@ -114,7 +116,9 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
           ),
           const SizedBox(height: 16),
           Text(
-            perfil.nombreCompleto.isEmpty ? 'Usuario' : perfil.nombreCompleto,
+            perfil.nombreCompleto.isEmpty
+                ? _t.defaultUser
+                : perfil.nombreCompleto,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: Colors.white,
@@ -136,23 +140,23 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
     final perfil = _perfil!;
 
     return _construirSeccion(
-      titulo: 'Mis datos',
+      titulo: _t.profileSectionMyData,
       icono: Icons.person_outline,
       children: [
         _construirDato(
           icono: Icons.email_outlined,
-          titulo: 'Email',
+          titulo: _t.storeEmailLabel,
           valor: perfil.email,
         ),
         if (perfil.telefono != null && perfil.telefono!.trim().isNotEmpty)
           _construirDato(
             icono: Icons.phone_outlined,
-            titulo: 'Teléfono',
+            titulo: _t.clubPhone,
             valor: perfil.telefono!,
           ),
         _construirDato(
           icono: Icons.badge_outlined,
-          titulo: 'Rol',
+          titulo: _t.profileRole,
           valor: _rolesTexto(perfil.roles),
         ),
       ],
@@ -161,13 +165,13 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
 
   Widget _construirAjustes() {
     return _construirSeccion(
-      titulo: 'Configuración',
+      titulo: _t.profileSectionSettings,
       icono: Icons.settings_outlined,
       children: [
         _construirOpcion(
           icono: Icons.settings_outlined,
-          titulo: 'Ajustes',
-          subtitulo: 'Notificaciones, apariencia y aplicación',
+          titulo: _t.settingsTitle,
+          subtitulo: _t.profileSettingsSubtitle,
           onTap: () {
             Navigator.pushNamed(context, AppRoutes.settings);
           },
@@ -330,7 +334,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
                 _cargarPerfil();
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
+              label: Text(_t.retry),
             ),
           ],
         ),
@@ -340,34 +344,34 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
 
   String _nombreRolPrincipal(PerfilApp perfil) {
     if (perfil.roles.contains('FAMILIAR')) {
-      return 'Familiar';
+      return _t.roleFamiliar;
     }
 
     if (perfil.roles.contains('JUGADOR')) {
-      return 'Jugador';
+      return _t.roleJugador;
     }
 
     if (perfil.roles.contains('ENTRENADOR')) {
-      return 'Entrenador';
+      return _t.roleEntrenador;
     }
 
     if (perfil.roles.contains('COORDINADOR')) {
-      return 'Coordinador';
+      return _t.roleCoordinador;
     }
 
     if (perfil.roles.contains('RETRANSMISION')) {
-      return 'Retransmisión';
+      return _t.roleRetransmision;
     }
 
     if (perfil.roles.contains('ADMIN_APP')) {
-      return 'Administrador';
+      return _t.roleAdministrador;
     }
 
     if (perfil.roles.contains('SOCIO')) {
-      return 'Socio';
+      return _t.roleSocio;
     }
 
-    return 'Miembro del club';
+    return _t.clubPageDefaultMember;
   }
 
   String _rolesTexto(List<String> roles) {
@@ -375,19 +379,19 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
         .map((rol) {
           switch (rol) {
             case 'FAMILIAR':
-              return 'Familiar';
+              return _t.roleFamiliar;
             case 'JUGADOR':
-              return 'Jugador';
+              return _t.roleJugador;
             case 'ENTRENADOR':
-              return 'Entrenador';
+              return _t.roleEntrenador;
             case 'COORDINADOR':
-              return 'Coordinador';
+              return _t.roleCoordinador;
             case 'RETRANSMISION':
-              return 'Retransmisión';
+              return _t.roleRetransmision;
             case 'SOCIO':
-              return 'Socio';
+              return _t.roleSocio;
             case 'ADMIN_APP':
-              return 'Administrador';
+              return _t.roleAdministrador;
             default:
               return rol;
           }

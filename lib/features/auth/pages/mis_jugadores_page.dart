@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../../teams/models/player_model.dart';
 import '../../teams/services/team_services.dart';
 import '../models/perfil_app.dart';
@@ -26,6 +27,7 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
   String? _error;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -90,7 +92,7 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Mis jugadores')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: _t.clubPageMyPlayers)),
       body: _construirContenido(),
     );
   }
@@ -111,7 +113,7 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
         child: Padding(
           padding: EdgeInsets.all(24),
           child: Text(
-            'No tienes jugadores vinculados a tu cuenta.',
+            _t.noPlayersLinked,
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 16, color: _colors.onSurfaceVariant),
           ),
@@ -127,7 +129,7 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
         children: [
           Text(
-            'Mis jugadores',
+            _t.clubPageMyPlayers,
             style: TextStyle(
               color: _colors.onSurface,
               fontSize: 22,
@@ -136,7 +138,7 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
           ),
           const SizedBox(height: 6),
           Text(
-            '${jugadores.length} jugador${jugadores.length == 1 ? '' : 'es'} vinculado${jugadores.length == 1 ? '' : 's'}',
+            _t.playersLinkedCount(jugadores.length),
             style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 14),
           ),
           const SizedBox(height: 20),
@@ -181,27 +183,27 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
 
                 _construirDato(
                   icono: Icons.groups_outlined,
-                  titulo: 'Equipo',
+                  titulo: _t.fieldTeam,
                   valor: jugador.equipo,
                 ),
 
                 _construirDato(
                   icono: Icons.sports_soccer,
-                  titulo: 'Deporte',
+                  titulo: _t.fieldSport,
                   valor: jugador.deporte == 'F'
-                      ? 'Fútbol'
+                      ? _t.sportFootball
                       : (jugador.deporte ?? '-'),
                 ),
 
                 _construirDato(
                   icono: Icons.looks_3_outlined,
-                  titulo: 'Dorsal',
+                  titulo: _t.fieldDorsal,
                   valor: jugador.dorsal?.toString(),
                 ),
 
                 _construirDato(
                   icono: Icons.accessibility_new_outlined,
-                  titulo: 'Posición',
+                  titulo: _t.fieldPosition,
                   valor: jugador.posicion,
                 ),
               ],
@@ -312,7 +314,7 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
                 _cargarJugadores();
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
+              label: Text(_t.retry),
             ),
           ],
         ),

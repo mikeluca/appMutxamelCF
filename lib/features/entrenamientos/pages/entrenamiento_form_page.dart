@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
 import '../../teams/models/player_model.dart';
 import '../../teams/services/team_services.dart';
@@ -35,6 +36,7 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
   bool get _esEdicion => widget.entrenamiento != null;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -112,9 +114,7 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
 
     if (jugadores.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No hay jugadores para registrar el entrenamiento.'),
-        ),
+        SnackBar(content: Text(_t.noPlayersForTraining)),
       );
       return;
     }
@@ -129,11 +129,7 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
 
     if (fechaSeleccionada.isAfter(fechaHoy)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'La fecha del entrenamiento no puede ser posterior a hoy.',
-          ),
-        ),
+        SnackBar(content: Text(_t.trainingDateFutureError)),
       );
       return;
     }
@@ -166,8 +162,8 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
         SnackBar(
           content: Text(
             _esEdicion
-                ? 'Entrenamiento actualizado correctamente.'
-                : 'Entrenamiento guardado correctamente.',
+                ? _t.trainingUpdatedSuccess
+                : _t.trainingSavedSuccess,
           ),
         ),
       );
@@ -176,9 +172,9 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('No se ha podido guardar: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_t.trainingSaveError(e.toString()))),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -193,7 +189,7 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
     return Scaffold(
       appBar: AppBar(
         title: ClubAppBarTitle(
-          titulo: _esEdicion ? 'Editar entrenamiento' : 'Nuevo entrenamiento',
+          titulo: _esEdicion ? _t.editTrainingTitle : _t.newTrainingTitle,
         ),
       ),
       body: FutureBuilder<List<PlayerModel>>(
@@ -272,7 +268,7 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Fecha del entrenamiento',
+                            _t.trainingDateLabel,
                             style: TextStyle(
                               fontSize: 13,
                               color: _colors.onSurfaceVariant,
@@ -306,7 +302,7 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
       children: [
         Expanded(
           child: Text(
-            'Asistencia',
+            _t.attendanceTitle,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -315,7 +311,7 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
           ),
         ),
         Text(
-          'Marca el estado de cada jugador',
+          _t.attendanceHint,
           style: TextStyle(fontSize: 12, color: _colors.onSurfaceVariant),
         ),
       ],
@@ -374,17 +370,26 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
             DropdownButtonFormField<String>(
               initialValue: estadoActual,
               decoration: const InputDecoration(border: OutlineInputBorder()),
-              items: const [
-                DropdownMenuItem(value: 'PRESENTE', child: Text('Presente')),
-                DropdownMenuItem(value: 'FALTA', child: Text('Falta')),
-                DropdownMenuItem(value: 'RETRASO', child: Text('Retraso')),
+              items: [
+                DropdownMenuItem(
+                  value: 'PRESENTE',
+                  child: Text(_t.attendanceStatusPresent),
+                ),
+                DropdownMenuItem(
+                  value: 'FALTA',
+                  child: Text(_t.attendanceStatusAbsent),
+                ),
+                DropdownMenuItem(
+                  value: 'RETRASO',
+                  child: Text(_t.attendanceStatusLate),
+                ),
                 DropdownMenuItem(
                   value: 'FALTA_JUSTIFICADA',
-                  child: Text('Falta justificada'),
+                  child: Text(_t.attendanceStatusJustifiedAbsence),
                 ),
                 DropdownMenuItem(
                   value: 'MAL_COMPORTAMIENTO',
-                  child: Text('Mal comportamiento'),
+                  child: Text(_t.attendanceStatusMisconduct),
                 ),
               ],
               onChanged: _guardando
@@ -422,8 +427,8 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
                 : const Icon(Icons.save_outlined),
             label: Text(
               _guardando
-                  ? 'Guardando...'
-                  : (_esEdicion ? 'Guardar cambios' : 'Guardar entrenamiento'),
+                  ? _t.savingButton
+                  : (_esEdicion ? _t.saveChangesButton : _t.saveTrainingButton),
             ),
           ),
         ),
@@ -436,7 +441,7 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Text(
-          'No hay jugadores disponibles para este equipo.',
+          _t.noPlayersAvailableForTeam,
           textAlign: TextAlign.center,
           style: TextStyle(color: _colors.onSurfaceVariant),
         ),
@@ -454,7 +459,7 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
             const Icon(Icons.error_outline, size: 56, color: Colors.redAccent),
             const SizedBox(height: 16),
             Text(
-              'No se han podido cargar los jugadores.',
+              _t.playersLoadError,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 17,

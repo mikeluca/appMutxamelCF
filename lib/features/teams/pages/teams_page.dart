@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../models/team_model.dart';
 import '../services/team_services.dart';
 import 'team_detail_page.dart';
@@ -40,7 +41,7 @@ class _TeamsPageState extends State<TeamsPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: ClubAppBarTitle(titulo: 'Equipos'),
+        title: ClubAppBarTitle(titulo: AppLocalizations.of(context).teamsPageTitle),
       ),
       body: RefreshIndicator(
         onRefresh: _recargar,
@@ -86,7 +87,7 @@ class _TeamsPageState extends State<TeamsPage> {
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
       children: [
         Text(
-          'Nuestros equipos',
+          AppLocalizations.of(context).ourTeamsTitle,
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -97,8 +98,7 @@ class _TeamsPageState extends State<TeamsPage> {
         const SizedBox(height: 6),
 
         Text(
-          'Consulta las plantillas y la información '
-          'de cada equipo del club.',
+          AppLocalizations.of(context).teamsSubtitle,
           style: TextStyle(fontSize: 14, color: _colors.onSurfaceVariant),
         ),
 
@@ -246,15 +246,14 @@ class _TeamsError extends StatelessWidget {
                 children: [
                   const Icon(Icons.error_outline, size: 48),
                   const SizedBox(height: 14),
-                  const Text(
-                    'No se han podido cargar '
-                    'los equipos.',
+                  Text(
+                    AppLocalizations.of(context).teamsLoadError,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 14),
                   OutlinedButton(
                     onPressed: onRetry,
-                    child: const Text('Reintentar'),
+                    child: Text(AppLocalizations.of(context).retry),
                   ),
                 ],
               ),
@@ -273,10 +272,12 @@ class _TeamsEmpty extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
-      children: const [
+      children: [
         SizedBox(
           height: 400,
-          child: Center(child: Text('No hay equipos disponibles.')),
+          child: Center(
+            child: Text(AppLocalizations.of(context).noTeamsAvailable),
+          ),
         ),
       ],
     );

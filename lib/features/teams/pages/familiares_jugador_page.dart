@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../models/familiar_jugador_model.dart';
 import '../../auth/models/perfil_app.dart';
 import '../models/player_model.dart';
@@ -56,9 +57,7 @@ class _FamiliaresJugadorPageState extends State<FamiliaresJugadorPage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No se puede abrir la aplicación de teléfono'),
-        ),
+        SnackBar(content: Text(AppLocalizations.of(context).phoneAppOpenError)),
       );
     }
   }
@@ -72,9 +71,7 @@ class _FamiliaresJugadorPageState extends State<FamiliaresJugadorPage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No se puede abrir la aplicación de correo'),
-        ),
+        SnackBar(content: Text(AppLocalizations.of(context).mailAppOpenError)),
       );
     }
   }
@@ -94,7 +91,7 @@ class _FamiliaresJugadorPageState extends State<FamiliaresJugadorPage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se puede abrir WhatsApp')),
+        SnackBar(content: Text(AppLocalizations.of(context).whatsappOpenError)),
       );
     }
   }
@@ -102,7 +99,9 @@ class _FamiliaresJugadorPageState extends State<FamiliaresJugadorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const ClubAppBarTitle(titulo: 'Familiares')),
+      appBar: AppBar(
+        title: ClubAppBarTitle(titulo: AppLocalizations.of(context).familiesTitle),
+      ),
       body: FutureBuilder<List<FamiliarJugadorModel>>(
         future: _familiaresFuture,
         builder: (context, snapshot) {
@@ -144,9 +143,9 @@ class _FamiliaresJugadorPageState extends State<FamiliaresJugadorPage> {
                   SizedBox(height: MediaQuery.of(context).size.height * 0.35),
                   const Icon(Icons.family_restroom, size: 60),
                   const SizedBox(height: 16),
-                  const Center(
+                  Center(
                     child: Text(
-                      'Este jugador no tiene familiares registrados',
+                      AppLocalizations.of(context).noFamiliesRegistered,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -177,6 +176,8 @@ class _FamiliaresJugadorPageState extends State<FamiliaresJugadorPage> {
   }
 
   Widget _construirFamiliar(FamiliarJugadorModel familiar) {
+    final t = AppLocalizations.of(context);
+
     final tieneTelefono =
         familiar.telefono != null && familiar.telefono!.trim().isNotEmpty;
 
@@ -259,21 +260,21 @@ class _FamiliaresJugadorPageState extends State<FamiliaresJugadorPage> {
                   OutlinedButton.icon(
                     onPressed: () => _llamar(familiar.telefono!),
                     icon: const Icon(Icons.call),
-                    label: const Text('Llamar'),
+                    label: Text(t.callButton),
                   ),
 
                 if (tieneEmail)
                   OutlinedButton.icon(
                     onPressed: () => _enviarEmail(familiar.email!),
                     icon: const Icon(Icons.email),
-                    label: const Text('Email'),
+                    label: Text(t.emailButton),
                   ),
 
                 if (tieneTelefono && familiar.tieneWhatsapp)
                   OutlinedButton.icon(
                     onPressed: () => _abrirWhatsapp(familiar.telefono!),
                     icon: const Icon(Icons.chat),
-                    label: const Text('WhatsApp'),
+                    label: Text(t.whatsappButton),
                   ),
               ],
             ),

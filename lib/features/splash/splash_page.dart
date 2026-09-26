@@ -5,6 +5,7 @@ import '../../routing/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/notifications/services/local_notification_service.dart';
 import '../../core/notifications/services/push_notification_service.dart';
+import '../../l10n/gen/app_localizations.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -55,9 +56,12 @@ class _SplashPageState extends State<SplashPage> {
                       fit: BoxFit.contain,
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'La app oficial del club',
-                      style: TextStyle(color: Colors.white70, fontSize: 16),
+                    Text(
+                      AppLocalizations.of(context).splashTagline,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 16,
+                      ),
                     ),
                     const SizedBox(height: 45),
                     SizedBox(

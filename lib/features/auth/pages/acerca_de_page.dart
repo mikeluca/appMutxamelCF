@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 
 class AcercaDePage extends StatefulWidget {
   const AcercaDePage({super.key});
@@ -38,7 +39,7 @@ class _AcercaDePageState extends State<AcercaDePage> {
     });
   }
 
-  String get _version {
+  String _version(AppLocalizations t) {
     final info = _packageInfo;
 
     if (info == null) {
@@ -46,8 +47,8 @@ class _AcercaDePageState extends State<AcercaDePage> {
     }
 
     return info.buildNumber.isEmpty
-        ? 'Versión ${info.version}'
-        : 'Versión ${info.version} (${info.buildNumber})';
+        ? t.aboutVersionText(info.version)
+        : t.aboutVersionTextWithBuild(info.version, info.buildNumber);
   }
 
   Future<void> _abrirUrl(String url) async {
@@ -58,9 +59,9 @@ class _AcercaDePageState extends State<AcercaDePage> {
     } else {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('No se ha podido abrir el enlace')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).linkOpenError)),
+      );
     }
   }
 
@@ -73,43 +74,39 @@ class _AcercaDePageState extends State<AcercaDePage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se puede abrir la aplicación de correo')),
+        SnackBar(content: Text(AppLocalizations.of(context).mailAppOpenError)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Acerca de appMTX')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: t.settingsAboutApp)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
         children: [
-          _construirCabecera(),
+          _construirCabecera(t),
 
           const SizedBox(height: 24),
 
           _construirSeccion(
-            titulo: 'El club',
+            titulo: t.aboutSectionClub,
             icono: Icons.info_outline,
-            children: [
-              _construirTarjetaTexto(
-                'La aplicación oficial del Mutxamel Club de Fútbol te '
-                'mantiene al día de convocatorias, entrenamientos, '
-                'resultados y comunicaciones del club, estés donde estés.',
-              ),
-            ],
+            children: [_construirTarjetaTexto(t.aboutClubDescription)],
           ),
 
           const SizedBox(height: 24),
 
           _construirSeccion(
-            titulo: 'Contacto',
+            titulo: t.aboutSectionContact,
             icono: Icons.contact_mail_outlined,
             children: [
               _construirOpcion(
                 icono: Icons.public,
-                titulo: 'Página web',
+                titulo: t.clubWebsite,
                 subtitulo: _urlWeb,
                 onTap: () => _abrirUrl(_urlWeb),
               ),
@@ -118,7 +115,7 @@ class _AcercaDePageState extends State<AcercaDePage> {
 
               _construirOpcion(
                 icono: Icons.email_outlined,
-                titulo: 'Email',
+                titulo: t.storeEmailLabel,
                 subtitulo: _email,
                 onTap: () => _enviarEmail(_email),
               ),
@@ -128,13 +125,13 @@ class _AcercaDePageState extends State<AcercaDePage> {
           const SizedBox(height: 24),
 
           _construirSeccion(
-            titulo: 'Legal',
+            titulo: t.aboutSectionLegal,
             icono: Icons.gavel_outlined,
             children: [
               _construirOpcion(
                 icono: Icons.privacy_tip_outlined,
-                titulo: 'Política de privacidad',
-                subtitulo: 'Cómo tratamos tus datos',
+                titulo: t.aboutPrivacyPolicy,
+                subtitulo: t.aboutPrivacyPolicySubtitle,
                 onTap: () => _abrirUrl(_urlPoliticaPrivacidad),
               ),
 
@@ -142,12 +139,12 @@ class _AcercaDePageState extends State<AcercaDePage> {
 
               _construirOpcion(
                 icono: Icons.description_outlined,
-                titulo: 'Licencias de terceros',
-                subtitulo: 'Software libre utilizado en la aplicación',
+                titulo: t.aboutThirdPartyLicenses,
+                subtitulo: t.aboutThirdPartyLicensesSubtitle,
                 onTap: () => showLicensePage(
                   context: context,
                   applicationName: 'appMTX',
-                  applicationVersion: _version,
+                  applicationVersion: _version(t),
                   applicationIcon: Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Image.asset(
@@ -165,7 +162,7 @@ class _AcercaDePageState extends State<AcercaDePage> {
 
           Center(
             child: Text(
-              '© ${DateTime.now().year} Mutxamel Club de Fútbol',
+              t.clubCopyright(DateTime.now().year),
               style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 12),
             ),
           ),
@@ -174,7 +171,9 @@ class _AcercaDePageState extends State<AcercaDePage> {
     );
   }
 
-  Widget _construirCabecera() {
+  Widget _construirCabecera(AppLocalizations t) {
+    final version = _version(t);
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
       decoration: BoxDecoration(
@@ -199,12 +198,12 @@ class _AcercaDePageState extends State<AcercaDePage> {
           const SizedBox(height: 6),
 
           Text(
-            'Aplicación oficial del Mutxamel Club de Fútbol',
+            t.aboutAppTagline,
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.white70, fontSize: 14),
           ),
 
-          if (_version.isNotEmpty) ...[
+          if (version.isNotEmpty) ...[
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
@@ -213,7 +212,7 @@ class _AcercaDePageState extends State<AcercaDePage> {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                _version,
+                version,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,

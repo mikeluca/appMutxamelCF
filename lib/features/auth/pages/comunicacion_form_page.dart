@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../../teams/services/team_services.dart';
 import '../models/destinatario_comunicacion_model.dart';
 import '../models/perfil_app.dart';
@@ -50,6 +51,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
   String _busquedaDestinatarios = '';
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   bool get _esEntrenador => _perfil?.tieneRol('ENTRENADOR') ?? false;
 
@@ -233,7 +235,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
 
     if (modo == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecciona a quién quieres escribir.')),
+        SnackBar(content: Text(_t.commSelectRecipientError)),
       );
 
       return;
@@ -243,7 +245,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
       case _ModoDestinatario.equipos:
         if (_equiposSeleccionados.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Selecciona al menos un equipo.')),
+            SnackBar(content: Text(_t.commSelectTeamError)),
           );
           return;
         }
@@ -252,7 +254,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
       case _ModoDestinatario.categorias:
         if (_categoriasSeleccionadas.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Selecciona al menos una categoría.')),
+            SnackBar(content: Text(_t.commSelectCategoryError)),
           );
           return;
         }
@@ -261,7 +263,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
       case _ModoDestinatario.privado:
         if (_destinatarioSeleccionado == null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Selecciona un destinatario.')),
+            SnackBar(content: Text(_t.commSelectRecipientPersonError)),
           );
           return;
         }
@@ -292,7 +294,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Comunicación creada correctamente.')),
+        SnackBar(content: Text(_t.commCreatedSuccess)),
       );
 
       Navigator.pop(context, true);
@@ -302,8 +304,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'No se ha podido crear la comunicación: '
-            '${e.toString().replaceFirst('Exception: ', '')}',
+            _t.commCreateError(e.toString().replaceFirst('Exception: ', '')),
           ),
         ),
       );
@@ -320,7 +321,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const ClubAppBarTitle(titulo: 'Nueva comunicación'),
+        title: ClubAppBarTitle(titulo: _t.commNewTitle),
       ),
       body: _construirContenido(),
     );
@@ -385,15 +386,15 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
               TextFormField(
                 controller: _tituloController,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  labelText: 'Título',
-                  hintText: 'Escribe el título',
-                  prefixIcon: Icon(Icons.title_outlined),
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: _t.titleLabel,
+                  hintText: _t.titleHint,
+                  prefixIcon: const Icon(Icons.title_outlined),
+                  border: const OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'El título es obligatorio.';
+                    return _t.titleRequired;
                   }
 
                   return null;
@@ -408,19 +409,19 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
               textCapitalization: TextCapitalization.sentences,
               minLines: 6,
               maxLines: 10,
-              decoration: const InputDecoration(
-                labelText: 'Mensaje',
-                hintText: 'Escribe el contenido de la comunicación',
-                prefixIcon: Padding(
+              decoration: InputDecoration(
+                labelText: _t.messageLabel,
+                hintText: _t.messageHint,
+                prefixIcon: const Padding(
                   padding: EdgeInsets.only(bottom: 90),
                   child: Icon(Icons.message_outlined),
                 ),
                 alignLabelWithHint: true,
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'El mensaje es obligatorio.';
+                  return _t.messageRequired;
                 }
 
                 return null;
@@ -434,7 +435,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
 
   Widget _construirTituloDestinatarios() {
     return Text(
-      'Destinatarios',
+      _t.recipientsTitle,
       style: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.bold,
@@ -450,22 +451,22 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
           value: _ModoDestinatario.equipos,
           label: Text(
             _esEntrenador && !_esCoordinador && !_esAdmin
-                ? 'Mis equipos'
-                : 'Equipos',
+                ? _t.clubPageMyTeams
+                : _t.teamsSegment,
           ),
           icon: const Icon(Icons.groups_outlined),
         ),
       if (_puedeSeleccionarCategorias)
-        const ButtonSegment(
+        ButtonSegment(
           value: _ModoDestinatario.categorias,
-          label: Text('Categorías'),
-          icon: Icon(Icons.category_outlined),
+          label: Text(_t.categoriesSegment),
+          icon: const Icon(Icons.category_outlined),
         ),
       if (_puedeSeleccionarPrivado)
-        const ButtonSegment(
+        ButtonSegment(
           value: _ModoDestinatario.privado,
-          label: Text('Privado'),
-          icon: Icon(Icons.person_outline),
+          label: Text(_t.privateSegment),
+          icon: const Icon(Icons.person_outline),
         ),
     ];
 
@@ -499,8 +500,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: Text(
-          'No tienes ningún destinatario disponible para escribir una '
-          'comunicación.',
+          _t.noRecipientsAvailable,
           style: TextStyle(color: _colors.onSurfaceVariant),
         ),
       ),
@@ -520,7 +520,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
             child: Text(
-              'Elige uno o varios equipos.',
+              _t.chooseTeamsHint,
               style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 13),
             ),
           ),
@@ -568,7 +568,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
             child: Text(
-              'Elige una o varias categorías.',
+              _t.chooseCategoriesHint,
               style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 13),
             ),
           ),
@@ -618,8 +618,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
             child: Text(
-              'Elige una única persona; el mensaje será privado solo '
-              'para ella.',
+              _t.choosePrivateRecipientHint,
               style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 13),
             ),
           ),
@@ -631,8 +630,8 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
               enabled: !_guardando,
               textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
-                labelText: 'Buscar destinatario',
-                hintText: 'Nombre o apellidos',
+                labelText: _t.searchRecipientLabel,
+                hintText: _t.searchRecipientHint,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _busquedaDestinatarios.isEmpty
                     ? null
@@ -653,7 +652,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Text(
-                'No se han encontrado destinatarios.',
+                _t.noRecipientsFound,
                 style: TextStyle(color: _colors.onSurfaceVariant),
               ),
             )
@@ -721,7 +720,9 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.save_outlined),
-            label: Text(_guardando ? 'Guardando...' : 'Guardar comunicación'),
+            label: Text(
+              _guardando ? _t.savingButton : _t.saveCommunicationButton,
+            ),
           ),
         ),
       ),
@@ -738,7 +739,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
             Icon(Icons.error_outline, size: 56, color: _colors.error),
             const SizedBox(height: 16),
             Text(
-              'No se han podido cargar los destinatarios.',
+              _t.recipientsLoadError,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 17,
@@ -763,7 +764,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
                 _cargarDatos();
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
+              label: Text(_t.retry),
             ),
           ],
         ),

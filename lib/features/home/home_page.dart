@@ -5,6 +5,7 @@ import '../../core/config/app_config.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widget/club_app_bar_title.dart';
+import '../../l10n/gen/app_localizations.dart';
 import '../matches/models/match_model.dart';
 import '../matches/services/match_service.dart';
 import '../news/models/news_model.dart';
@@ -34,6 +35,7 @@ class HomePageState extends State<HomePage> {
   late Future<List<NewsModel>> _futureNews;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -102,7 +104,7 @@ class HomePageState extends State<HomePage> {
             clipBehavior: Clip.none,
             children: [
               IconButton(
-                tooltip: 'Notificaciones',
+                tooltip: _t.homeNotificationsTooltip,
                 icon: const Icon(Icons.notifications_outlined),
                 onPressed: () async {
                   await Navigator.push(
@@ -150,9 +152,9 @@ class HomePageState extends State<HomePage> {
           TextButton.icon(
             onPressed: _abrirAreaClub,
             icon: const Icon(Icons.login, size: 19),
-            label: const Text(
-              'Área Club',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+            label: Text(
+              _t.homeAreaClub,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -195,7 +197,7 @@ class HomePageState extends State<HomePage> {
 
               const SizedBox(height: 28),
 
-              _buildSectionTitle('Últimas noticias'),
+              _buildSectionTitle(_t.homeLatestNews),
 
               const SizedBox(height: 12),
 
@@ -203,7 +205,7 @@ class HomePageState extends State<HomePage> {
 
               const SizedBox(height: 28),
 
-              _buildSectionTitle('Nuestros patrocinadores'),
+              _buildSectionTitle(_t.homeOurSponsors),
 
               const SizedBox(height: 12),
 
@@ -247,10 +249,7 @@ class HomePageState extends State<HomePage> {
                 children: [
                   const Icon(Icons.error_outline, size: 42),
                   const SizedBox(height: 12),
-                  const Text(
-                    'No se han podido cargar las noticias.',
-                    textAlign: TextAlign.center,
-                  ),
+                  Text(_t.homeNewsLoadError, textAlign: TextAlign.center),
                   const SizedBox(height: 12),
                   OutlinedButton(
                     onPressed: () {
@@ -258,7 +257,7 @@ class HomePageState extends State<HomePage> {
                         _futureNews = _newsService.obtenerNoticias();
                       });
                     },
-                    child: const Text('Reintentar'),
+                    child: Text(_t.retry),
                   ),
                 ],
               ),
@@ -269,10 +268,10 @@ class HomePageState extends State<HomePage> {
         final noticias = snapshot.data ?? [];
 
         if (noticias.isEmpty) {
-          return const Card(
+          return Card(
             child: Padding(
-              padding: EdgeInsets.all(24),
-              child: Center(child: Text('No hay noticias disponibles.')),
+              padding: const EdgeInsets.all(24),
+              child: Center(child: Text(_t.homeNoNewsAvailable)),
             ),
           );
         }
@@ -370,8 +369,7 @@ class HomePageState extends State<HomePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Pulsa en las imágenes para conocer más '
-          'acerca de nuestros patrocinadores.',
+          _t.homeSponsorsHint,
           style: TextStyle(fontSize: 12, color: _colors.onSurfaceVariant),
         ),
 
@@ -456,7 +454,7 @@ class HomePageState extends State<HomePage> {
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('No se ha podido abrir el enlace')));
+      ).showSnackBar(SnackBar(content: Text(_t.linkOpenError)));
     }
   }
 }
@@ -492,14 +490,14 @@ class _MatchErrorCard extends StatelessWidget {
             children: [
               const Icon(Icons.error_outline, size: 42),
               const SizedBox(height: 12),
-              const Text(
-                'No se ha podido cargar el partido.',
+              Text(
+                AppLocalizations.of(context).homeMatchLoadError,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               OutlinedButton(
                 onPressed: onRetry,
-                child: const Text('Reintentar'),
+                child: Text(AppLocalizations.of(context).retry),
               ),
             ],
           ),
@@ -514,15 +512,14 @@ class _MatchUnavailableCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Card(
+    return Card(
       child: SizedBox(
         width: double.infinity,
         child: Padding(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Center(
             child: Text(
-              'No hay información disponible '
-              'sobre el próximo partido.',
+              AppLocalizations.of(context).homeMatchUnavailable,
               textAlign: TextAlign.center,
             ),
           ),

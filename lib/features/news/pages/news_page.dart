@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/config/app_config.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../models/news_model.dart';
 import 'news_detail_page.dart';
 import '../services/news_services.dart';
@@ -70,9 +71,7 @@ class _NewsPageState extends State<NewsPage> {
       // snackbar, en vez de sustituirla por la pantalla de error.
       if (!esInicial && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No se han podido cargar las noticias.'),
-          ),
+          SnackBar(content: Text(AppLocalizations.of(context).homeNewsLoadError)),
         );
       }
     }
@@ -101,9 +100,7 @@ class _NewsPageState extends State<NewsPage> {
       setState(() => _cargandoMas = false);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No se han podido cargar más noticias.'),
-        ),
+        SnackBar(content: Text(AppLocalizations.of(context).newsLoadMoreError)),
       );
     }
   }
@@ -111,12 +108,16 @@ class _NewsPageState extends State<NewsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Noticias')),
+      appBar: AppBar(
+        title: ClubAppBarTitle(titulo: AppLocalizations.of(context).newsTitle),
+      ),
       body: _construirContenido(),
     );
   }
 
   Widget _construirContenido() {
+    final t = AppLocalizations.of(context);
+
     if (_cargandoInicial) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -130,14 +131,11 @@ class _NewsPageState extends State<NewsPage> {
             children: [
               const Icon(Icons.error_outline, size: 48),
               const SizedBox(height: 16),
-              const Text(
-                'No se han podido cargar las noticias.',
-                textAlign: TextAlign.center,
-              ),
+              Text(t.homeNewsLoadError, textAlign: TextAlign.center),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => _cargarNoticias(esInicial: true),
-                child: const Text('Reintentar'),
+                child: Text(t.retry),
               ),
             ],
           ),
@@ -146,7 +144,7 @@ class _NewsPageState extends State<NewsPage> {
     }
 
     if (_noticias.isEmpty) {
-      return const Center(child: Text('No hay noticias disponibles.'));
+      return Center(child: Text(t.homeNoNewsAvailable));
     }
 
     return RefreshIndicator(
@@ -183,7 +181,7 @@ class _NewsPageState extends State<NewsPage> {
         child: OutlinedButton.icon(
           onPressed: _cargarMasNoticias,
           icon: const Icon(Icons.expand_more),
-          label: const Text('Cargar más noticias'),
+          label: Text(AppLocalizations.of(context).newsLoadMore),
         ),
       ),
     );

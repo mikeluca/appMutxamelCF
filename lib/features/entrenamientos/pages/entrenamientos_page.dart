@@ -6,6 +6,7 @@ import '../../auth/models/perfil_app.dart';
 import '../model/entrenamiento_model.dart';
 import '../services/entrenamiento_service.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 
 class EntrenamientosPage extends StatefulWidget {
   final PerfilEquipo equipo;
@@ -22,6 +23,7 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
   late Future<List<EntrenamientoModel>> _futureEntrenamientos;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
+  AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
@@ -41,7 +43,7 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: 'Entrenamientos')),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: _t.trainingsTitle)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           final resultado = await Navigator.push(
@@ -56,7 +58,7 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
           }
         },
         icon: const Icon(Icons.add),
-        label: const Text('Nuevo'),
+        label: Text(_t.newMasculineButton),
       ),
       body: RefreshIndicator(
         onRefresh: _recargar,
@@ -147,7 +149,7 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '${entrenamiento.asistencias.length} jugadores',
+                      _t.playersCountSimple(entrenamiento.asistencias.length),
                       style: TextStyle(color: _colors.onSurfaceVariant),
                     ),
                   ],
@@ -170,7 +172,7 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
         Icon(Icons.fact_check_outlined, size: 64, color: _colors.primary),
         const SizedBox(height: 20),
         Text(
-          'Todavía no hay entrenamientos.',
+          _t.noTrainingsYet,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 18,
@@ -180,7 +182,7 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Crea el primero pulsando el botón Nuevo.',
+          _t.createFirstTrainingHint,
           textAlign: TextAlign.center,
           style: TextStyle(color: _colors.onSurfaceVariant),
         ),
@@ -198,7 +200,7 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
             const Icon(Icons.error_outline, size: 56, color: Colors.redAccent),
             const SizedBox(height: 16),
             Text(
-              'No se han podido cargar los entrenamientos.',
+              _t.trainingsLoadError,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 17,
@@ -218,7 +220,7 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
                 setState(_cargar);
               },
               icon: const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
+              label: Text(_t.retry),
             ),
           ],
         ),
@@ -239,14 +241,14 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
 
     final date = DateTime(ano, mes, dia);
 
-    const diasSemana = [
-      'Lunes',
-      'Martes',
-      'Miércoles',
-      'Jueves',
-      'Viernes',
-      'Sábado',
-      'Domingo',
+    final diasSemana = [
+      _t.weekdayMonday,
+      _t.weekdayTuesday,
+      _t.weekdayWednesday,
+      _t.weekdayThursday,
+      _t.weekdayFriday,
+      _t.weekdaySaturday,
+      _t.weekdaySunday,
     ];
 
     final diaSemana = diasSemana[date.weekday - 1];

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../entrenamientos/pages/entrenamientos_page.dart';
 import '../../convocatorias/pages/convocatorias_page.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../l10n/gen/app_localizations.dart';
 import '../../teams/pages/jugadores_equipo_page.dart';
 import '../models/perfil_app.dart';
 
@@ -13,6 +14,7 @@ class EquipoGestionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final t = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(title: ClubAppBarTitle(titulo: equipo.nombre)),
@@ -20,7 +22,7 @@ class EquipoGestionPage extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         children: [
           Text(
-            'Gestión del equipo',
+            t.teamManagementTitle,
             style: TextStyle(
               color: colors.onSurface,
               fontSize: 20,
@@ -33,8 +35,8 @@ class EquipoGestionPage extends StatelessWidget {
           _construirOpcion(
             context,
             icono: Icons.fact_check_outlined,
-            titulo: 'Entrenamientos',
-            descripcion: 'Crear y consultar entrenamientos y asistencia',
+            titulo: t.trainingsTitle,
+            descripcion: t.trainingsDesc,
             onTap: () {
               Navigator.push(
                 context,
@@ -50,8 +52,8 @@ class EquipoGestionPage extends StatelessWidget {
           _construirOpcion(
             context,
             icono: Icons.sports_soccer_outlined,
-            titulo: 'Convocatorias',
-            descripcion: 'Crear y consultar convocatorias de partidos',
+            titulo: t.callupsTitle,
+            descripcion: t.callupsDesc,
             onTap: () {
               Navigator.push(
                 context,
@@ -67,8 +69,8 @@ class EquipoGestionPage extends StatelessWidget {
           _construirOpcion(
             context,
             icono: Icons.groups_outlined,
-            titulo: 'Jugadores',
-            descripcion: 'Consultar los jugadores del equipo',
+            titulo: t.playersMenuLabel,
+            descripcion: t.playersMenuDesc,
             onTap: () {
               Navigator.push(
                 context,
