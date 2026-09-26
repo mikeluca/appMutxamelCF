@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/config/app_config.dart';
 import '../../../core/config/app_preferences.dart';
 import '../../../core/notifications/services/push_notification_service.dart';
 import '../../../core/theme/app_colors.dart';
@@ -590,17 +591,20 @@ class _AjustesPageState extends State<AjustesPage> {
             child: DropdownButton<String>(
               value: widget.idiomaActual,
               items: [
-                DropdownMenuItem(
-                  value: 'es',
-                  child: Text(_t.settingsLanguageSpanish),
+                _opcionIdiomaConBandera(
+                  'es',
+                  _t.settingsLanguageSpanish,
+                  'bandera-es.png',
                 ),
-                DropdownMenuItem(
-                  value: 'ca',
-                  child: Text(_t.settingsLanguageValencian),
+                _opcionIdiomaConBandera(
+                  'ca',
+                  _t.settingsLanguageValencian,
+                  'bandera-cv.png',
                 ),
-                DropdownMenuItem(
-                  value: 'en',
-                  child: Text(_t.settingsLanguageEnglish),
+                _opcionIdiomaConBandera(
+                  'en',
+                  _t.settingsLanguageEnglish,
+                  'bandera-gb.png',
                 ),
               ],
               onChanged: (valor) {
@@ -610,6 +614,36 @@ class _AjustesPageState extends State<AjustesPage> {
               },
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  DropdownMenuItem<String> _opcionIdiomaConBandera(
+    String codigo,
+    String nombre,
+    String ficheroImagen,
+  ) {
+    return DropdownMenuItem(
+      value: codigo,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 24,
+            height: 16,
+            child: Image.network(
+              '${AppConfig.mediaBaseUrl}/images/$ficheroImagen',
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+
+          const SizedBox(width: 8),
+
+          Text(nombre),
         ],
       ),
     );
