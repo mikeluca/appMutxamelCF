@@ -9,6 +9,7 @@ import '../model/horario_entrenamiento_model.dart';
 import '../model/justificacion_falta_model.dart';
 import '../model/sesion_entrenamiento_model.dart';
 import '../services/calendario_service.dart';
+import '../widgets/calendario_mensual.dart';
 
 /// Gestión del calendario de un equipo (vista de entrenador/coordinador):
 /// configuración del horario semanal fijo de entrenamientos y listado de
@@ -331,13 +332,12 @@ class _CalendarioGestionPageState extends State<CalendarioGestionPage> {
                 ),
                 const SizedBox(height: 10),
 
-                if (datos.calendario.itemsOrdenados.isEmpty)
-                  _construirVacio(_t.upcomingItemsEmpty)
-                else
-                  for (final item in datos.calendario.itemsOrdenados) ...[
-                    _construirTarjetaItem(item),
-                    const SizedBox(height: 10),
-                  ],
+                CalendarioMensual(
+                  items: datos.calendario.itemsOrdenados,
+                  textoSinEventosDia: _t.upcomingItemsEmpty,
+                  locale: Localizations.localeOf(context).languageCode,
+                  itemBuilder: (context, item) => _construirTarjetaItem(item),
+                ),
               ],
             );
           },

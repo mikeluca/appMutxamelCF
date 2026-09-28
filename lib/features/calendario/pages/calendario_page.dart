@@ -9,6 +9,7 @@ import '../../teams/models/team_model.dart';
 import '../../teams/services/team_services.dart';
 import '../model/calendario_model.dart';
 import '../services/calendario_service.dart';
+import '../widgets/calendario_mensual.dart';
 
 /// Vista de solo lectura del calendario (entrenamientos + partidos) de
 /// los equipos del usuario: un acordeón por cada equipo al que está
@@ -460,38 +461,13 @@ class _EquipoCalendarioSeccionState extends State<_EquipoCalendarioSeccion> {
       return const SizedBox.shrink();
     }
 
-    if (_items.isEmpty) {
-      return Card(
-        margin: EdgeInsets.zero,
-        color: _colors.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Row(
-            children: [
-              Icon(Icons.event_busy, color: _colors.primary),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  _t.calendarNoItems,
-                  style: TextStyle(color: _colors.onSurface),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     final hoy = DateTime.now();
 
-    return Column(
-      children: [
-        for (final item in _items) ...[
-          _construirTarjetaItem(item, hoy),
-          const SizedBox(height: 10),
-        ],
-      ],
+    return CalendarioMensual(
+      items: _items,
+      textoSinEventosDia: _t.calendarNoItems,
+      locale: Localizations.localeOf(context).languageCode,
+      itemBuilder: (context, item) => _construirTarjetaItem(item, hoy),
     );
   }
 

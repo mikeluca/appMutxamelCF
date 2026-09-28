@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'core/config/app_preferences.dart';
 import 'core/theme/app_theme.dart';
@@ -29,6 +30,11 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Necesario para que el calendario visual (table_calendar) pueda
+  // pintar nombres de mes/día de la semana en es/en/ca sin lanzar
+  // LocaleDataException.
+  await initializeDateFormatting();
 
   final temaGuardado = await AppPreferences.obtenerTema();
 
