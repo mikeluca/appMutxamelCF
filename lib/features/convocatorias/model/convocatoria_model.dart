@@ -2,10 +2,16 @@ class ConvocatoriaModel {
   final int id;
   final int equipoId;
   final String equipo;
+  final int partidoId;
+
+  /// Rival/campo/fecha/hora del partido: el backend ya no los guarda en
+  /// la convocatoria, los lee en vivo del partido vinculado (partidoId)
+  /// y los expone aquí igual que antes para no romper la UI existente.
   final String rival;
   final String campo;
   final String fechaPartido;
   final String horaPartido;
+
   final String horaConvocatoria;
   final String lugarConvocatoria;
   final int usuarioEntrenadorId;
@@ -15,6 +21,7 @@ class ConvocatoriaModel {
     required this.id,
     required this.equipoId,
     required this.equipo,
+    required this.partidoId,
     required this.rival,
     required this.campo,
     required this.fechaPartido,
@@ -30,6 +37,7 @@ class ConvocatoriaModel {
       id: json['id'],
       equipoId: json['equipoId'],
       equipo: json['equipo'] ?? '',
+      partidoId: json['partidoId'],
       rival: json['rival'] ?? '',
       campo: json['campo'] ?? '',
       fechaPartido: json['fechaPartido'].toString(),

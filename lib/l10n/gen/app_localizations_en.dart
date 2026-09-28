@@ -1033,6 +1033,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get matchDateLabel => 'Match date';
 
   @override
+  String get selectMatchLabel => 'Match';
+
+  @override
+  String get selectMatchHint => 'Select a match';
+
+  @override
+  String get selectMatchError => 'Select a match.';
+
+  @override
+  String get noMatchesAvailableForCallup =>
+      'There are no matches available to create a call-up. Create a match first.';
+
+  @override
   String get callupPlayersTitle => 'Called-up players';
 
   @override

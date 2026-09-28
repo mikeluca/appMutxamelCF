@@ -1040,6 +1040,19 @@ class AppLocalizationsCa extends AppLocalizations {
   String get matchDateLabel => 'Data del partit';
 
   @override
+  String get selectMatchLabel => 'Partit';
+
+  @override
+  String get selectMatchHint => 'Selecciona un partit';
+
+  @override
+  String get selectMatchError => 'Selecciona un partit.';
+
+  @override
+  String get noMatchesAvailableForCallup =>
+      'No hi ha partits disponibles per crear una convocatòria. Crea primer un partit.';
+
+  @override
   String get callupPlayersTitle => 'Jugadors convocats';
 
   @override

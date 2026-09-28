@@ -1049,6 +1049,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get matchDateLabel => 'Fecha del partido';
 
   @override
+  String get selectMatchLabel => 'Partido';
+
+  @override
+  String get selectMatchHint => 'Selecciona un partido';
+
+  @override
+  String get selectMatchError => 'Selecciona un partido.';
+
+  @override
+  String get noMatchesAvailableForCallup =>
+      'No hay partidos disponibles para crear una convocatoria. Crea primero un partido.';
+
+  @override
   String get callupPlayersTitle => 'Jugadores convocados';
 
   @override

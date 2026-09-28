@@ -1990,6 +1990,30 @@ abstract class AppLocalizations {
   /// **'Fecha del partido'**
   String get matchDateLabel;
 
+  /// No description provided for @selectMatchLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Partido'**
+  String get selectMatchLabel;
+
+  /// No description provided for @selectMatchHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona un partido'**
+  String get selectMatchHint;
+
+  /// No description provided for @selectMatchError.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona un partido.'**
+  String get selectMatchError;
+
+  /// No description provided for @noMatchesAvailableForCallup.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay partidos disponibles para crear una convocatoria. Crea primero un partido.'**
+  String get noMatchesAvailableForCallup;
+
   /// No description provided for @callupPlayersTitle.
   ///
   /// In es, this message translates to:

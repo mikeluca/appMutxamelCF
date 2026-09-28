@@ -22,12 +22,11 @@ class ConvocatoriaService {
     return ConvocatoriaModel.fromJson(data as Map<String, dynamic>);
   }
 
+  /// Crea una convocatoria a partir de un partido YA existente: el
+  /// rival/campo/fecha/hora ya no se envían (se leen en el backend, en
+  /// vivo, del partido indicado por [partidoId]).
   Future<ConvocatoriaModel> crear({
-    required int equipoId,
-    required String rival,
-    required String campo,
-    required String fechaPartido,
-    required String horaPartido,
+    required int partidoId,
     required String horaConvocatoria,
     required String lugarConvocatoria,
     required List<int> jugadoresIds,
@@ -36,11 +35,7 @@ class ConvocatoriaService {
       '/app/convocatorias',
       autenticado: true,
       body: {
-        'equipoId': equipoId,
-        'rival': rival,
-        'campo': campo,
-        'fechaPartido': fechaPartido,
-        'horaPartido': horaPartido,
+        'partidoId': partidoId,
         'horaConvocatoria': horaConvocatoria,
         'lugarConvocatoria': lugarConvocatoria,
         'jugadoresIds': jugadoresIds,
@@ -50,13 +45,11 @@ class ConvocatoriaService {
     return ConvocatoriaModel.fromJson(data as Map<String, dynamic>);
   }
 
+  /// Actualiza una convocatoria. Se permite re-apuntarla a otro partido
+  /// (mismo equipo), igual que se permite cambiar hora/lugar.
   Future<ConvocatoriaModel> actualizar({
     required int convocatoriaId,
-    required int equipoId,
-    required String rival,
-    required String campo,
-    required String fechaPartido,
-    required String horaPartido,
+    required int partidoId,
     required String horaConvocatoria,
     required String lugarConvocatoria,
   }) async {
@@ -64,11 +57,7 @@ class ConvocatoriaService {
       '/app/convocatorias/$convocatoriaId',
       autenticado: true,
       body: {
-        'equipoId': equipoId,
-        'rival': rival,
-        'campo': campo,
-        'fechaPartido': fechaPartido,
-        'horaPartido': horaPartido,
+        'partidoId': partidoId,
         'horaConvocatoria': horaConvocatoria,
         'lugarConvocatoria': lugarConvocatoria,
       },

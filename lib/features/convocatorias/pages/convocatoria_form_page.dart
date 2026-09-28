@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
+import '../../matches/models/match_model.dart';
+import '../../matches/services/match_service.dart';
 import '../../teams/models/player_model.dart';
 import '../../teams/services/team_services.dart';
 import '../model/convocatoria_model.dart';
@@ -22,21 +24,31 @@ class ConvocatoriaFormPage extends StatefulWidget {
   State<ConvocatoriaFormPage> createState() => _ConvocatoriaFormPageState();
 }
 
+/// Datos necesarios para pintar el formulario: los jugadores del equipo y
+/// los partidos que se pueden elegir para la convocatoria. Se cargan
+/// juntos con Future.wait para poder mostrar un único loader.
+class _DatosFormulario {
+  final List<PlayerModel> jugadores;
+  final List<MatchModel> partidos;
+
+  _DatosFormulario(this.jugadores, this.partidos);
+}
+
 class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
   final TeamService _teamService = TeamService();
+  final MatchService _matchService = MatchService();
   final ConvocatoriaService _convocatoriaService = ConvocatoriaService();
-
-  final TextEditingController _rivalController = TextEditingController();
-
-  final TextEditingController _campoController = TextEditingController();
 
   final TextEditingController _lugarController = TextEditingController();
 
-  late Future<List<PlayerModel>> _futureJugadores;
+  late Future<_DatosFormulario> _futureDatos;
 
-  DateTime _fechaPartido = DateTime.now();
-
-  TimeOfDay _horaPartido = const TimeOfDay(hour: 18, minute: 0);
+  /// Partido elegido para la convocatoria. La convocatoria SIEMPRE se
+  /// crea/edita a partir de un partido ya existente: rival/campo/fecha/
+  /// hora del partido ya NO se pueden escribir a mano, se muestran de
+  /// solo lectura una vez elegido el partido (se leen en vivo del
+  /// partido, nunca se duplican en la convocatoria).
+  MatchModel? _partidoSeleccionado;
 
   TimeOfDay _horaConvocatoria = const TimeOfDay(hour: 17, minute: 0);
 
@@ -51,39 +63,61 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
   void initState() {
     super.initState();
 
-    _futureJugadores = _teamService.obtenerJugadores(widget.equipo.id);
-
-    if (_esEdicion) {
-      _cargarConvocatoria();
-    }
+    _futureDatos = _cargarDatos();
   }
 
-  void _cargarConvocatoria() {
+  Future<_DatosFormulario> _cargarDatos() async {
+    final resultados = await Future.wait([
+      _teamService.obtenerJugadores(widget.equipo.id),
+      _matchService.obtenerPartidosSinConvocatoria(
+        widget.equipo.id,
+        incluirPartidoId: widget.convocatoria?.partidoId,
+      ),
+    ]);
+
+    return _DatosFormulario(
+      resultados[0] as List<PlayerModel>,
+      resultados[1] as List<MatchModel>,
+    );
+  }
+
+  void _cargarConvocatoria(List<MatchModel> partidos) {
     final convocatoria = widget.convocatoria!;
 
-    _rivalController.text = convocatoria.rival;
-    _campoController.text = convocatoria.campo;
     _lugarController.text = convocatoria.lugarConvocatoria;
-
-    final match = RegExp(
-      r'\[(\d+),\s*(\d+),\s*(\d+)\]',
-    ).firstMatch(convocatoria.fechaPartido);
-
-    if (match != null) {
-      _fechaPartido = DateTime(
-        int.parse(match.group(1)!),
-        int.parse(match.group(2)!),
-        int.parse(match.group(3)!),
-      );
-    }
-
-    _horaPartido = _parsearHora(convocatoria.horaPartido);
 
     _horaConvocatoria = _parsearHora(convocatoria.horaConvocatoria);
 
     _jugadoresSeleccionados.addAll(
       convocatoria.jugadores.map((jugador) => jugador.jugadorId),
     );
+
+    MatchModel? partido;
+
+    for (final candidato in partidos) {
+      if (candidato.id == convocatoria.partidoId) {
+        partido = candidato;
+        break;
+      }
+    }
+
+    // El endpoint de partidos-sin-convocatoria siempre incluye, aparte,
+    // el partido ya vinculado (incluirPartidoId), así que en condiciones
+    // normales `partido` no debería ser null. Por robustez, si no
+    // apareciera se construye uno mínimo con los datos ya conocidos
+    // (leídos en vivo por el backend en la respuesta de la convocatoria).
+    partido ??= MatchModel(
+      id: convocatoria.partidoId,
+      equipoId: convocatoria.equipoId,
+      categoria: '',
+      equipo: convocatoria.equipo,
+      rival: convocatoria.rival,
+      campo: convocatoria.campo,
+      hora: convocatoria.horaPartido,
+      diaFormateado: convocatoria.fechaPartido,
+    );
+
+    _partidoSeleccionado = partido;
   }
 
   TimeOfDay _parsearHora(String hora) {
@@ -101,38 +135,8 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
 
   @override
   void dispose() {
-    _rivalController.dispose();
-    _campoController.dispose();
     _lugarController.dispose();
     super.dispose();
-  }
-
-  Future<void> _seleccionarFecha() async {
-    final fecha = await showDatePicker(
-      context: context,
-      initialDate: _fechaPartido,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2100),
-    );
-
-    if (fecha == null) return;
-
-    setState(() {
-      _fechaPartido = fecha;
-    });
-  }
-
-  Future<void> _seleccionarHoraPartido() async {
-    final hora = await showTimePicker(
-      context: context,
-      initialTime: _horaPartido,
-    );
-
-    if (hora == null) return;
-
-    setState(() {
-      _horaPartido = hora;
-    });
   }
 
   Future<void> _seleccionarHoraConvocatoria() async {
@@ -168,8 +172,8 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
           titulo: _esEdicion ? _t.editCallupTitle : _t.newCallupTitle,
         ),
       ),
-      body: FutureBuilder<List<PlayerModel>>(
-        future: _futureJugadores,
+      body: FutureBuilder<_DatosFormulario>(
+        future: _futureDatos,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -179,7 +183,13 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
             return _construirError(snapshot.error);
           }
 
-          final jugadores = snapshot.data ?? [];
+          final datos = snapshot.data!;
+          final jugadores = datos.jugadores;
+          final partidos = datos.partidos;
+
+          if (_esEdicion && _partidoSeleccionado == null) {
+            _cargarConvocatoria(partidos);
+          }
 
           return Column(
             children: [
@@ -187,7 +197,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
                   children: [
-                    _construirDatosPartido(),
+                    _construirDatosPartido(partidos),
                     const SizedBox(height: 24),
                     _construirTituloJugadores(),
                     const SizedBox(height: 12),
@@ -206,7 +216,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
     );
   }
 
-  Widget _construirDatosPartido() {
+  Widget _construirDatosPartido(List<MatchModel> partidos) {
     return Card(
       margin: EdgeInsets.zero,
       color: _colors.surface,
@@ -226,31 +236,14 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
               ),
             ),
             const SizedBox(height: 18),
-            TextField(
-              controller: _rivalController,
-              decoration: InputDecoration(
-                labelText: _t.rivalLabel,
-                border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.sports_soccer),
-              ),
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: _campoController,
-              decoration: InputDecoration(
-                labelText: _t.fieldLabelCampo,
-                border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.stadium_outlined),
-              ),
-            ),
-            const SizedBox(height: 14),
-            _construirSelectorFecha(),
-            const SizedBox(height: 14),
-            _construirSelectorHora(
-              titulo: _t.matchTimeLabel,
-              hora: _horaPartido,
-              onTap: _seleccionarHoraPartido,
-            ),
+            if (partidos.isEmpty && _partidoSeleccionado == null)
+              _construirSinPartidos()
+            else
+              _construirSelectorPartido(partidos),
+            if (_partidoSeleccionado != null) ...[
+              const SizedBox(height: 14),
+              _construirDatosPartidoSeleccionado(_partidoSeleccionado!),
+            ],
             const SizedBox(height: 14),
             _construirSelectorHora(
               titulo: _t.callupTimeLabel,
@@ -272,21 +265,98 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
     );
   }
 
-  Widget _construirSelectorFecha() {
-    return InkWell(
-      borderRadius: BorderRadius.circular(12),
-      onTap: _seleccionarFecha,
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: _t.matchDateLabel,
-          border: const OutlineInputBorder(),
-          prefixIcon: const Icon(Icons.calendar_today_outlined),
-        ),
-        child: Text(
-          _formatearFechaVisible(_fechaPartido),
-          style: const TextStyle(fontSize: 16),
-        ),
+  Widget _construirSinPartidos() {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: _colors.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
       ),
+      child: Text(
+        _t.noMatchesAvailableForCallup,
+        style: TextStyle(color: _colors.onSurfaceVariant),
+      ),
+    );
+  }
+
+  Widget _construirSelectorPartido(List<MatchModel> partidos) {
+    final idSeleccionado = _partidoSeleccionado?.id;
+
+    // Si el partido actualmente seleccionado no está en la lista (por
+    // ejemplo, tras recargar), evita que el Dropdown reciba un value sin
+    // item asociado.
+    final hayValorValido =
+        idSeleccionado != null &&
+        partidos.any((partido) => partido.id == idSeleccionado);
+
+    return DropdownButtonFormField<int>(
+      initialValue: hayValorValido ? idSeleccionado : null,
+      decoration: InputDecoration(
+        labelText: _t.selectMatchLabel,
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.sports_soccer),
+      ),
+      hint: Text(_t.selectMatchHint),
+      isExpanded: true,
+      items: partidos
+          .map(
+            (partido) => DropdownMenuItem<int>(
+              value: partido.id,
+              child: Text(
+                '${partido.rival}'
+                '${partido.diaFormateado != null && partido.diaFormateado!.isNotEmpty ? ' — ${partido.diaFormateado}' : ''}',
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          )
+          .toList(),
+      onChanged: (id) {
+        setState(() {
+          _partidoSeleccionado = partidos.firstWhere(
+            (partido) => partido.id == id,
+          );
+        });
+      },
+    );
+  }
+
+  Widget _construirDatosPartidoSeleccionado(MatchModel partido) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: _colors.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _construirFilaInfo(Icons.stadium_outlined, _t.fieldLabelCampo, partido.campo),
+          const SizedBox(height: 6),
+          _construirFilaInfo(
+            Icons.calendar_today_outlined,
+            _t.matchDateLabel,
+            partido.diaFormateado,
+          ),
+          const SizedBox(height: 6),
+          _construirFilaInfo(Icons.access_time, _t.matchTimeLabel, partido.hora),
+        ],
+      ),
+    );
+  }
+
+  Widget _construirFilaInfo(IconData icono, String titulo, String? valor) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icono, size: 18, color: _colors.onSurfaceVariant),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            '$titulo: ${(valor == null || valor.isEmpty) ? '-' : valor}',
+            style: TextStyle(color: _colors.onSurfaceVariant),
+          ),
+        ),
+      ],
     );
   }
 
@@ -419,13 +489,10 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
   }
 
   Future<void> _guardar() async {
-    if (_rivalController.text.trim().isEmpty) {
-      _mostrarMensaje(_t.enterRivalError);
-      return;
-    }
+    final partido = _partidoSeleccionado;
 
-    if (_campoController.text.trim().isEmpty) {
-      _mostrarMensaje(_t.enterFieldError);
+    if (partido == null || partido.id == null) {
+      _mostrarMensaje(_t.selectMatchError);
       return;
     }
 
@@ -434,21 +501,12 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       return;
     }
 
-    if (_jugadoresSeleccionados.isEmpty) {
+    if (!_esEdicion && _jugadoresSeleccionados.isEmpty) {
       _mostrarMensaje(_t.selectAtLeastOnePlayerError);
       return;
     }
 
     try {
-      final fechaPartido =
-          '${_fechaPartido.year}-'
-          '${_fechaPartido.month.toString().padLeft(2, '0')}-'
-          '${_fechaPartido.day.toString().padLeft(2, '0')}';
-
-      final horaPartido =
-          '${_horaPartido.hour.toString().padLeft(2, '0')}:'
-          '${_horaPartido.minute.toString().padLeft(2, '0')}';
-
       final horaConvocatoria =
           '${_horaConvocatoria.hour.toString().padLeft(2, '0')}:'
           '${_horaConvocatoria.minute.toString().padLeft(2, '0')}';
@@ -456,21 +514,13 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       if (_esEdicion) {
         await _convocatoriaService.actualizar(
           convocatoriaId: widget.convocatoria!.id,
-          equipoId: widget.equipo.id,
-          rival: _rivalController.text.trim(),
-          campo: _campoController.text.trim(),
-          fechaPartido: fechaPartido,
-          horaPartido: horaPartido,
+          partidoId: partido.id!,
           horaConvocatoria: horaConvocatoria,
           lugarConvocatoria: _lugarController.text.trim(),
         );
       } else {
         await _convocatoriaService.crear(
-          equipoId: widget.equipo.id,
-          rival: _rivalController.text.trim(),
-          campo: _campoController.text.trim(),
-          fechaPartido: fechaPartido,
-          horaPartido: horaPartido,
+          partidoId: partido.id!,
           horaConvocatoria: horaConvocatoria,
           lugarConvocatoria: _lugarController.text.trim(),
           jugadoresIds: _jugadoresSeleccionados.toList(),
@@ -544,13 +594,5 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
         ),
       ),
     );
-  }
-
-  String _formatearFechaVisible(DateTime fecha) {
-    final day = fecha.day.toString().padLeft(2, '0');
-    final month = fecha.month.toString().padLeft(2, '0');
-    final year = fecha.year.toString();
-
-    return '$day/$month/$year';
   }
 }

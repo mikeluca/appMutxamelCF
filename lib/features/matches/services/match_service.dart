@@ -52,6 +52,33 @@ class MatchService {
         .toList();
   }
 
+  /// Partidos de un equipo que todavía no tienen convocatoria asociada,
+  /// para el selector de "crear convocatoria a partir de un partido
+  /// existente".
+  ///
+  /// Si se indica [incluirPartidoId] (al editar una convocatoria ya
+  /// existente), ese partido se incluye en el listado aunque ya tenga
+  /// convocatoria, para que siga siendo seleccionable.
+  Future<List<MatchModel>> obtenerPartidosSinConvocatoria(
+    int equipoId, {
+    int? incluirPartidoId,
+  }) async {
+    final query = StringBuffer('/app/partidos/sin-convocatoria?equipoId=$equipoId');
+
+    if (incluirPartidoId != null) {
+      query.write('&incluirPartidoId=$incluirPartidoId');
+    }
+
+    final data = await ApiClient.get(
+      query.toString(),
+      autenticado: true,
+    ) as List<dynamic>;
+
+    return data
+        .map((json) => MatchModel.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<MatchModel> crearPartido({
     required int equipoId,
     required String rival,
