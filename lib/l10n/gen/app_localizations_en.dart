@@ -1449,4 +1449,48 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get justificationNoReasonGiven => 'No reason given';
+
+  @override
+  String get matchResultFormTitle => 'Match result';
+
+  @override
+  String get matchResultGoalsForLabel => 'Goals for';
+
+  @override
+  String get matchResultGoalsAgainstLabel => 'Goals against';
+
+  @override
+  String get matchResultPlayersTitle => 'Player statistics';
+
+  @override
+  String get matchResultGoalsShort => 'Goals';
+
+  @override
+  String get matchResultAssistsShort => 'Assists';
+
+  @override
+  String get matchResultYellowCardsShort => 'Yellow cards';
+
+  @override
+  String get matchResultRedCardShort => 'Red card';
+
+  @override
+  String get matchResultSaveButton => 'Save result';
+
+  @override
+  String get matchResultSavedSuccess => 'Result saved successfully.';
+
+  @override
+  String matchResultSaveError(String error) {
+    return 'The result could not be saved: $error';
+  }
+
+  @override
+  String get matchResultLoadError => 'The match data could not be loaded.';
+
+  @override
+  String get matchEnterResultTooltip => 'Enter result';
+
+  @override
+  String get matchEditResultTooltip => 'Edit result';
 }

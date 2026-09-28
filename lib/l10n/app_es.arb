@@ -557,5 +557,23 @@
   "viewJustificationsTitle": "Justificaciones de falta",
   "viewJustificationsEmpty": "Todavía no hay ninguna justificación para esta sesión.",
   "viewJustificationsLoadError": "No se han podido cargar las justificaciones.",
-  "justificationNoReasonGiven": "Sin motivo indicado"
+  "justificationNoReasonGiven": "Sin motivo indicado",
+
+  "matchResultFormTitle": "Resultado del partido",
+  "matchResultGoalsForLabel": "Goles a favor",
+  "matchResultGoalsAgainstLabel": "Goles en contra",
+  "matchResultPlayersTitle": "Estadísticas por jugador",
+  "matchResultGoalsShort": "Goles",
+  "matchResultAssistsShort": "Asist.",
+  "matchResultYellowCardsShort": "T. amarillas",
+  "matchResultRedCardShort": "T. roja",
+  "matchResultSaveButton": "Guardar resultado",
+  "matchResultSavedSuccess": "Resultado guardado correctamente.",
+  "matchResultSaveError": "No se ha podido guardar el resultado: {error}",
+  "@matchResultSaveError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "matchResultLoadError": "No se han podido cargar los datos del partido.",
+  "matchEnterResultTooltip": "Introducir resultado",
+  "matchEditResultTooltip": "Editar resultado"
 }

@@ -1,5 +1,6 @@
 import '../../../core/network/api_client.dart';
 import '../models/match_model.dart';
+import '../models/partido_estadisticas_model.dart';
 
 class MatchService {
   Future<MatchModel?> obtenerResultadoPrimerEquipo() async {
@@ -134,5 +135,43 @@ class MatchService {
 
   Future<void> eliminarPartido(int partidoId) async {
     await ApiClient.delete('/app/partidos/$partidoId', autenticado: true);
+  }
+
+  /// Estadísticas actualmente guardadas de un partido (resultado y
+  /// estadísticas por jugador). Si todavía no se ha introducido el
+  /// resultado, se devuelve con golesFavor/golesContra a null y la lista
+  /// de jugadores vacía.
+  Future<PartidoEstadisticasModel> obtenerEstadisticas(int partidoId) async {
+    final data = await ApiClient.get(
+      '/app/partidos/$partidoId/estadisticas',
+      autenticado: true,
+    );
+
+    return PartidoEstadisticasModel.fromJson(data as Map<String, dynamic>);
+  }
+
+  /// Introduce (o reemplaza por completo, si ya existían) el resultado
+  /// numérico y las estadísticas por jugador de un partido ya jugado.
+  /// [jugadores] debe cubrir exactamente la convocatoria del partido si
+  /// existe, o la plantilla completa del equipo en caso contrario: el
+  /// backend rechaza con un error cualquier jugador que falte, sobre o
+  /// esté duplicado.
+  Future<PartidoEstadisticasModel> guardarEstadisticas({
+    required int partidoId,
+    required int golesFavor,
+    required int golesContra,
+    required List<EstadisticaJugadorModel> jugadores,
+  }) async {
+    final data = await ApiClient.put(
+      '/app/partidos/$partidoId/estadisticas',
+      autenticado: true,
+      body: {
+        'golesFavor': golesFavor,
+        'golesContra': golesContra,
+        'jugadores': jugadores.map((jugador) => jugador.toJson()).toList(),
+      },
+    );
+
+    return PartidoEstadisticasModel.fromJson(data as Map<String, dynamic>);
   }
 }

@@ -557,5 +557,23 @@
   "viewJustificationsTitle": "Absence justifications",
   "viewJustificationsEmpty": "There are no justifications for this session yet.",
   "viewJustificationsLoadError": "The justifications could not be loaded.",
-  "justificationNoReasonGiven": "No reason given"
+  "justificationNoReasonGiven": "No reason given",
+
+  "matchResultFormTitle": "Match result",
+  "matchResultGoalsForLabel": "Goals for",
+  "matchResultGoalsAgainstLabel": "Goals against",
+  "matchResultPlayersTitle": "Player statistics",
+  "matchResultGoalsShort": "Goals",
+  "matchResultAssistsShort": "Assists",
+  "matchResultYellowCardsShort": "Yellow cards",
+  "matchResultRedCardShort": "Red card",
+  "matchResultSaveButton": "Save result",
+  "matchResultSavedSuccess": "Result saved successfully.",
+  "matchResultSaveError": "The result could not be saved: {error}",
+  "@matchResultSaveError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "matchResultLoadError": "The match data could not be loaded.",
+  "matchEnterResultTooltip": "Enter result",
+  "matchEditResultTooltip": "Edit result"
 }

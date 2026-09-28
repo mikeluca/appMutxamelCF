@@ -4,6 +4,7 @@ import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
 import '../../matches/models/match_model.dart';
+import '../../matches/pages/resultado_partido_form_page.dart';
 import '../model/calendario_model.dart';
 import '../model/horario_entrenamiento_model.dart';
 import '../model/justificacion_falta_model.dart';
@@ -216,6 +217,19 @@ class _CalendarioGestionPageState extends State<CalendarioGestionPage> {
   // ============================================================
   // PARTIDOS
   // ============================================================
+
+  Future<void> _abrirFormularioResultadoPartido(MatchModel partido) async {
+    final guardado = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ResultadoPartidoFormPage(partido: partido),
+      ),
+    );
+
+    if (guardado == true && mounted) {
+      await _recargar();
+    }
+  }
 
   Future<void> _confirmarCancelarPartido(MatchModel partido) async {
     if (partido.id == null) return;
@@ -611,11 +625,25 @@ class _CalendarioGestionPageState extends State<CalendarioGestionPage> {
         ),
       );
     } else if (item.partido != null && !item.cancelado) {
+      final partido = item.partido!;
+
+      if (partido.esPartidoPasado) {
+        botones.add(
+          IconButton(
+            icon: const Icon(Icons.scoreboard_outlined),
+            tooltip: partido.estaJugado
+                ? _t.matchEditResultTooltip
+                : _t.matchEnterResultTooltip,
+            onPressed: () => _abrirFormularioResultadoPartido(partido),
+          ),
+        );
+      }
+
       botones.add(
         IconButton(
           icon: const Icon(Icons.cancel_outlined, color: Colors.redAccent),
           tooltip: _t.matchCancelTooltip,
-          onPressed: () => _confirmarCancelarPartido(item.partido!),
+          onPressed: () => _confirmarCancelarPartido(partido),
         ),
       );
     }

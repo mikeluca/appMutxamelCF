@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../matches/models/match_model.dart';
+import '../../matches/pages/resultado_partido_form_page.dart';
 import '../../matches/services/match_service.dart';
 import '../../matches/widgets/match_card.dart';
 import '../models/perfil_app.dart';
@@ -432,6 +433,19 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
     _cargar();
   }
 
+  Future<void> _abrirFormularioResultado(MatchModel partido) async {
+    final guardado = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ResultadoPartidoFormPage(partido: partido),
+      ),
+    );
+
+    if (guardado == true && mounted) {
+      _cargar();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -572,6 +586,12 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
       return MatchCard(match: partido);
     }
 
+    // Un partido ya jugado (y no cancelado) introduce/edita su resultado
+    // y estadísticas por jugador en el formulario dedicado; el resto de
+    // partidos (todavía por jugar) siguen usando el diálogo de edición
+    // general (rival, fecha, hora, campo, tipo...).
+    final introducirResultado = partido.esPartidoPasado && !partido.cancelado;
+
     return Stack(
       children: [
         MatchCard(match: partido),
@@ -583,9 +603,18 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
             shape: const CircleBorder(),
             elevation: 2,
             child: IconButton(
-              icon: const Icon(Icons.edit, size: 20),
-              tooltip: _t.editMatchTooltip,
-              onPressed: () => _abrirFormulario(partidoExistente: partido),
+              icon: Icon(
+                introducirResultado ? Icons.scoreboard_outlined : Icons.edit,
+                size: 20,
+              ),
+              tooltip: introducirResultado
+                  ? (partido.estaJugado
+                        ? _t.matchEditResultTooltip
+                        : _t.matchEnterResultTooltip)
+                  : _t.editMatchTooltip,
+              onPressed: introducirResultado
+                  ? () => _abrirFormularioResultado(partido)
+                  : () => _abrirFormulario(partidoExistente: partido),
             ),
           ),
         ),

@@ -1467,4 +1467,49 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get justificationNoReasonGiven => 'Sin motivo indicado';
+
+  @override
+  String get matchResultFormTitle => 'Resultado del partido';
+
+  @override
+  String get matchResultGoalsForLabel => 'Goles a favor';
+
+  @override
+  String get matchResultGoalsAgainstLabel => 'Goles en contra';
+
+  @override
+  String get matchResultPlayersTitle => 'Estadísticas por jugador';
+
+  @override
+  String get matchResultGoalsShort => 'Goles';
+
+  @override
+  String get matchResultAssistsShort => 'Asist.';
+
+  @override
+  String get matchResultYellowCardsShort => 'T. amarillas';
+
+  @override
+  String get matchResultRedCardShort => 'T. roja';
+
+  @override
+  String get matchResultSaveButton => 'Guardar resultado';
+
+  @override
+  String get matchResultSavedSuccess => 'Resultado guardado correctamente.';
+
+  @override
+  String matchResultSaveError(String error) {
+    return 'No se ha podido guardar el resultado: $error';
+  }
+
+  @override
+  String get matchResultLoadError =>
+      'No se han podido cargar los datos del partido.';
+
+  @override
+  String get matchEnterResultTooltip => 'Introducir resultado';
+
+  @override
+  String get matchEditResultTooltip => 'Editar resultado';
 }

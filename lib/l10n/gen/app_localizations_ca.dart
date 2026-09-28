@@ -1457,4 +1457,49 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get justificationNoReasonGiven => 'Sense motiu indicat';
+
+  @override
+  String get matchResultFormTitle => 'Resultat del partit';
+
+  @override
+  String get matchResultGoalsForLabel => 'Gols a favor';
+
+  @override
+  String get matchResultGoalsAgainstLabel => 'Gols en contra';
+
+  @override
+  String get matchResultPlayersTitle => 'Estadístiques per jugador';
+
+  @override
+  String get matchResultGoalsShort => 'Gols';
+
+  @override
+  String get matchResultAssistsShort => 'Assist.';
+
+  @override
+  String get matchResultYellowCardsShort => 'T. grogues';
+
+  @override
+  String get matchResultRedCardShort => 'T. roja';
+
+  @override
+  String get matchResultSaveButton => 'Guarda el resultat';
+
+  @override
+  String get matchResultSavedSuccess => 'Resultat guardat correctament.';
+
+  @override
+  String matchResultSaveError(String error) {
+    return 'No s\'ha pogut guardar el resultat: $error';
+  }
+
+  @override
+  String get matchResultLoadError =>
+      'No s\'han pogut carregar les dades del partit.';
+
+  @override
+  String get matchEnterResultTooltip => 'Introdueix el resultat';
+
+  @override
+  String get matchEditResultTooltip => 'Edita el resultat';
 }

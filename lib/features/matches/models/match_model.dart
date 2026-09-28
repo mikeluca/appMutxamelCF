@@ -11,6 +11,8 @@ class MatchModel {
   final String? campo;
   final String? tipo;
   final bool cancelado;
+  final int? golesFavor;
+  final int? golesContra;
 
   const MatchModel({
     this.id,
@@ -25,6 +27,8 @@ class MatchModel {
     this.campo,
     this.tipo,
     this.cancelado = false,
+    this.golesFavor,
+    this.golesContra,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -43,6 +47,8 @@ class MatchModel {
       // Ausente en respuestas antiguas/otros endpoints: por compatibilidad
       // se asume no cancelado si no viene informado.
       cancelado: json['cancelado'] as bool? ?? false,
+      golesFavor: json['golesFavor'] as int?,
+      golesContra: json['golesContra'] as int?,
     );
   }
 
@@ -70,5 +76,36 @@ class MatchModel {
     final rivalNormalizado = rival.trim().toUpperCase();
 
     return rivalNormalizado.isEmpty || rivalNormalizado == 'DESCANSA';
+  }
+
+  /// Indica si la fecha y hora del partido ya han pasado, con el mismo
+  /// criterio que aplica el backend para aceptar la introducción de
+  /// estadísticas (PUT /api/app/partidos/{id}/estadisticas lo rechaza si
+  /// el partido todavía no se ha jugado). Si no se conoce la fecha, se
+  /// asume que NO ha pasado (no se puede afirmar lo contrario).
+  bool get esPartidoPasado {
+    final fecha = dia;
+
+    if (fecha == null) {
+      return false;
+    }
+
+    final horaPartido = hora;
+    DateTime limite;
+
+    if (horaPartido != null && horaPartido.trim().isNotEmpty) {
+      final partes = horaPartido.split(':');
+      final horas = int.tryParse(partes.isNotEmpty ? partes[0] : '') ?? 0;
+      final minutos = int.tryParse(partes.length > 1 ? partes[1] : '') ?? 0;
+
+      limite = DateTime(fecha.year, fecha.month, fecha.day, horas, minutos);
+    } else {
+      // Sin hora conocida: se considera pasado a partir del día
+      // siguiente, para no bloquear la introducción de resultado el
+      // mismo día del partido por no conocer la hora exacta.
+      limite = DateTime(fecha.year, fecha.month, fecha.day + 1);
+    }
+
+    return limite.isBefore(DateTime.now());
   }
 }

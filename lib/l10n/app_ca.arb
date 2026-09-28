@@ -557,5 +557,23 @@
   "viewJustificationsTitle": "Justificacions de falta",
   "viewJustificationsEmpty": "Encara no hi ha cap justificació per a esta sessió.",
   "viewJustificationsLoadError": "No s'han pogut carregar les justificacions.",
-  "justificationNoReasonGiven": "Sense motiu indicat"
+  "justificationNoReasonGiven": "Sense motiu indicat",
+
+  "matchResultFormTitle": "Resultat del partit",
+  "matchResultGoalsForLabel": "Gols a favor",
+  "matchResultGoalsAgainstLabel": "Gols en contra",
+  "matchResultPlayersTitle": "Estadístiques per jugador",
+  "matchResultGoalsShort": "Gols",
+  "matchResultAssistsShort": "Assist.",
+  "matchResultYellowCardsShort": "T. grogues",
+  "matchResultRedCardShort": "T. roja",
+  "matchResultSaveButton": "Guarda el resultat",
+  "matchResultSavedSuccess": "Resultat guardat correctament.",
+  "matchResultSaveError": "No s'ha pogut guardar el resultat: {error}",
+  "@matchResultSaveError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "matchResultLoadError": "No s'han pogut carregar les dades del partit.",
+  "matchEnterResultTooltip": "Introdueix el resultat",
+  "matchEditResultTooltip": "Edita el resultat"
 }

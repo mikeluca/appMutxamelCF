@@ -2751,6 +2751,90 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Sin motivo indicado'**
   String get justificationNoReasonGiven;
+
+  /// No description provided for @matchResultFormTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Resultado del partido'**
+  String get matchResultFormTitle;
+
+  /// No description provided for @matchResultGoalsForLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Goles a favor'**
+  String get matchResultGoalsForLabel;
+
+  /// No description provided for @matchResultGoalsAgainstLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Goles en contra'**
+  String get matchResultGoalsAgainstLabel;
+
+  /// No description provided for @matchResultPlayersTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Estadísticas por jugador'**
+  String get matchResultPlayersTitle;
+
+  /// No description provided for @matchResultGoalsShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Goles'**
+  String get matchResultGoalsShort;
+
+  /// No description provided for @matchResultAssistsShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Asist.'**
+  String get matchResultAssistsShort;
+
+  /// No description provided for @matchResultYellowCardsShort.
+  ///
+  /// In es, this message translates to:
+  /// **'T. amarillas'**
+  String get matchResultYellowCardsShort;
+
+  /// No description provided for @matchResultRedCardShort.
+  ///
+  /// In es, this message translates to:
+  /// **'T. roja'**
+  String get matchResultRedCardShort;
+
+  /// No description provided for @matchResultSaveButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar resultado'**
+  String get matchResultSaveButton;
+
+  /// No description provided for @matchResultSavedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Resultado guardado correctamente.'**
+  String get matchResultSavedSuccess;
+
+  /// No description provided for @matchResultSaveError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido guardar el resultado: {error}'**
+  String matchResultSaveError(String error);
+
+  /// No description provided for @matchResultLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se han podido cargar los datos del partido.'**
+  String get matchResultLoadError;
+
+  /// No description provided for @matchEnterResultTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Introducir resultado'**
+  String get matchEnterResultTooltip;
+
+  /// No description provided for @matchEditResultTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar resultado'**
+  String get matchEditResultTooltip;
 }
 
 class _AppLocalizationsDelegate

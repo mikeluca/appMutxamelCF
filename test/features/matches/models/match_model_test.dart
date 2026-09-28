@@ -94,4 +94,75 @@ void main() {
       expect(partido.esProximoPartido, isFalse);
     });
   });
+
+  group('MatchModel.esPartidoPasado', () {
+    test('es false si no se conoce la fecha del partido', () {
+      const partido = MatchModel(
+        categoria: 'Senior',
+        equipo: 'Senior A',
+        rival: 'Rival CF',
+      );
+
+      expect(partido.esPartidoPasado, isFalse);
+    });
+
+    test('es false para una fecha y hora futuras', () {
+      final manana = DateTime.now().add(const Duration(days: 1));
+
+      final partido = MatchModel(
+        categoria: 'Senior',
+        equipo: 'Senior A',
+        rival: 'Rival CF',
+        dia: manana,
+        hora: '18:00',
+      );
+
+      expect(partido.esPartidoPasado, isFalse);
+    });
+
+    test('es true para una fecha y hora ya pasadas', () {
+      final ayer = DateTime.now().subtract(const Duration(days: 1));
+
+      final partido = MatchModel(
+        categoria: 'Senior',
+        equipo: 'Senior A',
+        rival: 'Rival CF',
+        dia: ayer,
+        hora: '18:00',
+      );
+
+      expect(partido.esPartidoPasado, isTrue);
+    });
+
+    test(
+        'sin hora conocida, el mismo día del partido todavía no se '
+        'considera pasado (para no bloquear introducir el resultado el '
+        'mismo día)', () {
+      final hoy = DateTime.now();
+      final hoySoloFecha = DateTime(hoy.year, hoy.month, hoy.day);
+
+      final partido = MatchModel(
+        categoria: 'Senior',
+        equipo: 'Senior A',
+        rival: 'Rival CF',
+        dia: hoySoloFecha,
+      );
+
+      expect(partido.esPartidoPasado, isFalse);
+    });
+
+    test('sin hora conocida, un día anterior a hoy sí se considera pasado', () {
+      final ayer = DateTime.now().subtract(const Duration(days: 1));
+      final ayerSoloFecha = DateTime(ayer.year, ayer.month, ayer.day);
+
+      final partido = MatchModel(
+        categoria: 'Senior',
+        equipo: 'Senior A',
+        rival: 'Rival CF',
+        dia: ayerSoloFecha,
+      );
+
+      expect(partido.esPartidoPasado, isTrue);
+    });
+  });
 }
