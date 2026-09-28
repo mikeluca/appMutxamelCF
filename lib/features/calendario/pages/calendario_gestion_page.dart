@@ -332,8 +332,9 @@ class _CalendarioGestionPageState extends State<CalendarioGestionPage> {
                 ),
                 const SizedBox(height: 10),
 
-                CalendarioMensual(
+                CalendarioMensual<ItemCalendario>(
                   items: datos.calendario.itemsOrdenados,
+                  fechaDe: (item) => item.fecha,
                   textoSinEventosDia: _t.upcomingItemsEmpty,
                   locale: Localizations.localeOf(context).languageCode,
                   itemBuilder: (context, item) => _construirTarjetaItem(item),

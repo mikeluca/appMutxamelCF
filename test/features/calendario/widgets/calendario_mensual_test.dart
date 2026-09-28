@@ -38,8 +38,9 @@ void main() {
         locale: const Locale('es'),
         home: Scaffold(
           body: SingleChildScrollView(
-            child: CalendarioMensual(
+            child: CalendarioMensual<ItemCalendario>(
               items: items,
+              fechaDe: (item) => item.fecha,
               textoSinEventosDia: 'No hay entrenamientos ni partidos programados.',
               locale: 'es',
               itemBuilder: (context, item) => ListTile(

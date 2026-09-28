@@ -11,10 +11,11 @@ import '../model/calendario_model.dart';
 import '../services/calendario_service.dart';
 import '../widgets/calendario_mensual.dart';
 
-/// Vista de solo lectura del calendario (entrenamientos + partidos) de
-/// los equipos del usuario: un acordeón por cada equipo al que está
-/// vinculado (deduplicado), igual que en "Mis partidos". Para
-/// coordinador/administrador se listan todos los equipos del club.
+/// Vista de solo lectura de UN ÚNICO calendario con los entrenamientos y
+/// partidos de TODOS los equipos a los que el usuario está vinculado
+/// (varios jugadores/equipos aparecen mezclados en el mismo calendario,
+/// cada evento indicando a qué equipo -y jugador, si aplica- pertenece).
+/// Para coordinador/administrador se incluyen todos los equipos del club.
 class CalendarioPage extends StatefulWidget {
   const CalendarioPage({super.key});
 
@@ -36,18 +37,37 @@ class _EquipoCalendarioEntrada {
   });
 }
 
+/// Un evento del calendario combinado, con el contexto de a qué
+/// jugador pertenece (si aplica) para poder justificar su falta y
+/// para mostrar "Equipo — Jugador" en la tarjeta. El nombre del equipo
+/// ya viene incluido en item.sesion/item.partido.
+class _EventoUsuario {
+  final ItemCalendario item;
+  final String? jugadorNombre;
+  final int? jugadorId;
+
+  const _EventoUsuario({
+    required this.item,
+    this.jugadorNombre,
+    this.jugadorId,
+  });
+}
+
 class _CalendarioPageState extends State<CalendarioPage> {
   final CalendarioService _calendarioService = CalendarioService();
 
   PerfilApp? _perfil;
   List<_EquipoCalendarioEntrada> _equipos = [];
+  List<_EventoUsuario> _eventos = [];
+
+  // Ventana de fechas consultada: fija para toda la vida de la página
+  // (calculada una vez en initState) para que el calendario visual
+  // (firstDay/lastDay) no "salte" en cada recarga.
+  late final DateTime _desde;
+  late final DateTime _hasta;
 
   bool _cargando = true;
   String? _error;
-
-  // Se incrementa en cada recarga para forzar que las secciones del
-  // acordeón se reconstruyan desde cero (colapsadas).
-  int _generacion = 0;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
   AppLocalizations get _t => AppLocalizations.of(context);
@@ -55,10 +75,26 @@ class _CalendarioPageState extends State<CalendarioPage> {
   @override
   void initState() {
     super.initState();
+
+    final hoy = DateTime.now();
+    // Los partidos se muestran pasados o futuros (para poder ver el
+    // resultado de los ya jugados): 2 años atrás cubre de sobra la
+    // temporada actual y la anterior. Los entrenamientos solo se
+    // generan hacia delante, así que la parte futura de la ventana
+    // (hoy + 2 meses) coincide con el horizonte de generación del
+    // backend.
+    _desde = DateTime(hoy.year - 2, hoy.month, hoy.day);
+    _hasta = DateTime(hoy.year, hoy.month + 2, hoy.day);
+
     _cargarDatos();
   }
 
   Future<void> _cargarDatos() async {
+    setState(() {
+      _cargando = true;
+      _error = null;
+    });
+
     try {
       final perfil = await PerfilService.obtenerPerfil();
 
@@ -71,7 +107,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
       final esGestionGlobal =
           perfil.tieneRol('COORDINADOR') || perfil.tieneRol('ADMIN_APP');
 
-      final resultado = <_EquipoCalendarioEntrada>[];
+      final equipos = <_EquipoCalendarioEntrada>[];
       final procesados = <String>{};
 
       if (esGestionGlobal) {
@@ -81,7 +117,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
           final clave = equipo.nombre.trim().toUpperCase();
 
           if (procesados.add(clave)) {
-            resultado.add(
+            equipos.add(
               _EquipoCalendarioEntrada(
                 equipo: equipo.nombre.trim(),
                 equipoId: equipo.id,
@@ -98,7 +134,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
           final clave = '${equipo.trim().toUpperCase()}|${jugador.id}';
 
           if (procesados.add(clave)) {
-            resultado.add(
+            equipos.add(
               _EquipoCalendarioEntrada(
                 equipo: equipo.trim(),
                 jugador: jugador.nombreCompleto,
@@ -116,7 +152,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
           final clave = equipo.nombre.trim().toUpperCase();
 
           if (procesados.add(clave)) {
-            resultado.add(
+            equipos.add(
               _EquipoCalendarioEntrada(
                 equipo: equipo.nombre.trim(),
                 equipoId: equipo.id,
@@ -126,14 +162,16 @@ class _CalendarioPageState extends State<CalendarioPage> {
         }
       }
 
+      final eventos = await _cargarEventos(equipos);
+
       if (!mounted) return;
 
       setState(() {
         _perfil = perfil;
-        _equipos = resultado;
+        _equipos = equipos;
+        _eventos = eventos;
         _cargando = false;
         _error = null;
-        _generacion++;
       });
     } catch (e) {
       if (!mounted) return;
@@ -143,6 +181,83 @@ class _CalendarioPageState extends State<CalendarioPage> {
         _cargando = false;
       });
     }
+  }
+
+  /// Pide el calendario de cada equipo (en paralelo) y los combina en
+  /// una única lista. Los partidos se deduplican por id (si dos
+  /// jugadores del usuario comparten equipo, su partido no debe salir
+  /// dos veces); las sesiones de entrenamiento NO se deduplican, ya
+  /// que cada una lleva el estado de justificación propio de CADA
+  /// jugador, y ambos hijos deben poder justificar su falta por
+  /// separado a la misma sesión.
+  Future<List<_EventoUsuario>> _cargarEventos(
+    List<_EquipoCalendarioEntrada> equipos,
+  ) async {
+    final calendarios = await Future.wait(
+      equipos.map((entrada) async {
+        final equipoId = entrada.equipoId;
+
+        if (equipoId == null) return null;
+
+        try {
+          return await _calendarioService.obtenerCalendario(
+            equipoId: equipoId,
+            desde: _desde,
+            hasta: _hasta,
+            jugadorId: entrada.jugadorId,
+          );
+        } catch (_) {
+          // Si falla un equipo concreto no se bloquea la vista
+          // completa: se omite y se muestran los demás.
+          return null;
+        }
+      }),
+    );
+
+    final eventos = <_EventoUsuario>[];
+    final partidosVistos = <int>{};
+
+    for (var i = 0; i < equipos.length; i++) {
+      final calendario = calendarios[i];
+
+      if (calendario == null) continue;
+
+      final entrada = equipos[i];
+
+      for (final sesion in calendario.sesiones) {
+        eventos.add(
+          _EventoUsuario(
+            item: ItemCalendario.deSesion(sesion),
+            jugadorId: entrada.jugadorId,
+            jugadorNombre: entrada.jugador,
+          ),
+        );
+      }
+
+      for (final partido in calendario.partidos) {
+        if (partido.id != null && !partidosVistos.add(partido.id!)) {
+          continue;
+        }
+
+        eventos.add(
+          _EventoUsuario(
+            item: ItemCalendario.dePartido(partido),
+            jugadorId: entrada.jugadorId,
+            jugadorNombre: entrada.jugador,
+          ),
+        );
+      }
+    }
+
+    eventos.sort((a, b) {
+      final comparacionFecha = a.item.fecha.compareTo(b.item.fecha);
+
+      if (comparacionFecha != 0) return comparacionFecha;
+
+      return (a.item.hora ?? '').compareTo(b.item.hora ?? '');
+    });
+
+    return eventos;
   }
 
   int? _buscarEquipoId(List<TeamModel> equipos, String nombre) {
@@ -155,6 +270,33 @@ class _CalendarioPageState extends State<CalendarioPage> {
     }
 
     return null;
+  }
+
+  Future<void> _justificarFalta(_EventoUsuario evento) async {
+    final sesion = evento.item.sesion;
+    final jugadorId = evento.jugadorId;
+
+    if (sesion == null || jugadorId == null) return;
+
+    final resultado = await showDialog<bool>(
+      context: context,
+      builder: (_) => _JustificarFaltaDialog(
+        calendarioService: _calendarioService,
+        sesionId: sesion.id,
+        jugadorId: jugadorId,
+        motivoActual: sesion.justificado ? sesion.motivoJustificacion : null,
+      ),
+    );
+
+    if (resultado == true && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_t.calendarJustifyAbsenceSuccess)),
+      );
+
+      // El estado "justificado" de esta sesión ha podido cambiar:
+      // recargamos para reflejarlo en la tarjeta.
+      _cargarDatos();
+    }
   }
 
   @override
@@ -184,9 +326,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
       return _construirError();
     }
 
-    final equipos = _equipos;
-
-    if (equipos.isEmpty) {
+    if (_equipos.isEmpty) {
       return RefreshIndicator(
         onRefresh: _cargarDatos,
         child: ListView(
@@ -214,33 +354,23 @@ class _CalendarioPageState extends State<CalendarioPage> {
 
     return RefreshIndicator(
       onRefresh: _cargarDatos,
-      child: ListView.separated(
+      child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
-        itemCount: equipos.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 14),
-        itemBuilder: (context, index) {
-          final entrada = equipos[index];
-
-          return _EquipoCalendarioSeccion(
-            key: ValueKey(
-              '$_generacion-${entrada.equipo}-${entrada.jugador}-$index',
-            ),
-            calendarioService: _calendarioService,
-            titulo: _tituloTexto(entrada),
-            equipoId: entrada.equipoId,
-            jugadorId: entrada.jugadorId,
-          );
-        },
+        children: [
+          CalendarioMensual<_EventoUsuario>(
+            items: _eventos,
+            fechaDe: (evento) => evento.item.fecha,
+            textoSinEventosDia: _t.calendarNoItems,
+            locale: Localizations.localeOf(context).languageCode,
+            primerDia: _desde,
+            ultimoDia: _hasta,
+            itemBuilder: (context, evento) =>
+                _construirTarjetaItem(evento, DateTime.now()),
+          ),
+        ],
       ),
     );
-  }
-
-  String _tituloTexto(_EquipoCalendarioEntrada entrada) {
-    final tieneJugador =
-        entrada.jugador != null && entrada.jugador!.trim().isNotEmpty;
-
-    return tieneJugador ? '${entrada.equipo} - ${entrada.jugador}' : entrada.equipo;
   }
 
   Widget _construirError() {
@@ -263,14 +393,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-              onPressed: () {
-                setState(() {
-                  _cargando = true;
-                  _error = null;
-                });
-
-                _cargarDatos();
-              },
+              onPressed: _cargarDatos,
               icon: const Icon(Icons.refresh),
               label: Text(_t.retry),
             ),
@@ -279,204 +402,17 @@ class _CalendarioPageState extends State<CalendarioPage> {
       ),
     );
   }
-}
 
-// ============================================================
-// SECCIÓN DE ACORDEÓN POR EQUIPO
-// ============================================================
+  String _equipoDe(ItemCalendario item) =>
+      item.sesion?.equipo ?? item.partido?.equipo ?? '';
 
-class _EquipoCalendarioSeccion extends StatefulWidget {
-  final CalendarioService calendarioService;
-  final String titulo;
-  final int? equipoId;
-  final int? jugadorId;
-
-  const _EquipoCalendarioSeccion({
-    super.key,
-    required this.calendarioService,
-    required this.titulo,
-    required this.equipoId,
-    required this.jugadorId,
-  });
-
-  @override
-  State<_EquipoCalendarioSeccion> createState() =>
-      _EquipoCalendarioSeccionState();
-}
-
-class _EquipoCalendarioSeccionState extends State<_EquipoCalendarioSeccion> {
-  bool _cargando = false;
-  bool _cargado = false;
-  String? _error;
-  List<ItemCalendario> _items = [];
-
-  ColorScheme get _colors => Theme.of(context).colorScheme;
-  AppLocalizations get _t => AppLocalizations.of(context);
-
-  Future<void> _cargar() async {
-    final equipoId = widget.equipoId;
-
-    if (equipoId == null) {
-      setState(() {
-        _error = _t.calendarLoadError;
-        _cargado = true;
-      });
-      return;
-    }
-
-    setState(() {
-      _cargando = true;
-      _error = null;
-    });
-
-    try {
-      final hoy = DateTime.now();
-      final desde = DateTime(hoy.year, hoy.month, hoy.day);
-      // Ventana de dos meses: coincide con el horizonte de generación
-      // de sesiones futuras del backend.
-      final hasta = DateTime(hoy.year, hoy.month + 2, hoy.day);
-
-      final calendario = await widget.calendarioService.obtenerCalendario(
-        equipoId: equipoId,
-        desde: desde,
-        hasta: hasta,
-        jugadorId: widget.jugadorId,
-      );
-
-      if (!mounted) return;
-
-      setState(() {
-        _items = calendario.itemsOrdenados;
-        _cargando = false;
-        _cargado = true;
-      });
-    } catch (e) {
-      if (!mounted) return;
-
-      setState(() {
-        _error = e.toString();
-        _cargando = false;
-        _cargado = true;
-      });
-    }
-  }
-
-  Future<void> _justificarFalta(ItemCalendario item) async {
-    final sesion = item.sesion;
-    final jugadorId = widget.jugadorId;
-
-    if (sesion == null || jugadorId == null) return;
-
-    final resultado = await showDialog<bool>(
-      context: context,
-      builder: (_) => _JustificarFaltaDialog(
-        calendarioService: widget.calendarioService,
-        sesionId: sesion.id,
-        jugadorId: jugadorId,
-        motivoActual: sesion.justificado ? sesion.motivoJustificacion : null,
-      ),
-    );
-
-    if (resultado == true && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_t.calendarJustifyAbsenceSuccess)),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      color: _colors.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      clipBehavior: Clip.antiAlias,
-      child: ExpansionTile(
-        title: Row(
-          children: [
-            Container(
-              width: 5,
-              height: 26,
-              decoration: BoxDecoration(
-                color: AppColors.dorado,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                widget.titulo,
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  color: _colors.onSurface,
-                ),
-              ),
-            ),
-          ],
-        ),
-        onExpansionChanged: (expandido) {
-          if (expandido && !_cargado && !_cargando) {
-            _cargar();
-          }
-        },
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            child: _construirContenidoSeccion(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _construirContenidoSeccion() {
-    if (_cargando) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 24),
-        child: Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (_error != null) {
-      return Column(
-        children: [
-          Text(
-            _t.calendarLoadError,
-            textAlign: TextAlign.center,
-            style: TextStyle(color: _colors.onSurface),
-          ),
-          const SizedBox(height: 8),
-          if (widget.equipoId != null)
-            TextButton.icon(
-              onPressed: _cargar,
-              icon: const Icon(Icons.refresh),
-              label: Text(_t.retry),
-            ),
-        ],
-      );
-    }
-
-    if (!_cargado) {
-      return const SizedBox.shrink();
-    }
-
-    final hoy = DateTime.now();
-
-    return CalendarioMensual(
-      items: _items,
-      textoSinEventosDia: _t.calendarNoItems,
-      locale: Localizations.localeOf(context).languageCode,
-      itemBuilder: (context, item) => _construirTarjetaItem(item, hoy),
-    );
-  }
-
-  Widget _construirTarjetaItem(ItemCalendario item, DateTime hoy) {
+  Widget _construirTarjetaItem(_EventoUsuario evento, DateTime hoy) {
+    final item = evento.item;
     final esFuturo = item.esFuturoRespectoA(hoy);
     final yaJustificado = item.sesion?.justificado == true;
     final puedeJustificar =
         item.esEntrenamiento &&
-        widget.jugadorId != null &&
+        evento.jugadorId != null &&
         !item.cancelado &&
         esFuturo;
 
@@ -496,6 +432,18 @@ class _EquipoCalendarioSeccionState extends State<_EquipoCalendarioSeccion> {
         ? (item.sesion?.lugar ?? '')
         : (item.partido?.rival ?? '');
 
+    final equipo = _equipoDe(item);
+    final tieneJugador =
+        evento.jugadorNombre != null && evento.jugadorNombre!.trim().isNotEmpty;
+    final etiquetaEquipo = tieneJugador
+        ? '$equipo — ${evento.jugadorNombre}'
+        : equipo;
+
+    final resultado = item.partido?.resultado?.trim();
+    final tieneResultado = !item.esEntrenamiento &&
+        resultado != null &&
+        resultado.isNotEmpty;
+
     return Card(
       margin: EdgeInsets.zero,
       elevation: 1,
@@ -503,7 +451,7 @@ class _EquipoCalendarioSeccionState extends State<_EquipoCalendarioSeccion> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
-        onTap: puedeJustificar ? () => _justificarFalta(item) : null,
+        onTap: puedeJustificar ? () => _justificarFalta(evento) : null,
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
@@ -543,6 +491,17 @@ class _EquipoCalendarioSeccionState extends State<_EquipoCalendarioSeccion> {
                         ],
                       ],
                     ),
+                    if (etiquetaEquipo.trim().isNotEmpty) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        etiquetaEquipo,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: _colors.primary,
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 4),
                     Text(
                       _formatearFecha(item.fecha) +
@@ -570,6 +529,17 @@ class _EquipoCalendarioSeccionState extends State<_EquipoCalendarioSeccion> {
                           decoration: item.cancelado
                               ? TextDecoration.lineThrough
                               : null,
+                        ),
+                      ),
+                    ],
+                    if (tieneResultado) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        '${_t.matchResultLabel}: $resultado',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: _colors.onSurface,
                         ),
                       ),
                     ],

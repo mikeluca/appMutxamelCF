@@ -479,6 +479,7 @@
   "calendarCancelledBadge": "Cancelled",
   "calendarJustifiedBadge": "Justified",
   "calendarPlaceLabel": "Place",
+  "matchResultLabel": "Result",
   "calendarJustifyAbsenceButton": "Justify absence",
   "calendarEditJustificationButton": "Edit justification",
   "calendarJustifyAbsenceTitle": "Justify training absence",

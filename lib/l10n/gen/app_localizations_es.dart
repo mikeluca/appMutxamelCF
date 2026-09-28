@@ -1280,6 +1280,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get calendarPlaceLabel => 'Lugar';
 
   @override
+  String get matchResultLabel => 'Resultado';
+
+  @override
   String get calendarJustifyAbsenceButton => 'Justificar falta';
 
   @override

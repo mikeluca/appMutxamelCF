@@ -1,33 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import '../model/calendario_model.dart';
-
 /// Vista visual del calendario (mes o semana, con marcadores por día
-/// que tiene entrenamientos/partidos) + agenda del día seleccionado
-/// debajo. Reutilizada tanto por la vista de jugador/familiar como por
-/// la de gestión del entrenador/coordinador: cada una decide cómo se
-/// pinta cada elemento de la agenda mediante [itemBuilder].
-class CalendarioMensual extends StatefulWidget {
-  final List<ItemCalendario> items;
-  final Widget Function(BuildContext context, ItemCalendario item)
-  itemBuilder;
+/// que tiene eventos) + agenda del día seleccionado debajo. Reutilizada
+/// tanto por la vista de jugador/familiar (calendario único combinando
+/// varios equipos) como por la de gestión del entrenador/coordinador
+/// (un único equipo): es genérica sobre el tipo de elemento [T] para
+/// que cada pantalla pueda decorar sus eventos con el contexto que
+/// necesite (equipo, jugador...) sin acoplar este widget a un modelo
+/// concreto. [fechaDe] indica cómo obtener la fecha de cada elemento y
+/// [itemBuilder] cómo pintarlo.
+class CalendarioMensual<T> extends StatefulWidget {
+  final List<T> items;
+  final DateTime Function(T item) fechaDe;
+  final Widget Function(BuildContext context, T item) itemBuilder;
   final String textoSinEventosDia;
   final String locale;
+  final DateTime? primerDia;
+  final DateTime? ultimoDia;
 
   const CalendarioMensual({
     super.key,
     required this.items,
+    required this.fechaDe,
     required this.itemBuilder,
     required this.textoSinEventosDia,
     required this.locale,
+    this.primerDia,
+    this.ultimoDia,
   });
 
   @override
-  State<CalendarioMensual> createState() => _CalendarioMensualState();
+  State<CalendarioMensual<T>> createState() => _CalendarioMensualState<T>();
 }
 
-class _CalendarioMensualState extends State<CalendarioMensual> {
+class _CalendarioMensualState<T> extends State<CalendarioMensual<T>> {
   late DateTime _focusedDay;
   late DateTime _selectedDay;
   CalendarFormat _formato = CalendarFormat.month;
@@ -44,11 +51,11 @@ class _CalendarioMensualState extends State<CalendarioMensual> {
   DateTime _soloFecha(DateTime fecha) =>
       DateTime(fecha.year, fecha.month, fecha.day);
 
-  List<ItemCalendario> _eventosDelDia(DateTime dia) {
+  List<T> _eventosDelDia(DateTime dia) {
     final clave = _soloFecha(dia);
 
     return widget.items
-        .where((item) => _soloFecha(item.fecha) == clave)
+        .where((item) => _soloFecha(widget.fechaDe(item)) == clave)
         .toList();
   }
 
@@ -68,10 +75,14 @@ class _CalendarioMensualState extends State<CalendarioMensual> {
           clipBehavior: Clip.antiAlias,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: TableCalendar<ItemCalendario>(
+            child: TableCalendar<T>(
               locale: widget.locale,
-              firstDay: DateTime.now().subtract(const Duration(days: 365)),
-              lastDay: DateTime.now().add(const Duration(days: 365)),
+              firstDay:
+                  widget.primerDia ??
+                  DateTime.now().subtract(const Duration(days: 365)),
+              lastDay:
+                  widget.ultimoDia ??
+                  DateTime.now().add(const Duration(days: 365)),
               focusedDay: _focusedDay,
               currentDay: _soloFecha(DateTime.now()),
               selectedDayPredicate: (dia) => _soloFecha(dia) == _selectedDay,

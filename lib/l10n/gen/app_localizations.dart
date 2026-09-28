@@ -2422,6 +2422,12 @@ abstract class AppLocalizations {
   /// **'Lugar'**
   String get calendarPlaceLabel;
 
+  /// No description provided for @matchResultLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Resultado'**
+  String get matchResultLabel;
+
   /// No description provided for @calendarJustifyAbsenceButton.
   ///
   /// In es, this message translates to:
