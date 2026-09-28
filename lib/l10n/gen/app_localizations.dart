@@ -2410,6 +2410,12 @@ abstract class AppLocalizations {
   /// **'Cancelado'**
   String get calendarCancelledBadge;
 
+  /// No description provided for @calendarJustifiedBadge.
+  ///
+  /// In es, this message translates to:
+  /// **'Justificada'**
+  String get calendarJustifiedBadge;
+
   /// No description provided for @calendarPlaceLabel.
   ///
   /// In es, this message translates to:
@@ -2422,17 +2428,35 @@ abstract class AppLocalizations {
   /// **'Justificar falta'**
   String get calendarJustifyAbsenceButton;
 
+  /// No description provided for @calendarEditJustificationButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar justificación'**
+  String get calendarEditJustificationButton;
+
   /// No description provided for @calendarJustifyAbsenceTitle.
   ///
   /// In es, this message translates to:
   /// **'Justificar falta a entrenamiento'**
   String get calendarJustifyAbsenceTitle;
 
+  /// No description provided for @calendarEditJustificationTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar justificación de falta'**
+  String get calendarEditJustificationTitle;
+
   /// No description provided for @calendarJustifyAbsenceHint.
   ///
   /// In es, this message translates to:
   /// **'Indica el motivo de la falta (opcional). Si ya habías justificado esta sesión, se actualizará el motivo.'**
   String get calendarJustifyAbsenceHint;
+
+  /// No description provided for @calendarEditJustificationHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya has justificado esta falta. Puedes editar el motivo si quieres.'**
+  String get calendarEditJustificationHint;
 
   /// No description provided for @calendarJustifyAbsenceReasonLabel.
   ///

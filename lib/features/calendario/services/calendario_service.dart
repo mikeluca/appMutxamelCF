@@ -21,11 +21,13 @@ class CalendarioService {
     required int equipoId,
     required DateTime desde,
     required DateTime hasta,
+    int? jugadorId,
   }) async {
     final data = await ApiClient.get(
       '/app/calendario?equipoId=$equipoId'
       '&desde=${_formatearFecha(desde)}'
-      '&hasta=${_formatearFecha(hasta)}',
+      '&hasta=${_formatearFecha(hasta)}'
+      '${jugadorId != null ? '&jugadorId=$jugadorId' : ''}',
       autenticado: true,
     );
 

@@ -1274,17 +1274,30 @@ class AppLocalizationsEs extends AppLocalizations {
   String get calendarCancelledBadge => 'Cancelado';
 
   @override
+  String get calendarJustifiedBadge => 'Justificada';
+
+  @override
   String get calendarPlaceLabel => 'Lugar';
 
   @override
   String get calendarJustifyAbsenceButton => 'Justificar falta';
 
   @override
+  String get calendarEditJustificationButton => 'Editar justificación';
+
+  @override
   String get calendarJustifyAbsenceTitle => 'Justificar falta a entrenamiento';
+
+  @override
+  String get calendarEditJustificationTitle => 'Editar justificación de falta';
 
   @override
   String get calendarJustifyAbsenceHint =>
       'Indica el motivo de la falta (opcional). Si ya habías justificado esta sesión, se actualizará el motivo.';
+
+  @override
+  String get calendarEditJustificationHint =>
+      'Ya has justificado esta falta. Puedes editar el motivo si quieres.';
 
   @override
   String get calendarJustifyAbsenceReasonLabel => 'Motivo';

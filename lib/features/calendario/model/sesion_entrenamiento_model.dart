@@ -14,6 +14,12 @@ class SesionEntrenamientoModel {
   /// "PROGRAMADA" | "CANCELADA".
   final String estado;
 
+  /// Solo viene relleno cuando el calendario se consultó indicando un
+  /// jugador concreto (vista jugador/familiar): si ESE jugador ya ha
+  /// justificado su falta a esta sesión, y con qué motivo.
+  final bool justificado;
+  final String? motivoJustificacion;
+
   const SesionEntrenamientoModel({
     required this.id,
     required this.equipoId,
@@ -23,6 +29,8 @@ class SesionEntrenamientoModel {
     this.hora,
     this.lugar,
     required this.estado,
+    this.justificado = false,
+    this.motivoJustificacion,
   });
 
   factory SesionEntrenamientoModel.fromJson(Map<String, dynamic> json) {
@@ -35,6 +43,8 @@ class SesionEntrenamientoModel {
       hora: json['hora'] as String?,
       lugar: json['lugar'] as String?,
       estado: json['estado'] as String? ?? 'PROGRAMADA',
+      justificado: json['justificado'] as bool? ?? false,
+      motivoJustificacion: json['motivoJustificacion'] as String?,
     );
   }
 

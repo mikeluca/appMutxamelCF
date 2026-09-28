@@ -1257,17 +1257,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calendarCancelledBadge => 'Cancelled';
 
   @override
+  String get calendarJustifiedBadge => 'Justified';
+
+  @override
   String get calendarPlaceLabel => 'Place';
 
   @override
   String get calendarJustifyAbsenceButton => 'Justify absence';
 
   @override
+  String get calendarEditJustificationButton => 'Edit justification';
+
+  @override
   String get calendarJustifyAbsenceTitle => 'Justify training absence';
+
+  @override
+  String get calendarEditJustificationTitle => 'Edit absence justification';
 
   @override
   String get calendarJustifyAbsenceHint =>
       'Enter the reason for the absence (optional). If you had already justified this session, the reason will be updated.';
+
+  @override
+  String get calendarEditJustificationHint =>
+      'You have already justified this absence. You can edit the reason if you want.';
 
   @override
   String get calendarJustifyAbsenceReasonLabel => 'Reason';

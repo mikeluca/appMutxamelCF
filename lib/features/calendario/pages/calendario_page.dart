@@ -339,6 +339,7 @@ class _EquipoCalendarioSeccionState extends State<_EquipoCalendarioSeccion> {
         equipoId: equipoId,
         desde: desde,
         hasta: hasta,
+        jugadorId: widget.jugadorId,
       );
 
       if (!mounted) return;
@@ -371,6 +372,7 @@ class _EquipoCalendarioSeccionState extends State<_EquipoCalendarioSeccion> {
         calendarioService: widget.calendarioService,
         sesionId: sesion.id,
         jugadorId: jugadorId,
+        motivoActual: sesion.justificado ? sesion.motivoJustificacion : null,
       ),
     );
 
@@ -495,6 +497,7 @@ class _EquipoCalendarioSeccionState extends State<_EquipoCalendarioSeccion> {
 
   Widget _construirTarjetaItem(ItemCalendario item, DateTime hoy) {
     final esFuturo = item.esFuturoRespectoA(hoy);
+    final yaJustificado = item.sesion?.justificado == true;
     final puedeJustificar =
         item.esEntrenamiento &&
         widget.jugadorId != null &&
@@ -558,6 +561,9 @@ class _EquipoCalendarioSeccionState extends State<_EquipoCalendarioSeccion> {
                         if (item.cancelado) ...[
                           const SizedBox(width: 8),
                           _construirBadgeCancelado(),
+                        ] else if (yaJustificado) ...[
+                          const SizedBox(width: 8),
+                          _construirBadgeJustificado(),
                         ],
                       ],
                     ),
@@ -602,7 +608,9 @@ class _EquipoCalendarioSeccionState extends State<_EquipoCalendarioSeccion> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            _t.calendarJustifyAbsenceButton,
+                            yaJustificado
+                                ? _t.calendarEditJustificationButton
+                                : _t.calendarJustifyAbsenceButton,
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -640,6 +648,24 @@ class _EquipoCalendarioSeccionState extends State<_EquipoCalendarioSeccion> {
     );
   }
 
+  Widget _construirBadgeJustificado() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.green.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        _t.calendarJustifiedBadge,
+        style: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          color: Colors.green,
+        ),
+      ),
+    );
+  }
+
   String _formatearFecha(DateTime fecha) {
     final diasSemana = [
       _t.weekdayMonday,
@@ -667,11 +693,13 @@ class _JustificarFaltaDialog extends StatefulWidget {
   final CalendarioService calendarioService;
   final int sesionId;
   final int jugadorId;
+  final String? motivoActual;
 
   const _JustificarFaltaDialog({
     required this.calendarioService,
     required this.sesionId,
     required this.jugadorId,
+    this.motivoActual,
   });
 
   @override
@@ -680,10 +708,14 @@ class _JustificarFaltaDialog extends StatefulWidget {
 }
 
 class _JustificarFaltaDialogState extends State<_JustificarFaltaDialog> {
-  final TextEditingController _motivoController = TextEditingController();
+  late final TextEditingController _motivoController = TextEditingController(
+    text: widget.motivoActual ?? '',
+  );
 
   bool _enviando = false;
   String? _error;
+
+  bool get _yaJustificado => widget.motivoActual != null;
 
   AppLocalizations get _t => AppLocalizations.of(context);
 
@@ -724,13 +756,21 @@ class _JustificarFaltaDialogState extends State<_JustificarFaltaDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(_t.calendarJustifyAbsenceTitle),
+      title: Text(
+        _yaJustificado
+            ? _t.calendarEditJustificationTitle
+            : _t.calendarJustifyAbsenceTitle,
+      ),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(_t.calendarJustifyAbsenceHint),
+            Text(
+              _yaJustificado
+                  ? _t.calendarEditJustificationHint
+                  : _t.calendarJustifyAbsenceHint,
+            ),
             const SizedBox(height: 14),
             TextField(
               controller: _motivoController,
