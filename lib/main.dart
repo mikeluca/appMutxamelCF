@@ -17,6 +17,7 @@ import 'features/auth/pages/club_page.dart';
 import 'features/auth/pages/mi_perfil_page.dart';
 import 'features/auth/pages/mis_jugadores_page.dart';
 import 'features/auth/pages/mis_partidos_page.dart';
+import 'features/calendario/pages/calendario_page.dart';
 import 'features/auth/pages/mis_equipos_page.dart';
 import 'features/auth/pages/ajustes_page.dart';
 import 'features/auth/pages/comunicaciones_page.dart';
@@ -152,6 +153,7 @@ class _MutxamelCfAppState extends State<MutxamelCfApp> {
         AppRoutes.profile: (context) => const MiPerfilPage(),
         AppRoutes.players: (context) => const MisJugadoresPage(),
         AppRoutes.myMatches: (context) => const MisPartidosPage(),
+        AppRoutes.calendar: (context) => const CalendarioPage(),
         AppRoutes.myTeams: (context) => const MisEquiposPage(),
         AppRoutes.settings: (context) => AjustesPage(
           temaActual: _temaActual,

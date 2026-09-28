@@ -413,6 +413,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clubPageMyMatchesDesc => 'Upcoming matches and results';
 
   @override
+  String get clubPageCalendar => 'Calendar';
+
+  @override
+  String get clubPageCalendarDesc => 'Trainings and matches for your teams';
+
+  @override
   String get clubPageLiveMatch => 'Live match';
 
   @override
@@ -1231,4 +1237,194 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get save => 'Save';
+
+  @override
+  String get calendarAllTeamsTitle => 'Teams calendar';
+
+  @override
+  String get calendarLoadError => 'The calendar could not be loaded.';
+
+  @override
+  String get calendarNoItems => 'There are no trainings or matches scheduled.';
+
+  @override
+  String get calendarSessionLabel => 'Training';
+
+  @override
+  String get calendarMatchLabel => 'Match';
+
+  @override
+  String get calendarCancelledBadge => 'Cancelled';
+
+  @override
+  String get calendarPlaceLabel => 'Place';
+
+  @override
+  String get calendarJustifyAbsenceButton => 'Justify absence';
+
+  @override
+  String get calendarJustifyAbsenceTitle => 'Justify training absence';
+
+  @override
+  String get calendarJustifyAbsenceHint =>
+      'Enter the reason for the absence (optional). If you had already justified this session, the reason will be updated.';
+
+  @override
+  String get calendarJustifyAbsenceReasonLabel => 'Reason';
+
+  @override
+  String get calendarJustifyAbsenceSubmit => 'Send';
+
+  @override
+  String get calendarJustifyAbsenceSuccess => 'Absence justified successfully.';
+
+  @override
+  String calendarJustifyAbsenceError(String error) {
+    return 'The justification could not be sent: $error';
+  }
+
+  @override
+  String get calendarManagementTitle => 'Calendar';
+
+  @override
+  String get calendarManagementDesc =>
+      'Weekly schedule, sessions and matches for the team';
+
+  @override
+  String get calendarManagementLoadError =>
+      'The team\'s calendar could not be loaded.';
+
+  @override
+  String get weeklyScheduleTitle => 'Weekly training schedule';
+
+  @override
+  String get weeklyScheduleEmpty =>
+      'No weekly schedule has been set up for this team yet.';
+
+  @override
+  String get weeklyScheduleAddButton => 'Add schedule';
+
+  @override
+  String get weeklyScheduleEditTooltip => 'Edit schedule';
+
+  @override
+  String get weeklyScheduleDeactivateTooltip => 'Deactivate schedule';
+
+  @override
+  String get weeklyScheduleDeactivateConfirmTitle => 'Deactivate schedule';
+
+  @override
+  String get weeklyScheduleDeactivateConfirmMessage =>
+      'This schedule will be deactivated and its future, still-scheduled sessions will be cancelled. Continue?';
+
+  @override
+  String get weeklyScheduleDeactivatedSuccess => 'Schedule deactivated.';
+
+  @override
+  String weeklyScheduleDeactivateError(String error) {
+    return 'The schedule could not be deactivated: $error';
+  }
+
+  @override
+  String get weeklyScheduleSavedSuccess => 'Schedule saved successfully.';
+
+  @override
+  String weeklyScheduleSaveError(String error) {
+    return 'The schedule could not be saved: $error';
+  }
+
+  @override
+  String get weeklyScheduleFormTitleNew => 'New schedule';
+
+  @override
+  String get weeklyScheduleFormTitleEdit => 'Edit schedule';
+
+  @override
+  String get weeklyScheduleDayLabel => 'Day of the week';
+
+  @override
+  String get weeklyScheduleTimeLabel => 'Time';
+
+  @override
+  String get weeklySchedulePlaceLabel => 'Place';
+
+  @override
+  String get weeklyScheduleActiveLabel => 'Active';
+
+  @override
+  String get weeklyScheduleInactiveBadge => 'Inactive';
+
+  @override
+  String get upcomingItemsTitle => 'Upcoming sessions and matches';
+
+  @override
+  String get upcomingItemsEmpty =>
+      'There are no trainings or matches scheduled for the coming weeks.';
+
+  @override
+  String get sessionEditTooltip => 'Edit session';
+
+  @override
+  String get sessionEditFormTitle => 'Edit training session';
+
+  @override
+  String get sessionEditSavedSuccess => 'Session updated successfully.';
+
+  @override
+  String sessionEditError(String error) {
+    return 'The session could not be updated: $error';
+  }
+
+  @override
+  String get sessionCancelTooltip => 'Cancel session';
+
+  @override
+  String get sessionCancelConfirmTitle => 'Cancel session';
+
+  @override
+  String get sessionCancelConfirmMessage =>
+      'This training session will be cancelled and players and family members will be notified. This action cannot be undone. Continue?';
+
+  @override
+  String get sessionCancelledSuccess => 'Session cancelled.';
+
+  @override
+  String sessionCancelError(String error) {
+    return 'The session could not be cancelled: $error';
+  }
+
+  @override
+  String get matchCancelTooltip => 'Cancel match';
+
+  @override
+  String get matchCancelConfirmTitle => 'Cancel match';
+
+  @override
+  String get matchCancelConfirmMessage =>
+      'This match will be cancelled. This action cannot be undone. Continue?';
+
+  @override
+  String get matchCancelledSuccess => 'Match cancelled.';
+
+  @override
+  String matchCancelError(String error) {
+    return 'The match could not be cancelled: $error';
+  }
+
+  @override
+  String get viewJustificationsTooltip => 'View justifications';
+
+  @override
+  String get viewJustificationsTitle => 'Absence justifications';
+
+  @override
+  String get viewJustificationsEmpty =>
+      'There are no justifications for this session yet.';
+
+  @override
+  String get viewJustificationsLoadError =>
+      'The justifications could not be loaded.';
+
+  @override
+  String get justificationNoReasonGiven => 'No reason given';
 }

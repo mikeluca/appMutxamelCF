@@ -10,6 +10,7 @@ class MatchModel {
   final String? hora;
   final String? campo;
   final String? tipo;
+  final bool cancelado;
 
   const MatchModel({
     this.id,
@@ -23,6 +24,7 @@ class MatchModel {
     this.hora,
     this.campo,
     this.tipo,
+    this.cancelado = false,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -38,6 +40,9 @@ class MatchModel {
       hora: json['hora'],
       campo: json['campo'],
       tipo: json['tipo'],
+      // Ausente en respuestas antiguas/otros endpoints: por compatibilidad
+      // se asume no cancelado si no viene informado.
+      cancelado: json['cancelado'] as bool? ?? false,
     );
   }
 

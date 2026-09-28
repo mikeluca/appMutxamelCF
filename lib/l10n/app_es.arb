@@ -148,6 +148,8 @@
   "clubPageMyTeamsDesc": "Equipos vinculados a tu actividad en el club",
   "clubPageMyMatches": "Mis partidos",
   "clubPageMyMatchesDesc": "Próximos partidos y resultados",
+  "clubPageCalendar": "Calendario",
+  "clubPageCalendarDesc": "Entrenamientos y partidos de tus equipos",
   "clubPageLiveMatch": "Partido en directo",
   "clubPageLiveMatchDesc": "Avisos en directo del primer equipo",
   "clubPageCommunications": "Comunicaciones",
@@ -467,5 +469,86 @@
   "dateLabel": "Fecha",
   "hourLabelHint": "Hora (ej. 18:00)",
   "resultLabelHint": "Resultado (ej. 2-1)",
-  "save": "Guardar"
+  "save": "Guardar",
+
+  "calendarAllTeamsTitle": "Calendario de equipos",
+  "calendarLoadError": "No se ha podido cargar el calendario.",
+  "calendarNoItems": "No hay entrenamientos ni partidos programados.",
+  "calendarSessionLabel": "Entrenamiento",
+  "calendarMatchLabel": "Partido",
+  "calendarCancelledBadge": "Cancelado",
+  "calendarPlaceLabel": "Lugar",
+  "calendarJustifyAbsenceButton": "Justificar falta",
+  "calendarJustifyAbsenceTitle": "Justificar falta a entrenamiento",
+  "calendarJustifyAbsenceHint": "Indica el motivo de la falta (opcional). Si ya habías justificado esta sesión, se actualizará el motivo.",
+  "calendarJustifyAbsenceReasonLabel": "Motivo",
+  "calendarJustifyAbsenceSubmit": "Enviar",
+  "calendarJustifyAbsenceSuccess": "Falta justificada correctamente.",
+  "calendarJustifyAbsenceError": "No se ha podido enviar la justificación: {error}",
+  "@calendarJustifyAbsenceError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "calendarManagementTitle": "Calendario",
+  "calendarManagementDesc": "Horario semanal, sesiones y partidos del equipo",
+  "calendarManagementLoadError": "No se ha podido cargar el calendario del equipo.",
+
+  "weeklyScheduleTitle": "Horario semanal de entrenamientos",
+  "weeklyScheduleEmpty": "Todavía no se ha configurado ningún horario semanal para este equipo.",
+  "weeklyScheduleAddButton": "Añadir horario",
+  "weeklyScheduleEditTooltip": "Editar horario",
+  "weeklyScheduleDeactivateTooltip": "Desactivar horario",
+  "weeklyScheduleDeactivateConfirmTitle": "Desactivar horario",
+  "weeklyScheduleDeactivateConfirmMessage": "Se desactivará este horario y se cancelarán sus sesiones futuras todavía programadas. ¿Continuar?",
+  "weeklyScheduleDeactivatedSuccess": "Horario desactivado.",
+  "weeklyScheduleDeactivateError": "No se ha podido desactivar el horario: {error}",
+  "@weeklyScheduleDeactivateError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "weeklyScheduleSavedSuccess": "Horario guardado correctamente.",
+  "weeklyScheduleSaveError": "No se ha podido guardar el horario: {error}",
+  "@weeklyScheduleSaveError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "weeklyScheduleFormTitleNew": "Nuevo horario",
+  "weeklyScheduleFormTitleEdit": "Editar horario",
+  "weeklyScheduleDayLabel": "Día de la semana",
+  "weeklyScheduleTimeLabel": "Hora",
+  "weeklySchedulePlaceLabel": "Lugar",
+  "weeklyScheduleActiveLabel": "Activo",
+  "weeklyScheduleInactiveBadge": "Inactivo",
+
+  "upcomingItemsTitle": "Próximas sesiones y partidos",
+  "upcomingItemsEmpty": "No hay entrenamientos ni partidos programados en las próximas semanas.",
+
+  "sessionEditTooltip": "Editar sesión",
+  "sessionEditFormTitle": "Editar sesión de entrenamiento",
+  "sessionEditSavedSuccess": "Sesión actualizada correctamente.",
+  "sessionEditError": "No se ha podido actualizar la sesión: {error}",
+  "@sessionEditError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "sessionCancelTooltip": "Cancelar sesión",
+  "sessionCancelConfirmTitle": "Cancelar sesión",
+  "sessionCancelConfirmMessage": "Se cancelará esta sesión de entrenamiento y se avisará a los jugadores y familiares. Esta acción no se puede deshacer. ¿Continuar?",
+  "sessionCancelledSuccess": "Sesión cancelada.",
+  "sessionCancelError": "No se ha podido cancelar la sesión: {error}",
+  "@sessionCancelError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "matchCancelTooltip": "Cancelar partido",
+  "matchCancelConfirmTitle": "Cancelar partido",
+  "matchCancelConfirmMessage": "Se cancelará este partido. Esta acción no se puede deshacer. ¿Continuar?",
+  "matchCancelledSuccess": "Partido cancelado.",
+  "matchCancelError": "No se ha podido cancelar el partido: {error}",
+  "@matchCancelError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "viewJustificationsTooltip": "Ver justificaciones",
+  "viewJustificationsTitle": "Justificaciones de falta",
+  "viewJustificationsEmpty": "Todavía no hay ninguna justificación para esta sesión.",
+  "viewJustificationsLoadError": "No se han podido cargar las justificaciones.",
+  "justificationNoReasonGiven": "Sin motivo indicado"
 }

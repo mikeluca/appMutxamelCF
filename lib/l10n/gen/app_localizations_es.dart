@@ -423,6 +423,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get clubPageMyMatchesDesc => 'Próximos partidos y resultados';
 
   @override
+  String get clubPageCalendar => 'Calendario';
+
+  @override
+  String get clubPageCalendarDesc => 'Entrenamientos y partidos de tus equipos';
+
+  @override
   String get clubPageLiveMatch => 'Partido en directo';
 
   @override
@@ -1247,4 +1253,196 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get save => 'Guardar';
+
+  @override
+  String get calendarAllTeamsTitle => 'Calendario de equipos';
+
+  @override
+  String get calendarLoadError => 'No se ha podido cargar el calendario.';
+
+  @override
+  String get calendarNoItems =>
+      'No hay entrenamientos ni partidos programados.';
+
+  @override
+  String get calendarSessionLabel => 'Entrenamiento';
+
+  @override
+  String get calendarMatchLabel => 'Partido';
+
+  @override
+  String get calendarCancelledBadge => 'Cancelado';
+
+  @override
+  String get calendarPlaceLabel => 'Lugar';
+
+  @override
+  String get calendarJustifyAbsenceButton => 'Justificar falta';
+
+  @override
+  String get calendarJustifyAbsenceTitle => 'Justificar falta a entrenamiento';
+
+  @override
+  String get calendarJustifyAbsenceHint =>
+      'Indica el motivo de la falta (opcional). Si ya habías justificado esta sesión, se actualizará el motivo.';
+
+  @override
+  String get calendarJustifyAbsenceReasonLabel => 'Motivo';
+
+  @override
+  String get calendarJustifyAbsenceSubmit => 'Enviar';
+
+  @override
+  String get calendarJustifyAbsenceSuccess =>
+      'Falta justificada correctamente.';
+
+  @override
+  String calendarJustifyAbsenceError(String error) {
+    return 'No se ha podido enviar la justificación: $error';
+  }
+
+  @override
+  String get calendarManagementTitle => 'Calendario';
+
+  @override
+  String get calendarManagementDesc =>
+      'Horario semanal, sesiones y partidos del equipo';
+
+  @override
+  String get calendarManagementLoadError =>
+      'No se ha podido cargar el calendario del equipo.';
+
+  @override
+  String get weeklyScheduleTitle => 'Horario semanal de entrenamientos';
+
+  @override
+  String get weeklyScheduleEmpty =>
+      'Todavía no se ha configurado ningún horario semanal para este equipo.';
+
+  @override
+  String get weeklyScheduleAddButton => 'Añadir horario';
+
+  @override
+  String get weeklyScheduleEditTooltip => 'Editar horario';
+
+  @override
+  String get weeklyScheduleDeactivateTooltip => 'Desactivar horario';
+
+  @override
+  String get weeklyScheduleDeactivateConfirmTitle => 'Desactivar horario';
+
+  @override
+  String get weeklyScheduleDeactivateConfirmMessage =>
+      'Se desactivará este horario y se cancelarán sus sesiones futuras todavía programadas. ¿Continuar?';
+
+  @override
+  String get weeklyScheduleDeactivatedSuccess => 'Horario desactivado.';
+
+  @override
+  String weeklyScheduleDeactivateError(String error) {
+    return 'No se ha podido desactivar el horario: $error';
+  }
+
+  @override
+  String get weeklyScheduleSavedSuccess => 'Horario guardado correctamente.';
+
+  @override
+  String weeklyScheduleSaveError(String error) {
+    return 'No se ha podido guardar el horario: $error';
+  }
+
+  @override
+  String get weeklyScheduleFormTitleNew => 'Nuevo horario';
+
+  @override
+  String get weeklyScheduleFormTitleEdit => 'Editar horario';
+
+  @override
+  String get weeklyScheduleDayLabel => 'Día de la semana';
+
+  @override
+  String get weeklyScheduleTimeLabel => 'Hora';
+
+  @override
+  String get weeklySchedulePlaceLabel => 'Lugar';
+
+  @override
+  String get weeklyScheduleActiveLabel => 'Activo';
+
+  @override
+  String get weeklyScheduleInactiveBadge => 'Inactivo';
+
+  @override
+  String get upcomingItemsTitle => 'Próximas sesiones y partidos';
+
+  @override
+  String get upcomingItemsEmpty =>
+      'No hay entrenamientos ni partidos programados en las próximas semanas.';
+
+  @override
+  String get sessionEditTooltip => 'Editar sesión';
+
+  @override
+  String get sessionEditFormTitle => 'Editar sesión de entrenamiento';
+
+  @override
+  String get sessionEditSavedSuccess => 'Sesión actualizada correctamente.';
+
+  @override
+  String sessionEditError(String error) {
+    return 'No se ha podido actualizar la sesión: $error';
+  }
+
+  @override
+  String get sessionCancelTooltip => 'Cancelar sesión';
+
+  @override
+  String get sessionCancelConfirmTitle => 'Cancelar sesión';
+
+  @override
+  String get sessionCancelConfirmMessage =>
+      'Se cancelará esta sesión de entrenamiento y se avisará a los jugadores y familiares. Esta acción no se puede deshacer. ¿Continuar?';
+
+  @override
+  String get sessionCancelledSuccess => 'Sesión cancelada.';
+
+  @override
+  String sessionCancelError(String error) {
+    return 'No se ha podido cancelar la sesión: $error';
+  }
+
+  @override
+  String get matchCancelTooltip => 'Cancelar partido';
+
+  @override
+  String get matchCancelConfirmTitle => 'Cancelar partido';
+
+  @override
+  String get matchCancelConfirmMessage =>
+      'Se cancelará este partido. Esta acción no se puede deshacer. ¿Continuar?';
+
+  @override
+  String get matchCancelledSuccess => 'Partido cancelado.';
+
+  @override
+  String matchCancelError(String error) {
+    return 'No se ha podido cancelar el partido: $error';
+  }
+
+  @override
+  String get viewJustificationsTooltip => 'Ver justificaciones';
+
+  @override
+  String get viewJustificationsTitle => 'Justificaciones de falta';
+
+  @override
+  String get viewJustificationsEmpty =>
+      'Todavía no hay ninguna justificación para esta sesión.';
+
+  @override
+  String get viewJustificationsLoadError =>
+      'No se han podido cargar las justificaciones.';
+
+  @override
+  String get justificationNoReasonGiven => 'Sin motivo indicado';
 }

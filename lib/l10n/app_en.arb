@@ -146,6 +146,8 @@
   "clubPageFeesDesc": "Your players' fees and their status",
   "clubPageMyTeams": "My teams",
   "clubPageMyTeamsDesc": "Teams linked to your activity in the club",
+  "clubPageCalendar": "Calendar",
+  "clubPageCalendarDesc": "Trainings and matches for your teams",
   "clubPageMyMatches": "My matches",
   "clubPageMyMatchesDesc": "Upcoming matches and results",
   "clubPageLiveMatch": "Live match",
@@ -467,5 +469,86 @@
   "dateLabel": "Date",
   "hourLabelHint": "Time (e.g. 18:00)",
   "resultLabelHint": "Result (e.g. 2-1)",
-  "save": "Save"
+  "save": "Save",
+
+  "calendarAllTeamsTitle": "Teams calendar",
+  "calendarLoadError": "The calendar could not be loaded.",
+  "calendarNoItems": "There are no trainings or matches scheduled.",
+  "calendarSessionLabel": "Training",
+  "calendarMatchLabel": "Match",
+  "calendarCancelledBadge": "Cancelled",
+  "calendarPlaceLabel": "Place",
+  "calendarJustifyAbsenceButton": "Justify absence",
+  "calendarJustifyAbsenceTitle": "Justify training absence",
+  "calendarJustifyAbsenceHint": "Enter the reason for the absence (optional). If you had already justified this session, the reason will be updated.",
+  "calendarJustifyAbsenceReasonLabel": "Reason",
+  "calendarJustifyAbsenceSubmit": "Send",
+  "calendarJustifyAbsenceSuccess": "Absence justified successfully.",
+  "calendarJustifyAbsenceError": "The justification could not be sent: {error}",
+  "@calendarJustifyAbsenceError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "calendarManagementTitle": "Calendar",
+  "calendarManagementDesc": "Weekly schedule, sessions and matches for the team",
+  "calendarManagementLoadError": "The team's calendar could not be loaded.",
+
+  "weeklyScheduleTitle": "Weekly training schedule",
+  "weeklyScheduleEmpty": "No weekly schedule has been set up for this team yet.",
+  "weeklyScheduleAddButton": "Add schedule",
+  "weeklyScheduleEditTooltip": "Edit schedule",
+  "weeklyScheduleDeactivateTooltip": "Deactivate schedule",
+  "weeklyScheduleDeactivateConfirmTitle": "Deactivate schedule",
+  "weeklyScheduleDeactivateConfirmMessage": "This schedule will be deactivated and its future, still-scheduled sessions will be cancelled. Continue?",
+  "weeklyScheduleDeactivatedSuccess": "Schedule deactivated.",
+  "weeklyScheduleDeactivateError": "The schedule could not be deactivated: {error}",
+  "@weeklyScheduleDeactivateError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "weeklyScheduleSavedSuccess": "Schedule saved successfully.",
+  "weeklyScheduleSaveError": "The schedule could not be saved: {error}",
+  "@weeklyScheduleSaveError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "weeklyScheduleFormTitleNew": "New schedule",
+  "weeklyScheduleFormTitleEdit": "Edit schedule",
+  "weeklyScheduleDayLabel": "Day of the week",
+  "weeklyScheduleTimeLabel": "Time",
+  "weeklySchedulePlaceLabel": "Place",
+  "weeklyScheduleActiveLabel": "Active",
+  "weeklyScheduleInactiveBadge": "Inactive",
+
+  "upcomingItemsTitle": "Upcoming sessions and matches",
+  "upcomingItemsEmpty": "There are no trainings or matches scheduled for the coming weeks.",
+
+  "sessionEditTooltip": "Edit session",
+  "sessionEditFormTitle": "Edit training session",
+  "sessionEditSavedSuccess": "Session updated successfully.",
+  "sessionEditError": "The session could not be updated: {error}",
+  "@sessionEditError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "sessionCancelTooltip": "Cancel session",
+  "sessionCancelConfirmTitle": "Cancel session",
+  "sessionCancelConfirmMessage": "This training session will be cancelled and players and family members will be notified. This action cannot be undone. Continue?",
+  "sessionCancelledSuccess": "Session cancelled.",
+  "sessionCancelError": "The session could not be cancelled: {error}",
+  "@sessionCancelError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "matchCancelTooltip": "Cancel match",
+  "matchCancelConfirmTitle": "Cancel match",
+  "matchCancelConfirmMessage": "This match will be cancelled. This action cannot be undone. Continue?",
+  "matchCancelledSuccess": "Match cancelled.",
+  "matchCancelError": "The match could not be cancelled: {error}",
+  "@matchCancelError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "viewJustificationsTooltip": "View justifications",
+  "viewJustificationsTitle": "Absence justifications",
+  "viewJustificationsEmpty": "There are no justifications for this session yet.",
+  "viewJustificationsLoadError": "The justifications could not be loaded.",
+  "justificationNoReasonGiven": "No reason given"
 }

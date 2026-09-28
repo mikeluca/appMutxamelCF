@@ -868,6 +868,18 @@ abstract class AppLocalizations {
   /// **'Próximos partidos y resultados'**
   String get clubPageMyMatchesDesc;
 
+  /// No description provided for @clubPageCalendar.
+  ///
+  /// In es, this message translates to:
+  /// **'Calendario'**
+  String get clubPageCalendar;
+
+  /// No description provided for @clubPageCalendarDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Entrenamientos y partidos de tus equipos'**
+  String get clubPageCalendarDesc;
+
   /// No description provided for @clubPageLiveMatch.
   ///
   /// In es, this message translates to:
@@ -2361,6 +2373,342 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Guardar'**
   String get save;
+
+  /// No description provided for @calendarAllTeamsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Calendario de equipos'**
+  String get calendarAllTeamsTitle;
+
+  /// No description provided for @calendarLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido cargar el calendario.'**
+  String get calendarLoadError;
+
+  /// No description provided for @calendarNoItems.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay entrenamientos ni partidos programados.'**
+  String get calendarNoItems;
+
+  /// No description provided for @calendarSessionLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Entrenamiento'**
+  String get calendarSessionLabel;
+
+  /// No description provided for @calendarMatchLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Partido'**
+  String get calendarMatchLabel;
+
+  /// No description provided for @calendarCancelledBadge.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelado'**
+  String get calendarCancelledBadge;
+
+  /// No description provided for @calendarPlaceLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Lugar'**
+  String get calendarPlaceLabel;
+
+  /// No description provided for @calendarJustifyAbsenceButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Justificar falta'**
+  String get calendarJustifyAbsenceButton;
+
+  /// No description provided for @calendarJustifyAbsenceTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Justificar falta a entrenamiento'**
+  String get calendarJustifyAbsenceTitle;
+
+  /// No description provided for @calendarJustifyAbsenceHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Indica el motivo de la falta (opcional). Si ya habías justificado esta sesión, se actualizará el motivo.'**
+  String get calendarJustifyAbsenceHint;
+
+  /// No description provided for @calendarJustifyAbsenceReasonLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo'**
+  String get calendarJustifyAbsenceReasonLabel;
+
+  /// No description provided for @calendarJustifyAbsenceSubmit.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar'**
+  String get calendarJustifyAbsenceSubmit;
+
+  /// No description provided for @calendarJustifyAbsenceSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Falta justificada correctamente.'**
+  String get calendarJustifyAbsenceSuccess;
+
+  /// No description provided for @calendarJustifyAbsenceError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido enviar la justificación: {error}'**
+  String calendarJustifyAbsenceError(String error);
+
+  /// No description provided for @calendarManagementTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Calendario'**
+  String get calendarManagementTitle;
+
+  /// No description provided for @calendarManagementDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Horario semanal, sesiones y partidos del equipo'**
+  String get calendarManagementDesc;
+
+  /// No description provided for @calendarManagementLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido cargar el calendario del equipo.'**
+  String get calendarManagementLoadError;
+
+  /// No description provided for @weeklyScheduleTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Horario semanal de entrenamientos'**
+  String get weeklyScheduleTitle;
+
+  /// No description provided for @weeklyScheduleEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no se ha configurado ningún horario semanal para este equipo.'**
+  String get weeklyScheduleEmpty;
+
+  /// No description provided for @weeklyScheduleAddButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir horario'**
+  String get weeklyScheduleAddButton;
+
+  /// No description provided for @weeklyScheduleEditTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar horario'**
+  String get weeklyScheduleEditTooltip;
+
+  /// No description provided for @weeklyScheduleDeactivateTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Desactivar horario'**
+  String get weeklyScheduleDeactivateTooltip;
+
+  /// No description provided for @weeklyScheduleDeactivateConfirmTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Desactivar horario'**
+  String get weeklyScheduleDeactivateConfirmTitle;
+
+  /// No description provided for @weeklyScheduleDeactivateConfirmMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Se desactivará este horario y se cancelarán sus sesiones futuras todavía programadas. ¿Continuar?'**
+  String get weeklyScheduleDeactivateConfirmMessage;
+
+  /// No description provided for @weeklyScheduleDeactivatedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Horario desactivado.'**
+  String get weeklyScheduleDeactivatedSuccess;
+
+  /// No description provided for @weeklyScheduleDeactivateError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido desactivar el horario: {error}'**
+  String weeklyScheduleDeactivateError(String error);
+
+  /// No description provided for @weeklyScheduleSavedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Horario guardado correctamente.'**
+  String get weeklyScheduleSavedSuccess;
+
+  /// No description provided for @weeklyScheduleSaveError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido guardar el horario: {error}'**
+  String weeklyScheduleSaveError(String error);
+
+  /// No description provided for @weeklyScheduleFormTitleNew.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo horario'**
+  String get weeklyScheduleFormTitleNew;
+
+  /// No description provided for @weeklyScheduleFormTitleEdit.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar horario'**
+  String get weeklyScheduleFormTitleEdit;
+
+  /// No description provided for @weeklyScheduleDayLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Día de la semana'**
+  String get weeklyScheduleDayLabel;
+
+  /// No description provided for @weeklyScheduleTimeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora'**
+  String get weeklyScheduleTimeLabel;
+
+  /// No description provided for @weeklySchedulePlaceLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Lugar'**
+  String get weeklySchedulePlaceLabel;
+
+  /// No description provided for @weeklyScheduleActiveLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Activo'**
+  String get weeklyScheduleActiveLabel;
+
+  /// No description provided for @weeklyScheduleInactiveBadge.
+  ///
+  /// In es, this message translates to:
+  /// **'Inactivo'**
+  String get weeklyScheduleInactiveBadge;
+
+  /// No description provided for @upcomingItemsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Próximas sesiones y partidos'**
+  String get upcomingItemsTitle;
+
+  /// No description provided for @upcomingItemsEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay entrenamientos ni partidos programados en las próximas semanas.'**
+  String get upcomingItemsEmpty;
+
+  /// No description provided for @sessionEditTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar sesión'**
+  String get sessionEditTooltip;
+
+  /// No description provided for @sessionEditFormTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar sesión de entrenamiento'**
+  String get sessionEditFormTitle;
+
+  /// No description provided for @sessionEditSavedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Sesión actualizada correctamente.'**
+  String get sessionEditSavedSuccess;
+
+  /// No description provided for @sessionEditError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido actualizar la sesión: {error}'**
+  String sessionEditError(String error);
+
+  /// No description provided for @sessionCancelTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar sesión'**
+  String get sessionCancelTooltip;
+
+  /// No description provided for @sessionCancelConfirmTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar sesión'**
+  String get sessionCancelConfirmTitle;
+
+  /// No description provided for @sessionCancelConfirmMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Se cancelará esta sesión de entrenamiento y se avisará a los jugadores y familiares. Esta acción no se puede deshacer. ¿Continuar?'**
+  String get sessionCancelConfirmMessage;
+
+  /// No description provided for @sessionCancelledSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Sesión cancelada.'**
+  String get sessionCancelledSuccess;
+
+  /// No description provided for @sessionCancelError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido cancelar la sesión: {error}'**
+  String sessionCancelError(String error);
+
+  /// No description provided for @matchCancelTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar partido'**
+  String get matchCancelTooltip;
+
+  /// No description provided for @matchCancelConfirmTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar partido'**
+  String get matchCancelConfirmTitle;
+
+  /// No description provided for @matchCancelConfirmMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Se cancelará este partido. Esta acción no se puede deshacer. ¿Continuar?'**
+  String get matchCancelConfirmMessage;
+
+  /// No description provided for @matchCancelledSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Partido cancelado.'**
+  String get matchCancelledSuccess;
+
+  /// No description provided for @matchCancelError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido cancelar el partido: {error}'**
+  String matchCancelError(String error);
+
+  /// No description provided for @viewJustificationsTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver justificaciones'**
+  String get viewJustificationsTooltip;
+
+  /// No description provided for @viewJustificationsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Justificaciones de falta'**
+  String get viewJustificationsTitle;
+
+  /// No description provided for @viewJustificationsEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay ninguna justificación para esta sesión.'**
+  String get viewJustificationsEmpty;
+
+  /// No description provided for @viewJustificationsLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se han podido cargar las justificaciones.'**
+  String get viewJustificationsLoadError;
+
+  /// No description provided for @justificationNoReasonGiven.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin motivo indicado'**
+  String get justificationNoReasonGiven;
 }
 
 class _AppLocalizationsDelegate

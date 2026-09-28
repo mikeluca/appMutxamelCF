@@ -146,6 +146,8 @@
   "clubPageFeesDesc": "Quotes dels teus jugadors i el seu estat",
   "clubPageMyTeams": "Els meus equips",
   "clubPageMyTeamsDesc": "Equips vinculats a la teua activitat al club",
+  "clubPageCalendar": "Calendari",
+  "clubPageCalendarDesc": "Entrenaments i partits dels teus equips",
   "clubPageMyMatches": "Els meus partits",
   "clubPageMyMatchesDesc": "Pròxims partits i resultats",
   "clubPageLiveMatch": "Partit en directe",
@@ -467,5 +469,86 @@
   "dateLabel": "Data",
   "hourLabelHint": "Hora (ex. 18:00)",
   "resultLabelHint": "Resultat (ex. 2-1)",
-  "save": "Guarda"
+  "save": "Guarda",
+
+  "calendarAllTeamsTitle": "Calendari d'equips",
+  "calendarLoadError": "No s'ha pogut carregar el calendari.",
+  "calendarNoItems": "No hi ha entrenaments ni partits programats.",
+  "calendarSessionLabel": "Entrenament",
+  "calendarMatchLabel": "Partit",
+  "calendarCancelledBadge": "Cancel·lat",
+  "calendarPlaceLabel": "Lloc",
+  "calendarJustifyAbsenceButton": "Justifica la falta",
+  "calendarJustifyAbsenceTitle": "Justifica la falta a l'entrenament",
+  "calendarJustifyAbsenceHint": "Indica el motiu de la falta (opcional). Si ja havies justificat esta sessió, s'actualitzarà el motiu.",
+  "calendarJustifyAbsenceReasonLabel": "Motiu",
+  "calendarJustifyAbsenceSubmit": "Envia",
+  "calendarJustifyAbsenceSuccess": "Falta justificada correctament.",
+  "calendarJustifyAbsenceError": "No s'ha pogut enviar la justificació: {error}",
+  "@calendarJustifyAbsenceError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "calendarManagementTitle": "Calendari",
+  "calendarManagementDesc": "Horari setmanal, sessions i partits de l'equip",
+  "calendarManagementLoadError": "No s'ha pogut carregar el calendari de l'equip.",
+
+  "weeklyScheduleTitle": "Horari setmanal d'entrenaments",
+  "weeklyScheduleEmpty": "Encara no s'ha configurat cap horari setmanal per a este equip.",
+  "weeklyScheduleAddButton": "Afig un horari",
+  "weeklyScheduleEditTooltip": "Edita l'horari",
+  "weeklyScheduleDeactivateTooltip": "Desactiva l'horari",
+  "weeklyScheduleDeactivateConfirmTitle": "Desactiva l'horari",
+  "weeklyScheduleDeactivateConfirmMessage": "Es desactivarà este horari i es cancel·laran les seues sessions futures encara programades. Vols continuar?",
+  "weeklyScheduleDeactivatedSuccess": "Horari desactivat.",
+  "weeklyScheduleDeactivateError": "No s'ha pogut desactivar l'horari: {error}",
+  "@weeklyScheduleDeactivateError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "weeklyScheduleSavedSuccess": "Horari guardat correctament.",
+  "weeklyScheduleSaveError": "No s'ha pogut guardar l'horari: {error}",
+  "@weeklyScheduleSaveError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "weeklyScheduleFormTitleNew": "Nou horari",
+  "weeklyScheduleFormTitleEdit": "Edita l'horari",
+  "weeklyScheduleDayLabel": "Dia de la setmana",
+  "weeklyScheduleTimeLabel": "Hora",
+  "weeklySchedulePlaceLabel": "Lloc",
+  "weeklyScheduleActiveLabel": "Actiu",
+  "weeklyScheduleInactiveBadge": "Inactiu",
+
+  "upcomingItemsTitle": "Pròximes sessions i partits",
+  "upcomingItemsEmpty": "No hi ha entrenaments ni partits programats per a les pròximes setmanes.",
+
+  "sessionEditTooltip": "Edita la sessió",
+  "sessionEditFormTitle": "Edita la sessió d'entrenament",
+  "sessionEditSavedSuccess": "Sessió actualitzada correctament.",
+  "sessionEditError": "No s'ha pogut actualitzar la sessió: {error}",
+  "@sessionEditError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "sessionCancelTooltip": "Cancel·la la sessió",
+  "sessionCancelConfirmTitle": "Cancel·la la sessió",
+  "sessionCancelConfirmMessage": "Es cancel·larà esta sessió d'entrenament i s'avisarà als jugadors i familiars. Esta acció no es pot desfer. Vols continuar?",
+  "sessionCancelledSuccess": "Sessió cancel·lada.",
+  "sessionCancelError": "No s'ha pogut cancel·lar la sessió: {error}",
+  "@sessionCancelError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "matchCancelTooltip": "Cancel·la el partit",
+  "matchCancelConfirmTitle": "Cancel·la el partit",
+  "matchCancelConfirmMessage": "Es cancel·larà este partit. Esta acció no es pot desfer. Vols continuar?",
+  "matchCancelledSuccess": "Partit cancel·lat.",
+  "matchCancelError": "No s'ha pogut cancel·lar el partit: {error}",
+  "@matchCancelError": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "viewJustificationsTooltip": "Veure justificacions",
+  "viewJustificationsTitle": "Justificacions de falta",
+  "viewJustificationsEmpty": "Encara no hi ha cap justificació per a esta sessió.",
+  "viewJustificationsLoadError": "No s'han pogut carregar les justificacions.",
+  "justificationNoReasonGiven": "Sense motiu indicat"
 }

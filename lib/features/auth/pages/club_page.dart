@@ -131,6 +131,18 @@ class _ClubPageState extends State<ClubPage> {
 
           const SizedBox(height: 12),
 
+          _construirOpcion(
+            context,
+            icono: Icons.event_note_outlined,
+            titulo: t.clubPageCalendar,
+            descripcion: t.clubPageCalendarDesc,
+            onTap: () {
+              Navigator.pushNamed(context, AppRoutes.calendar);
+            },
+          ),
+
+          const SizedBox(height: 12),
+
           if (esRetransmision)
             _construirOpcion(
               context,

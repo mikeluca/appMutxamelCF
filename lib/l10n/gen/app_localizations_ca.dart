@@ -418,6 +418,12 @@ class AppLocalizationsCa extends AppLocalizations {
   String get clubPageMyMatchesDesc => 'Pròxims partits i resultats';
 
   @override
+  String get clubPageCalendar => 'Calendari';
+
+  @override
+  String get clubPageCalendarDesc => 'Entrenaments i partits dels teus equips';
+
+  @override
   String get clubPageLiveMatch => 'Partit en directe';
 
   @override
@@ -1237,4 +1243,195 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get save => 'Guarda';
+
+  @override
+  String get calendarAllTeamsTitle => 'Calendari d\'equips';
+
+  @override
+  String get calendarLoadError => 'No s\'ha pogut carregar el calendari.';
+
+  @override
+  String get calendarNoItems => 'No hi ha entrenaments ni partits programats.';
+
+  @override
+  String get calendarSessionLabel => 'Entrenament';
+
+  @override
+  String get calendarMatchLabel => 'Partit';
+
+  @override
+  String get calendarCancelledBadge => 'Cancel·lat';
+
+  @override
+  String get calendarPlaceLabel => 'Lloc';
+
+  @override
+  String get calendarJustifyAbsenceButton => 'Justifica la falta';
+
+  @override
+  String get calendarJustifyAbsenceTitle =>
+      'Justifica la falta a l\'entrenament';
+
+  @override
+  String get calendarJustifyAbsenceHint =>
+      'Indica el motiu de la falta (opcional). Si ja havies justificat esta sessió, s\'actualitzarà el motiu.';
+
+  @override
+  String get calendarJustifyAbsenceReasonLabel => 'Motiu';
+
+  @override
+  String get calendarJustifyAbsenceSubmit => 'Envia';
+
+  @override
+  String get calendarJustifyAbsenceSuccess => 'Falta justificada correctament.';
+
+  @override
+  String calendarJustifyAbsenceError(String error) {
+    return 'No s\'ha pogut enviar la justificació: $error';
+  }
+
+  @override
+  String get calendarManagementTitle => 'Calendari';
+
+  @override
+  String get calendarManagementDesc =>
+      'Horari setmanal, sessions i partits de l\'equip';
+
+  @override
+  String get calendarManagementLoadError =>
+      'No s\'ha pogut carregar el calendari de l\'equip.';
+
+  @override
+  String get weeklyScheduleTitle => 'Horari setmanal d\'entrenaments';
+
+  @override
+  String get weeklyScheduleEmpty =>
+      'Encara no s\'ha configurat cap horari setmanal per a este equip.';
+
+  @override
+  String get weeklyScheduleAddButton => 'Afig un horari';
+
+  @override
+  String get weeklyScheduleEditTooltip => 'Edita l\'horari';
+
+  @override
+  String get weeklyScheduleDeactivateTooltip => 'Desactiva l\'horari';
+
+  @override
+  String get weeklyScheduleDeactivateConfirmTitle => 'Desactiva l\'horari';
+
+  @override
+  String get weeklyScheduleDeactivateConfirmMessage =>
+      'Es desactivarà este horari i es cancel·laran les seues sessions futures encara programades. Vols continuar?';
+
+  @override
+  String get weeklyScheduleDeactivatedSuccess => 'Horari desactivat.';
+
+  @override
+  String weeklyScheduleDeactivateError(String error) {
+    return 'No s\'ha pogut desactivar l\'horari: $error';
+  }
+
+  @override
+  String get weeklyScheduleSavedSuccess => 'Horari guardat correctament.';
+
+  @override
+  String weeklyScheduleSaveError(String error) {
+    return 'No s\'ha pogut guardar l\'horari: $error';
+  }
+
+  @override
+  String get weeklyScheduleFormTitleNew => 'Nou horari';
+
+  @override
+  String get weeklyScheduleFormTitleEdit => 'Edita l\'horari';
+
+  @override
+  String get weeklyScheduleDayLabel => 'Dia de la setmana';
+
+  @override
+  String get weeklyScheduleTimeLabel => 'Hora';
+
+  @override
+  String get weeklySchedulePlaceLabel => 'Lloc';
+
+  @override
+  String get weeklyScheduleActiveLabel => 'Actiu';
+
+  @override
+  String get weeklyScheduleInactiveBadge => 'Inactiu';
+
+  @override
+  String get upcomingItemsTitle => 'Pròximes sessions i partits';
+
+  @override
+  String get upcomingItemsEmpty =>
+      'No hi ha entrenaments ni partits programats per a les pròximes setmanes.';
+
+  @override
+  String get sessionEditTooltip => 'Edita la sessió';
+
+  @override
+  String get sessionEditFormTitle => 'Edita la sessió d\'entrenament';
+
+  @override
+  String get sessionEditSavedSuccess => 'Sessió actualitzada correctament.';
+
+  @override
+  String sessionEditError(String error) {
+    return 'No s\'ha pogut actualitzar la sessió: $error';
+  }
+
+  @override
+  String get sessionCancelTooltip => 'Cancel·la la sessió';
+
+  @override
+  String get sessionCancelConfirmTitle => 'Cancel·la la sessió';
+
+  @override
+  String get sessionCancelConfirmMessage =>
+      'Es cancel·larà esta sessió d\'entrenament i s\'avisarà als jugadors i familiars. Esta acció no es pot desfer. Vols continuar?';
+
+  @override
+  String get sessionCancelledSuccess => 'Sessió cancel·lada.';
+
+  @override
+  String sessionCancelError(String error) {
+    return 'No s\'ha pogut cancel·lar la sessió: $error';
+  }
+
+  @override
+  String get matchCancelTooltip => 'Cancel·la el partit';
+
+  @override
+  String get matchCancelConfirmTitle => 'Cancel·la el partit';
+
+  @override
+  String get matchCancelConfirmMessage =>
+      'Es cancel·larà este partit. Esta acció no es pot desfer. Vols continuar?';
+
+  @override
+  String get matchCancelledSuccess => 'Partit cancel·lat.';
+
+  @override
+  String matchCancelError(String error) {
+    return 'No s\'ha pogut cancel·lar el partit: $error';
+  }
+
+  @override
+  String get viewJustificationsTooltip => 'Veure justificacions';
+
+  @override
+  String get viewJustificationsTitle => 'Justificacions de falta';
+
+  @override
+  String get viewJustificationsEmpty =>
+      'Encara no hi ha cap justificació per a esta sessió.';
+
+  @override
+  String get viewJustificationsLoadError =>
+      'No s\'han pogut carregar les justificacions.';
+
+  @override
+  String get justificationNoReasonGiven => 'Sense motiu indicat';
 }

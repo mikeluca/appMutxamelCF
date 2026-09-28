@@ -11,6 +11,7 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String players = '/players';
   static const String myMatches = '/my-matches';
+  static const String calendar = '/calendar';
   static const String myTeams = '/my-teams';
   static const String settings = '/settings';
   static const String communication = '/communication';
