@@ -1,3 +1,5 @@
+import '../../../core/utils/backend_date.dart';
+
 /// Aviso informativo de falta a una sesión de entrenamiento, enviado por
 /// el propio jugador o un familiar suyo. No requiere aprobación por parte
 /// del entrenador, solo le informa.
@@ -28,9 +30,7 @@ class JustificacionFaltaModel {
       jugador: json['jugador'] as String? ?? '',
       usuarioAppId: json['usuarioAppId'] as int,
       motivo: json['motivo'] as String?,
-      fechaCreacion: json['fechaCreacion'] == null
-          ? null
-          : DateTime.tryParse(json['fechaCreacion'] as String),
+      fechaCreacion: parseFechaBackend(json['fechaCreacion']),
     );
   }
 }

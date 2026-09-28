@@ -1,3 +1,5 @@
+import '../../../core/utils/backend_date.dart';
+
 /// Sesión concreta de entrenamiento (generada a partir de un horario
 /// recurrente, o dada de alta suelta) dentro del calendario de un equipo.
 class SesionEntrenamientoModel {
@@ -39,7 +41,7 @@ class SesionEntrenamientoModel {
       equipoId: json['equipoId'] as int,
       equipo: json['equipo'] as String? ?? '',
       horarioId: json['horarioId'] as int?,
-      fecha: DateTime.parse(json['fecha'] as String),
+      fecha: parseFechaBackend(json['fecha'])!,
       hora: json['hora'] as String?,
       lugar: json['lugar'] as String?,
       estado: json['estado'] as String? ?? 'PROGRAMADA',
