@@ -2659,8 +2659,20 @@ abstract class AppLocalizations {
   /// No description provided for @sessionCancelConfirmMessage.
   ///
   /// In es, this message translates to:
-  /// **'Se cancelará esta sesión de entrenamiento y se avisará a los jugadores y familiares. Esta acción no se puede deshacer. ¿Continuar?'**
+  /// **'Se avisará a los jugadores y familiares. Esta acción no se puede deshacer. Indica el motivo de la cancelación:'**
   String get sessionCancelConfirmMessage;
+
+  /// No description provided for @cancelReasonLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo'**
+  String get cancelReasonLabel;
+
+  /// No description provided for @cancelReasonRequiredError.
+  ///
+  /// In es, this message translates to:
+  /// **'El motivo es obligatorio'**
+  String get cancelReasonRequiredError;
 
   /// No description provided for @sessionCancelledSuccess.
   ///

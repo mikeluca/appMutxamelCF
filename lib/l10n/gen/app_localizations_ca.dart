@@ -1404,7 +1404,13 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get sessionCancelConfirmMessage =>
-      'Es cancel·larà esta sessió d\'entrenament i s\'avisarà als jugadors i familiars. Esta acció no es pot desfer. Vols continuar?';
+      'S\'avisarà als jugadors i familiars. Esta acció no es pot desfer. Indica el motiu de la cancel·lació:';
+
+  @override
+  String get cancelReasonLabel => 'Motiu';
+
+  @override
+  String get cancelReasonRequiredError => 'El motiu és obligatori';
 
   @override
   String get sessionCancelledSuccess => 'Sessió cancel·lada.';

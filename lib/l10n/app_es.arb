@@ -534,7 +534,9 @@
   },
   "sessionCancelTooltip": "Cancelar sesión",
   "sessionCancelConfirmTitle": "Cancelar sesión",
-  "sessionCancelConfirmMessage": "Se cancelará esta sesión de entrenamiento y se avisará a los jugadores y familiares. Esta acción no se puede deshacer. ¿Continuar?",
+  "sessionCancelConfirmMessage": "Se avisará a los jugadores y familiares. Esta acción no se puede deshacer. Indica el motivo de la cancelación:",
+  "cancelReasonLabel": "Motivo",
+  "cancelReasonRequiredError": "El motivo es obligatorio",
   "sessionCancelledSuccess": "Sesión cancelada.",
   "sessionCancelError": "No se ha podido cancelar la sesión: {error}",
   "@sessionCancelError": {

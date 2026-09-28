@@ -534,7 +534,9 @@
   },
   "sessionCancelTooltip": "Cancel session",
   "sessionCancelConfirmTitle": "Cancel session",
-  "sessionCancelConfirmMessage": "This training session will be cancelled and players and family members will be notified. This action cannot be undone. Continue?",
+  "sessionCancelConfirmMessage": "Players and family members will be notified. This action cannot be undone. Enter the reason for the cancellation:",
+  "cancelReasonLabel": "Reason",
+  "cancelReasonRequiredError": "The reason is required",
   "sessionCancelledSuccess": "Session cancelled.",
   "sessionCancelError": "The session could not be cancelled: {error}",
   "@sessionCancelError": {

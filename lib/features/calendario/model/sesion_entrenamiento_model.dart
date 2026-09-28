@@ -22,6 +22,10 @@ class SesionEntrenamientoModel {
   final bool justificado;
   final String? motivoJustificacion;
 
+  /// Solo relleno cuando estado == "CANCELADA": motivo obligatorio que
+  /// indicó el entrenador/coordinador al cancelarla.
+  final String? motivoCancelacion;
+
   const SesionEntrenamientoModel({
     required this.id,
     required this.equipoId,
@@ -33,6 +37,7 @@ class SesionEntrenamientoModel {
     required this.estado,
     this.justificado = false,
     this.motivoJustificacion,
+    this.motivoCancelacion,
   });
 
   factory SesionEntrenamientoModel.fromJson(Map<String, dynamic> json) {
@@ -47,6 +52,7 @@ class SesionEntrenamientoModel {
       estado: json['estado'] as String? ?? 'PROGRAMADA',
       justificado: json['justificado'] as bool? ?? false,
       motivoJustificacion: json['motivoJustificacion'] as String?,
+      motivoCancelacion: json['motivoCancelacion'] as String?,
     );
   }
 

@@ -1414,7 +1414,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sessionCancelConfirmMessage =>
-      'Se cancelará esta sesión de entrenamiento y se avisará a los jugadores y familiares. Esta acción no se puede deshacer. ¿Continuar?';
+      'Se avisará a los jugadores y familiares. Esta acción no se puede deshacer. Indica el motivo de la cancelación:';
+
+  @override
+  String get cancelReasonLabel => 'Motivo';
+
+  @override
+  String get cancelReasonRequiredError => 'El motivo es obligatorio';
 
   @override
   String get sessionCancelledSuccess => 'Sesión cancelada.';

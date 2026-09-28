@@ -534,7 +534,9 @@
   },
   "sessionCancelTooltip": "Cancel·la la sessió",
   "sessionCancelConfirmTitle": "Cancel·la la sessió",
-  "sessionCancelConfirmMessage": "Es cancel·larà esta sessió d'entrenament i s'avisarà als jugadors i familiars. Esta acció no es pot desfer. Vols continuar?",
+  "sessionCancelConfirmMessage": "S'avisarà als jugadors i familiars. Esta acció no es pot desfer. Indica el motiu de la cancel·lació:",
+  "cancelReasonLabel": "Motiu",
+  "cancelReasonRequiredError": "El motiu és obligatori",
   "sessionCancelledSuccess": "Sessió cancel·lada.",
   "sessionCancelError": "No s'ha pogut cancel·lar la sessió: {error}",
   "@sessionCancelError": {

@@ -597,6 +597,19 @@ class _EquipoCalendarioSeccionState extends State<_EquipoCalendarioSeccion> {
                         ),
                       ),
                     ],
+                    if (item.cancelado &&
+                        (item.sesion?.motivoCancelacion?.trim().isNotEmpty ??
+                            false)) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        '${_t.cancelReasonLabel}: ${item.sesion!.motivoCancelacion}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.redAccent,
+                        ),
+                      ),
+                    ],
                     if (puedeJustificar) ...[
                       const SizedBox(height: 8),
                       Row(

@@ -180,29 +180,18 @@ class _CalendarioGestionPageState extends State<CalendarioGestionPage> {
   Future<void> _confirmarCancelarSesion(
     SesionEntrenamientoModel sesion,
   ) async {
-    final confirmado = await showDialog<bool>(
+    final motivo = await showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(_t.sessionCancelConfirmTitle),
-        content: Text(_t.sessionCancelConfirmMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(_t.cancel),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(_t.delete),
-          ),
-        ],
+      builder: (_) => _MotivoCancelacionDialog(
+        titulo: _t.sessionCancelConfirmTitle,
+        hint: _t.sessionCancelConfirmMessage,
       ),
     );
 
-    if (confirmado != true || !mounted) return;
+    if (motivo == null || !mounted) return;
 
     try {
-      await _service.cancelarSesion(sesion.id);
+      await _service.cancelarSesion(sesion.id, motivo);
 
       if (!mounted) return;
 
@@ -564,6 +553,19 @@ class _CalendarioGestionPageState extends State<CalendarioGestionPage> {
                         decoration: item.cancelado
                             ? TextDecoration.lineThrough
                             : null,
+                      ),
+                    ),
+                  ],
+                  if (item.cancelado &&
+                      (item.sesion?.motivoCancelacion?.trim().isNotEmpty ??
+                          false)) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      '${_t.cancelReasonLabel}: ${item.sesion!.motivoCancelacion}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.redAccent,
                       ),
                     ),
                   ],
@@ -1162,6 +1164,84 @@ class _JustificacionesDialogState extends State<_JustificacionesDialog> {
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text(_t.close),
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================================
+// MOTIVO DE CANCELACIÓN (obligatorio, reutilizado por sesión y partido)
+// ============================================================
+
+class _MotivoCancelacionDialog extends StatefulWidget {
+  final String titulo;
+  final String hint;
+
+  const _MotivoCancelacionDialog({required this.titulo, required this.hint});
+
+  @override
+  State<_MotivoCancelacionDialog> createState() =>
+      _MotivoCancelacionDialogState();
+}
+
+class _MotivoCancelacionDialogState extends State<_MotivoCancelacionDialog> {
+  final TextEditingController _motivoController = TextEditingController();
+
+  String? _error;
+
+  AppLocalizations get _t => AppLocalizations.of(context);
+
+  @override
+  void dispose() {
+    _motivoController.dispose();
+    super.dispose();
+  }
+
+  void _confirmar() {
+    final motivo = _motivoController.text.trim();
+
+    if (motivo.isEmpty) {
+      setState(() {
+        _error = _t.cancelReasonRequiredError;
+      });
+      return;
+    }
+
+    Navigator.pop(context, motivo);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.titulo),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(widget.hint),
+          const SizedBox(height: 14),
+          TextField(
+            controller: _motivoController,
+            autofocus: true,
+            maxLines: 3,
+            decoration: InputDecoration(
+              labelText: _t.cancelReasonLabel,
+              border: const OutlineInputBorder(),
+              errorText: _error,
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(_t.cancel),
+        ),
+        FilledButton(
+          style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
+          onPressed: _confirmar,
+          child: Text(_t.delete),
         ),
       ],
     );

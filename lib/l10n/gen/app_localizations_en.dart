@@ -1396,7 +1396,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sessionCancelConfirmMessage =>
-      'This training session will be cancelled and players and family members will be notified. This action cannot be undone. Continue?';
+      'Players and family members will be notified. This action cannot be undone. Enter the reason for the cancellation:';
+
+  @override
+  String get cancelReasonLabel => 'Reason';
+
+  @override
+  String get cancelReasonRequiredError => 'The reason is required';
 
   @override
   String get sessionCancelledSuccess => 'Session cancelled.';

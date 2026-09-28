@@ -166,10 +166,11 @@ class CalendarioService {
     return SesionEntrenamientoModel.fromJson(data as Map<String, dynamic>);
   }
 
-  Future<void> cancelarSesion(int sesionId) async {
+  Future<void> cancelarSesion(int sesionId, String motivo) async {
     await ApiClient.post(
       '/app/sesiones-entrenamiento/$sesionId/cancelar',
       autenticado: true,
+      body: {'motivo': motivo},
     );
   }
 
