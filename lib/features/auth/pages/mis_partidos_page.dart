@@ -665,7 +665,6 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
   late final TextEditingController _rivalController;
   late final TextEditingController _horaController;
   late final TextEditingController _campoController;
-  late final TextEditingController _resultadoController;
 
   DateTime? _dia;
   late String _tipo;
@@ -683,9 +682,6 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
     _rivalController = TextEditingController(text: partido?.rival ?? '');
     _horaController = TextEditingController(text: partido?.hora ?? '');
     _campoController = TextEditingController(text: partido?.campo ?? '');
-    _resultadoController = TextEditingController(
-      text: partido?.resultado ?? '',
-    );
     _dia = partido?.dia;
 
     // 'LIGA' por defecto tanto al crear un partido nuevo como si el
@@ -699,7 +695,6 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
     _rivalController.dispose();
     _horaController.dispose();
     _campoController.dispose();
-    _resultadoController.dispose();
     super.dispose();
   }
 
@@ -720,38 +715,12 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
     });
   }
 
-  String? _validarResultado(String texto) {
-    final valor = texto.trim();
-
-    if (valor.isEmpty) {
-      return null;
-    }
-
-    final regex = RegExp(r'^\d+-\d+$');
-
-    if (!regex.hasMatch(valor)) {
-      return _t.resultFormatError;
-    }
-
-    return null;
-  }
-
   Future<void> _guardar() async {
     final rival = _rivalController.text.trim();
 
     if (rival.isEmpty) {
       setState(() {
         _error = _t.rivalRequiredError;
-      });
-      return;
-    }
-
-    final resultadoTexto = _resultadoController.text.trim();
-    final errorResultado = _validarResultado(resultadoTexto);
-
-    if (errorResultado != null) {
-      setState(() {
-        _error = errorResultado;
       });
       return;
     }
@@ -769,7 +738,10 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
       final campo = _campoController.text.trim().isEmpty
           ? null
           : _campoController.text.trim();
-      final resultado = resultadoTexto.isEmpty ? null : resultadoTexto;
+      // El resultado ya no se edita desde este dialogo (solo desde el
+      // formulario dedicado tras jugarse el partido): se conserva el
+      // valor que ya tuviera para no perderlo al editar otros campos.
+      final resultado = widget.partidoExistente?.resultado;
 
       if (_esEdicion) {
         await widget.matchService.actualizarPartido(
@@ -943,15 +915,6 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
               enabled: !_guardando,
               decoration: InputDecoration(
                 labelText: _t.fieldLabelCampo,
-                border: const OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: _resultadoController,
-              enabled: !_guardando,
-              decoration: InputDecoration(
-                labelText: _t.resultLabelHint,
                 border: const OutlineInputBorder(),
               ),
             ),
