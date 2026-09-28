@@ -144,6 +144,8 @@
   "clubPageMyPlayersDesc": "Jugadors vinculats al teu compte",
   "clubPageFees": "Quotes",
   "clubPageFeesDesc": "Quotes dels teus jugadors i el seu estat",
+  "clubPageFeesComingSoonDesc": "Prompte disponible",
+  "clubPageFeesComingSoonMessage": "Estem treballant en esta funcionalitat. Estarà operativa pròximament.",
   "clubPageMyTeams": "Els meus equips",
   "clubPageMyTeamsDesc": "Equips vinculats a la teua activitat al club",
   "clubPageCalendar": "Calendari",

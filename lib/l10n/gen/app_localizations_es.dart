@@ -410,6 +410,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get clubPageFeesDesc => 'Cuotas de tus jugadores y su estado';
 
   @override
+  String get clubPageFeesComingSoonDesc => 'Próximamente disponible';
+
+  @override
+  String get clubPageFeesComingSoonMessage =>
+      'Estamos trabajando en esta funcionalidad. Estará operativa próximamente.';
+
+  @override
   String get clubPageMyTeams => 'Mis equipos';
 
   @override

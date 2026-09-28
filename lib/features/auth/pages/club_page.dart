@@ -45,6 +45,27 @@ class _ClubPageState extends State<ClubPage> {
     await _cargarContadorComunicaciones();
   }
 
+  /// La pantalla de Cuotas (AppRoutes.cuotas / CuotasPage) sigue intacta
+  /// para retomarla más adelante: de momento solo se deja de navegar a
+  /// ella y se informa de que estará operativa próximamente.
+  void _mostrarCuotasProximamente(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(t.clubPageFees),
+        content: Text(t.clubPageFeesComingSoonMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(t.close),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final usuario = AuthManager.usuarioActual;
@@ -98,10 +119,8 @@ class _ClubPageState extends State<ClubPage> {
               context,
               icono: Icons.payments_outlined,
               titulo: t.clubPageFees,
-              descripcion: t.clubPageFeesDesc,
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.cuotas);
-              },
+              descripcion: t.clubPageFeesComingSoonDesc,
+              onTap: () => _mostrarCuotasProximamente(context),
             ),
 
           if (tieneJugadores) const SizedBox(height: 12),

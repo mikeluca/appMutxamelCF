@@ -144,6 +144,8 @@
   "clubPageMyPlayersDesc": "Jugadores vinculados a tu cuenta",
   "clubPageFees": "Cuotas",
   "clubPageFeesDesc": "Cuotas de tus jugadores y su estado",
+  "clubPageFeesComingSoonDesc": "Próximamente disponible",
+  "clubPageFeesComingSoonMessage": "Estamos trabajando en esta funcionalidad. Estará operativa próximamente.",
   "clubPageMyTeams": "Mis equipos",
   "clubPageMyTeamsDesc": "Equipos vinculados a tu actividad en el club",
   "clubPageMyMatches": "Mis partidos",

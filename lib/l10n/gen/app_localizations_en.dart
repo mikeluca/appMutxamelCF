@@ -401,6 +401,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clubPageFeesDesc => 'Your players\' fees and their status';
 
   @override
+  String get clubPageFeesComingSoonDesc => 'Coming soon';
+
+  @override
+  String get clubPageFeesComingSoonMessage =>
+      'We\'re working on this feature. It will be available soon.';
+
+  @override
   String get clubPageMyTeams => 'My teams';
 
   @override

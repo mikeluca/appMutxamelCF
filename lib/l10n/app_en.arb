@@ -144,6 +144,8 @@
   "clubPageMyPlayersDesc": "Players linked to your account",
   "clubPageFees": "Fees",
   "clubPageFeesDesc": "Your players' fees and their status",
+  "clubPageFeesComingSoonDesc": "Coming soon",
+  "clubPageFeesComingSoonMessage": "We're working on this feature. It will be available soon.",
   "clubPageMyTeams": "My teams",
   "clubPageMyTeamsDesc": "Teams linked to your activity in the club",
   "clubPageCalendar": "Calendar",

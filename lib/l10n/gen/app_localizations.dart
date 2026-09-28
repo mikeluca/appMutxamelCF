@@ -844,6 +844,18 @@ abstract class AppLocalizations {
   /// **'Cuotas de tus jugadores y su estado'**
   String get clubPageFeesDesc;
 
+  /// No description provided for @clubPageFeesComingSoonDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Próximamente disponible'**
+  String get clubPageFeesComingSoonDesc;
+
+  /// No description provided for @clubPageFeesComingSoonMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Estamos trabajando en esta funcionalidad. Estará operativa próximamente.'**
+  String get clubPageFeesComingSoonMessage;
+
   /// No description provided for @clubPageMyTeams.
   ///
   /// In es, this message translates to:

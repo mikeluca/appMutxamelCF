@@ -405,6 +405,13 @@ class AppLocalizationsCa extends AppLocalizations {
   String get clubPageFeesDesc => 'Quotes dels teus jugadors i el seu estat';
 
   @override
+  String get clubPageFeesComingSoonDesc => 'Prompte disponible';
+
+  @override
+  String get clubPageFeesComingSoonMessage =>
+      'Estem treballant en esta funcionalitat. Estarà operativa pròximament.';
+
+  @override
   String get clubPageMyTeams => 'Els meus equips';
 
   @override
