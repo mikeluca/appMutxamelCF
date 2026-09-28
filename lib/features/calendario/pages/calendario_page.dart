@@ -61,9 +61,10 @@ class _CalendarioPageState extends State<CalendarioPage> {
   List<_EventoUsuario> _eventos = [];
 
   // Ventana de fechas consultada: fija para toda la vida de la página
-  // (calculada una vez en initState) para que el calendario visual
-  // (firstDay/lastDay) no "salte" en cada recarga.
-  late final DateTime _desde;
+  // (calculada una vez, la primera vez que se cargan datos) para que
+  // el calendario visual (firstDay/lastDay) no "salte" en cada
+  // recarga.
+  late DateTime _desde;
   late final DateTime _hasta;
 
   bool _cargando = true;
@@ -77,13 +78,9 @@ class _CalendarioPageState extends State<CalendarioPage> {
     super.initState();
 
     final hoy = DateTime.now();
-    // Los partidos se muestran pasados o futuros (para poder ver el
-    // resultado de los ya jugados): 2 años atrás cubre de sobra la
-    // temporada actual y la anterior. Los entrenamientos solo se
-    // generan hacia delante, así que la parte futura de la ventana
-    // (hoy + 2 meses) coincide con el horizonte de generación del
-    // backend.
-    _desde = DateTime(hoy.year - 2, hoy.month, hoy.day);
+    // Los entrenamientos solo se generan hacia delante, así que la
+    // parte futura de la ventana (hoy + 2 meses) coincide con el
+    // horizonte de generación del backend.
     _hasta = DateTime(hoy.year, hoy.month + 2, hoy.day);
 
     _cargarDatos();
@@ -96,6 +93,16 @@ class _CalendarioPageState extends State<CalendarioPage> {
     });
 
     try {
+      // Los partidos pasados se muestran solo desde el inicio de la
+      // temporada activa (configurada por el club); si no hay ninguna
+      // temporada activa configurada, se usa un año atrás como
+      // respaldo razonable.
+      final temporada = await _calendarioService.obtenerTemporadaActiva();
+      final hoy = DateTime.now();
+
+      _desde =
+          temporada?.fechaInicio ?? DateTime(hoy.year - 1, hoy.month, hoy.day);
+
       final perfil = await PerfilService.obtenerPerfil();
 
       // El perfil solo trae el NOMBRE del equipo de cada jugador (no su

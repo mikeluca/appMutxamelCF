@@ -3,8 +3,28 @@ import '../model/calendario_model.dart';
 import '../model/horario_entrenamiento_model.dart';
 import '../model/justificacion_falta_model.dart';
 import '../model/sesion_entrenamiento_model.dart';
+import '../model/temporada_model.dart';
 
 class CalendarioService {
+  /// Temporada activa configurada por el club, o null si no hay
+  /// ninguna marcada como activa (la vista que la use debe aplicar su
+  /// propio valor de respaldo en ese caso).
+  Future<TemporadaModel?> obtenerTemporadaActiva() async {
+    try {
+      final data = await ApiClient.get(
+        '/app/temporadas/activa',
+        autenticado: true,
+      );
+
+      if (data == null) return null;
+
+      return TemporadaModel.fromJson(data as Map<String, dynamic>);
+    } on ApiException catch (e) {
+      if (e.statusCode == 404) return null;
+      rethrow;
+    }
+  }
+
   String _formatearFecha(DateTime fecha) {
     final year = fecha.year.toString().padLeft(4, '0');
     final month = fecha.month.toString().padLeft(2, '0');
