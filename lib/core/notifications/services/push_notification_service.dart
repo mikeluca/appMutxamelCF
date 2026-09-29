@@ -155,7 +155,11 @@ class PushNotificationService {
       final token = await _messaging.getToken();
 
       if (token != null && token.isNotEmpty) {
-        await DispositivoAppService.desactivar(token);
+        // N-01: timeout propio además del de ApiClient, para que un
+        // servidor caído/lento no deje el logout colgado indefinidamente.
+        await DispositivoAppService.desactivar(
+          token,
+        ).timeout(const Duration(seconds: 5));
       }
 
       await _messaging.deleteToken();

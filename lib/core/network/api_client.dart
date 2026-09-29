@@ -117,9 +117,14 @@ class ApiClient {
 
     if (response.statusCode == 401) {
       if (autenticado) {
-        // El token ya no es válido: purgamos la sesión almacenada
-        // para que la app no siga usándolo en próximas peticiones.
-        await AuthManager.cerrarSesion();
+        // N-01: el token ya no es válido, así que el backend tampoco
+        // aceptaría el DELETE de desregistro del dispositivo -- llamarlo
+        // aquí con este mismo token provocaría otro 401 y una llamada
+        // recursiva a cerrarSesion() sin fin. Se purga solo la sesión
+        // local; el token FCM quedará huérfano hasta el próximo
+        // registrarDispositivoActual() (login) o hasta que Firebase lo
+        // renueve.
+        await AuthManager.cerrarSesion(desregistrarDispositivo: false);
       }
 
       throw ApiException(

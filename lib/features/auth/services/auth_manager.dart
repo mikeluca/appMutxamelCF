@@ -65,10 +65,18 @@ class AuthManager {
     _usuarioActual = usuario;
   }
 
-  static Future<void> cerrarSesion() async {
+  /// [desregistrarDispositivo] debe ser false cuando el cierre de sesión
+  /// lo dispara un 401 de ApiClient (token ya inválido): desregistrar
+  /// llama a DELETE /api/app/dispositivos con ese mismo token, que
+  /// volvería a devolver 401 y a llamar a cerrarSesion() en bucle
+  /// infinito (N-01). El valor por defecto (true) es para un logout real
+  /// iniciado por el usuario, donde el token todavía es válido.
+  static Future<void> cerrarSesion({bool desregistrarDispositivo = true}) async {
     // SEC-07: desregistrar el dispositivo requiere el token de sesión
     // actual, así que debe hacerse antes de borrarlo.
-    await PushNotificationService.desregistrarDispositivoActual();
+    if (desregistrarDispositivo) {
+      await PushNotificationService.desregistrarDispositivoActual();
+    }
 
     _usuarioActual = null;
     await AuthSession.cerrarSesion();
