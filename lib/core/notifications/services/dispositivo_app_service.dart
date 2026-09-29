@@ -27,4 +27,21 @@ class DispositivoAppService {
       body: request.toJson(),
     );
   }
+
+  /// SEC-07: desregistra el token FCM de este dispositivo. Debe llamarse
+  /// antes de borrar la sesión (el endpoint requiere Bearer token).
+  static Future<void> desactivar(String tokenFcm) async {
+    final tokenSesion = await AuthSession.obtenerToken();
+
+    if (tokenSesion == null || tokenSesion.isEmpty) {
+      return;
+    }
+
+    final tokenCodificado = Uri.encodeQueryComponent(tokenFcm);
+
+    await ApiClient.delete(
+      '/app/dispositivos?tokenFcm=$tokenCodificado',
+      autenticado: true,
+    );
+  }
 }

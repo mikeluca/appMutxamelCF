@@ -142,6 +142,26 @@ class PushNotificationService {
     }
   }
 
+  /// SEC-07: se llama al cerrar sesión, antes de borrar el token de
+  /// sesión guardado, para que un móvil compartido (varios hijos, tablet
+  /// del club) deje de recibir las notificaciones push del usuario que
+  /// acaba de salir.
+  static Future<void> desregistrarDispositivoActual() async {
+    try {
+      final token = await _messaging.getToken();
+
+      if (token != null && token.isNotEmpty) {
+        await DispositivoAppService.desactivar(token);
+      }
+
+      await _messaging.deleteToken();
+
+      debugPrint('DISPOSITIVO FCM DESREGISTRADO CORRECTAMENTE');
+    } catch (e) {
+      debugPrint('ERROR AL DESREGISTRAR EL DISPOSITIVO FCM: $e');
+    }
+  }
+
   static Future<void> _procesarNotificacion(RemoteMessage message) async {
     final tipo = message.data['tipo'];
 

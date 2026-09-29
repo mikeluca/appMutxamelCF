@@ -10,10 +10,9 @@ independiente y puedes marcar las casillas según avances.
       (capability Push Notifications / `aps-environment`).
 - [x] `ios/Runner/Info.plist`: añadido `UIBackgroundModes` con
       `remote-notification` (para que las push lleguen en segundo plano).
-- [x] `ios/Runner/Info.plist`: añadida excepción de App Transport Security
-      (`NSAllowsArbitraryLoads`) porque el backend todavía se sirve por
-      `http://` sin TLS. **Quitar esta excepción en cuanto el backend tenga
-      HTTPS.**
+- [x] SEC-14: quitada la excepción de App Transport Security
+      (`NSAllowsArbitraryLoads`) de `ios/Runner/Info.plist` — el backend de
+      producción ya se sirve por HTTPS (`https://api.mutxamelcf.es`).
 - [x] El código Dart ya inicializa Firebase correctamente
       (`main.dart` → `Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)`)
       y ya pide permiso de notificaciones (`push_notification_service.dart`).

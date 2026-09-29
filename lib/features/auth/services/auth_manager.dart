@@ -62,6 +62,10 @@ class AuthManager {
   }
 
   static Future<void> cerrarSesion() async {
+    // SEC-07: desregistrar el dispositivo requiere el token de sesión
+    // actual, así que debe hacerse antes de borrarlo.
+    await PushNotificationService.desregistrarDispositivoActual();
+
     _usuarioActual = null;
     await AuthSession.cerrarSesion();
   }
