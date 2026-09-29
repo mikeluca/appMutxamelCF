@@ -190,12 +190,6 @@ abstract class AppLocalizations {
   /// **'No se ha podido cargar el partido.'**
   String get homeMatchLoadError;
 
-  /// No description provided for @homeMatchUnavailable.
-  ///
-  /// In es, this message translates to:
-  /// **'No hay información disponible sobre el próximo partido.'**
-  String get homeMatchUnavailable;
-
   /// No description provided for @matchUpcoming.
   ///
   /// In es, this message translates to:

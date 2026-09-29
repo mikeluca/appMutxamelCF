@@ -26,6 +26,12 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  static const _sinPartidoPrimerEquipo = MatchModel(
+    categoria: 'Primer Equipo',
+    equipo: 'Primer Equipo',
+    rival: '',
+  );
+
   final MatchService _matchService = MatchService();
   final NewsService _newsService = NewsService();
 
@@ -185,11 +191,13 @@ class HomePageState extends State<HomePage> {
                     );
                   }
 
-                  final match = snapshot.data;
-
-                  if (match == null) {
-                    return const _MatchUnavailableCard();
-                  }
+                  // El backend siempre devuelve un ResultadoDTO para el
+                  // primer equipo (rival vacío si no hay próximo partido
+                  // ni último jugado, igual que una jornada de descanso),
+                  // pero por si alguna vez llegara un cuerpo vacío, se
+                  // pinta la misma tarjeta "sin partido" en vez de dejar
+                  // la sección sin ninguna tarjeta.
+                  final match = snapshot.data ?? _sinPartidoPrimerEquipo;
 
                   return MatchCard(match: match, mostrarPrimerEquipo: true);
                 },
@@ -507,24 +515,3 @@ class _MatchErrorCard extends StatelessWidget {
   }
 }
 
-class _MatchUnavailableCard extends StatelessWidget {
-  const _MatchUnavailableCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: SizedBox(
-        width: double.infinity,
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Center(
-            child: Text(
-              AppLocalizations.of(context).homeMatchUnavailable,
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

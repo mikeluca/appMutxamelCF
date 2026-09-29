@@ -55,10 +55,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get homeMatchLoadError => 'No se ha podido cargar el partido.';
 
   @override
-  String get homeMatchUnavailable =>
-      'No hay información disponible sobre el próximo partido.';
-
-  @override
   String get matchUpcoming => 'PRÓXIMO PARTIDO';
 
   @override

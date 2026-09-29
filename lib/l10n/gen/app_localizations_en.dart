@@ -55,10 +55,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeMatchLoadError => 'The match could not be loaded.';
 
   @override
-  String get homeMatchUnavailable =>
-      'No information available about the next match.';
-
-  @override
   String get matchUpcoming => 'NEXT MATCH';
 
   @override

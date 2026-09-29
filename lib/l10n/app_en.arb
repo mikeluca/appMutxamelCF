@@ -18,7 +18,6 @@
   "homeNewsLoadError": "The news could not be loaded.",
   "homeNoNewsAvailable": "No news available.",
   "homeMatchLoadError": "The match could not be loaded.",
-  "homeMatchUnavailable": "No information available about the next match.",
 
   "matchUpcoming": "NEXT MATCH",
   "matchUpcomingFirstTeam": "NEXT MATCH FIRST TEAM",

@@ -18,7 +18,6 @@
   "homeNewsLoadError": "No se han podido cargar las noticias.",
   "homeNoNewsAvailable": "No hay noticias disponibles.",
   "homeMatchLoadError": "No se ha podido cargar el partido.",
-  "homeMatchUnavailable": "No hay información disponible sobre el próximo partido.",
 
   "matchUpcoming": "PRÓXIMO PARTIDO",
   "matchUpcomingFirstTeam": "PRÓXIMO PARTIDO PRIMER EQUIPO",
