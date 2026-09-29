@@ -379,7 +379,18 @@ class _MapaEmbebidoState extends State<_MapaEmbebido> {
           // esto, un enlace dentro del propio embed de Google (p.ej.
           // "Ver mapa más grande") podría navegar el WebView entero
           // fuera del dominio esperado.
+          //
+          // N-07: en iOS (WKWebView) esta delegación también recibe la
+          // carga inicial (about:blank, el documento que crea
+          // loadHtmlString) y las navegaciones del propio <iframe>
+          // (isMainFrame = false); si se bloquean, el mapa se queda en
+          // blanco. Solo se restringe la navegación del marco principal
+          // a otra URL real.
           onNavigationRequest: (request) {
+            if (!request.isMainFrame || request.url == 'about:blank') {
+              return NavigationDecision.navigate;
+            }
+
             final uri = Uri.tryParse(request.url);
             final esMapaDeGoogle =
                 uri != null &&

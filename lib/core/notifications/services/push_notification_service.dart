@@ -25,6 +25,16 @@ class PushNotificationService {
   static const String topicNoticias = 'noticias';
   static const String topicResultados = 'resultados';
 
+  // FL-05: tipos de "tipo" que puede enviar el backend en el canal
+  // personal (ver FcmPushServiceImpl/PartidoEnVivoServiceImpl). Solo
+  // 'COMUNICACION' abre una notificación local o hace deep-link al
+  // tocarla; 'RESULTADO' se apoya en la notificación de sistema que
+  // FCM muestra por su cuenta con el título/cuerpo del payload. Se
+  // nombran aquí para no repetir el string mágico y para poder
+  // distinguir un tipo no reconocido de uno simplemente no manejado.
+  static const String _tipoComunicacion = 'COMUNICACION';
+  static const String _tipoResultado = 'RESULTADO';
+
   static Future<void> suscribirATopic(String topic) =>
       _messaging.subscribeToTopic(topic);
 
@@ -87,7 +97,10 @@ class PushNotificationService {
       final tipo = message.data['tipo'];
       final referenciaIdString = message.data['referenciaId'];
 
-      if (tipo != 'COMUNICACION') {
+      if (tipo != _tipoComunicacion) {
+        if (tipo != _tipoResultado) {
+          debugPrint('Push con tipo no reconocido en foreground: $tipo');
+        }
         return;
       }
 
@@ -173,7 +186,10 @@ class PushNotificationService {
   static Future<void> _procesarNotificacion(RemoteMessage message) async {
     final tipo = message.data['tipo'];
 
-    if (tipo != 'COMUNICACION') {
+    if (tipo != _tipoComunicacion) {
+      if (tipo != _tipoResultado) {
+        debugPrint('Push con tipo no reconocido al abrir: $tipo');
+      }
       return;
     }
 
