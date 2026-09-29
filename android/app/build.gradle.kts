@@ -16,6 +16,21 @@ val hasKeystoreProperties = keystorePropertiesFile.exists()
 
 if (hasKeystoreProperties) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+} else {
+    // FL-09: aviso bien visible en el log del build. No se hace fallar la
+    // tarea porque assembleRelease/bundleRelease es la misma tarea tanto
+    // para `flutter run --release` en una máquina de desarrollo (sin
+    // keystore) como para el artefacto real que se sube a la Play
+    // Store; un hard-fail aquí rompería ese primer caso, que es
+    // intencionado (ver comentario en buildTypes.release más abajo).
+    logger.warn(
+        "\n" +
+            "==================================================================\n" +
+            "AVISO: no existe android/key.properties. El APK/AAB de 'release'\n" +
+            "se va a firmar con la clave de DEBUG. NUNCA subas este artefacto\n" +
+            "a la Play Store -- solo sirve para probar en un dispositivo.\n" +
+            "==================================================================\n"
+    )
 }
 
 android {

@@ -375,6 +375,22 @@ class _MapaEmbebidoState extends State<_MapaEmbebido> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
+          // FL-11: este WebView solo debe mostrar el mapa embebido. Sin
+          // esto, un enlace dentro del propio embed de Google (p.ej.
+          // "Ver mapa más grande") podría navegar el WebView entero
+          // fuera del dominio esperado.
+          onNavigationRequest: (request) {
+            final uri = Uri.tryParse(request.url);
+            final esMapaDeGoogle =
+                uri != null &&
+                uri.scheme == 'https' &&
+                uri.host == 'www.google.com' &&
+                uri.path.startsWith('/maps/embed');
+
+            return esMapaDeGoogle
+                ? NavigationDecision.navigate
+                : NavigationDecision.prevent;
+          },
           onWebResourceError: (error) {
             if (!mounted) return;
 

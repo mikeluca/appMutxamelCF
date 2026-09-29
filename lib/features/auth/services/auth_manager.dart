@@ -52,7 +52,11 @@ class AuthManager {
 
       return true;
     } catch (_) {
-      await cerrarSesion();
+      // FL-03: no se borra la sesión guardada aquí. Si el fallo fue un
+      // 401, ApiClient ya la ha limpiado (ver _enviar); si fue un fallo
+      // de red o timeout, el token sigue siendo válido y no hay que
+      // expulsar al usuario por abrir la app sin cobertura.
+      _usuarioActual = null;
       return false;
     }
   }

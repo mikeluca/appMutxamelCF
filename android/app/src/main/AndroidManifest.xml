@@ -8,7 +8,13 @@
     <application
         android:label="appMTX"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false">
+        <!-- FL-10: sin esto, Android puede incluir el almacenamiento de la
+             app (EncryptedSharedPreferences, con el JWT) en la copia de
+             seguridad automática. Al restaurarla en otro dispositivo la
+             clave de cifrado no coincide y la app fallaría al leerla. -->
         <activity
             android:name=".MainActivity"
             android:exported="true"

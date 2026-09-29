@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import '../../../features/auth/services/notificacion_service.dart';
@@ -8,6 +10,8 @@ import 'local_notification_service.dart';
 import '../../../core/navigation/app_navigator.dart';
 
 class PushNotificationService {
+  // FL-04: se registraba 'ANDROID' también en iOS.
+  static String get _plataformaActual => Platform.isIOS ? 'IOS' : 'ANDROID';
   PushNotificationService._();
 
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -55,7 +59,7 @@ class PushNotificationService {
       try {
         await DispositivoAppService.registrar(
           tokenFcm: token,
-          plataforma: 'ANDROID',
+          plataforma: _plataformaActual,
         );
 
         debugPrint('DISPOSITIVO FCM REGISTRADO CORRECTAMENTE');
@@ -70,7 +74,7 @@ class PushNotificationService {
       try {
         await DispositivoAppService.registrar(
           tokenFcm: nuevoToken,
-          plataforma: 'ANDROID',
+          plataforma: _plataformaActual,
         );
 
         debugPrint('NUEVO TOKEN FCM REGISTRADO CORRECTAMENTE');
@@ -133,7 +137,7 @@ class PushNotificationService {
     try {
       await DispositivoAppService.registrar(
         tokenFcm: token,
-        plataforma: 'ANDROID',
+        plataforma: _plataformaActual,
       );
 
       debugPrint('DISPOSITIVO FCM REGISTRADO CORRECTAMENTE');
