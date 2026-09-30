@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/utils/backend_date.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
@@ -238,17 +239,11 @@ class _ConvocatoriasPageState extends State<ConvocatoriasPage> {
   }
 
   String _formatearFecha(String fecha) {
-    final match = RegExp(r'\[(\d+),\s*(\d+),\s*(\d+)\]').firstMatch(fecha);
+    final date = parseFechaTextoBackend(fecha);
 
-    if (match == null) {
+    if (date == null) {
       return fecha;
     }
-
-    final ano = int.parse(match.group(1)!);
-    final mes = int.parse(match.group(2)!);
-    final dia = int.parse(match.group(3)!);
-
-    final date = DateTime(ano, mes, dia);
 
     return formatearFechaConDiaSemana(date, _t);
   }

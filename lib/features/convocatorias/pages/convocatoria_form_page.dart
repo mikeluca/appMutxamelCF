@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/utils/backend_date.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
@@ -115,6 +116,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       rival: convocatoria.rival,
       campo: convocatoria.campo,
       hora: convocatoria.horaPartido,
+      dia: parseFechaTextoBackend(convocatoria.fechaPartido),
       diaFormateado: convocatoria.fechaPartido,
     );
 

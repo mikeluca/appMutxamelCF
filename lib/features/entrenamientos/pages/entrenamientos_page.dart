@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'entrenamiento_form_page.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/backend_date.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
 import '../../auth/models/perfil_app.dart';
 import '../model/entrenamiento_model.dart';
@@ -230,17 +231,11 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
   }
 
   String _formatearFecha(String fecha) {
-    final match = RegExp(r'\[(\d+),\s*(\d+),\s*(\d+)\]').firstMatch(fecha);
+    final date = parseFechaTextoBackend(fecha);
 
-    if (match == null) {
+    if (date == null) {
       return fecha;
     }
-
-    final ano = int.parse(match.group(1)!);
-    final mes = int.parse(match.group(2)!);
-    final dia = int.parse(match.group(3)!);
-
-    final date = DateTime(ano, mes, dia);
 
     return formatearFechaConDiaSemana(date, _t);
   }
