@@ -17,7 +17,13 @@ void main() {
 
   final hoy = DateTime.now();
   final hoySoloFecha = DateTime(hoy.year, hoy.month, hoy.day);
-  final manana = hoySoloFecha.add(const Duration(days: 1));
+  // Un día distinto a hoy pero DENTRO DEL MISMO MES: el calendario oculta
+  // los días fuera del mes enfocado (outsideDaysVisible: false), así que
+  // "hoy + 1 día" no sería visible si hoy fuera el último día del mes.
+  // Todo mes tiene al menos 2 días, así que esto siempre existe.
+  final manana = hoySoloFecha.day == 1
+      ? DateTime(hoySoloFecha.year, hoySoloFecha.month, 2)
+      : DateTime(hoySoloFecha.year, hoySoloFecha.month, hoySoloFecha.day - 1);
 
   SesionEntrenamientoModel sesionEn(DateTime fecha) => SesionEntrenamientoModel(
     id: 1,

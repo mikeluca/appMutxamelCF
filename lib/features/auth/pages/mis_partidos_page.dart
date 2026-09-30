@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../matches/models/match_model.dart';
@@ -834,13 +835,8 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
     return '$year-$month-$day';
   }
 
-  String _formatearFechaVisible(DateTime fecha) {
-    final day = fecha.day.toString().padLeft(2, '0');
-    final month = fecha.month.toString().padLeft(2, '0');
-    final year = fecha.year.toString();
-
-    return '$day/$month/$year';
-  }
+  String _formatearFechaVisible(DateTime fecha) =>
+      formatearFechaConDiaSemana(fecha, _t);
 
   @override
   Widget build(BuildContext context) {

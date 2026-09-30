@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/match_model.dart';
 
@@ -342,13 +343,21 @@ class MatchCard extends StatelessWidget {
   // ============================================================
 
   Widget _buildMatchInformation(BuildContext context) {
+    // La fecha se calcula en el cliente a partir de match.dia (en vez de
+    // usar match.diaFormateado tal cual llega del backend) para poder
+    // anteponer el nombre del día y respetar el idioma activo (es/ca/en);
+    // diaFormateado queda como respaldo si match.dia no viniera informado.
+    final fechaVisible = match.dia != null
+        ? formatearFechaConDiaSemana(match.dia!, AppLocalizations.of(context))
+        : match.diaFormateado;
+
     return Column(
       children: [
-        if (match.diaFormateado?.isNotEmpty == true)
+        if (fechaVisible?.isNotEmpty == true)
           _buildInfoRow(
             context,
             Icons.calendar_today_outlined,
-            match.diaFormateado!,
+            fechaVisible!,
           ),
 
         if (match.hora?.isNotEmpty == true)

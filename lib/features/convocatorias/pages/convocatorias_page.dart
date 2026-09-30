@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
@@ -249,21 +250,6 @@ class _ConvocatoriasPageState extends State<ConvocatoriasPage> {
 
     final date = DateTime(ano, mes, dia);
 
-    final diasSemana = [
-      _t.weekdayMonday,
-      _t.weekdayTuesday,
-      _t.weekdayWednesday,
-      _t.weekdayThursday,
-      _t.weekdayFriday,
-      _t.weekdaySaturday,
-      _t.weekdaySunday,
-    ];
-
-    final diaSemana = diasSemana[date.weekday - 1];
-
-    return '$diaSemana - '
-        '${dia.toString().padLeft(2, '0')}/'
-        '${mes.toString().padLeft(2, '0')}/'
-        '$ano';
+    return formatearFechaConDiaSemana(date, _t);
   }
 }

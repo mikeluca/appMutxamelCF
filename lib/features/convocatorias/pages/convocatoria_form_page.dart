@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
@@ -118,6 +119,17 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
     );
 
     _partidoSeleccionado = partido;
+  }
+
+  /// Se calcula a partir de partido.dia (en vez de usar diaFormateado tal
+  /// cual llega del backend) para poder anteponer el nombre del día y
+  /// respetar el idioma activo; diaFormateado queda como respaldo para el
+  /// MatchModel mínimo que se construye si el partido no aparece en la
+  /// lista (ver arriba).
+  String? _formatearFechaPartido(MatchModel partido) {
+    return partido.dia != null
+        ? formatearFechaConDiaSemana(partido.dia!, _t)
+        : partido.diaFormateado;
   }
 
   TimeOfDay _parsearHora(String hora) {
@@ -304,7 +316,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
               value: partido.id,
               child: Text(
                 '${partido.rival}'
-                '${partido.diaFormateado != null && partido.diaFormateado!.isNotEmpty ? ' — ${partido.diaFormateado}' : ''}',
+                '${_formatearFechaPartido(partido)?.isNotEmpty == true ? ' — ${_formatearFechaPartido(partido)}' : ''}',
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -335,7 +347,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
           _construirFilaInfo(
             Icons.calendar_today_outlined,
             _t.matchDateLabel,
-            partido.diaFormateado,
+            _formatearFechaPartido(partido),
           ),
           const SizedBox(height: 6),
           _construirFilaInfo(Icons.access_time, _t.matchTimeLabel, partido.hora),

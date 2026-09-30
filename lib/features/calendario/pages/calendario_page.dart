@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
@@ -632,23 +633,8 @@ class _CalendarioPageState extends State<CalendarioPage> {
     );
   }
 
-  String _formatearFecha(DateTime fecha) {
-    final diasSemana = [
-      _t.weekdayMonday,
-      _t.weekdayTuesday,
-      _t.weekdayWednesday,
-      _t.weekdayThursday,
-      _t.weekdayFriday,
-      _t.weekdaySaturday,
-      _t.weekdaySunday,
-    ];
-
-    final diaSemana = diasSemana[fecha.weekday - 1];
-
-    return '$diaSemana ${fecha.day.toString().padLeft(2, '0')}/'
-        '${fecha.month.toString().padLeft(2, '0')}/'
-        '${fecha.year}';
-  }
+  String _formatearFecha(DateTime fecha) =>
+      formatearFechaConDiaSemana(fecha, _t);
 }
 
 // ============================================================

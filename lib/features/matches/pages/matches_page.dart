@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/match_model.dart';
@@ -262,7 +263,7 @@ class _MatchCard extends StatelessWidget {
               _buildInfoRow(
                 context,
                 Icons.calendar_today_outlined,
-                _formatearFecha(partido.dia!),
+                _formatearFecha(context, partido.dia!),
               ),
 
             if (partido.hora != null && partido.hora!.isNotEmpty)
@@ -328,7 +329,7 @@ class _MatchCard extends StatelessWidget {
             if (partido.dia != null) ...[
               const SizedBox(height: 12),
               Text(
-                _formatearFecha(partido.dia!),
+                _formatearFecha(context, partido.dia!),
                 style: TextStyle(color: _colors(context).onSurfaceVariant),
               ),
             ],
@@ -471,9 +472,6 @@ class _MatchCard extends StatelessWidget {
     );
   }
 
-  String _formatearFecha(DateTime fecha) {
-    return '${fecha.day.toString().padLeft(2, '0')}/'
-        '${fecha.month.toString().padLeft(2, '0')}/'
-        '${fecha.year}';
-  }
+  String _formatearFecha(BuildContext context, DateTime fecha) =>
+      formatearFechaConDiaSemana(fecha, AppLocalizations.of(context));
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'entrenamiento_form_page.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/fecha_visualizacion.dart';
 import '../../auth/models/perfil_app.dart';
 import '../model/entrenamiento_model.dart';
 import '../services/entrenamiento_service.dart';
@@ -241,21 +242,6 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
 
     final date = DateTime(ano, mes, dia);
 
-    final diasSemana = [
-      _t.weekdayMonday,
-      _t.weekdayTuesday,
-      _t.weekdayWednesday,
-      _t.weekdayThursday,
-      _t.weekdayFriday,
-      _t.weekdaySaturday,
-      _t.weekdaySunday,
-    ];
-
-    final diaSemana = diasSemana[date.weekday - 1];
-
-    return '$diaSemana - '
-        '${dia.toString().padLeft(2, '0')}/'
-        '${mes.toString().padLeft(2, '0')}/'
-        '$ano';
+    return formatearFechaConDiaSemana(date, _t);
   }
 }

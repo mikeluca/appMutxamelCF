@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../convocatorias/services/convocatoria_service.dart';
@@ -310,10 +311,13 @@ class _ResultadoPartidoFormPageState extends State<ResultadoPartidoFormPage> {
                 color: _colors.onSurface,
               ),
             ),
-            if (partido.diaFormateado?.isNotEmpty == true) ...[
+            if (partido.dia != null ||
+                partido.diaFormateado?.isNotEmpty == true) ...[
               const SizedBox(height: 4),
               Text(
-                partido.diaFormateado!,
+                partido.dia != null
+                    ? formatearFechaConDiaSemana(partido.dia!, _t)
+                    : partido.diaFormateado!,
                 style: TextStyle(fontSize: 13, color: _colors.onSurfaceVariant),
               ),
             ],
