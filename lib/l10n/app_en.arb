@@ -479,6 +479,8 @@
   "calendarMatchLabel": "Match",
   "calendarCancelledBadge": "Cancelled",
   "calendarJustifiedBadge": "Justified",
+  "calendarCalledUpBadge": "Called up",
+  "calendarNotCalledUpBadge": "Not called up",
   "calendarPlaceLabel": "Place",
   "matchResultLabel": "Result",
   "calendarJustifyAbsenceButton": "Justify absence",

@@ -14,6 +14,13 @@ class MatchModel {
   final int? golesFavor;
   final int? golesContra;
 
+  /// Solo viene relleno cuando el calendario se consultó indicando un
+  /// jugador concreto: true/false si el partido ya tiene convocatoria
+  /// creada y el jugador está o no en ella, null si el partido todavía
+  /// no tiene convocatoria (no aplica, no es lo mismo que "no
+  /// convocado").
+  final bool? convocado;
+
   const MatchModel({
     this.id,
     this.equipoId,
@@ -29,6 +36,7 @@ class MatchModel {
     this.cancelado = false,
     this.golesFavor,
     this.golesContra,
+    this.convocado,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -49,6 +57,7 @@ class MatchModel {
       cancelado: json['cancelado'] as bool? ?? false,
       golesFavor: json['golesFavor'] as int?,
       golesContra: json['golesContra'] as int?,
+      convocado: json['convocado'] as bool?,
     );
   }
 

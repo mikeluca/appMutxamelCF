@@ -56,6 +56,37 @@ void main() {
       expect(partido.hora, isNull);
       expect(partido.campo, isNull);
     });
+
+    group('convocado', () {
+      test('true cuando el backend lo informa como convocado', () {
+        final partido = MatchModel.fromJson({
+          'equipo': 'Senior A',
+          'rival': 'Rival CF',
+          'convocado': true,
+        });
+
+        expect(partido.convocado, isTrue);
+      });
+
+      test('false cuando el backend lo informa como no convocado', () {
+        final partido = MatchModel.fromJson({
+          'equipo': 'Senior A',
+          'rival': 'Rival CF',
+          'convocado': false,
+        });
+
+        expect(partido.convocado, isFalse);
+      });
+
+      test('null cuando el partido todavia no tiene convocatoria (ausente)', () {
+        final partido = MatchModel.fromJson({
+          'equipo': 'Senior A',
+          'rival': 'Rival CF',
+        });
+
+        expect(partido.convocado, isNull);
+      });
+    });
   });
 
   group('MatchModel getters', () {

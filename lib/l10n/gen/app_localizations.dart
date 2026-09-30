@@ -2422,6 +2422,18 @@ abstract class AppLocalizations {
   /// **'Justificada'**
   String get calendarJustifiedBadge;
 
+  /// No description provided for @calendarCalledUpBadge.
+  ///
+  /// In es, this message translates to:
+  /// **'Convocado'**
+  String get calendarCalledUpBadge;
+
+  /// No description provided for @calendarNotCalledUpBadge.
+  ///
+  /// In es, this message translates to:
+  /// **'No convocado'**
+  String get calendarNotCalledUpBadge;
+
   /// No description provided for @calendarPlaceLabel.
   ///
   /// In es, this message translates to:

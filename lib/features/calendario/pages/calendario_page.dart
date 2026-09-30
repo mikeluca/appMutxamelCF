@@ -6,6 +6,7 @@ import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
 import '../../auth/services/perfil_service.dart';
+import '../../entrenamientos/utils/estado_asistencia_utils.dart';
 import '../../teams/models/team_model.dart';
 import '../../teams/services/team_services.dart';
 import '../model/calendario_model.dart';
@@ -418,6 +419,8 @@ class _CalendarioPageState extends State<CalendarioPage> {
     final item = evento.item;
     final esFuturo = item.esFuturoRespectoA(hoy);
     final yaJustificado = item.sesion?.justificado == true;
+    final convocado = item.partido?.convocado;
+    final asistencia = item.sesion?.asistencia;
     final puedeJustificar =
         item.esEntrenamiento &&
         evento.jugadorId != null &&
@@ -496,6 +499,12 @@ class _CalendarioPageState extends State<CalendarioPage> {
                         ] else if (yaJustificado) ...[
                           const SizedBox(width: 8),
                           _construirBadgeJustificado(),
+                        ] else if (asistencia != null) ...[
+                          const SizedBox(width: 8),
+                          _construirBadgeAsistencia(asistencia),
+                        ] else if (convocado != null) ...[
+                          const SizedBox(width: 8),
+                          _construirBadgeConvocado(convocado),
                         ],
                       ],
                     ),
@@ -628,6 +637,46 @@ class _CalendarioPageState extends State<CalendarioPage> {
           fontSize: 11,
           fontWeight: FontWeight.bold,
           color: Colors.green,
+        ),
+      ),
+    );
+  }
+
+  Widget _construirBadgeConvocado(bool convocado) {
+    final color = convocado ? Colors.green : _colors.onSurfaceVariant;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        convocado ? _t.calendarCalledUpBadge : _t.calendarNotCalledUpBadge,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  Widget _construirBadgeAsistencia(String estado) {
+    final color = colorEstadoAsistencia(estado);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.20),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        labelEstadoAsistencia(_t, estado),
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          color: color,
         ),
       ),
     );

@@ -1280,6 +1280,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get calendarJustifiedBadge => 'Justificada';
 
   @override
+  String get calendarCalledUpBadge => 'Convocado';
+
+  @override
+  String get calendarNotCalledUpBadge => 'No convocado';
+
+  @override
   String get calendarPlaceLabel => 'Lugar';
 
   @override

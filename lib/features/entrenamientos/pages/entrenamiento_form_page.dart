@@ -9,6 +9,7 @@ import '../../teams/models/player_model.dart';
 import '../../teams/services/team_services.dart';
 import '../services/entrenamiento_service.dart';
 import '../model/entrenamiento_model.dart';
+import '../utils/estado_asistencia_utils.dart';
 
 class EntrenamientoFormPage extends StatefulWidget {
   final PerfilEquipo equipo;
@@ -85,23 +86,6 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
   void _inicializarEstados(List<PlayerModel> jugadores) {
     for (final jugador in jugadores) {
       _estados.putIfAbsent(jugador.id, () => 'PRESENTE');
-    }
-  }
-
-  Color _colorEstado(String estado) {
-    switch (estado) {
-      case 'PRESENTE':
-        return const Color.fromARGB(255, 64, 236, 70);
-      case 'FALTA_JUSTIFICADA':
-        return const Color.fromARGB(255, 255, 230, 7);
-      case 'FALTA':
-        return const Color.fromARGB(255, 248, 26, 26);
-      case 'MAL_COMPORTAMIENTO':
-        return const Color.fromARGB(255, 105, 104, 104);
-      case 'RETRASO':
-        return const Color.fromARGB(255, 115, 23, 190);
-      default:
-        return Colors.green;
     }
   }
 
@@ -316,7 +300,7 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
 
   Widget _construirJugador(PlayerModel jugador) {
     final estadoActual = _estados[jugador.id] ?? 'PRESENTE';
-    final colorEstado = _colorEstado(estadoActual);
+    final colorEstado = colorEstadoAsistencia(estadoActual);
 
     final nombre = '${jugador.nombre} ${jugador.apellidos}'.trim();
 

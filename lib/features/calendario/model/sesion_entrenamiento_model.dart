@@ -26,6 +26,14 @@ class SesionEntrenamientoModel {
   /// indicó el entrenador/coordinador al cancelarla.
   final String? motivoCancelacion;
 
+  /// Estado de asistencia del jugador ("PRESENTE"/"FALTA"/
+  /// "FALTA_JUSTIFICADA"/"MAL_COMPORTAMIENTO"/"RETRASO") al entrenamiento
+  /// vinculado a esta sesión. Solo viene relleno, igual que justificado,
+  /// cuando el calendario se consultó indicando un jugador concreto Y la
+  /// sesión ya ha pasado (la asistencia se registra durante/después de
+  /// la sesión, no antes).
+  final String? asistencia;
+
   const SesionEntrenamientoModel({
     required this.id,
     required this.equipoId,
@@ -38,6 +46,7 @@ class SesionEntrenamientoModel {
     this.justificado = false,
     this.motivoJustificacion,
     this.motivoCancelacion,
+    this.asistencia,
   });
 
   factory SesionEntrenamientoModel.fromJson(Map<String, dynamic> json) {
@@ -53,6 +62,7 @@ class SesionEntrenamientoModel {
       justificado: json['justificado'] as bool? ?? false,
       motivoJustificacion: json['motivoJustificacion'] as String?,
       motivoCancelacion: json['motivoCancelacion'] as String?,
+      asistencia: json['asistencia'] as String?,
     );
   }
 

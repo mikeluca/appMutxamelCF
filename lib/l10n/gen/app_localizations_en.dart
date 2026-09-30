@@ -1263,6 +1263,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calendarJustifiedBadge => 'Justified';
 
   @override
+  String get calendarCalledUpBadge => 'Called up';
+
+  @override
+  String get calendarNotCalledUpBadge => 'Not called up';
+
+  @override
   String get calendarPlaceLabel => 'Place';
 
   @override

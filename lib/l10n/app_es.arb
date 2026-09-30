@@ -479,6 +479,8 @@
   "calendarMatchLabel": "Partido",
   "calendarCancelledBadge": "Cancelado",
   "calendarJustifiedBadge": "Justificada",
+  "calendarCalledUpBadge": "Convocado",
+  "calendarNotCalledUpBadge": "No convocado",
   "calendarPlaceLabel": "Lugar",
   "matchResultLabel": "Resultado",
   "calendarJustifyAbsenceButton": "Justificar falta",
