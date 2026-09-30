@@ -37,12 +37,25 @@ class _CalendarioGestionPageState extends State<CalendarioGestionPage> {
 
   late Future<_DatosCalendarioGestion> _futureDatos;
 
+  // Misma ventana que el calendario del familiar/jugador (calendario_page.dart):
+  // desde el inicio de la temporada activa (o un año atrás de respaldo si no
+  // hay ninguna configurada) hasta hoy + 2 meses, para que ambos calendarios
+  // muestren siempre el mismo rango. _hasta se fija una única vez (para que
+  // el calendario visual no "salte" en cada recarga); _desde se recalcula en
+  // cada carga porque depende de una llamada async a la temporada activa.
+  late DateTime _desde;
+  late final DateTime _hasta;
+
   ColorScheme get _colors => Theme.of(context).colorScheme;
   AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
     super.initState();
+
+    final hoy = DateTime.now();
+    _hasta = DateTime(hoy.year, hoy.month + 2, hoy.day);
+
     _cargar();
   }
 
@@ -51,17 +64,18 @@ class _CalendarioGestionPageState extends State<CalendarioGestionPage> {
   }
 
   Future<_DatosCalendarioGestion> _cargarDatos() async {
+    final temporada = await _service.obtenerTemporadaActiva();
     final hoy = DateTime.now();
-    final desde = DateTime(hoy.year, hoy.month, hoy.day);
-    // Misma ventana de dos meses que la generación de sesiones del backend.
-    final hasta = DateTime(hoy.year, hoy.month + 2, hoy.day);
+
+    _desde =
+        temporada?.fechaInicio ?? DateTime(hoy.year - 1, hoy.month, hoy.day);
 
     final resultados = await Future.wait([
       _service.obtenerHorarios(widget.equipo.id),
       _service.obtenerCalendario(
         equipoId: widget.equipo.id,
-        desde: desde,
-        hasta: hasta,
+        desde: _desde,
+        hasta: _hasta,
       ),
     ]);
 
@@ -352,6 +366,8 @@ class _CalendarioGestionPageState extends State<CalendarioGestionPage> {
                   fechaDe: (item) => item.fecha,
                   textoSinEventosDia: _t.upcomingItemsEmpty,
                   locale: Localizations.localeOf(context).languageCode,
+                  primerDia: _desde,
+                  ultimoDia: _hasta,
                   itemBuilder: (context, item) => _construirTarjetaItem(item),
                 ),
               ],
