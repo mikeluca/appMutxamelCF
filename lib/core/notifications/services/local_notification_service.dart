@@ -22,7 +22,17 @@ class LocalNotificationService {
       '@mipmap/ic_launcher',
     );
 
-    const settings = InitializationSettings(android: androidSettings);
+    // iOS: los permisos ya los pide firebase_messaging, así que aquí no.
+    const darwinSettings = DarwinInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+    );
+
+    const settings = InitializationSettings(
+      android: androidSettings,
+      iOS: darwinSettings,
+    );
 
     await _plugin.initialize(
       settings: settings,
@@ -101,7 +111,17 @@ class LocalNotificationService {
       icon: '@mipmap/ic_launcher',
     );
 
-    final notificationDetails = NotificationDetails(android: androidDetails);
+    final darwinDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      badgeNumber: cantidadNoLeidas,
+    );
+
+    final notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: darwinDetails,
+    );
 
     final payload = esPrivada && autorId != null && autorId > 0
         ? 'PRIVADA:$autorId'
