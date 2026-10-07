@@ -50,11 +50,30 @@ class _PublicShellPageState extends State<PublicShellPage> {
     );
   }
 
+  void _seleccionar(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+
+    if (index == 0) {
+      _homeKey.currentState?.actualizarContadorNotificaciones();
+    }
+  }
+
+  // Barra propia en lugar de NavigationBar: esta fuerza una altura mínima
+  // y su propio SafeArea, y quedaba más alta que icono + texto. Aquí la
+  // altura es exactamente la del contenido.
   Widget _buildFloatingNavigationBar() {
     final t = AppLocalizations.of(context);
 
-    // NavigationBar añade su propio SafeArea inferior, que dejaba un hueco
-    // vacío bajo los iconos: se aplica fuera de la barra y se quita dentro.
+    final items = [
+      (Icons.home_outlined, Icons.home, t.navHome),
+      (Icons.article_outlined, Icons.article, t.navNews),
+      (Icons.sports_soccer_outlined, Icons.sports_soccer, t.navMatches),
+      (Icons.storefront_outlined, Icons.storefront, t.navStore),
+      (Icons.info_outline, Icons.info, t.navClub),
+    ];
+
     return SafeArea(
       top: false,
       minimum: const EdgeInsets.only(bottom: 10),
@@ -64,56 +83,74 @@ class _PublicShellPageState extends State<PublicShellPage> {
           elevation: 8,
           borderRadius: BorderRadius.circular(20),
           color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.76),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: MediaQuery.removePadding(
-              context: context,
-              removeBottom: true,
-              child: NavigationBar(
-                selectedIndex: _currentIndex,
-                onDestinationSelected: (index) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-
-                  if (index == 0) {
-                    _homeKey.currentState?.actualizarContadorNotificaciones();
-                  }
-                },
-                height: 64,
-                elevation: 0,
-                backgroundColor: Colors.transparent,
-                destinations: [
-                  NavigationDestination(
-                    icon: const Icon(Icons.home_outlined),
-                    selectedIcon: const Icon(Icons.home),
-                    label: t.navHome,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              children: [
+                for (var i = 0; i < items.length; i++)
+                  Expanded(
+                    child: _NavItem(
+                      icono: items[i].$1,
+                      iconoSeleccionado: items[i].$2,
+                      etiqueta: items[i].$3,
+                      seleccionado: i == _currentIndex,
+                      onTap: () => _seleccionar(i),
+                    ),
                   ),
-                  NavigationDestination(
-                    icon: const Icon(Icons.article_outlined),
-                    selectedIcon: const Icon(Icons.article),
-                    label: t.navNews,
-                  ),
-                  NavigationDestination(
-                    icon: const Icon(Icons.sports_soccer_outlined),
-                    selectedIcon: const Icon(Icons.sports_soccer),
-                    label: t.navMatches,
-                  ),
-                  NavigationDestination(
-                    icon: const Icon(Icons.storefront_outlined),
-                    selectedIcon: const Icon(Icons.storefront),
-                    label: t.navStore,
-                  ),
-                  NavigationDestination(
-                    icon: const Icon(Icons.info_outline),
-                    selectedIcon: const Icon(Icons.info),
-                    label: t.navClub,
-                  ),
-                ],
-              ),
+              ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  const _NavItem({
+    required this.icono,
+    required this.iconoSeleccionado,
+    required this.etiqueta,
+    required this.seleccionado,
+    required this.onTap,
+  });
+
+  final IconData icono;
+  final IconData iconoSeleccionado;
+  final String etiqueta;
+  final bool seleccionado;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context).navigationBarTheme;
+    final estiloEtiqueta = theme.labelTextStyle?.resolve({
+      if (seleccionado) WidgetState.selected,
+    });
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 64,
+            height: 32,
+            decoration: BoxDecoration(
+              color: seleccionado ? theme.indicatorColor : Colors.transparent,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(seleccionado ? iconoSeleccionado : icono),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            etiqueta,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: estiloEtiqueta,
+          ),
+        ],
       ),
     );
   }
