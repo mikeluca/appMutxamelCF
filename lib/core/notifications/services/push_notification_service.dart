@@ -47,8 +47,12 @@ class PushNotificationService {
   /// hay que desuscribirlo de los topics anónimos para que no le
   /// lleguen duplicados.
   static Future<void> desuscribirDeTopicsAnonimos() async {
-    await desuscribirDeTopic(topicNoticias);
-    await desuscribirDeTopic(topicResultados);
+    try {
+      await desuscribirDeTopic(topicNoticias);
+      await desuscribirDeTopic(topicResultados);
+    } catch (e) {
+      debugPrint('ERROR AL DESUSCRIBIR DE TOPICS ANÓNIMOS: $e');
+    }
   }
 
   static Future<void> inicializar() async {
@@ -63,7 +67,12 @@ class PushNotificationService {
       '${settings.authorizationStatus}',
     );
 
-    final token = await _messaging.getToken();
+    String? token;
+    try {
+      token = await _messaging.getToken();
+    } catch (e) {
+      debugPrint('NO SE PUDO OBTENER EL TOKEN FCM: $e');
+    }
 
     if (token != null && token.isNotEmpty) {
       try {
@@ -141,13 +150,13 @@ class PushNotificationService {
   }
 
   static Future<void> registrarDispositivoActual() async {
-    final token = await _messaging.getToken();
-
-    if (token == null || token.isEmpty) {
-      return;
-    }
-
     try {
+      final token = await _messaging.getToken();
+
+      if (token == null || token.isEmpty) {
+        return;
+      }
+
       await DispositivoAppService.registrar(
         tokenFcm: token,
         plataforma: _plataformaActual,
@@ -155,6 +164,9 @@ class PushNotificationService {
 
       debugPrint('DISPOSITIVO FCM REGISTRADO CORRECTAMENTE');
     } catch (e) {
+      // En iOS sin APNs (cuenta gratuita, simulador, o token aún no
+      // disponible) getToken lanza apns-token-not-set: no debe
+      // impedir el login.
       debugPrint('ERROR AL REGISTRAR EL DISPOSITIVO FCM: $e');
     }
   }
