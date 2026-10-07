@@ -215,9 +215,7 @@ class _StorePageState extends State<StorePage> {
       final tallas = _tallasSeleccionadas[producto.prenda]!;
 
       if (tallas.any((talla) => talla == null || talla.isEmpty)) {
-        _mostrarError(
-          t.storeErrorSelectSizeForProduct(producto.titulo(t)),
-        );
+        _mostrarError(t.storeErrorSelectSizeForProduct(producto.titulo(t)));
         return;
       }
 
@@ -277,7 +275,12 @@ class _StorePageState extends State<StorePage> {
         title: ClubAppBarTitle(titulo: AppLocalizations.of(context).storeTitle),
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          20,
+          16,
+          16 + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           _construirHero(),
           const SizedBox(height: 24),
@@ -484,7 +487,9 @@ class _StorePageState extends State<StorePage> {
               initialValue: tallas[i],
               isDense: true,
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(context).storeSizeUnitLabel(i + 1),
+                labelText: AppLocalizations.of(
+                  context,
+                ).storeSizeUnitLabel(i + 1),
                 border: const OutlineInputBorder(),
               ),
               items: _tallas

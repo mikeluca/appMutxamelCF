@@ -62,7 +62,12 @@ class _MatchesPageState extends State<MatchesPage> {
             onRefresh: _recargar,
             child: ListView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.fromLTRB(
+                16,
+                16,
+                16,
+                16 + MediaQuery.paddingOf(context).bottom,
+              ),
               children: [
                 Text(
                   _t.matchesCalendarTitle,

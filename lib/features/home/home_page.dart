@@ -169,7 +169,13 @@ class HomePageState extends State<HomePage> {
         onRefresh: _recargar,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+          // El bottom del MediaQuery incluye la barra flotante (extendBody).
+          padding: EdgeInsets.fromLTRB(
+            16,
+            20,
+            16,
+            16 + MediaQuery.paddingOf(context).bottom,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -408,8 +414,7 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget _buildPatrocinadorTile(Patrocinador patrocinador) {
-    final imagenUrl =
-        '${AppConfig.mediaBaseUrl}/images/${patrocinador.imagen}';
+    final imagenUrl = '${AppConfig.mediaBaseUrl}/images/${patrocinador.imagen}';
 
     final imagen = SizedBox.expand(
       child: Image.network(
@@ -514,4 +519,3 @@ class _MatchErrorCard extends StatelessWidget {
     );
   }
 }
-

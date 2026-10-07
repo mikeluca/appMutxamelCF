@@ -71,7 +71,9 @@ class _NewsPageState extends State<NewsPage> {
       // snackbar, en vez de sustituirla por la pantalla de error.
       if (!esInicial && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).homeNewsLoadError)),
+          SnackBar(
+            content: Text(AppLocalizations.of(context).homeNewsLoadError),
+          ),
         );
       }
     }
@@ -150,7 +152,12 @@ class _NewsPageState extends State<NewsPage> {
     return RefreshIndicator(
       onRefresh: _cargarNoticias,
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          16 + MediaQuery.paddingOf(context).bottom,
+        ),
         itemCount: _noticias.length + 1,
         itemBuilder: (context, index) {
           if (index == _noticias.length) {
@@ -195,9 +202,7 @@ class _NewsPageState extends State<NewsPage> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (_) => NewsDetailPage(noticia: noticia),
-            ),
+            MaterialPageRoute(builder: (_) => NewsDetailPage(noticia: noticia)),
           );
         },
         child: Column(
@@ -223,10 +228,7 @@ class _NewsPageState extends State<NewsPage> {
                 },
                 errorBuilder: (context, error, stackTrace) {
                   return const Center(
-                    child: Icon(
-                      Icons.image_not_supported_outlined,
-                      size: 48,
-                    ),
+                    child: Icon(Icons.image_not_supported_outlined, size: 48),
                   );
                 },
               ),

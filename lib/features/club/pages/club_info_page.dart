@@ -73,7 +73,12 @@ class ClubInfoPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: ClubAppBarTitle(titulo: t.clubTitle)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          20,
+          16,
+          16 + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           _construirCabecera(context),
 
@@ -193,8 +198,7 @@ class ClubInfoPage extends StatelessWidget {
           child: IconButton(
             icon: const Icon(Icons.settings_outlined, color: Colors.white),
             tooltip: t.clubSettingsTooltip,
-            onPressed: () =>
-                Navigator.pushNamed(context, AppRoutes.settings),
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.settings),
           ),
         ),
       ],
