@@ -349,7 +349,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsLanguageEnglish => 'English';
 
   @override
-  String get settingsAboutApp => 'About appMTX';
+  String get settingsAboutApp => 'About Mutxamel CF';
 
   @override
   String get settingsAboutAppSubtitle => 'App information';

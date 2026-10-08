@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/config/app_config.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../routing/app_routes.dart';
@@ -114,7 +115,7 @@ class _ClubPageState extends State<ClubPage> {
 
           if (tieneJugadores) const SizedBox(height: 12),
 
-          if (tieneJugadores)
+          if (tieneJugadores && AppConfig.cuotasDisponibles)
             _construirOpcion(
               context,
               icono: Icons.payments_outlined,
@@ -123,7 +124,8 @@ class _ClubPageState extends State<ClubPage> {
               onTap: () => _mostrarCuotasProximamente(context),
             ),
 
-          if (tieneJugadores) const SizedBox(height: 12),
+          if (tieneJugadores && AppConfig.cuotasDisponibles)
+            const SizedBox(height: 12),
 
           if (tieneEquipos)
             _construirOpcion(

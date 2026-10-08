@@ -358,7 +358,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsLanguageEnglish => 'Inglés';
 
   @override
-  String get settingsAboutApp => 'Acerca de appMTX';
+  String get settingsAboutApp => 'Acerca de Mutxamel CF';
 
   @override
   String get settingsAboutAppSubtitle => 'Información de la aplicación';

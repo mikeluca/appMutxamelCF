@@ -492,7 +492,6 @@ class _AjustesPageState extends State<AjustesPage> {
           Switch(
             value: valor,
             onChanged: onChanged,
-            activeThumbColor: AppColors.azul,
           ),
         ],
       ),

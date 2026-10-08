@@ -745,7 +745,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsAboutApp.
   ///
   /// In es, this message translates to:
-  /// **'Acerca de appMTX'**
+  /// **'Acerca de Mutxamel CF'**
   String get settingsAboutApp;
 
   /// No description provided for @settingsAboutAppSubtitle.

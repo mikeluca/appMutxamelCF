@@ -100,6 +100,23 @@ class AppTheme {
     ),
 
     dividerTheme: const DividerThemeData(color: Colors.black12, thickness: 1),
+
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return AppColors.dorado;
+        }
+
+        return const Color(0xFF8A979D);
+      }),
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return AppColors.azul;
+        }
+
+        return const Color(0xFFD5DCE0);
+      }),
+    ),
   );
 
   // ============================================================
