@@ -313,8 +313,9 @@ class _ClubPageState extends State<ClubPage> {
   }
 
   Widget _construirCabecera(BuildContext context, dynamic usuario) {
-    final nombre =
-        usuario?.email ?? AppLocalizations.of(context).clubPageDefaultMember;
+    final nombre = (usuario?.nombre as String?)?.trim().isNotEmpty == true
+        ? usuario.nombre as String
+        : usuario?.email ?? AppLocalizations.of(context).clubPageDefaultMember;
 
     return Container(
       padding: const EdgeInsets.all(22),

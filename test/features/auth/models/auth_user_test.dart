@@ -23,6 +23,22 @@ void main() {
 
       expect(usuario.roles, isEmpty);
     });
+
+    test('lee el nombre y es null si el backend no lo envia', () {
+      final conNombre = AuthUser.fromJson({
+        'usuarioId': 7,
+        'email': 'coord@mutxamelcf.es',
+        'roles': ['COORDINADOR'],
+        'nombre': 'Juan Pérez',
+      });
+      final sinNombre = AuthUser.fromJson({
+        'usuarioId': 8,
+        'email': 'otro@mutxamelcf.es',
+      });
+
+      expect(conNombre.nombre, 'Juan Pérez');
+      expect(sinNombre.nombre, isNull);
+    });
   });
 
   group('AuthUser.tieneRol', () {
