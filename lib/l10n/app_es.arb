@@ -578,5 +578,25 @@
   },
   "matchResultLoadError": "No se han podido cargar los datos del partido.",
   "matchEnterResultTooltip": "Introducir resultado",
-  "matchEditResultTooltip": "Editar resultado"
+  "matchEditResultTooltip": "Editar resultado",
+  "settingsSectionAccount": "Cuenta",
+  "settingsDeleteAccount": "Eliminar mi cuenta",
+  "settingsDeleteAccountSubtitle": "Borra tu cuenta y tus datos personales",
+  "deleteAccountDialogTitle": "¿Eliminar tu cuenta?",
+  "deleteAccountWarning": "Se borrarán tu correo, tu contraseña, tus accesos al club, tus dispositivos y tus notificaciones. Las fichas del club (jugador, familiar o cuerpo técnico) se conservan, y los mensajes que enviaste se conservarán sin tu nombre. Esta acción no se puede deshacer.",
+  "deleteAccountPasswordLabel": "Introduce tu contraseña para confirmar",
+  "deleteAccountPasswordRequired": "Introduce tu contraseña",
+  "deleteAccountConfirm": "Eliminar cuenta",
+  "deleteAccountWrongPassword": "La contraseña no es correcta.",
+  "deleteAccountTooManyAttempts": "Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos.",
+  "deleteAccountError": "No se ha podido eliminar la cuenta. Inténtalo de nuevo.",
+  "deleteAccountDone": "Tu cuenta ha sido eliminada.",
+  "reportAction": "Reportar",
+  "reportDialogTitle": "Reportar mensaje",
+  "reportDialogBody": "Se avisará al club para que revise este mensaje. Puedes indicar el motivo (opcional).",
+  "reportReasonHint": "Motivo (opcional)",
+  "reportSend": "Enviar reporte",
+  "reportSent": "Reporte enviado. El club lo revisará.",
+  "reportError": "No se ha podido enviar el reporte. Inténtalo de nuevo."
+
 }

@@ -2853,6 +2853,120 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Editar resultado'**
   String get matchEditResultTooltip;
+
+  /// No description provided for @settingsSectionAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta'**
+  String get settingsSectionAccount;
+
+  /// No description provided for @settingsDeleteAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar mi cuenta'**
+  String get settingsDeleteAccount;
+
+  /// No description provided for @settingsDeleteAccountSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Borra tu cuenta y tus datos personales'**
+  String get settingsDeleteAccountSubtitle;
+
+  /// No description provided for @deleteAccountDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Eliminar tu cuenta?'**
+  String get deleteAccountDialogTitle;
+
+  /// No description provided for @deleteAccountWarning.
+  ///
+  /// In es, this message translates to:
+  /// **'Se borrarán tu correo, tu contraseña, tus accesos al club, tus dispositivos y tus notificaciones. Las fichas del club (jugador, familiar o cuerpo técnico) se conservan, y los mensajes que enviaste se conservarán sin tu nombre. Esta acción no se puede deshacer.'**
+  String get deleteAccountWarning;
+
+  /// No description provided for @deleteAccountPasswordLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce tu contraseña para confirmar'**
+  String get deleteAccountPasswordLabel;
+
+  /// No description provided for @deleteAccountPasswordRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce tu contraseña'**
+  String get deleteAccountPasswordRequired;
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar cuenta'**
+  String get deleteAccountConfirm;
+
+  /// No description provided for @deleteAccountWrongPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'La contraseña no es correcta.'**
+  String get deleteAccountWrongPassword;
+
+  /// No description provided for @deleteAccountTooManyAttempts.
+  ///
+  /// In es, this message translates to:
+  /// **'Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos.'**
+  String get deleteAccountTooManyAttempts;
+
+  /// No description provided for @deleteAccountError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido eliminar la cuenta. Inténtalo de nuevo.'**
+  String get deleteAccountError;
+
+  /// No description provided for @deleteAccountDone.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu cuenta ha sido eliminada.'**
+  String get deleteAccountDone;
+
+  /// No description provided for @reportAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Reportar'**
+  String get reportAction;
+
+  /// No description provided for @reportDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Reportar mensaje'**
+  String get reportDialogTitle;
+
+  /// No description provided for @reportDialogBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Se avisará al club para que revise este mensaje. Puedes indicar el motivo (opcional).'**
+  String get reportDialogBody;
+
+  /// No description provided for @reportReasonHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo (opcional)'**
+  String get reportReasonHint;
+
+  /// No description provided for @reportSend.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar reporte'**
+  String get reportSend;
+
+  /// No description provided for @reportSent.
+  ///
+  /// In es, this message translates to:
+  /// **'Reporte enviado. El club lo revisará.'**
+  String get reportSent;
+
+  /// No description provided for @reportError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido enviar el reporte. Inténtalo de nuevo.'**
+  String get reportError;
 }
 
 class _AppLocalizationsDelegate

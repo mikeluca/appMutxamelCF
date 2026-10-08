@@ -578,5 +578,25 @@
   },
   "matchResultLoadError": "No s'han pogut carregar les dades del partit.",
   "matchEnterResultTooltip": "Introdueix el resultat",
-  "matchEditResultTooltip": "Edita el resultat"
+  "matchEditResultTooltip": "Edita el resultat",
+  "settingsSectionAccount": "Compte",
+  "settingsDeleteAccount": "Eliminar el meu compte",
+  "settingsDeleteAccountSubtitle": "Esborra el teu compte i les teues dades personals",
+  "deleteAccountDialogTitle": "Vols eliminar el teu compte?",
+  "deleteAccountWarning": "S'esborraran el teu correu, la teua contrasenya, els teus accessos al club, els teus dispositius i les teues notificacions. Les fitxes del club (jugador, familiar o cos tècnic) es conserven, i els missatges que vas enviar es conservaran sense el teu nom. Aquesta acció no es pot desfer.",
+  "deleteAccountPasswordLabel": "Introdueix la teua contrasenya per a confirmar",
+  "deleteAccountPasswordRequired": "Introdueix la teua contrasenya",
+  "deleteAccountConfirm": "Eliminar compte",
+  "deleteAccountWrongPassword": "La contrasenya no és correcta.",
+  "deleteAccountTooManyAttempts": "Massa intents fallits. Torna-ho a provar d'ací a uns minuts.",
+  "deleteAccountError": "No s'ha pogut eliminar el compte. Torna-ho a provar.",
+  "deleteAccountDone": "El teu compte ha sigut eliminat.",
+  "reportAction": "Reportar",
+  "reportDialogTitle": "Reportar missatge",
+  "reportDialogBody": "S'avisarà el club perquè revise aquest missatge. Pots indicar el motiu (opcional).",
+  "reportReasonHint": "Motiu (opcional)",
+  "reportSend": "Enviar report",
+  "reportSent": "Report enviat. El club el revisarà.",
+  "reportError": "No s'ha pogut enviar el report. Torna-ho a provar."
+
 }

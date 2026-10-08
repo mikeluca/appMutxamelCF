@@ -1521,4 +1521,68 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get matchEditResultTooltip => 'Editar resultado';
+
+  @override
+  String get settingsSectionAccount => 'Cuenta';
+
+  @override
+  String get settingsDeleteAccount => 'Eliminar mi cuenta';
+
+  @override
+  String get settingsDeleteAccountSubtitle =>
+      'Borra tu cuenta y tus datos personales';
+
+  @override
+  String get deleteAccountDialogTitle => '¿Eliminar tu cuenta?';
+
+  @override
+  String get deleteAccountWarning =>
+      'Se borrarán tu correo, tu contraseña, tus accesos al club, tus dispositivos y tus notificaciones. Las fichas del club (jugador, familiar o cuerpo técnico) se conservan, y los mensajes que enviaste se conservarán sin tu nombre. Esta acción no se puede deshacer.';
+
+  @override
+  String get deleteAccountPasswordLabel =>
+      'Introduce tu contraseña para confirmar';
+
+  @override
+  String get deleteAccountPasswordRequired => 'Introduce tu contraseña';
+
+  @override
+  String get deleteAccountConfirm => 'Eliminar cuenta';
+
+  @override
+  String get deleteAccountWrongPassword => 'La contraseña no es correcta.';
+
+  @override
+  String get deleteAccountTooManyAttempts =>
+      'Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos.';
+
+  @override
+  String get deleteAccountError =>
+      'No se ha podido eliminar la cuenta. Inténtalo de nuevo.';
+
+  @override
+  String get deleteAccountDone => 'Tu cuenta ha sido eliminada.';
+
+  @override
+  String get reportAction => 'Reportar';
+
+  @override
+  String get reportDialogTitle => 'Reportar mensaje';
+
+  @override
+  String get reportDialogBody =>
+      'Se avisará al club para que revise este mensaje. Puedes indicar el motivo (opcional).';
+
+  @override
+  String get reportReasonHint => 'Motivo (opcional)';
+
+  @override
+  String get reportSend => 'Enviar reporte';
+
+  @override
+  String get reportSent => 'Reporte enviado. El club lo revisará.';
+
+  @override
+  String get reportError =>
+      'No se ha podido enviar el reporte. Inténtalo de nuevo.';
 }

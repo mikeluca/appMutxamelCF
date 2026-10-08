@@ -166,6 +166,23 @@ class ComunicacionService {
         .toList();
   }
 
+  /// Denuncia un mensaje o comunicación: el backend avisa al club por email.
+  static Future<void> reportarComunicacion(
+    int comunicacionId, {
+    String? motivo,
+  }) async {
+    final motivoLimpio = motivo?.trim();
+
+    await ApiClient.post(
+      '/app/comunicaciones/$comunicacionId/reportar',
+      autenticado: true,
+      body: {
+        if (motivoLimpio != null && motivoLimpio.isNotEmpty)
+          'motivo': motivoLimpio,
+      },
+    );
+  }
+
   static Future<void> marcarConversacionLeida(int otroUsuarioId) async {
     await ApiClient.put(
       '/app/comunicaciones/conversacion/$otroUsuarioId/leida',

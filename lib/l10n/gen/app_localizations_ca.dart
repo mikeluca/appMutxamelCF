@@ -1511,4 +1511,68 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get matchEditResultTooltip => 'Edita el resultat';
+
+  @override
+  String get settingsSectionAccount => 'Compte';
+
+  @override
+  String get settingsDeleteAccount => 'Eliminar el meu compte';
+
+  @override
+  String get settingsDeleteAccountSubtitle =>
+      'Esborra el teu compte i les teues dades personals';
+
+  @override
+  String get deleteAccountDialogTitle => 'Vols eliminar el teu compte?';
+
+  @override
+  String get deleteAccountWarning =>
+      'S\'esborraran el teu correu, la teua contrasenya, els teus accessos al club, els teus dispositius i les teues notificacions. Les fitxes del club (jugador, familiar o cos tècnic) es conserven, i els missatges que vas enviar es conservaran sense el teu nom. Aquesta acció no es pot desfer.';
+
+  @override
+  String get deleteAccountPasswordLabel =>
+      'Introdueix la teua contrasenya per a confirmar';
+
+  @override
+  String get deleteAccountPasswordRequired => 'Introdueix la teua contrasenya';
+
+  @override
+  String get deleteAccountConfirm => 'Eliminar compte';
+
+  @override
+  String get deleteAccountWrongPassword => 'La contrasenya no és correcta.';
+
+  @override
+  String get deleteAccountTooManyAttempts =>
+      'Massa intents fallits. Torna-ho a provar d\'ací a uns minuts.';
+
+  @override
+  String get deleteAccountError =>
+      'No s\'ha pogut eliminar el compte. Torna-ho a provar.';
+
+  @override
+  String get deleteAccountDone => 'El teu compte ha sigut eliminat.';
+
+  @override
+  String get reportAction => 'Reportar';
+
+  @override
+  String get reportDialogTitle => 'Reportar missatge';
+
+  @override
+  String get reportDialogBody =>
+      'S\'avisarà el club perquè revise aquest missatge. Pots indicar el motiu (opcional).';
+
+  @override
+  String get reportReasonHint => 'Motiu (opcional)';
+
+  @override
+  String get reportSend => 'Enviar report';
+
+  @override
+  String get reportSent => 'Report enviat. El club el revisarà.';
+
+  @override
+  String get reportError =>
+      'No s\'ha pogut enviar el report. Torna-ho a provar.';
 }

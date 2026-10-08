@@ -4,7 +4,9 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/comunicacion_model.dart';
+import '../services/auth_manager.dart';
 import '../services/comunicacion_service.dart';
+import '../widgets/reportar_mensaje_dialog.dart';
 
 class ComunicacionDetallePage extends StatefulWidget {
   final int comunicacionId;
@@ -57,7 +59,23 @@ class _ComunicacionDetallePageState extends State<ComunicacionDetallePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: _t.commDetailTitle)),
+      appBar: AppBar(
+        title: ClubAppBarTitle(titulo: _t.commDetailTitle),
+        actions: [
+          // Solo se pueden reportar mensajes de otras personas.
+          if (_comunicacion != null &&
+              _comunicacion!.usuarioAutorId !=
+                  AuthManager.usuarioActual?.usuarioId)
+            IconButton(
+              tooltip: _t.reportAction,
+              icon: const Icon(Icons.flag_outlined),
+              onPressed: () => mostrarDialogoReportarMensaje(
+                context,
+                comunicacionId: _comunicacion!.id,
+              ),
+            ),
+        ],
+      ),
       body: _construirContenido(),
     );
   }

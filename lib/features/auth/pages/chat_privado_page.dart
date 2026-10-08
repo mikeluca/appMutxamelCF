@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/mensaje_conversacion_model.dart';
 import '../services/comunicacion_service.dart';
+import '../widgets/reportar_mensaje_dialog.dart';
 
 class ChatPrivadoPage extends StatefulWidget {
   final int contraparteId;
@@ -164,9 +165,7 @@ class _ChatPrivadoPageState extends State<ChatPrivadoPage> {
       setState(() => _enviando = false);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString().replaceFirst('Exception: ', '')),
-        ),
+        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
       );
     }
   }
@@ -186,7 +185,10 @@ class _ChatPrivadoPageState extends State<ChatPrivadoPage> {
             if (widget.contraparteRol != null)
               Text(
                 widget.contraparteRol!,
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.normal,
+                ),
               ),
           ],
         ),
@@ -267,41 +269,69 @@ class _ChatPrivadoPageState extends State<ChatPrivadoPage> {
 
     return Align(
       alignment: esMia ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.75,
-        ),
-        decoration: BoxDecoration(
-          color: fondo,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16),
-            topRight: const Radius.circular(16),
-            bottomLeft: Radius.circular(esMia ? 16 : 4),
-            bottomRight: Radius.circular(esMia ? 4 : 16),
+      // Mantener pulsado un mensaje ajeno también permite reportarlo.
+      child: GestureDetector(
+        onLongPress: esMia ? null : () => _reportar(mensaje),
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.75,
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              mensaje.contenido
-                  .replaceAll(r'\r\n', '\n')
-                  .replaceAll(r'\n', '\n')
-                  .replaceAll(r'\r', '\n'),
-              style: TextStyle(color: colorTexto, fontSize: 15, height: 1.3),
+          decoration: BoxDecoration(
+            color: fondo,
+            borderRadius: BorderRadius.only(
+              topLeft: const Radius.circular(16),
+              topRight: const Radius.circular(16),
+              bottomLeft: Radius.circular(esMia ? 16 : 4),
+              bottomRight: Radius.circular(esMia ? 4 : 16),
             ),
-            const SizedBox(height: 4),
-            Text(
-              _formatearHora(mensaje.fecha),
-              style: TextStyle(color: colorFecha, fontSize: 11),
-            ),
-          ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                mensaje.contenido
+                    .replaceAll(r'\r\n', '\n')
+                    .replaceAll(r'\n', '\n')
+                    .replaceAll(r'\r', '\n'),
+                style: TextStyle(color: colorTexto, fontSize: 15, height: 1.3),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (!esMia)
+                    InkWell(
+                      onTap: () => _reportar(mensaje),
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Tooltip(
+                          message: _t.reportAction,
+                          child: Icon(
+                            Icons.flag_outlined,
+                            size: 16,
+                            color: colorFecha,
+                          ),
+                        ),
+                      ),
+                    ),
+                  Text(
+                    _formatearHora(mensaje.fecha),
+                    style: TextStyle(color: colorFecha, fontSize: 11),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> _reportar(MensajeConversacionModel mensaje) {
+    return mostrarDialogoReportarMensaje(context, comunicacionId: mensaje.id);
   }
 
   Widget _construirCajaEnvio() {

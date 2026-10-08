@@ -36,6 +36,19 @@ class AuthService {
     }
   }
 
+  /// Borra la cuenta del usuario autenticado (confirmando su contraseña).
+  ///
+  /// Lanza [ApiException] con `statusCode` 400 si la contraseña no es
+  /// correcta y 429 si hay demasiados intentos fallidos. Tras un borrado
+  /// correcto el llamador debe cerrar la sesión local.
+  static Future<void> eliminarCuenta({required String password}) async {
+    await ApiClient.delete(
+      '/app/auth/cuenta',
+      body: {'password': password},
+      autenticado: true,
+    );
+  }
+
   static Future<AuthUser> obtenerUsuarioActual() async {
     final data = await ApiClient.get('/app/auth/me', autenticado: true);
 

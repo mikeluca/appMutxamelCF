@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/config/app_preferences.dart';
+import '../../../core/network/api_client.dart';
 import '../../../core/notifications/services/push_notification_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/preferencias_notificacion_model.dart';
+import '../../../routing/app_routes.dart';
 import '../services/auth_manager.dart';
+import '../services/auth_service.dart';
 import '../services/preferencias_notificacion_service.dart';
 import 'acerca_de_page.dart';
 
@@ -117,9 +120,9 @@ class _AjustesPageState extends State<AjustesPage> {
         _cargandoPreferencias = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_t.settingsPreferencesLoadError)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_t.settingsPreferencesLoadError)));
     }
   }
 
@@ -168,9 +171,9 @@ class _AjustesPageState extends State<AjustesPage> {
         _preferencias = actuales;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_t.settingsPreferenceSaveError)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_t.settingsPreferenceSaveError)));
     } finally {
       if (mounted) {
         setState(() {
@@ -358,8 +361,46 @@ class _AjustesPageState extends State<AjustesPage> {
             ),
           ],
         ),
+
+        const SizedBox(height: 24),
+
+        _construirSeccion(
+          titulo: _t.settingsSectionAccount,
+          icono: Icons.manage_accounts_outlined,
+          children: [
+            _construirOpcion(
+              icono: Icons.delete_forever_outlined,
+              titulo: _t.settingsDeleteAccount,
+              subtitulo: _t.settingsDeleteAccountSubtitle,
+              colorIcono: _colors.error,
+              onTap: _eliminarCuenta,
+            ),
+          ],
+        ),
       ],
     );
+  }
+
+  /// Pide confirmación y contraseña, borra la cuenta en el backend y,
+  /// si todo va bien, cierra la sesión y vuelve al inicio.
+  Future<void> _eliminarCuenta() async {
+    final eliminada = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const _EliminarCuentaDialog(),
+    );
+
+    if (eliminada != true || !mounted) return;
+
+    final mensaje = _t.deleteAccountDone;
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    await AuthManager.cerrarSesion();
+
+    messenger.showSnackBar(SnackBar(content: Text(mensaje)));
+
+    navigator.pushNamedAndRemoveUntil(AppRoutes.public, (route) => false);
   }
 
   Widget _construirSeccion({
@@ -620,6 +661,7 @@ class _AjustesPageState extends State<AjustesPage> {
     required String titulo,
     required String subtitulo,
     required VoidCallback onTap,
+    Color? colorIcono,
   }) {
     return Material(
       color: _colors.surface,
@@ -638,7 +680,11 @@ class _AjustesPageState extends State<AjustesPage> {
                   color: AppColors.azul.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icono, color: _colors.primary, size: 24),
+                child: Icon(
+                  icono,
+                  color: colorIcono ?? _colors.primary,
+                  size: 24,
+                ),
               ),
 
               const SizedBox(width: 14),
@@ -674,6 +720,121 @@ class _AjustesPageState extends State<AjustesPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Diálogo de confirmación del borrado de cuenta: explica qué se borra,
+/// pide la contraseña y llama al backend. Se cierra con `true` solo si
+/// la cuenta se ha eliminado; los errores se muestran dentro del diálogo.
+class _EliminarCuentaDialog extends StatefulWidget {
+  const _EliminarCuentaDialog();
+
+  @override
+  State<_EliminarCuentaDialog> createState() => _EliminarCuentaDialogState();
+}
+
+class _EliminarCuentaDialogState extends State<_EliminarCuentaDialog> {
+  final TextEditingController _passwordController = TextEditingController();
+
+  bool _eliminando = false;
+  String? _error;
+
+  AppLocalizations get _t => AppLocalizations.of(context);
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _confirmar() async {
+    final password = _passwordController.text;
+
+    if (password.isEmpty) {
+      setState(() => _error = _t.deleteAccountPasswordRequired);
+      return;
+    }
+
+    setState(() {
+      _eliminando = true;
+      _error = null;
+    });
+
+    try {
+      await AuthService.eliminarCuenta(password: password);
+
+      if (!mounted) return;
+
+      Navigator.pop(context, true);
+    } on ApiException catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _eliminando = false;
+        _error = switch (e.statusCode) {
+          400 => _t.deleteAccountWrongPassword,
+          429 => _t.deleteAccountTooManyAttempts,
+          _ => _t.deleteAccountError,
+        };
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _eliminando = false;
+        _error = _t.deleteAccountError;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(_t.deleteAccountDialogTitle),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(_t.deleteAccountWarning),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              enabled: !_eliminando,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: _t.deleteAccountPasswordLabel,
+                border: const OutlineInputBorder(),
+                errorText: _error,
+                errorMaxLines: 3,
+              ),
+              onSubmitted: (_) => _confirmar(),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _eliminando ? null : () => Navigator.pop(context, false),
+          child: Text(_t.cancel),
+        ),
+        FilledButton(
+          onPressed: _eliminando ? null : _confirmar,
+          style: FilledButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.error,
+            foregroundColor: Theme.of(context).colorScheme.onError,
+          ),
+          child: _eliminando
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(_t.deleteAccountConfirm),
+        ),
+      ],
     );
   }
 }

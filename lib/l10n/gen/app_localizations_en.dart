@@ -1502,4 +1502,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get matchEditResultTooltip => 'Edit result';
+
+  @override
+  String get settingsSectionAccount => 'Account';
+
+  @override
+  String get settingsDeleteAccount => 'Delete my account';
+
+  @override
+  String get settingsDeleteAccountSubtitle =>
+      'Deletes your account and personal data';
+
+  @override
+  String get deleteAccountDialogTitle => 'Delete your account?';
+
+  @override
+  String get deleteAccountWarning =>
+      'Your email, password, club access, devices and notifications will be deleted. Club records (player, family member or coaching staff) are kept, and messages you sent will be kept without your name. This cannot be undone.';
+
+  @override
+  String get deleteAccountPasswordLabel => 'Enter your password to confirm';
+
+  @override
+  String get deleteAccountPasswordRequired => 'Enter your password';
+
+  @override
+  String get deleteAccountConfirm => 'Delete account';
+
+  @override
+  String get deleteAccountWrongPassword => 'The password is incorrect.';
+
+  @override
+  String get deleteAccountTooManyAttempts =>
+      'Too many failed attempts. Try again in a few minutes.';
+
+  @override
+  String get deleteAccountError =>
+      'The account could not be deleted. Please try again.';
+
+  @override
+  String get deleteAccountDone => 'Your account has been deleted.';
+
+  @override
+  String get reportAction => 'Report';
+
+  @override
+  String get reportDialogTitle => 'Report message';
+
+  @override
+  String get reportDialogBody =>
+      'The club will be notified so they can review this message. You can add a reason (optional).';
+
+  @override
+  String get reportReasonHint => 'Reason (optional)';
+
+  @override
+  String get reportSend => 'Send report';
+
+  @override
+  String get reportSent => 'Report sent. The club will review it.';
+
+  @override
+  String get reportError => 'The report could not be sent. Please try again.';
 }

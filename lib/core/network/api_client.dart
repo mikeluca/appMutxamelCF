@@ -28,9 +28,7 @@ enum _HttpMethod { get, post, put, delete }
 class ApiClient {
   ApiClient._();
 
-  static const Map<String, String> jsonHeaders = {
-    'Accept': 'application/json',
-  };
+  static const Map<String, String> jsonHeaders = {'Accept': 'application/json'};
 
   static String get baseUrl => AppConfig.apiBaseUrl;
 
@@ -45,7 +43,12 @@ class ApiClient {
     Object? body,
     bool autenticado = false,
   }) {
-    return _enviar(_HttpMethod.post, path, body: body, autenticado: autenticado);
+    return _enviar(
+      _HttpMethod.post,
+      path,
+      body: body,
+      autenticado: autenticado,
+    );
   }
 
   static Future<dynamic> put(
@@ -56,8 +59,17 @@ class ApiClient {
     return _enviar(_HttpMethod.put, path, body: body, autenticado: autenticado);
   }
 
-  static Future<dynamic> delete(String path, {bool autenticado = false}) {
-    return _enviar(_HttpMethod.delete, path, autenticado: autenticado);
+  static Future<dynamic> delete(
+    String path, {
+    Object? body,
+    bool autenticado = false,
+  }) {
+    return _enviar(
+      _HttpMethod.delete,
+      path,
+      body: body,
+      autenticado: autenticado,
+    );
   }
 
   static Future<dynamic> _enviar(
@@ -103,8 +115,9 @@ class ApiClient {
               .timeout(_timeout);
           break;
         case _HttpMethod.delete:
-          response =
-              await http.delete(uri, headers: headers).timeout(_timeout);
+          response = await http
+              .delete(uri, headers: headers, body: bodyJson)
+              .timeout(_timeout);
           break;
       }
     } on TimeoutException {
@@ -128,7 +141,8 @@ class ApiClient {
       }
 
       throw ApiException(
-        _extraerMensaje(response.body) ?? 'La sesión ha caducado o no es válida.',
+        _extraerMensaje(response.body) ??
+            'La sesión ha caducado o no es válida.',
         statusCode: 401,
       );
     }
@@ -175,8 +189,8 @@ class ApiClient {
 
         // Errores de validación del backend: {"campo": "mensaje", ...}.
         final valoresTexto = decoded.values.whereType<String>().where(
-              (valor) => valor.trim().isNotEmpty,
-            );
+          (valor) => valor.trim().isNotEmpty,
+        );
 
         if (valoresTexto.isNotEmpty) {
           return valoresTexto.join('\n');

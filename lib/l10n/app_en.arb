@@ -578,5 +578,25 @@
   },
   "matchResultLoadError": "The match data could not be loaded.",
   "matchEnterResultTooltip": "Enter result",
-  "matchEditResultTooltip": "Edit result"
+  "matchEditResultTooltip": "Edit result",
+  "settingsSectionAccount": "Account",
+  "settingsDeleteAccount": "Delete my account",
+  "settingsDeleteAccountSubtitle": "Deletes your account and personal data",
+  "deleteAccountDialogTitle": "Delete your account?",
+  "deleteAccountWarning": "Your email, password, club access, devices and notifications will be deleted. Club records (player, family member or coaching staff) are kept, and messages you sent will be kept without your name. This cannot be undone.",
+  "deleteAccountPasswordLabel": "Enter your password to confirm",
+  "deleteAccountPasswordRequired": "Enter your password",
+  "deleteAccountConfirm": "Delete account",
+  "deleteAccountWrongPassword": "The password is incorrect.",
+  "deleteAccountTooManyAttempts": "Too many failed attempts. Try again in a few minutes.",
+  "deleteAccountError": "The account could not be deleted. Please try again.",
+  "deleteAccountDone": "Your account has been deleted.",
+  "reportAction": "Report",
+  "reportDialogTitle": "Report message",
+  "reportDialogBody": "The club will be notified so they can review this message. You can add a reason (optional).",
+  "reportReasonHint": "Reason (optional)",
+  "reportSend": "Send report",
+  "reportSent": "Report sent. The club will review it.",
+  "reportError": "The report could not be sent. Please try again."
+
 }
