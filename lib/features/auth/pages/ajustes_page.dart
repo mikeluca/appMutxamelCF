@@ -396,7 +396,10 @@ class _AjustesPageState extends State<AjustesPage> {
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
 
-    await AuthManager.cerrarSesion();
+    // La cuenta ya no existe en el backend: no se intenta desregistrar el
+    // dispositivo con un token inválido, solo se limpia lo local.
+    await PushNotificationService.borrarTokenFcmLocal();
+    await AuthManager.cerrarSesion(desregistrarDispositivo: false);
 
     messenger.showSnackBar(SnackBar(content: Text(mensaje)));
 

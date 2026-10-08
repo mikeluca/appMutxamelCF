@@ -171,6 +171,17 @@ class PushNotificationService {
     }
   }
 
+  /// Borra solo el token FCM de este dispositivo, sin avisar al backend.
+  /// Se usa tras eliminar la cuenta: el backend ya ha borrado el
+  /// dispositivo y el token de sesión ya no es válido.
+  static Future<void> borrarTokenFcmLocal() async {
+    try {
+      await _messaging.deleteToken();
+    } catch (e) {
+      debugPrint('ERROR AL BORRAR EL TOKEN FCM LOCAL: $e');
+    }
+  }
+
   /// SEC-07: se llama al cerrar sesión, antes de borrar el token de
   /// sesión guardado, para que un móvil compartido (varios hijos, tablet
   /// del club) deje de recibir las notificaciones push del usuario que
