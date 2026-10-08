@@ -948,6 +948,22 @@ class AppLocalizationsCa extends AppLocalizations {
   String get createFirstTrainingHint => 'Crea el primer prement el botó Nou.';
 
   @override
+  String get trainingsNextBadge => 'PRÒXIM ENTRENAMENT';
+
+  @override
+  String get noUpcomingTrainings =>
+      'No hi ha entrenaments en les pròximes dues setmanes.';
+
+  @override
+  String get pastTrainingsButton => 'Entrenaments passats';
+
+  @override
+  String get pastTrainingsTitle => 'Entrenaments passats';
+
+  @override
+  String get noPastTrainings => 'Encara no hi ha entrenaments anteriors.';
+
+  @override
   String get trainingsLoadError => 'No s\'han pogut carregar els entrenaments.';
 
   @override

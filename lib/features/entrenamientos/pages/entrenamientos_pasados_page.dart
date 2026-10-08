@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'entrenamiento_form_page.dart';
-import 'entrenamientos_pasados_page.dart';
 
 import '../../../core/utils/backend_date.dart';
 import '../../auth/models/perfil_app.dart';
@@ -10,20 +9,19 @@ import '../widgets/entrenamiento_card.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 
-/// Entrenamientos del equipo: solo los de las próximas dos semanas, con el
-/// próximo destacado. Los anteriores están en [EntrenamientosPasadosPage].
-class EntrenamientosPage extends StatefulWidget {
+/// Todos los entrenamientos anteriores a hoy del equipo, del más cercano al
+/// más lejano, para consultar y modificar su asistencia.
+class EntrenamientosPasadosPage extends StatefulWidget {
   final PerfilEquipo equipo;
 
-  const EntrenamientosPage({super.key, required this.equipo});
+  const EntrenamientosPasadosPage({super.key, required this.equipo});
 
   @override
-  State<EntrenamientosPage> createState() => _EntrenamientosPageState();
+  State<EntrenamientosPasadosPage> createState() =>
+      _EntrenamientosPasadosPageState();
 }
 
-class _EntrenamientosPageState extends State<EntrenamientosPage> {
-  static const int _diasVentana = 14;
-
+class _EntrenamientosPasadosPageState extends State<EntrenamientosPasadosPage> {
   final EntrenamientoService _service = EntrenamientoService();
 
   late Future<List<EntrenamientoModel>> _futureEntrenamientos;
@@ -39,19 +37,18 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
 
   void _cargar() {
     final ahora = DateTime.now();
-    final hoy = DateTime(ahora.year, ahora.month, ahora.day);
+    final ayer = DateTime(
+      ahora.year,
+      ahora.month,
+      ahora.day,
+    ).subtract(const Duration(days: 1));
 
     _futureEntrenamientos = _service
-        .obtenerPorEquipo(
-          widget.equipo.id,
-          desde: hoy,
-          hasta: hoy.add(const Duration(days: _diasVentana)),
-        )
-        .then(_ordenarDelMasProximoAlMasLejano);
+        .obtenerPorEquipo(widget.equipo.id, hasta: ayer)
+        .then(_ordenarDelMasRecienteAlMasAntiguo);
   }
 
-  /// El primero de la lista es el próximo entrenamiento.
-  List<EntrenamientoModel> _ordenarDelMasProximoAlMasLejano(
+  List<EntrenamientoModel> _ordenarDelMasRecienteAlMasAntiguo(
     List<EntrenamientoModel> entrenamientos,
   ) {
     final ordenados = [...entrenamientos];
@@ -62,7 +59,7 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
 
       if (fechaA == null || fechaB == null) return 0;
 
-      return fechaA.compareTo(fechaB);
+      return fechaB.compareTo(fechaA);
     });
 
     return ordenados;
@@ -73,7 +70,7 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
     await _futureEntrenamientos;
   }
 
-  Future<void> _abrirFormulario({EntrenamientoModel? entrenamiento}) async {
+  Future<void> _abrir(EntrenamientoModel entrenamiento) async {
     final resultado = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -89,30 +86,10 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
     }
   }
 
-  Future<void> _abrirPasados() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => EntrenamientosPasadosPage(equipo: widget.equipo),
-      ),
-    );
-
-    // La asistencia o el alta de un entrenamiento de hoy pueden haber
-    // cambiado desde la pantalla de pasados.
-    if (mounted) {
-      _recargar();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: _t.trainingsTitle)),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _abrirFormulario(),
-        icon: const Icon(Icons.add),
-        label: Text(_t.newMasculineButton),
-      ),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: _t.pastTrainingsTitle)),
       body: RefreshIndicator(
         onRefresh: _recargar,
         child: FutureBuilder<List<EntrenamientoModel>>(
@@ -128,25 +105,19 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
 
             final entrenamientos = snapshot.data ?? [];
 
-            return ListView(
+            if (entrenamientos.isEmpty) {
+              return _construirVacio();
+            }
+
+            return ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(16, 20, 16, 100),
-              children: [
-                _construirBotonPasados(),
-                const SizedBox(height: 16),
-                if (entrenamientos.isEmpty)
-                  _construirVacio()
-                else
-                  for (var i = 0; i < entrenamientos.length; i++) ...[
-                    if (i > 0) const SizedBox(height: 12),
-                    EntrenamientoCard(
-                      entrenamiento: entrenamientos[i],
-                      destacado: i == 0,
-                      onTap: () =>
-                          _abrirFormulario(entrenamiento: entrenamientos[i]),
-                    ),
-                  ],
-              ],
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+              itemCount: entrenamientos.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
+              itemBuilder: (context, index) => EntrenamientoCard(
+                entrenamiento: entrenamientos[index],
+                onTap: () => _abrir(entrenamientos[index]),
+              ),
             );
           },
         ),
@@ -154,26 +125,16 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
     );
   }
 
-  Widget _construirBotonPasados() {
-    return OutlinedButton.icon(
-      onPressed: _abrirPasados,
-      icon: const Icon(Icons.history),
-      label: Text(_t.pastTrainingsButton),
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      ),
-    );
-  }
-
   Widget _construirVacio() {
-    return Column(
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(24),
       children: [
-        const SizedBox(height: 60),
-        Icon(Icons.fact_check_outlined, size: 64, color: _colors.primary),
+        const SizedBox(height: 90),
+        Icon(Icons.history, size: 64, color: _colors.primary),
         const SizedBox(height: 20),
         Text(
-          _t.noUpcomingTrainings,
+          _t.noPastTrainings,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 18,
@@ -211,9 +172,7 @@ class _EntrenamientosPageState extends State<EntrenamientosPage> {
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-              onPressed: () {
-                setState(_cargar);
-              },
+              onPressed: () => setState(_cargar),
               icon: const Icon(Icons.refresh),
               label: Text(_t.retry),
             ),

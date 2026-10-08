@@ -954,6 +954,22 @@ class AppLocalizationsEs extends AppLocalizations {
       'Crea el primero pulsando el botón Nuevo.';
 
   @override
+  String get trainingsNextBadge => 'PRÓXIMO ENTRENAMIENTO';
+
+  @override
+  String get noUpcomingTrainings =>
+      'No hay entrenamientos en las próximas dos semanas.';
+
+  @override
+  String get pastTrainingsButton => 'Entrenamientos pasados';
+
+  @override
+  String get pastTrainingsTitle => 'Entrenamientos pasados';
+
+  @override
+  String get noPastTrainings => 'Todavía no hay entrenamientos anteriores.';
+
+  @override
   String get trainingsLoadError =>
       'No se han podido cargar los entrenamientos.';
 

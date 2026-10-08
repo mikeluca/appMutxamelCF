@@ -1816,6 +1816,36 @@ abstract class AppLocalizations {
   /// **'Crea el primero pulsando el botón Nuevo.'**
   String get createFirstTrainingHint;
 
+  /// No description provided for @trainingsNextBadge.
+  ///
+  /// In es, this message translates to:
+  /// **'PRÓXIMO ENTRENAMIENTO'**
+  String get trainingsNextBadge;
+
+  /// No description provided for @noUpcomingTrainings.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay entrenamientos en las próximas dos semanas.'**
+  String get noUpcomingTrainings;
+
+  /// No description provided for @pastTrainingsButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Entrenamientos pasados'**
+  String get pastTrainingsButton;
+
+  /// No description provided for @pastTrainingsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Entrenamientos pasados'**
+  String get pastTrainingsTitle;
+
+  /// No description provided for @noPastTrainings.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay entrenamientos anteriores.'**
+  String get noPastTrainings;
+
   /// No description provided for @trainingsLoadError.
   ///
   /// In es, this message translates to:
