@@ -53,3 +53,10 @@ flutter_launcher_icons:
   image_path: "assets/images/escudo_icon.png"
   min_sdk_android: 21
   remove_alpha_ios: true
+  
+flutter_native_splash:
+  color: "#1976B8"
+  image: assets/images/escudo.png
+  android_12:
+    color: "#1976B8"
+    image: assets/images/escudo_splash_android12.png
