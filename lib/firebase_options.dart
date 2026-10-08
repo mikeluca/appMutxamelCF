@@ -60,13 +60,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDRd0X_qpy2eQSv56scyxVxmtccS8JcETc',
-    appId: '1:824756150035:ios:4d6fc2a6c9449939c404e6',
+    appId: '1:824756150035:ios:eb50431957760743c404e6',
     messagingSenderId: '824756150035',
     projectId: 'mutxamelcf-4b1dd',
     storageBucket: 'mutxamelcf-4b1dd.firebasestorage.app',
-    iosBundleId: 'com.example.appmtx',
+    iosBundleId: 'com.mutxamelcf.app',
   );
-
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDRd0X_qpy2eQSv56scyxVxmtccS8JcETc',
     appId: '1:824756150035:ios:4d6fc2a6c9449939c404e6',
