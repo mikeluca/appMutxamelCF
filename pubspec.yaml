@@ -2,7 +2,7 @@ name: app_mutxamel_cf
 description: Aplicación móvil oficial del Mutxamel Club de Fútbol.
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.10.0
@@ -36,6 +36,7 @@ dev_dependencies:
   # por el fake en memoria que el propio paquete distribuye
   # (package:flutter_secure_storage/test/test_flutter_secure_storage_platform.dart).
   flutter_secure_storage_platform_interface: ^1.1.2
+  flutter_native_splash: ^2.4.8
 
 flutter:
   uses-material-design: true
