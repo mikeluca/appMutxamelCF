@@ -571,6 +571,7 @@
   "matchResultFormTitle": "Resultat del partit",
   "matchResultGoalsForLabel": "Gols a favor",
   "matchResultGoalsAgainstLabel": "Gols en contra",
+  "matchResultGoalsHelp": "Gols del Mutxamel – gols del rival",
   "matchResultPlayersTitle": "Estadístiques per jugador",
   "matchResultGoalsShort": "Gols",
   "matchResultAssistsShort": "Assist.",

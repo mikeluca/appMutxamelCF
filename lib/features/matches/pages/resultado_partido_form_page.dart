@@ -339,6 +339,11 @@ class _ResultadoPartidoFormPageState extends State<ResultadoPartidoFormPage> {
                 ),
               ],
             ),
+            const SizedBox(height: 8),
+            Text(
+              _t.matchResultGoalsHelp,
+              style: TextStyle(fontSize: 12, color: _colors.onSurfaceVariant),
+            ),
           ],
         ),
       ),

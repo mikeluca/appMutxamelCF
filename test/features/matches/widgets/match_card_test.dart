@@ -45,4 +45,38 @@ void main() {
 
     expect(izquierda, lessThan(derecha));
   });
+
+  testWidgets('visitante con resultado 1-2 muestra Pego a la izquierda y 2-1', (tester) async {
+    await _pintar(
+      tester,
+      const MatchModel(
+        categoria: 'Primer Equipo',
+        equipo: 'Primer Equipo',
+        rival: 'Pego C.F.',
+        resultado: '1-2',
+        local: false,
+      ),
+    );
+
+    expect(find.text('2-1'), findsOneWidget);
+    expect(find.text('1-2'), findsNothing);
+    expect(
+      tester.getCenter(find.text('Pego C.F.')).dx,
+      lessThan(tester.getCenter(find.text('Primer Equipo')).dx),
+    );
+  });
+
+  testWidgets('local con resultado 2-1 se muestra tal cual', (tester) async {
+    await _pintar(
+      tester,
+      const MatchModel(
+        categoria: 'Primer Equipo',
+        equipo: 'Primer Equipo',
+        rival: 'Pego C.F.',
+        resultado: '2-1',
+      ),
+    );
+
+    expect(find.text('2-1'), findsOneWidget);
+  });
 }

@@ -1496,6 +1496,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get matchResultGoalsAgainstLabel => 'Gols en contra';
 
   @override
+  String get matchResultGoalsHelp => 'Gols del Mutxamel – gols del rival';
+
+  @override
   String get matchResultPlayersTitle => 'Estadístiques per jugador';
 
   @override

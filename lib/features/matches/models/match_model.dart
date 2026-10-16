@@ -1,3 +1,5 @@
+import '../../../core/utils/marcador.dart' as marcador;
+
 class MatchModel {
   final int? id;
   final int? equipoId;
@@ -89,6 +91,11 @@ class MatchModel {
   bool get esProximoPartido {
     return resultado == null && rival.trim().toUpperCase() != 'DESCANSA';
   }
+
+  /// Resultado para mostrarlo con los equipos en orden local | visitante
+  /// (el guardado es siempre "goles Mutxamel-goles rival").
+  String? get marcadorLocalVisitante =>
+      marcador.marcadorLocalVisitante(resultado, local: local);
 
   bool get estaJugado {
     return resultado != null && resultado!.trim().isNotEmpty;

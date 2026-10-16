@@ -571,6 +571,7 @@
   "matchResultFormTitle": "Match result",
   "matchResultGoalsForLabel": "Goals for",
   "matchResultGoalsAgainstLabel": "Goals against",
+  "matchResultGoalsHelp": "Mutxamel goals – opponent goals",
   "matchResultPlayersTitle": "Player statistics",
   "matchResultGoalsShort": "Goals",
   "matchResultAssistsShort": "Assists",

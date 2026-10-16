@@ -188,7 +188,7 @@ class MatchCard extends StatelessWidget {
                     ),
 
                     Text(
-                      match.resultado ?? '-',
+                      match.marcadorLocalVisitante ?? '-',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,

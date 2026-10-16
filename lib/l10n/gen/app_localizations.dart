@@ -2824,6 +2824,12 @@ abstract class AppLocalizations {
   /// **'Goles en contra'**
   String get matchResultGoalsAgainstLabel;
 
+  /// No description provided for @matchResultGoalsHelp.
+  ///
+  /// In es, this message translates to:
+  /// **'Goles del Mutxamel – goles del rival'**
+  String get matchResultGoalsHelp;
+
   /// No description provided for @matchResultPlayersTitle.
   ///
   /// In es, this message translates to:
