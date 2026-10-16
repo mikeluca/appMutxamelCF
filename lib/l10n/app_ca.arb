@@ -28,6 +28,7 @@
   "matchNoMatchFirstTeam": "SENSE PARTIT PRIMER EQUIP",
   "matchNoMatchThisRound": "No hi ha partit esta jornada",
   "matchTeamHasNoMatch": "No té partit",
+  "matchTeamRests": "Descansa",
 
   "matchesCalendarTitle": "CALENDARI",
   "matchesCalendarSubtitle": "Partits i resultats dels nostres equips",

@@ -82,6 +82,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get matchTeamHasNoMatch => 'No té partit';
 
   @override
+  String get matchTeamRests => 'Descansa';
+
+  @override
   String get matchesCalendarTitle => 'CALENDARI';
 
   @override

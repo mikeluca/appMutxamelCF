@@ -213,9 +213,11 @@ class MatchCard extends StatelessWidget {
     final descansaExplicitamente =
         match.rival.trim().toUpperCase() == 'DESCANSA';
 
-    final textoCuerpo = descansaExplicitamente
-        ? t.matchNoMatchThisRound
-        : t.matchTeamHasNoMatch;
+    final textoCuerpo = match.descansa
+        ? t.matchTeamRests
+        : descansaExplicitamente
+            ? t.matchNoMatchThisRound
+            : t.matchTeamHasNoMatch;
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -242,12 +244,19 @@ class MatchCard extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                Image.asset(
-                  'assets/images/escudo.png',
-                  width: 70,
-                  height: 85,
-                  fit: BoxFit.contain,
-                ),
+                if (match.descansa)
+                  const Icon(
+                    Icons.bedtime_outlined,
+                    size: 70,
+                    color: AppColors.azulOscuro,
+                  )
+                else
+                  Image.asset(
+                    'assets/images/escudo.png',
+                    width: 70,
+                    height: 85,
+                    fit: BoxFit.contain,
+                  ),
 
                 const SizedBox(height: 10),
 

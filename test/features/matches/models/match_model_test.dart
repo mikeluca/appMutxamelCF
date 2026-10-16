@@ -124,6 +124,30 @@ void main() {
       expect(partido.estaDescansando, isTrue);
       expect(partido.esProximoPartido, isFalse);
     });
+
+    test('descansa: true marca descanso aunque el rival sea el último jugado', () {
+      final partido = MatchModel.fromJson({
+        'categoria': 'Senior',
+        'equipo': 'Senior A',
+        'rival': 'Rival CF',
+        'resultado': '2-1',
+        'descansa': true,
+      });
+
+      expect(partido.descansa, isTrue);
+      expect(partido.estaDescansando, isTrue);
+    });
+
+    test('sin el campo descansa (backend antiguo) se mantiene el comportamiento', () {
+      final partido = MatchModel.fromJson({
+        'categoria': 'Senior',
+        'equipo': 'Senior A',
+        'rival': 'Rival CF',
+      });
+
+      expect(partido.descansa, isFalse);
+      expect(partido.estaDescansando, isFalse);
+    });
   });
 
   group('MatchModel.esPartidoPasado', () {

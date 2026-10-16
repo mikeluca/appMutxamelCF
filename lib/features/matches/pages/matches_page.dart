@@ -353,9 +353,11 @@ class _MatchCard extends StatelessWidget {
 
     final t = AppLocalizations.of(context);
 
-    final texto = descansaExplicitamente
-        ? t.matchesRestsThisRound
-        : t.matchTeamHasNoMatch;
+    final texto = partido.descansa
+        ? t.matchTeamRests
+        : descansaExplicitamente
+            ? t.matchesRestsThisRound
+            : t.matchTeamHasNoMatch;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -364,8 +366,10 @@ class _MatchCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            const Icon(
-              Icons.free_breakfast_outlined,
+            Icon(
+              partido.descansa
+                  ? Icons.bedtime_outlined
+                  : Icons.free_breakfast_outlined,
               color: AppColors.azulOscuro,
               size: 32,
             ),

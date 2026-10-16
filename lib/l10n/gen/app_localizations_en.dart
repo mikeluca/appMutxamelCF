@@ -82,6 +82,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get matchTeamHasNoMatch => 'Has no match';
 
   @override
+  String get matchTeamRests => 'Rest week';
+
+  @override
   String get matchesCalendarTitle => 'CALENDAR';
 
   @override

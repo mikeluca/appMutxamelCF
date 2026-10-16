@@ -21,6 +21,11 @@ class MatchModel {
   /// convocado").
   final bool? convocado;
 
+  /// El backend marca `descansa: true` cuando el equipo tiene un descanso
+  /// registrado este fin de semana y ningún partido. Ausente en backends
+  /// antiguos: se asume false y se mantiene el comportamiento anterior.
+  final bool descansa;
+
   const MatchModel({
     this.id,
     this.equipoId,
@@ -37,6 +42,7 @@ class MatchModel {
     this.golesFavor,
     this.golesContra,
     this.convocado,
+    this.descansa = false,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -58,6 +64,7 @@ class MatchModel {
       golesFavor: json['golesFavor'] as int?,
       golesContra: json['golesContra'] as int?,
       convocado: json['convocado'] as bool?,
+      descansa: json['descansa'] as bool? ?? false,
     );
   }
 
@@ -84,7 +91,9 @@ class MatchModel {
   bool get estaDescansando {
     final rivalNormalizado = rival.trim().toUpperCase();
 
-    return rivalNormalizado.isEmpty || rivalNormalizado == 'DESCANSA';
+    return descansa ||
+        rivalNormalizado.isEmpty ||
+        rivalNormalizado == 'DESCANSA';
   }
 
   /// Indica si la fecha y hora del partido ya han pasado, con el mismo

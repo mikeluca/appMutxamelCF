@@ -244,6 +244,12 @@ abstract class AppLocalizations {
   /// **'No tiene partido'**
   String get matchTeamHasNoMatch;
 
+  /// No description provided for @matchTeamRests.
+  ///
+  /// In es, this message translates to:
+  /// **'Descansa'**
+  String get matchTeamRests;
+
   /// No description provided for @matchesCalendarTitle.
   ///
   /// In es, this message translates to:

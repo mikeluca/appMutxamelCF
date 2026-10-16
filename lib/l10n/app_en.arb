@@ -28,6 +28,7 @@
   "matchNoMatchFirstTeam": "NO MATCH FIRST TEAM",
   "matchNoMatchThisRound": "No match this matchday",
   "matchTeamHasNoMatch": "Has no match",
+  "matchTeamRests": "Rest week",
 
   "matchesCalendarTitle": "CALENDAR",
   "matchesCalendarSubtitle": "Matches and results of our teams",

@@ -28,6 +28,7 @@
   "matchNoMatchFirstTeam": "SIN PARTIDO PRIMER EQUIPO",
   "matchNoMatchThisRound": "No hay partido esta jornada",
   "matchTeamHasNoMatch": "No tiene partido",
+  "matchTeamRests": "Descansa",
 
   "matchesCalendarTitle": "CALENDARIO",
   "matchesCalendarSubtitle": "Partidos y resultados de nuestros equipos",
