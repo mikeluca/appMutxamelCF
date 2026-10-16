@@ -26,6 +26,10 @@ class MatchModel {
   /// antiguos: se asume false y se mantiene el comportamiento anterior.
   final bool descansa;
 
+  /// true si el Mutxamel juega de local (se pinta a la izquierda). Ausente
+  /// en backends antiguos: se asume local, como se mostraba hasta ahora.
+  final bool local;
+
   const MatchModel({
     this.id,
     this.equipoId,
@@ -43,6 +47,7 @@ class MatchModel {
     this.golesContra,
     this.convocado,
     this.descansa = false,
+    this.local = true,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -65,6 +70,7 @@ class MatchModel {
       golesContra: json['golesContra'] as int?,
       convocado: json['convocado'] as bool?,
       descansa: json['descansa'] as bool? ?? false,
+      local: json['local'] as bool? ?? true,
     );
   }
 

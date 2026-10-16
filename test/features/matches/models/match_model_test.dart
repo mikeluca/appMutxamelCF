@@ -138,6 +138,23 @@ void main() {
       expect(partido.estaDescansando, isTrue);
     });
 
+    test('local: false se lee del JSON y por defecto es true', () {
+      final visitante = MatchModel.fromJson({
+        'categoria': 'Senior',
+        'equipo': 'Senior A',
+        'rival': 'Rival CF',
+        'local': false,
+      });
+      final sinCampo = MatchModel.fromJson({
+        'categoria': 'Senior',
+        'equipo': 'Senior A',
+        'rival': 'Rival CF',
+      });
+
+      expect(visitante.local, isFalse);
+      expect(sinCampo.local, isTrue);
+    });
+
     test('sin el campo descansa (backend antiguo) se mantiene el comportamiento', () {
       final partido = MatchModel.fromJson({
         'categoria': 'Senior',

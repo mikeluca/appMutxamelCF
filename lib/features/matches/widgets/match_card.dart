@@ -118,7 +118,11 @@ class MatchCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildTeam(context, match.equipo, isHomeTeam: true),
+                    _buildTeam(
+                      context,
+                      match.local ? match.equipo : match.rival,
+                      isHomeTeam: match.local,
+                    ),
 
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -132,7 +136,11 @@ class MatchCard extends StatelessWidget {
                       ),
                     ),
 
-                    _buildTeam(context, match.rival, isHomeTeam: false),
+                    _buildTeam(
+                      context,
+                      match.local ? match.rival : match.equipo,
+                      isHomeTeam: !match.local,
+                    ),
                   ],
                 ),
 
@@ -173,7 +181,11 @@ class MatchCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildTeam(context, match.equipo, isHomeTeam: true),
+                    _buildTeam(
+                      context,
+                      match.local ? match.equipo : match.rival,
+                      isHomeTeam: match.local,
+                    ),
 
                     Text(
                       match.resultado ?? '-',
@@ -184,7 +196,11 @@ class MatchCard extends StatelessWidget {
                       ),
                     ),
 
-                    _buildTeam(context, match.rival, isHomeTeam: false),
+                    _buildTeam(
+                      context,
+                      match.local ? match.rival : match.equipo,
+                      isHomeTeam: !match.local,
+                    ),
                   ],
                 ),
 
