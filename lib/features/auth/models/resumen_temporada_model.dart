@@ -1,0 +1,83 @@
+/// Resumen de la temporada activa de un jugador
+/// (GET /api/app/jugadores/{id}/resumen-temporada).
+class ResumenTemporadaModel {
+  /// Nombre de la temporada activa; null si no hay ninguna.
+  final String? temporada;
+
+  final int convocado;
+  final int goles;
+  final int asistencias;
+  final int amarillas;
+  final int rojas;
+
+  final int entrenamientosTotal;
+  final int entrenamientosAsistidos;
+  final int faltas;
+  final int justificadas;
+
+  /// Porcentaje de asistencia (0-100); null si todavía no hay entrenamientos.
+  final int? porcentaje;
+
+  final int convocatoriasVa;
+  final int convocatoriasNoPuede;
+  final int convocatoriasSinResponder;
+
+  const ResumenTemporadaModel({
+    this.temporada,
+    this.convocado = 0,
+    this.goles = 0,
+    this.asistencias = 0,
+    this.amarillas = 0,
+    this.rojas = 0,
+    this.entrenamientosTotal = 0,
+    this.entrenamientosAsistidos = 0,
+    this.faltas = 0,
+    this.justificadas = 0,
+    this.porcentaje,
+    this.convocatoriasVa = 0,
+    this.convocatoriasNoPuede = 0,
+    this.convocatoriasSinResponder = 0,
+  });
+
+  factory ResumenTemporadaModel.fromJson(Map<String, dynamic> json) {
+    final temporada = json['temporada'] as Map<String, dynamic>?;
+    final partidos = json['partidos'] as Map<String, dynamic>? ?? const {};
+    final entrenamientos =
+        json['entrenamientos'] as Map<String, dynamic>? ?? const {};
+    final convocatorias =
+        json['convocatorias'] as Map<String, dynamic>? ?? const {};
+
+    int entero(Map<String, dynamic> mapa, String clave) =>
+        (mapa[clave] as num?)?.toInt() ?? 0;
+
+    return ResumenTemporadaModel(
+      temporada: temporada?['nombre'] as String?,
+      convocado: entero(partidos, 'convocado'),
+      goles: entero(partidos, 'goles'),
+      asistencias: entero(partidos, 'asistencias'),
+      amarillas: entero(partidos, 'amarillas'),
+      rojas: entero(partidos, 'rojas'),
+      entrenamientosTotal: entero(entrenamientos, 'total'),
+      entrenamientosAsistidos: entero(entrenamientos, 'asistidos'),
+      faltas: entero(entrenamientos, 'faltas'),
+      justificadas: entero(entrenamientos, 'justificadas'),
+      porcentaje: (entrenamientos['porcentaje'] as num?)?.toInt(),
+      convocatoriasVa: entero(convocatorias, 'va'),
+      convocatoriasNoPuede: entero(convocatorias, 'noPuede'),
+      convocatoriasSinResponder: entero(convocatorias, 'sinResponder'),
+    );
+  }
+
+  /// Hay algo que enseñar: temporada activa y al menos un dato.
+  bool get hayDatos =>
+      temporada != null &&
+      (convocado > 0 ||
+          goles > 0 ||
+          asistencias > 0 ||
+          amarillas > 0 ||
+          rojas > 0 ||
+          entrenamientosTotal > 0 ||
+          convocatoriasVa > 0 ||
+          convocatoriasNoPuede > 0 ||
+          convocatoriasSinResponder > 0);
+}

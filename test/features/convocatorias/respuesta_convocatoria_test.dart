@@ -1,6 +1,8 @@
 import 'package:app_mutxamel_cf/core/notifications/utils/convocatoria_notificacion.dart';
 import 'package:app_mutxamel_cf/features/auth/models/auth_user.dart';
 import 'package:app_mutxamel_cf/features/auth/models/perfil_app.dart';
+import 'package:app_mutxamel_cf/features/auth/models/resumen_temporada_model.dart';
+import 'package:app_mutxamel_cf/features/auth/services/resumen_temporada_service.dart';
 import 'package:app_mutxamel_cf/features/auth/pages/club_page.dart';
 import 'package:app_mutxamel_cf/features/auth/pages/mis_jugadores_page.dart';
 import 'package:app_mutxamel_cf/features/auth/services/auth_manager.dart';
@@ -504,6 +506,7 @@ void main() {
             soloMiFicha: true,
             cargarPerfil: () async => perfil(['JUGADOR']),
             teamService: _FakeTeamService([_jugador(100, 'Pablo')]),
+            resumenService: _SinResumen(),
           ),
         );
 
@@ -521,6 +524,7 @@ void main() {
         MisJugadoresPage(
           cargarPerfil: () async => perfil(['FAMILIAR']),
           teamService: _FakeTeamService([_jugador(100, 'Pablo')]),
+          resumenService: _SinResumen(),
         ),
       );
 
@@ -635,4 +639,11 @@ class _FakeMatchService extends MatchService {
       hora: '11:00',
     ),
   ];
+}
+
+/// Sin red: el resumen de temporada llega vacío.
+class _SinResumen extends ResumenTemporadaService {
+  @override
+  Future<ResumenTemporadaModel> obtenerResumen(int jugadorId) async =>
+      const ResumenTemporadaModel();
 }

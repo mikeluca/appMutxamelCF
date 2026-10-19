@@ -1167,6 +1167,89 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewStandings => 'View standings';
 
   @override
+  String seasonTitle(String name) {
+    return 'Season $name';
+  }
+
+  @override
+  String get seasonTitleNoName => 'Season';
+
+  @override
+  String get seasonNoData => 'There is no data for this season yet';
+
+  @override
+  String get seasonGoals => 'Goals';
+
+  @override
+  String get seasonAssists => 'Assists';
+
+  @override
+  String get seasonYellows => 'Yellows';
+
+  @override
+  String get seasonReds => 'Reds';
+
+  @override
+  String get seasonCallupsCard => 'Call-ups';
+
+  @override
+  String get seasonTrainingsTitle => 'Training';
+
+  @override
+  String seasonTrainingsLine(int attended, int total, int percent) {
+    return '$attended of $total ($percent %)';
+  }
+
+  @override
+  String get seasonTrainingsNone => 'No training sessions yet';
+
+  @override
+  String seasonAbsences(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count absences',
+      one: '1 absence',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String seasonExcused(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count excused',
+      one: '1 excused',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get seasonCallupsTitle => 'Call-ups';
+
+  @override
+  String seasonCallupsLine(int going, int cannot, int pending) {
+    return 'Going: $going · Can\'t go: $cannot · No answer: $pending';
+  }
+
+  @override
+  String seasonShortTrainings(int attended, int total) {
+    return 'Training $attended/$total';
+  }
+
+  @override
+  String seasonShortGoals(int goals) {
+    String _temp0 = intl.Intl.pluralLogic(
+      goals,
+      locale: localeName,
+      other: '$goals goals',
+      one: '1 goal',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get clubPageMyCallups => 'My call-ups';
 
   @override

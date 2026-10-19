@@ -2236,6 +2236,108 @@ abstract class AppLocalizations {
   /// **'Ver clasificación'**
   String get viewStandings;
 
+  /// No description provided for @seasonTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Temporada {name}'**
+  String seasonTitle(String name);
+
+  /// No description provided for @seasonTitleNoName.
+  ///
+  /// In es, this message translates to:
+  /// **'Temporada'**
+  String get seasonTitleNoName;
+
+  /// No description provided for @seasonNoData.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay datos de esta temporada'**
+  String get seasonNoData;
+
+  /// No description provided for @seasonGoals.
+  ///
+  /// In es, this message translates to:
+  /// **'Goles'**
+  String get seasonGoals;
+
+  /// No description provided for @seasonAssists.
+  ///
+  /// In es, this message translates to:
+  /// **'Asistencias'**
+  String get seasonAssists;
+
+  /// No description provided for @seasonYellows.
+  ///
+  /// In es, this message translates to:
+  /// **'Amarillas'**
+  String get seasonYellows;
+
+  /// No description provided for @seasonReds.
+  ///
+  /// In es, this message translates to:
+  /// **'Rojas'**
+  String get seasonReds;
+
+  /// No description provided for @seasonCallupsCard.
+  ///
+  /// In es, this message translates to:
+  /// **'Convocatorias'**
+  String get seasonCallupsCard;
+
+  /// No description provided for @seasonTrainingsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Entrenamientos'**
+  String get seasonTrainingsTitle;
+
+  /// No description provided for @seasonTrainingsLine.
+  ///
+  /// In es, this message translates to:
+  /// **'{attended} de {total} ({percent} %)'**
+  String seasonTrainingsLine(int attended, int total, int percent);
+
+  /// No description provided for @seasonTrainingsNone.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay entrenamientos'**
+  String get seasonTrainingsNone;
+
+  /// No description provided for @seasonAbsences.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{1 falta} other{{count} faltas}}'**
+  String seasonAbsences(int count);
+
+  /// No description provided for @seasonExcused.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{1 justificada} other{{count} justificadas}}'**
+  String seasonExcused(int count);
+
+  /// No description provided for @seasonCallupsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Convocatorias'**
+  String get seasonCallupsTitle;
+
+  /// No description provided for @seasonCallupsLine.
+  ///
+  /// In es, this message translates to:
+  /// **'Va: {going} · No puede: {cannot} · Sin responder: {pending}'**
+  String seasonCallupsLine(int going, int cannot, int pending);
+
+  /// No description provided for @seasonShortTrainings.
+  ///
+  /// In es, this message translates to:
+  /// **'Entrenamientos {attended}/{total}'**
+  String seasonShortTrainings(int attended, int total);
+
+  /// No description provided for @seasonShortGoals.
+  ///
+  /// In es, this message translates to:
+  /// **'{goals, plural, =1{1 gol} other{{goals} goles}}'**
+  String seasonShortGoals(int goals);
+
   /// No description provided for @clubPageMyCallups.
   ///
   /// In es, this message translates to:

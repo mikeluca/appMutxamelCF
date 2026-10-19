@@ -9,7 +9,10 @@ import '../../teams/models/player_model.dart';
 import '../../teams/models/team_model.dart';
 import '../../teams/services/team_services.dart';
 import '../models/perfil_app.dart';
+import '../models/resumen_temporada_model.dart';
 import '../services/perfil_service.dart';
+import '../services/resumen_temporada_service.dart';
+import '../widgets/resumen_temporada_section.dart';
 
 class MisJugadoresPage extends StatefulWidget {
   /// true para un usuario JUGADOR: la pantalla es "Mi ficha" (sin el recuento
@@ -19,12 +22,14 @@ class MisJugadoresPage extends StatefulWidget {
   /// Solo para tests: sustituyen a las llamadas reales al backend.
   final Future<PerfilApp> Function()? cargarPerfil;
   final TeamService? teamService;
+  final ResumenTemporadaService? resumenService;
 
   const MisJugadoresPage({
     super.key,
     this.soloMiFicha = false,
     this.cargarPerfil,
     this.teamService,
+    this.resumenService,
   });
 
   @override
@@ -33,9 +38,12 @@ class MisJugadoresPage extends StatefulWidget {
 
 class _MisJugadoresPageState extends State<MisJugadoresPage> {
   late final TeamService _teamService = widget.teamService ?? TeamService();
+  late final ResumenTemporadaService _resumenService =
+      widget.resumenService ?? ResumenTemporadaService();
 
   PerfilApp? _perfil;
   Map<int, PlayerModel> _jugadoresConFoto = {};
+  Map<int, ResumenTemporadaModel?> _resumenes = {};
 
   bool _cargando = true;
   String? _error;
@@ -97,8 +105,25 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
 
       if (!mounted) return;
 
+      // El resumen de cada jugador se pide en paralelo y es opcional: si falla
+      // (o no hay temporada), esa ficha dice que todavía no hay datos.
+      final resumenes = await Future.wait(
+        perfil.jugadores.map(
+          (jugador) => _resumenService
+              .obtenerResumen(jugador.id)
+              .then<ResumenTemporadaModel?>((r) => r)
+              .catchError((_) => null),
+        ),
+      );
+
+      if (!mounted) return;
+
       setState(() {
         _perfil = perfil;
+        _resumenes = {
+          for (var i = 0; i < perfil.jugadores.length; i++)
+            perfil.jugadores[i].id: resumenes[i],
+        };
         _jugadoresConFoto = jugadoresConFoto;
         _cargando = false;
         _error = null;
@@ -209,6 +234,28 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
                   ),
                 ),
 
+                // Resumen corto de cada hijo ("Entrenamientos 18/20 · 3
+                // goles"); en "Mi ficha" ya está todo en la sección completa.
+                if (!widget.soloMiFicha &&
+                    ResumenTemporadaSection.resumenCorto(
+                          _t,
+                          _resumenes[jugador.id],
+                        ) !=
+                        null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    ResumenTemporadaSection.resumenCorto(
+                      _t,
+                      _resumenes[jugador.id],
+                    )!,
+                    style: TextStyle(
+                      color: _colors.primary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+
                 const SizedBox(height: 20),
 
                 _construirDato(
@@ -236,6 +283,10 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
                   titulo: _t.fieldPosition,
                   valor: jugador.posicion,
                 ),
+
+                const Divider(height: 32),
+
+                ResumenTemporadaSection(resumen: _resumenes[jugador.id]),
               ],
             ),
           ),

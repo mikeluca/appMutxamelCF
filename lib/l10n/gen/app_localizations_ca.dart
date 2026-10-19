@@ -1173,6 +1173,89 @@ class AppLocalizationsCa extends AppLocalizations {
   String get viewStandings => 'Veure classificació';
 
   @override
+  String seasonTitle(String name) {
+    return 'Temporada $name';
+  }
+
+  @override
+  String get seasonTitleNoName => 'Temporada';
+
+  @override
+  String get seasonNoData => 'Encara no hi ha dades d\'aquesta temporada';
+
+  @override
+  String get seasonGoals => 'Gols';
+
+  @override
+  String get seasonAssists => 'Assistències';
+
+  @override
+  String get seasonYellows => 'Grogues';
+
+  @override
+  String get seasonReds => 'Roges';
+
+  @override
+  String get seasonCallupsCard => 'Convocatòries';
+
+  @override
+  String get seasonTrainingsTitle => 'Entrenaments';
+
+  @override
+  String seasonTrainingsLine(int attended, int total, int percent) {
+    return '$attended de $total ($percent %)';
+  }
+
+  @override
+  String get seasonTrainingsNone => 'Encara no hi ha entrenaments';
+
+  @override
+  String seasonAbsences(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count faltes',
+      one: '1 falta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String seasonExcused(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count justificades',
+      one: '1 justificada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get seasonCallupsTitle => 'Convocatòries';
+
+  @override
+  String seasonCallupsLine(int going, int cannot, int pending) {
+    return 'Va: $going · No pot: $cannot · Sense respondre: $pending';
+  }
+
+  @override
+  String seasonShortTrainings(int attended, int total) {
+    return 'Entrenaments $attended/$total';
+  }
+
+  @override
+  String seasonShortGoals(int goals) {
+    String _temp0 = intl.Intl.pluralLogic(
+      goals,
+      locale: localeName,
+      other: '$goals gols',
+      one: '1 gol',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get clubPageMyCallups => 'Les meues convocatòries';
 
   @override

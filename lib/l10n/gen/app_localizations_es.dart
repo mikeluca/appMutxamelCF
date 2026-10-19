@@ -1182,6 +1182,89 @@ class AppLocalizationsEs extends AppLocalizations {
   String get viewStandings => 'Ver clasificación';
 
   @override
+  String seasonTitle(String name) {
+    return 'Temporada $name';
+  }
+
+  @override
+  String get seasonTitleNoName => 'Temporada';
+
+  @override
+  String get seasonNoData => 'Todavía no hay datos de esta temporada';
+
+  @override
+  String get seasonGoals => 'Goles';
+
+  @override
+  String get seasonAssists => 'Asistencias';
+
+  @override
+  String get seasonYellows => 'Amarillas';
+
+  @override
+  String get seasonReds => 'Rojas';
+
+  @override
+  String get seasonCallupsCard => 'Convocatorias';
+
+  @override
+  String get seasonTrainingsTitle => 'Entrenamientos';
+
+  @override
+  String seasonTrainingsLine(int attended, int total, int percent) {
+    return '$attended de $total ($percent %)';
+  }
+
+  @override
+  String get seasonTrainingsNone => 'Todavía no hay entrenamientos';
+
+  @override
+  String seasonAbsences(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count faltas',
+      one: '1 falta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String seasonExcused(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count justificadas',
+      one: '1 justificada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get seasonCallupsTitle => 'Convocatorias';
+
+  @override
+  String seasonCallupsLine(int going, int cannot, int pending) {
+    return 'Va: $going · No puede: $cannot · Sin responder: $pending';
+  }
+
+  @override
+  String seasonShortTrainings(int attended, int total) {
+    return 'Entrenamientos $attended/$total';
+  }
+
+  @override
+  String seasonShortGoals(int goals) {
+    String _temp0 = intl.Intl.pluralLogic(
+      goals,
+      locale: localeName,
+      other: '$goals goles',
+      one: '1 gol',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get clubPageMyCallups => 'Mis convocatorias';
 
   @override
