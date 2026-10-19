@@ -16,10 +16,18 @@ class ConvocatoriaFormPage extends StatefulWidget {
   final PerfilEquipo equipo;
   final ConvocatoriaModel? convocatoria;
 
+  /// Solo para tests: sustituyen a los servicios reales.
+  final TeamService? teamService;
+  final MatchService? matchService;
+  final ConvocatoriaService? convocatoriaService;
+
   const ConvocatoriaFormPage({
     super.key,
     required this.equipo,
     this.convocatoria,
+    this.teamService,
+    this.matchService,
+    this.convocatoriaService,
   });
 
   @override
@@ -37,9 +45,10 @@ class _DatosFormulario {
 }
 
 class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
-  final TeamService _teamService = TeamService();
-  final MatchService _matchService = MatchService();
-  final ConvocatoriaService _convocatoriaService = ConvocatoriaService();
+  late final TeamService _teamService = widget.teamService ?? TeamService();
+  late final MatchService _matchService = widget.matchService ?? MatchService();
+  late final ConvocatoriaService _convocatoriaService =
+      widget.convocatoriaService ?? ConvocatoriaService();
 
   final TextEditingController _lugarController = TextEditingController();
 
@@ -214,6 +223,21 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
                     _construirDatosPartido(partidos),
                     const SizedBox(height: 24),
                     _construirTituloJugadores(),
+                    if (_esEdicion) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        _t.callupSummary(
+                          widget.convocatoria!.van,
+                          widget.convocatoria!.noPueden,
+                          widget.convocatoria!.sinResponder,
+                        ),
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: _colors.primary,
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 12),
                     if (jugadores.isEmpty)
                       _construirSinJugadores()
@@ -416,8 +440,36 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
     );
   }
 
+  /// El convocado con ese id en la convocatoria que se está editando.
+  ConvocatoriaJugadorModel? _convocado(int jugadorId) {
+    return widget.convocatoria?.jugadores
+        .where((j) => j.jugadorId == jugadorId)
+        .firstOrNull;
+  }
+
+  /// ✓ verde (va), ✗ rojo (no puede) o ? gris (sin responder).
+  Widget _iconoRespuesta(String? respuesta) {
+    return switch (respuesta) {
+      'VA' => Tooltip(
+        message: _t.callupStatusGoing,
+        child: const Icon(Icons.check_circle, color: Colors.green),
+      ),
+      'NO_PUEDE' => Tooltip(
+        message: _t.callupStatusCannot,
+        child: const Icon(Icons.cancel, color: Colors.red),
+      ),
+      _ => Tooltip(
+        message: _t.callupStatusPending,
+        child: Icon(Icons.help_outline, color: _colors.onSurfaceVariant),
+      ),
+    };
+  }
+
   Widget _construirJugador(PlayerModel jugador) {
     final seleccionado = _jugadoresSeleccionados.contains(jugador.id);
+    final convocado = _esEdicion && seleccionado
+        ? _convocado(jugador.id)
+        : null;
     final bloqueado = _esEdicion;
 
     final nombre = '${jugador.nombre} ${jugador.apellidos}'.trim();
@@ -458,23 +510,43 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(
-                  nombre,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: _colors.onSurface,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      nombre,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: _colors.onSurface,
+                      ),
+                    ),
+                    if (convocado?.respuesta == 'NO_PUEDE' &&
+                        convocado?.motivo?.isNotEmpty == true)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 3),
+                        child: Text(
+                          _t.callupReasonShown(convocado!.motivo!),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: _colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
-              Icon(
-                seleccionado
-                    ? Icons.check_circle
-                    : Icons.radio_button_unchecked,
-                color: seleccionado
-                    ? _colors.primary
-                    : _colors.onSurfaceVariant,
-              ),
+              if (_esEdicion && seleccionado)
+                _iconoRespuesta(convocado?.respuesta)
+              else
+                Icon(
+                  seleccionado
+                      ? Icons.check_circle
+                      : Icons.radio_button_unchecked,
+                  color: seleccionado
+                      ? _colors.primary
+                      : _colors.onSurfaceVariant,
+                ),
             ],
           ),
         ),

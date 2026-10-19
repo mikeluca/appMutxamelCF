@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/notifications/utils/convocatoria_notificacion.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
+import '../../../routing/app_routes.dart';
 import '../models/notificacion_model.dart';
 import '../services/notificacion_service.dart';
 import 'comunicacion_detail_page.dart';
@@ -64,7 +66,11 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
 
     if (!mounted) return;
 
-    if (notificacion.tipo == 'COMUNICACION' &&
+    if (abreMisConvocatorias(notificacion.titulo)) {
+      await Navigator.pushNamed(context, AppRoutes.myCallups);
+
+      await _cargarNotificaciones();
+    } else if (notificacion.tipo == 'COMUNICACION' &&
         notificacion.referenciaId != null &&
         notificacion.referenciaId! > 0) {
       await Navigator.push(

@@ -84,6 +84,12 @@ class _ClubPageState extends State<ClubPage> {
         usuario?.tieneRol('COORDINADOR') == true ||
         usuario?.tieneRol('ADMIN_APP') == true;
 
+    final esJugador = usuario?.tieneRol('JUGADOR') == true;
+
+    final soloJugador = esJugador && !tieneJugadores;
+
+    final respondeConvocatorias = esJugador || tieneJugadores;
+
     final veClasificaciones =
         esGestionGlobal ||
         usuario?.tieneRol('JUGADOR') == true ||
@@ -125,6 +131,21 @@ class _ClubPageState extends State<ClubPage> {
 
           if (tieneJugadores) const SizedBox(height: 12),
 
+          // Un JUGADOR sin rol de familiar tiene su propia ficha. Si es
+          // JUGADOR y FAMILIAR a la vez, "Mis jugadores" ya los incluye a todos.
+          if (soloJugador)
+            _construirOpcion(
+              context,
+              icono: Icons.badge_outlined,
+              titulo: t.clubPageMyCard,
+              descripcion: t.clubPageMyCardDesc,
+              onTap: () {
+                Navigator.pushNamed(context, AppRoutes.myCard);
+              },
+            ),
+
+          if (soloJugador) const SizedBox(height: 12),
+
           if (tieneJugadores && AppConfig.cuotasDisponibles)
             _construirOpcion(
               context,
@@ -161,6 +182,19 @@ class _ClubPageState extends State<ClubPage> {
           ),
 
           const SizedBox(height: 12),
+
+          if (respondeConvocatorias)
+            _construirOpcion(
+              context,
+              icono: Icons.how_to_reg_outlined,
+              titulo: t.clubPageMyCallups,
+              descripcion: t.clubPageMyCallupsDesc,
+              onTap: () {
+                Navigator.pushNamed(context, AppRoutes.myCallups);
+              },
+            ),
+
+          if (respondeConvocatorias) const SizedBox(height: 12),
 
           if (veClasificaciones)
             _construirOpcion(

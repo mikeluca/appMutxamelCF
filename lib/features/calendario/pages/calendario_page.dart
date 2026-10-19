@@ -6,6 +6,7 @@ import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
 import '../../auth/services/perfil_service.dart';
+import '../../../routing/app_routes.dart';
 import '../../entrenamientos/utils/estado_asistencia_utils.dart';
 import '../../teams/models/team_model.dart';
 import '../../teams/services/team_services.dart';
@@ -19,7 +20,17 @@ import '../widgets/calendario_mensual.dart';
 /// cada evento indicando a qué equipo -y jugador, si aplica- pertenece).
 /// Para coordinador/administrador se incluyen todos los equipos del club.
 class CalendarioPage extends StatefulWidget {
-  const CalendarioPage({super.key});
+  /// Solo para tests: sustituyen a las llamadas reales al backend.
+  final CalendarioService? calendarioService;
+  final TeamService? teamService;
+  final Future<PerfilApp> Function()? cargarPerfil;
+
+  const CalendarioPage({
+    super.key,
+    this.calendarioService,
+    this.teamService,
+    this.cargarPerfil,
+  });
 
   @override
   State<CalendarioPage> createState() => _CalendarioPageState();
@@ -56,7 +67,8 @@ class _EventoUsuario {
 }
 
 class _CalendarioPageState extends State<CalendarioPage> {
-  final CalendarioService _calendarioService = CalendarioService();
+  late final CalendarioService _calendarioService =
+      widget.calendarioService ?? CalendarioService();
 
   PerfilApp? _perfil;
   List<_EquipoCalendarioEntrada> _equipos = [];
@@ -105,13 +117,15 @@ class _CalendarioPageState extends State<CalendarioPage> {
       _desde =
           temporada?.fechaInicio ?? DateTime(hoy.year - 1, hoy.month, hoy.day);
 
-      final perfil = await PerfilService.obtenerPerfil();
+      final perfil =
+          await (widget.cargarPerfil ?? PerfilService.obtenerPerfil)();
 
       // El perfil solo trae el NOMBRE del equipo de cada jugador (no su
       // id), así que resolvemos el id contra el listado completo de
       // equipos del club, igual de válido tanto para familiares/jugadores
       // como para la vista global de coordinador/administrador.
-      final todosLosEquipos = await TeamService().obtenerEquipos();
+      final todosLosEquipos = await (widget.teamService ?? TeamService())
+          .obtenerEquipos();
 
       final esGestionGlobal =
           perfil.tieneRol('COORDINADOR') || perfil.tieneRol('ADMIN_APP');
@@ -148,7 +162,9 @@ class _CalendarioPageState extends State<CalendarioPage> {
                 equipo: equipo.trim(),
                 jugador: jugador.nombreCompleto,
                 jugadorId: jugador.id,
-                equipoId: _buscarEquipoId(todosLosEquipos, equipo.trim()),
+                equipoId:
+                    jugador.equipoId ??
+                    _buscarEquipoId(todosLosEquipos, equipo.trim()),
               ),
             );
           }
@@ -298,9 +314,9 @@ class _CalendarioPageState extends State<CalendarioPage> {
     );
 
     if (resultado == true && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_t.calendarJustifyAbsenceSuccess)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_t.calendarJustifyAbsenceSuccess)));
 
       // El estado "justificado" de esta sesión ha podido cambiar:
       // recargamos para reflejarlo en la tarjeta.
@@ -427,6 +443,14 @@ class _CalendarioPageState extends State<CalendarioPage> {
         !item.cancelado &&
         esFuturo;
 
+    // Partido al que este jugador está convocado: se responde (Va / No
+    // puede) en "Mis convocatorias".
+    final abreConvocatorias =
+        !item.esEntrenamiento &&
+        convocado == true &&
+        evento.jugadorId != null &&
+        !item.cancelado;
+
     final icono = item.esEntrenamiento
         ? Icons.fitness_center
         : Icons.sports_soccer;
@@ -451,9 +475,8 @@ class _CalendarioPageState extends State<CalendarioPage> {
         : equipo;
 
     final resultado = item.partido?.resultado?.trim();
-    final tieneResultado = !item.esEntrenamiento &&
-        resultado != null &&
-        resultado.isNotEmpty;
+    final tieneResultado =
+        !item.esEntrenamiento && resultado != null && resultado.isNotEmpty;
 
     return Card(
       margin: EdgeInsets.zero,
@@ -462,7 +485,11 @@ class _CalendarioPageState extends State<CalendarioPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
-        onTap: puedeJustificar ? () => _justificarFalta(evento) : null,
+        onTap: puedeJustificar
+            ? () => _justificarFalta(evento)
+            : abreConvocatorias
+            ? _abrirMisConvocatorias
+            : null,
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
@@ -505,6 +532,12 @@ class _CalendarioPageState extends State<CalendarioPage> {
                         ] else if (convocado != null) ...[
                           const SizedBox(width: 8),
                           _construirBadgeConvocado(convocado),
+                          if (convocado && evento.jugadorId != null) ...[
+                            const SizedBox(width: 6),
+                            _construirBadgeRespuesta(
+                              item.partido?.respuestaConvocatoria,
+                            ),
+                          ],
                         ],
                       ],
                     ),
@@ -642,6 +675,39 @@ class _CalendarioPageState extends State<CalendarioPage> {
     );
   }
 
+  void _abrirMisConvocatorias() {
+    Navigator.pushNamed(context, AppRoutes.myCallups).then((_) {
+      // La respuesta ha podido cambiar: se vuelve a leer el calendario.
+      if (mounted) _cargarDatos();
+    });
+  }
+
+  /// Estado de la respuesta a la convocatoria: Va (verde), No puede (rojo) o
+  /// Sin responder (ámbar).
+  Widget _construirBadgeRespuesta(String? respuesta) {
+    final (texto, color) = switch (respuesta) {
+      'VA' => (_t.callupStatusGoing, Colors.green),
+      'NO_PUEDE' => (_t.callupStatusCannot, Colors.red),
+      _ => (_t.callupStatusPending, Colors.amber.shade800),
+    };
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        texto,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          color: color,
+        ),
+      ),
+    );
+  }
+
   Widget _construirBadgeConvocado(bool convocado) {
     final color = convocado ? Colors.green : _colors.onSurfaceVariant;
 
@@ -704,8 +770,7 @@ class _JustificarFaltaDialog extends StatefulWidget {
   });
 
   @override
-  State<_JustificarFaltaDialog> createState() =>
-      _JustificarFaltaDialogState();
+  State<_JustificarFaltaDialog> createState() => _JustificarFaltaDialogState();
 }
 
 class _JustificarFaltaDialogState extends State<_JustificarFaltaDialog> {

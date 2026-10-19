@@ -1173,6 +1173,84 @@ class AppLocalizationsCa extends AppLocalizations {
   String get viewStandings => 'Veure classificació';
 
   @override
+  String get clubPageMyCallups => 'Les meues convocatòries';
+
+  @override
+  String get clubPageMyCallupsDesc => 'Respon si pots anar als partits';
+
+  @override
+  String get clubPageMyCard => 'La meua fitxa';
+
+  @override
+  String get clubPageMyCardDesc => 'Les teues dades de jugador';
+
+  @override
+  String get callupStatusPending => 'Sense respondre';
+
+  @override
+  String get callupStatusGoing => 'Va';
+
+  @override
+  String get callupStatusCannot => 'No pot';
+
+  @override
+  String get callupAnswerGoing => 'Va';
+
+  @override
+  String get callupAnswerCannot => 'No pot';
+
+  @override
+  String get callupNoUpcoming => 'No tens convocatòries properes';
+
+  @override
+  String get callupsLoadFailed => 'No s\'han pogut carregar les convocatòries.';
+
+  @override
+  String callupMatchLine(String date) {
+    return 'Partit: $date';
+  }
+
+  @override
+  String callupMeetingLine(String time, String place) {
+    return 'Convocatòria: $time · $place';
+  }
+
+  @override
+  String callupDeadlineClosed(String deadline) {
+    return 'Termini de resposta tancat ($deadline)';
+  }
+
+  @override
+  String get callupMatchCancelled => 'Partit cancel·lat';
+
+  @override
+  String callupReasonShown(String reason) {
+    return 'Motiu: $reason';
+  }
+
+  @override
+  String get callupCannotDialogTitle => 'Per què no pot anar?';
+
+  @override
+  String get callupReasonLabel => 'Motiu';
+
+  @override
+  String get callupReasonRequired => 'Indica el motiu (mínim 3 caràcters)';
+
+  @override
+  String get callupAnswerSaved => 'Resposta guardada';
+
+  @override
+  String callupAnswerError(String error) {
+    return 'No s\'ha pogut guardar la resposta: $error';
+  }
+
+  @override
+  String callupSummary(int going, int cannot, int pending) {
+    return '$going van · $cannot no poden · $pending sense respondre';
+  }
+
+  @override
   String get clubPageMyStandings => 'Les meues classificacions';
 
   @override

@@ -8,6 +8,7 @@ import 'dispositivo_app_service.dart';
 import 'local_notification_service.dart';
 
 import '../../../core/navigation/app_navigator.dart';
+import '../utils/convocatoria_notificacion.dart';
 
 class PushNotificationService {
   // FL-04: se registraba 'ANDROID' también en iOS.
@@ -213,6 +214,13 @@ class PushNotificationService {
       if (tipo != _tipoResultado) {
         debugPrint('Push con tipo no reconocido al abrir: $tipo');
       }
+      return;
+    }
+
+    // El aviso de una convocatoria lleva a JUGADOR/FAMILIAR a "Mis
+    // convocatorias", donde pueden responder.
+    if (abreMisConvocatorias(message.notification?.title)) {
+      await AppNavigator.abrirMisConvocatorias();
       return;
     }
 

@@ -6,19 +6,33 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../teams/models/player_model.dart';
+import '../../teams/models/team_model.dart';
 import '../../teams/services/team_services.dart';
 import '../models/perfil_app.dart';
 import '../services/perfil_service.dart';
 
 class MisJugadoresPage extends StatefulWidget {
-  const MisJugadoresPage({super.key});
+  /// true para un usuario JUGADOR: la pantalla es "Mi ficha" (sin el recuento
+  /// de jugadores vinculados). Con false es "Mis jugadores", para familias.
+  final bool soloMiFicha;
+
+  /// Solo para tests: sustituyen a las llamadas reales al backend.
+  final Future<PerfilApp> Function()? cargarPerfil;
+  final TeamService? teamService;
+
+  const MisJugadoresPage({
+    super.key,
+    this.soloMiFicha = false,
+    this.cargarPerfil,
+    this.teamService,
+  });
 
   @override
   State<MisJugadoresPage> createState() => _MisJugadoresPageState();
 }
 
 class _MisJugadoresPageState extends State<MisJugadoresPage> {
-  final TeamService _teamService = TeamService();
+  late final TeamService _teamService = widget.teamService ?? TeamService();
 
   PerfilApp? _perfil;
   Map<int, PlayerModel> _jugadoresConFoto = {};
@@ -37,31 +51,41 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
 
   Future<void> _cargarJugadores() async {
     try {
-      final perfil = await PerfilService.obtenerPerfil();
+      final perfil =
+          await (widget.cargarPerfil ?? PerfilService.obtenerPerfil)();
 
-      final equipos = await _teamService.obtenerEquipos();
+      // El perfil ya trae el id del equipo; el listado de equipos solo hace
+      // falta para un jugador cuyo equipo no se pudo resolver por id.
+      final equipos = perfil.jugadores.any((j) => j.equipoId == null)
+          ? await _teamService.obtenerEquipos()
+          : <TeamModel>[];
 
       final jugadoresConFoto = <int, PlayerModel>{};
 
       for (final jugador in perfil.jugadores) {
-        final equipoNombre = jugador.equipo?.trim();
+        var equipoId = jugador.equipoId;
 
-        if (equipoNombre == null || equipoNombre.isEmpty) {
+        if (equipoId == null) {
+          final equipoNombre = jugador.equipo?.trim();
+
+          if (equipoNombre == null || equipoNombre.isEmpty) {
+            continue;
+          }
+
+          equipoId = equipos
+              .where(
+                (e) =>
+                    e.nombre.trim().toUpperCase() == equipoNombre.toUpperCase(),
+              )
+              .firstOrNull
+              ?.id;
+        }
+
+        if (equipoId == null) {
           continue;
         }
 
-        final equipo = equipos
-            .where(
-              (e) =>
-                  e.nombre.trim().toUpperCase() == equipoNombre.toUpperCase(),
-            )
-            .firstOrNull;
-
-        if (equipo == null) {
-          continue;
-        }
-
-        final jugadoresEquipo = await _teamService.obtenerJugadores(equipo.id);
+        final jugadoresEquipo = await _teamService.obtenerJugadores(equipoId);
 
         for (final jugadorPublico in jugadoresEquipo) {
           if (jugadorPublico.id == jugador.id) {
@@ -92,7 +116,11 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: ClubAppBarTitle(titulo: _t.clubPageMyPlayers)),
+      appBar: AppBar(
+        title: ClubAppBarTitle(
+          titulo: widget.soloMiFicha ? _t.clubPageMyCard : _t.clubPageMyPlayers,
+        ),
+      ),
       body: _construirContenido(),
     );
   }
@@ -128,20 +156,22 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
         children: [
-          Text(
-            _t.clubPageMyPlayers,
-            style: TextStyle(
-              color: _colors.onSurface,
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
+          if (!widget.soloMiFicha) ...[
+            Text(
+              _t.clubPageMyPlayers,
+              style: TextStyle(
+                color: _colors.onSurface,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            _t.playersLinkedCount(jugadores.length),
-            style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 14),
-          ),
-          const SizedBox(height: 20),
+            const SizedBox(height: 6),
+            Text(
+              _t.playersLinkedCount(jugadores.length),
+              style: TextStyle(color: _colors.onSurfaceVariant, fontSize: 14),
+            ),
+            const SizedBox(height: 20),
+          ],
 
           ...jugadores.map(
             (jugador) => Padding(

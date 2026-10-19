@@ -36,6 +36,10 @@ class MatchModel {
   /// antiguos: se asume false.
   final bool pendienteResultado;
 
+  /// Respuesta del jugador consultado a la convocatoria de este partido:
+  /// 'VA', 'NO_PUEDE' o null (sin responder, no convocado o sin convocatoria).
+  final String? respuestaConvocatoria;
+
   const MatchModel({
     this.id,
     this.equipoId,
@@ -55,6 +59,7 @@ class MatchModel {
     this.descansa = false,
     this.local = true,
     this.pendienteResultado = false,
+    this.respuestaConvocatoria,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -79,6 +84,7 @@ class MatchModel {
       descansa: json['descansa'] as bool? ?? false,
       local: json['local'] as bool? ?? true,
       pendienteResultado: json['pendienteResultado'] as bool? ?? false,
+      respuestaConvocatoria: json['respuestaConvocatoria'] as String?,
     );
   }
 

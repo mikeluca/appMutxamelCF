@@ -12,14 +12,18 @@ import 'convocatoria_form_page.dart';
 class ConvocatoriasPage extends StatefulWidget {
   final PerfilEquipo equipo;
 
-  const ConvocatoriasPage({super.key, required this.equipo});
+  /// Solo para tests: sustituye al servicio real.
+  final ConvocatoriaService? service;
+
+  const ConvocatoriasPage({super.key, required this.equipo, this.service});
 
   @override
   State<ConvocatoriasPage> createState() => _ConvocatoriasPageState();
 }
 
 class _ConvocatoriasPageState extends State<ConvocatoriasPage> {
-  final ConvocatoriaService _service = ConvocatoriaService();
+  late final ConvocatoriaService _service =
+      widget.service ?? ConvocatoriaService();
 
   late Future<List<ConvocatoriaModel>> _futureConvocatorias;
 
@@ -161,6 +165,19 @@ class _ConvocatoriasPageState extends State<ConvocatoriasPage> {
                       '${convocatoria.horaPartido} · '
                       '${convocatoria.campo}',
                       style: TextStyle(color: _colors.onSurfaceVariant),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      _t.callupSummary(
+                        convocatoria.van,
+                        convocatoria.noPueden,
+                        convocatoria.sinResponder,
+                      ),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: _colors.primary,
+                      ),
                     ),
                   ],
                 ),

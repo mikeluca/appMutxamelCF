@@ -2236,6 +2236,138 @@ abstract class AppLocalizations {
   /// **'Ver clasificación'**
   String get viewStandings;
 
+  /// No description provided for @clubPageMyCallups.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis convocatorias'**
+  String get clubPageMyCallups;
+
+  /// No description provided for @clubPageMyCallupsDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Responde si puedes ir a los partidos'**
+  String get clubPageMyCallupsDesc;
+
+  /// No description provided for @clubPageMyCard.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi ficha'**
+  String get clubPageMyCard;
+
+  /// No description provided for @clubPageMyCardDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Tus datos de jugador'**
+  String get clubPageMyCardDesc;
+
+  /// No description provided for @callupStatusPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin responder'**
+  String get callupStatusPending;
+
+  /// No description provided for @callupStatusGoing.
+  ///
+  /// In es, this message translates to:
+  /// **'Va'**
+  String get callupStatusGoing;
+
+  /// No description provided for @callupStatusCannot.
+  ///
+  /// In es, this message translates to:
+  /// **'No puede'**
+  String get callupStatusCannot;
+
+  /// No description provided for @callupAnswerGoing.
+  ///
+  /// In es, this message translates to:
+  /// **'Va'**
+  String get callupAnswerGoing;
+
+  /// No description provided for @callupAnswerCannot.
+  ///
+  /// In es, this message translates to:
+  /// **'No puede'**
+  String get callupAnswerCannot;
+
+  /// No description provided for @callupNoUpcoming.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes convocatorias próximas'**
+  String get callupNoUpcoming;
+
+  /// No description provided for @callupsLoadFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'No se han podido cargar las convocatorias.'**
+  String get callupsLoadFailed;
+
+  /// No description provided for @callupMatchLine.
+  ///
+  /// In es, this message translates to:
+  /// **'Partido: {date}'**
+  String callupMatchLine(String date);
+
+  /// No description provided for @callupMeetingLine.
+  ///
+  /// In es, this message translates to:
+  /// **'Convocatoria: {time} · {place}'**
+  String callupMeetingLine(String time, String place);
+
+  /// No description provided for @callupDeadlineClosed.
+  ///
+  /// In es, this message translates to:
+  /// **'Plazo de respuesta cerrado ({deadline})'**
+  String callupDeadlineClosed(String deadline);
+
+  /// No description provided for @callupMatchCancelled.
+  ///
+  /// In es, this message translates to:
+  /// **'Partido cancelado'**
+  String get callupMatchCancelled;
+
+  /// No description provided for @callupReasonShown.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo: {reason}'**
+  String callupReasonShown(String reason);
+
+  /// No description provided for @callupCannotDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Por qué no puede ir?'**
+  String get callupCannotDialogTitle;
+
+  /// No description provided for @callupReasonLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo'**
+  String get callupReasonLabel;
+
+  /// No description provided for @callupReasonRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Indica el motivo (mínimo 3 caracteres)'**
+  String get callupReasonRequired;
+
+  /// No description provided for @callupAnswerSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Respuesta guardada'**
+  String get callupAnswerSaved;
+
+  /// No description provided for @callupAnswerError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido guardar la respuesta: {error}'**
+  String callupAnswerError(String error);
+
+  /// No description provided for @callupSummary.
+  ///
+  /// In es, this message translates to:
+  /// **'{going} van · {cannot} no pueden · {pending} sin responder'**
+  String callupSummary(int going, int cannot, int pending);
+
   /// No description provided for @clubPageMyStandings.
   ///
   /// In es, this message translates to:

@@ -1,5 +1,6 @@
 import '../../../core/network/api_client.dart';
 import '../model/convocatoria_model.dart';
+import '../model/mi_convocatoria_model.dart';
 
 class ConvocatoriaService {
   Future<List<ConvocatoriaModel>> obtenerPorEquipo(int equipoId) async {
@@ -64,5 +65,34 @@ class ConvocatoriaService {
     );
 
     return ConvocatoriaModel.fromJson(data as Map<String, dynamic>);
+  }
+
+  /// Convocatorias de los jugadores vinculados al usuario (JUGADOR/FAMILIAR),
+  /// de hoy a 14 días.
+  Future<List<MiConvocatoriaModel>> obtenerMias() async {
+    final data =
+        await ApiClient.get('/app/mis-convocatorias', autenticado: true)
+            as List<dynamic>;
+
+    return data
+        .map((item) => MiConvocatoriaModel.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Responde "Va" (VA) o "No puede" (NO_PUEDE, con motivo) por un jugador.
+  /// El backend rechaza la respuesta fuera de plazo o sin vínculo.
+  Future<MiConvocatoriaModel> responder({
+    required int convocatoriaId,
+    required int jugadorId,
+    required String respuesta,
+    String? motivo,
+  }) async {
+    final data = await ApiClient.put(
+      '/app/convocatorias/$convocatoriaId/jugadores/$jugadorId/respuesta',
+      autenticado: true,
+      body: {'respuesta': respuesta, 'motivo': motivo},
+    );
+
+    return MiConvocatoriaModel.fromJson(data as Map<String, dynamic>);
   }
 }

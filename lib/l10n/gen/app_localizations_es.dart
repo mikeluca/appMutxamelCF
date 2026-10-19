@@ -1182,6 +1182,84 @@ class AppLocalizationsEs extends AppLocalizations {
   String get viewStandings => 'Ver clasificación';
 
   @override
+  String get clubPageMyCallups => 'Mis convocatorias';
+
+  @override
+  String get clubPageMyCallupsDesc => 'Responde si puedes ir a los partidos';
+
+  @override
+  String get clubPageMyCard => 'Mi ficha';
+
+  @override
+  String get clubPageMyCardDesc => 'Tus datos de jugador';
+
+  @override
+  String get callupStatusPending => 'Sin responder';
+
+  @override
+  String get callupStatusGoing => 'Va';
+
+  @override
+  String get callupStatusCannot => 'No puede';
+
+  @override
+  String get callupAnswerGoing => 'Va';
+
+  @override
+  String get callupAnswerCannot => 'No puede';
+
+  @override
+  String get callupNoUpcoming => 'No tienes convocatorias próximas';
+
+  @override
+  String get callupsLoadFailed => 'No se han podido cargar las convocatorias.';
+
+  @override
+  String callupMatchLine(String date) {
+    return 'Partido: $date';
+  }
+
+  @override
+  String callupMeetingLine(String time, String place) {
+    return 'Convocatoria: $time · $place';
+  }
+
+  @override
+  String callupDeadlineClosed(String deadline) {
+    return 'Plazo de respuesta cerrado ($deadline)';
+  }
+
+  @override
+  String get callupMatchCancelled => 'Partido cancelado';
+
+  @override
+  String callupReasonShown(String reason) {
+    return 'Motivo: $reason';
+  }
+
+  @override
+  String get callupCannotDialogTitle => '¿Por qué no puede ir?';
+
+  @override
+  String get callupReasonLabel => 'Motivo';
+
+  @override
+  String get callupReasonRequired => 'Indica el motivo (mínimo 3 caracteres)';
+
+  @override
+  String get callupAnswerSaved => 'Respuesta guardada';
+
+  @override
+  String callupAnswerError(String error) {
+    return 'No se ha podido guardar la respuesta: $error';
+  }
+
+  @override
+  String callupSummary(int going, int cannot, int pending) {
+    return '$going van · $cannot no pueden · $pending sin responder';
+  }
+
+  @override
   String get clubPageMyStandings => 'Mis clasificaciones';
 
   @override

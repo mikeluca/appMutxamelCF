@@ -17,6 +17,14 @@ class ConvocatoriaModel {
   final int usuarioEntrenadorId;
   final List<ConvocatoriaJugadorModel> jugadores;
 
+  /// Cuántos convocados van, no pueden o aún no han respondido.
+  int get van => jugadores.where((j) => j.respuesta == 'VA').length;
+
+  int get noPueden =>
+      jugadores.where((j) => j.respuesta == 'NO_PUEDE').length;
+
+  int get sinResponder => jugadores.length - van - noPueden;
+
   ConvocatoriaModel({
     required this.id,
     required this.equipoId,
@@ -59,12 +67,26 @@ class ConvocatoriaJugadorModel {
   final int jugadorId;
   final String jugador;
 
-  ConvocatoriaJugadorModel({required this.jugadorId, required this.jugador});
+  /// 'VA', 'NO_PUEDE' o null (sin responder).
+  final String? respuesta;
+  final String? motivo;
+  final DateTime? fechaRespuesta;
+
+  ConvocatoriaJugadorModel({
+    required this.jugadorId,
+    required this.jugador,
+    this.respuesta,
+    this.motivo,
+    this.fechaRespuesta,
+  });
 
   factory ConvocatoriaJugadorModel.fromJson(Map<String, dynamic> json) {
     return ConvocatoriaJugadorModel(
       jugadorId: json['jugadorId'],
       jugador: json['jugador'] ?? '',
+      respuesta: json['respuesta'] as String?,
+      motivo: json['motivo'] as String?,
+      fechaRespuesta: DateTime.tryParse(json['fechaRespuesta']?.toString() ?? ''),
     );
   }
 }

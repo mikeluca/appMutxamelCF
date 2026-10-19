@@ -1167,6 +1167,84 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewStandings => 'View standings';
 
   @override
+  String get clubPageMyCallups => 'My call-ups';
+
+  @override
+  String get clubPageMyCallupsDesc => 'Say whether you can attend the matches';
+
+  @override
+  String get clubPageMyCard => 'My player card';
+
+  @override
+  String get clubPageMyCardDesc => 'Your player details';
+
+  @override
+  String get callupStatusPending => 'No answer yet';
+
+  @override
+  String get callupStatusGoing => 'Going';
+
+  @override
+  String get callupStatusCannot => 'Can\'t go';
+
+  @override
+  String get callupAnswerGoing => 'Going';
+
+  @override
+  String get callupAnswerCannot => 'Can\'t go';
+
+  @override
+  String get callupNoUpcoming => 'You have no upcoming call-ups';
+
+  @override
+  String get callupsLoadFailed => 'The call-ups could not be loaded.';
+
+  @override
+  String callupMatchLine(String date) {
+    return 'Match: $date';
+  }
+
+  @override
+  String callupMeetingLine(String time, String place) {
+    return 'Meeting: $time · $place';
+  }
+
+  @override
+  String callupDeadlineClosed(String deadline) {
+    return 'Response deadline closed ($deadline)';
+  }
+
+  @override
+  String get callupMatchCancelled => 'Match cancelled';
+
+  @override
+  String callupReasonShown(String reason) {
+    return 'Reason: $reason';
+  }
+
+  @override
+  String get callupCannotDialogTitle => 'Why can\'t they go?';
+
+  @override
+  String get callupReasonLabel => 'Reason';
+
+  @override
+  String get callupReasonRequired => 'Enter the reason (at least 3 characters)';
+
+  @override
+  String get callupAnswerSaved => 'Answer saved';
+
+  @override
+  String callupAnswerError(String error) {
+    return 'The answer could not be saved: $error';
+  }
+
+  @override
+  String callupSummary(int going, int cannot, int pending) {
+    return '$going going · $cannot can\'t go · $pending no answer';
+  }
+
+  @override
   String get clubPageMyStandings => 'My standings';
 
   @override
