@@ -1615,7 +1615,7 @@ abstract class AppLocalizations {
   /// No description provided for @liveMatchWarning.
   ///
   /// In es, this message translates to:
-  /// **'Cada botón manda un aviso en directo a todos los usuarios de la app. Revisa bien antes de pulsar: no se puede deshacer.'**
+  /// **'Cada botón manda un aviso en directo a todos los usuarios de la app. Puedes deshacer el último aviso durante 2 minutos; pasado ese tiempo ya no se puede.'**
   String get liveMatchWarning;
 
   /// No description provided for @liveEventKickoff.
@@ -1743,6 +1743,162 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Gol enviado.'**
   String get liveGoalSentMessage;
+
+  /// No description provided for @liveNoMatchesToday.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay ningún partido del Primer Equipo hoy'**
+  String get liveNoMatchesToday;
+
+  /// No description provided for @liveChooseMatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige el partido que vas a retransmitir'**
+  String get liveChooseMatch;
+
+  /// No description provided for @liveMatchHome.
+  ///
+  /// In es, this message translates to:
+  /// **'Local'**
+  String get liveMatchHome;
+
+  /// No description provided for @liveMatchAway.
+  ///
+  /// In es, this message translates to:
+  /// **'Visitante'**
+  String get liveMatchAway;
+
+  /// No description provided for @liveChangeMatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar de partido'**
+  String get liveChangeMatch;
+
+  /// No description provided for @liveLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se han podido cargar los partidos de hoy.'**
+  String get liveLoadError;
+
+  /// No description provided for @livePhaseNotStarted.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin empezar'**
+  String get livePhaseNotStarted;
+
+  /// No description provided for @livePhaseFirstHalf.
+  ///
+  /// In es, this message translates to:
+  /// **'1ª parte'**
+  String get livePhaseFirstHalf;
+
+  /// No description provided for @livePhaseHalftime.
+  ///
+  /// In es, this message translates to:
+  /// **'Descanso'**
+  String get livePhaseHalftime;
+
+  /// No description provided for @livePhaseSecondHalf.
+  ///
+  /// In es, this message translates to:
+  /// **'2ª parte'**
+  String get livePhaseSecondHalf;
+
+  /// No description provided for @livePhaseFinished.
+  ///
+  /// In es, this message translates to:
+  /// **'Final'**
+  String get livePhaseFinished;
+
+  /// No description provided for @liveScorers.
+  ///
+  /// In es, this message translates to:
+  /// **'Goleadores'**
+  String get liveScorers;
+
+  /// No description provided for @liveNoScorersYet.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay goles a favor'**
+  String get liveNoScorersYet;
+
+  /// No description provided for @liveOwnGoalShort.
+  ///
+  /// In es, this message translates to:
+  /// **'p.p. (propia puerta del rival)'**
+  String get liveOwnGoalShort;
+
+  /// No description provided for @liveGoalAuthorTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Quién ha marcado?'**
+  String get liveGoalAuthorTitle;
+
+  /// No description provided for @liveGoalOther.
+  ///
+  /// In es, this message translates to:
+  /// **'Otro…'**
+  String get liveGoalOther;
+
+  /// No description provided for @liveGoalOtherLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Autor del gol (máx. 60 caracteres)'**
+  String get liveGoalOtherLabel;
+
+  /// No description provided for @liveGoalOwnGoal.
+  ///
+  /// In es, this message translates to:
+  /// **'Propia puerta (rival)'**
+  String get liveGoalOwnGoal;
+
+  /// No description provided for @liveNoPlayersToPick.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay jugadores en la lista: elige \"Otro\" o \"Propia puerta\".'**
+  String get liveNoPlayersToPick;
+
+  /// No description provided for @liveUndoButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Deshacer ({time})'**
+  String liveUndoButton(String time);
+
+  /// No description provided for @liveUndoLast.
+  ///
+  /// In es, this message translates to:
+  /// **'Último aviso: {event}'**
+  String liveUndoLast(String event);
+
+  /// No description provided for @liveUndoFulltimeTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Deshacer el final?'**
+  String get liveUndoFulltimeTitle;
+
+  /// No description provided for @liveUndoFulltimeMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Se anulará el final del partido y se devolverá a como estaba el resultado guardado.'**
+  String get liveUndoFulltimeMessage;
+
+  /// No description provided for @liveUndoneMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Aviso deshecho.'**
+  String get liveUndoneMessage;
+
+  /// No description provided for @liveUndoConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Deshacer'**
+  String get liveUndoConfirm;
+
+  /// No description provided for @liveEventAlert.
+  ///
+  /// In es, this message translates to:
+  /// **'Aviso'**
+  String get liveEventAlert;
 
   /// No description provided for @liveNotificationSentMessage.
   ///

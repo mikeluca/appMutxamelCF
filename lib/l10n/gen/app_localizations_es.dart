@@ -847,7 +847,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get liveMatchWarning =>
-      'Cada botón manda un aviso en directo a todos los usuarios de la app. Revisa bien antes de pulsar: no se puede deshacer.';
+      'Cada botón manda un aviso en directo a todos los usuarios de la app. Puedes deshacer el último aviso durante 2 minutos; pasado ese tiempo ya no se puede.';
 
   @override
   String get liveEventKickoff => 'Inicio de partido';
@@ -911,6 +911,91 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get liveGoalSentMessage => 'Gol enviado.';
+
+  @override
+  String get liveNoMatchesToday =>
+      'No hay ningún partido del Primer Equipo hoy';
+
+  @override
+  String get liveChooseMatch => 'Elige el partido que vas a retransmitir';
+
+  @override
+  String get liveMatchHome => 'Local';
+
+  @override
+  String get liveMatchAway => 'Visitante';
+
+  @override
+  String get liveChangeMatch => 'Cambiar de partido';
+
+  @override
+  String get liveLoadError => 'No se han podido cargar los partidos de hoy.';
+
+  @override
+  String get livePhaseNotStarted => 'Sin empezar';
+
+  @override
+  String get livePhaseFirstHalf => '1ª parte';
+
+  @override
+  String get livePhaseHalftime => 'Descanso';
+
+  @override
+  String get livePhaseSecondHalf => '2ª parte';
+
+  @override
+  String get livePhaseFinished => 'Final';
+
+  @override
+  String get liveScorers => 'Goleadores';
+
+  @override
+  String get liveNoScorersYet => 'Todavía no hay goles a favor';
+
+  @override
+  String get liveOwnGoalShort => 'p.p. (propia puerta del rival)';
+
+  @override
+  String get liveGoalAuthorTitle => '¿Quién ha marcado?';
+
+  @override
+  String get liveGoalOther => 'Otro…';
+
+  @override
+  String get liveGoalOtherLabel => 'Autor del gol (máx. 60 caracteres)';
+
+  @override
+  String get liveGoalOwnGoal => 'Propia puerta (rival)';
+
+  @override
+  String get liveNoPlayersToPick =>
+      'No hay jugadores en la lista: elige \"Otro\" o \"Propia puerta\".';
+
+  @override
+  String liveUndoButton(String time) {
+    return 'Deshacer ($time)';
+  }
+
+  @override
+  String liveUndoLast(String event) {
+    return 'Último aviso: $event';
+  }
+
+  @override
+  String get liveUndoFulltimeTitle => '¿Deshacer el final?';
+
+  @override
+  String get liveUndoFulltimeMessage =>
+      'Se anulará el final del partido y se devolverá a como estaba el resultado guardado.';
+
+  @override
+  String get liveUndoneMessage => 'Aviso deshecho.';
+
+  @override
+  String get liveUndoConfirm => 'Deshacer';
+
+  @override
+  String get liveEventAlert => 'Aviso';
 
   @override
   String liveNotificationSentMessage(String titulo) {

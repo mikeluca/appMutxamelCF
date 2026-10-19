@@ -833,7 +833,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get liveMatchWarning =>
-      'Each button sends a live alert to every app user. Check carefully before pressing: it cannot be undone.';
+      'Each button sends a live alert to every app user. You can undo the last alert for 2 minutes; after that it cannot be undone.';
 
   @override
   String get liveEventKickoff => 'Kick-off';
@@ -898,6 +898,90 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get liveGoalSentMessage => 'Goal sent.';
+
+  @override
+  String get liveNoMatchesToday => 'There is no First Team match today';
+
+  @override
+  String get liveChooseMatch => 'Choose the match you are going to broadcast';
+
+  @override
+  String get liveMatchHome => 'Home';
+
+  @override
+  String get liveMatchAway => 'Away';
+
+  @override
+  String get liveChangeMatch => 'Change match';
+
+  @override
+  String get liveLoadError => 'Today\'s matches could not be loaded.';
+
+  @override
+  String get livePhaseNotStarted => 'Not started';
+
+  @override
+  String get livePhaseFirstHalf => '1st half';
+
+  @override
+  String get livePhaseHalftime => 'Half-time';
+
+  @override
+  String get livePhaseSecondHalf => '2nd half';
+
+  @override
+  String get livePhaseFinished => 'Full time';
+
+  @override
+  String get liveScorers => 'Scorers';
+
+  @override
+  String get liveNoScorersYet => 'No goals scored yet';
+
+  @override
+  String get liveOwnGoalShort => 'o.g. (opponent\'s own goal)';
+
+  @override
+  String get liveGoalAuthorTitle => 'Who scored?';
+
+  @override
+  String get liveGoalOther => 'Other…';
+
+  @override
+  String get liveGoalOtherLabel => 'Goal scorer (max. 60 characters)';
+
+  @override
+  String get liveGoalOwnGoal => 'Own goal (opponent)';
+
+  @override
+  String get liveNoPlayersToPick =>
+      'There are no players in the list: choose \"Other\" or \"Own goal\".';
+
+  @override
+  String liveUndoButton(String time) {
+    return 'Undo ($time)';
+  }
+
+  @override
+  String liveUndoLast(String event) {
+    return 'Last alert: $event';
+  }
+
+  @override
+  String get liveUndoFulltimeTitle => 'Undo full time?';
+
+  @override
+  String get liveUndoFulltimeMessage =>
+      'Full time will be cancelled and the saved result will go back to how it was.';
+
+  @override
+  String get liveUndoneMessage => 'Alert undone.';
+
+  @override
+  String get liveUndoConfirm => 'Undo';
+
+  @override
+  String get liveEventAlert => 'Alert';
 
   @override
   String liveNotificationSentMessage(String titulo) {
