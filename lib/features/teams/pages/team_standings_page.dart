@@ -10,11 +10,13 @@ import '../widgets/team_standings_section.dart';
 class TeamStandingsPage extends StatefulWidget {
   final int equipoId;
   final String nombreEquipo;
+  final TeamService? teamService;
 
   const TeamStandingsPage({
     super.key,
     required this.equipoId,
     required this.nombreEquipo,
+    this.teamService,
   });
 
   @override
@@ -22,7 +24,7 @@ class TeamStandingsPage extends StatefulWidget {
 }
 
 class _TeamStandingsPageState extends State<TeamStandingsPage> {
-  final TeamService _teamService = TeamService();
+  late final TeamService _teamService = widget.teamService ?? TeamService();
 
   late Future<StandingsModel?> _futureStandings;
 

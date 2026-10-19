@@ -1167,6 +1167,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewStandings => 'View standings';
 
   @override
+  String get clubPageMyStandings => 'My standings';
+
+  @override
+  String get clubPageMyStandingsDesc => 'Your teams\' standings';
+
+  @override
+  String get allStandingsTitle => 'Standings';
+
+  @override
+  String get clubPageAllStandingsDesc => 'All teams\' standings';
+
+  @override
+  String get standingsNone => 'No standings yet';
+
+  @override
+  String standingsSummary(int pos, int pts, int round) {
+    return '#$pos · $pts pts · MD$round';
+  }
+
+  @override
+  String standingsSummaryNoRound(int pos, int pts) {
+    return '#$pos · $pts pts';
+  }
+
+  @override
   String get standingsTitle => 'Standings';
 
   @override

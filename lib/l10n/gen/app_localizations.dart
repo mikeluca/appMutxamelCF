@@ -2236,6 +2236,48 @@ abstract class AppLocalizations {
   /// **'Ver clasificación'**
   String get viewStandings;
 
+  /// No description provided for @clubPageMyStandings.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis clasificaciones'**
+  String get clubPageMyStandings;
+
+  /// No description provided for @clubPageMyStandingsDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Clasificación de tus equipos'**
+  String get clubPageMyStandingsDesc;
+
+  /// No description provided for @allStandingsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Clasificaciones'**
+  String get allStandingsTitle;
+
+  /// No description provided for @clubPageAllStandingsDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Clasificación de todos los equipos'**
+  String get clubPageAllStandingsDesc;
+
+  /// No description provided for @standingsNone.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin clasificación todavía'**
+  String get standingsNone;
+
+  /// No description provided for @standingsSummary.
+  ///
+  /// In es, this message translates to:
+  /// **'{pos}º · {pts} pts · J{round}'**
+  String standingsSummary(int pos, int pts, int round);
+
+  /// No description provided for @standingsSummaryNoRound.
+  ///
+  /// In es, this message translates to:
+  /// **'{pos}º · {pts} pts'**
+  String standingsSummaryNoRound(int pos, int pts);
+
   /// No description provided for @standingsTitle.
   ///
   /// In es, this message translates to:

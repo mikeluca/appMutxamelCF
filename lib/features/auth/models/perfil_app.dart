@@ -104,6 +104,7 @@ class PerfilJugador {
   final String apellidos;
   final String? categoria;
   final String? equipo;
+  final int? equipoId;
   final String? deporte;
   final int? dorsal;
   final String? posicion;
@@ -114,6 +115,7 @@ class PerfilJugador {
     required this.apellidos,
     this.categoria,
     this.equipo,
+    this.equipoId,
     this.deporte,
     this.dorsal,
     this.posicion,
@@ -126,6 +128,7 @@ class PerfilJugador {
       apellidos: json['apellidos'] as String? ?? '',
       categoria: json['categoria'] as String?,
       equipo: json['equipo'] as String?,
+      equipoId: json['equipoId'] as int?,
       deporte: json['deporte'] as String?,
       dorsal: json['dorsal'] as int?,
       posicion: json['posicion'] as String?,

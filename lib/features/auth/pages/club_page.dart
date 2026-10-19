@@ -80,6 +80,16 @@ class _ClubPageState extends State<ClubPage> {
 
     final esRetransmision = usuario?.tieneRol('RETRANSMISION') == true;
 
+    final esGestionGlobal =
+        usuario?.tieneRol('COORDINADOR') == true ||
+        usuario?.tieneRol('ADMIN_APP') == true;
+
+    final veClasificaciones =
+        esGestionGlobal ||
+        usuario?.tieneRol('JUGADOR') == true ||
+        usuario?.tieneRol('FAMILIAR') == true ||
+        usuario?.tieneRol('ENTRENADOR') == true;
+
     final t = AppLocalizations.of(context);
 
     return Scaffold(
@@ -151,6 +161,23 @@ class _ClubPageState extends State<ClubPage> {
           ),
 
           const SizedBox(height: 12),
+
+          if (veClasificaciones)
+            _construirOpcion(
+              context,
+              icono: Icons.leaderboard_outlined,
+              titulo: esGestionGlobal
+                  ? t.allStandingsTitle
+                  : t.clubPageMyStandings,
+              descripcion: esGestionGlobal
+                  ? t.clubPageAllStandingsDesc
+                  : t.clubPageMyStandingsDesc,
+              onTap: () {
+                Navigator.pushNamed(context, AppRoutes.myStandings);
+              },
+            ),
+
+          if (veClasificaciones) const SizedBox(height: 12),
 
           _construirOpcion(
             context,

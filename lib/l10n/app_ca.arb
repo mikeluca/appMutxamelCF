@@ -446,6 +446,19 @@
 
   "matchResultPending": "Pendent de resultat",
   "viewStandings": "Veure classificació",
+  "clubPageMyStandings": "Les meues classificacions",
+  "clubPageMyStandingsDesc": "Classificació dels teus equips",
+  "allStandingsTitle": "Classificacions",
+  "clubPageAllStandingsDesc": "Classificació de tots els equips",
+  "standingsNone": "Encara sense classificació",
+  "standingsSummary": "{pos}a · {pts} pts · J{round}",
+  "@standingsSummary": {
+    "placeholders": { "pos": { "type": "int" }, "pts": { "type": "int" }, "round": { "type": "int" } }
+  },
+  "standingsSummaryNoRound": "{pos}a · {pts} pts",
+  "@standingsSummaryNoRound": {
+    "placeholders": { "pos": { "type": "int" }, "pts": { "type": "int" } }
+  },
   "standingsTitle": "Classificació",
   "standingsUpdated": "Jornada {round} · actualitzat el {date}",
   "@standingsUpdated": {

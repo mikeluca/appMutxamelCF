@@ -446,6 +446,19 @@
 
   "matchResultPending": "Pendiente de resultado",
   "viewStandings": "Ver clasificación",
+  "clubPageMyStandings": "Mis clasificaciones",
+  "clubPageMyStandingsDesc": "Clasificación de tus equipos",
+  "allStandingsTitle": "Clasificaciones",
+  "clubPageAllStandingsDesc": "Clasificación de todos los equipos",
+  "standingsNone": "Sin clasificación todavía",
+  "standingsSummary": "{pos}º · {pts} pts · J{round}",
+  "@standingsSummary": {
+    "placeholders": { "pos": { "type": "int" }, "pts": { "type": "int" }, "round": { "type": "int" } }
+  },
+  "standingsSummaryNoRound": "{pos}º · {pts} pts",
+  "@standingsSummaryNoRound": {
+    "placeholders": { "pos": { "type": "int" }, "pts": { "type": "int" } }
+  },
   "standingsTitle": "Clasificación",
   "standingsUpdated": "Jornada {round} · actualizado el {date}",
   "@standingsUpdated": {

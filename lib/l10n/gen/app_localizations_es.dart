@@ -1182,6 +1182,31 @@ class AppLocalizationsEs extends AppLocalizations {
   String get viewStandings => 'Ver clasificación';
 
   @override
+  String get clubPageMyStandings => 'Mis clasificaciones';
+
+  @override
+  String get clubPageMyStandingsDesc => 'Clasificación de tus equipos';
+
+  @override
+  String get allStandingsTitle => 'Clasificaciones';
+
+  @override
+  String get clubPageAllStandingsDesc => 'Clasificación de todos los equipos';
+
+  @override
+  String get standingsNone => 'Sin clasificación todavía';
+
+  @override
+  String standingsSummary(int pos, int pts, int round) {
+    return '$posº · $pts pts · J$round';
+  }
+
+  @override
+  String standingsSummaryNoRound(int pos, int pts) {
+    return '$posº · $pts pts';
+  }
+
+  @override
   String get standingsTitle => 'Clasificación';
 
   @override
