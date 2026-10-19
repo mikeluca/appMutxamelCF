@@ -75,12 +75,29 @@ class TeamStandingsSection extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 4, bottom: 10),
-                  child: Text(
-                    _textoActualizacion(context, t, clasificacion),
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: colors.onSurfaceVariant,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _textoActualizacion(context, t, clasificacion),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                      if (clasificacion.competicion.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Text(
+                            clasificacion.competicion,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: colors.onSurface,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
                 _buildCabecera(t, colors, completa),
@@ -109,9 +126,10 @@ class TeamStandingsSection extends StatelessWidget {
       return '';
     }
 
-    final fechaTexto =
-        DateFormat('dd/MM', Localizations.localeOf(context).toString())
-            .format(fecha);
+    final fechaTexto = DateFormat(
+      'dd/MM',
+      Localizations.localeOf(context).toString(),
+    ).format(fecha);
 
     return jornada == null
         ? t.standingsUpdatedNoRound(fechaTexto)
@@ -186,8 +204,10 @@ class TeamStandingsSection extends StatelessWidget {
     required ColorScheme colors,
     required bool resaltada,
   }) {
-    Widget celda(Widget hijo, double ancho) =>
-        SizedBox(width: ancho, child: Center(child: hijo));
+    Widget celda(Widget hijo, double ancho) => SizedBox(
+      width: ancho,
+      child: Center(child: hijo),
+    );
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 4),

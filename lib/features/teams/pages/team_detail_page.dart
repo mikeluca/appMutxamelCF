@@ -7,10 +7,8 @@ import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/player_model.dart';
 import '../models/staff_model.dart';
-import '../models/standings_model.dart';
 import '../models/team_model.dart';
 import '../services/team_services.dart';
-import '../widgets/team_standings_section.dart';
 
 class TeamDetailPage extends StatefulWidget {
   final TeamModel equipo;
@@ -26,7 +24,6 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
 
   late Future<List<PlayerModel>> _futurePlayers;
   late Future<List<StaffModel>> _futureStaff;
-  late Future<StandingsModel?> _futureStandings;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
   AppLocalizations get _t => AppLocalizations.of(context);
@@ -38,8 +35,6 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
     _futurePlayers = _teamService.obtenerJugadores(widget.equipo.id);
 
     _futureStaff = _teamService.obtenerCuerpoTecnico(widget.equipo.id);
-
-    _futureStandings = _teamService.obtenerClasificacion(widget.equipo.id);
   }
 
   Future<void> _recargar() async {
@@ -47,17 +42,9 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
       _futurePlayers = _teamService.obtenerJugadores(widget.equipo.id);
 
       _futureStaff = _teamService.obtenerCuerpoTecnico(widget.equipo.id);
-
-      _futureStandings = _teamService.obtenerClasificacion(widget.equipo.id);
     });
 
-    // La clasificación tiene su propio estado de error: si falla no debe
-    // impedir que se recargue el resto de la pantalla.
-    await Future.wait([
-      _futurePlayers,
-      _futureStaff,
-      _futureStandings.catchError((_) => null),
-    ]);
+    await Future.wait([_futurePlayers, _futureStaff]);
   }
 
   @override
@@ -111,14 +98,6 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
       children: [
         _buildTeamHeader(),
-
-        const SizedBox(height: 28),
-
-        _buildSectionTitle(_t.standingsTitle),
-
-        const SizedBox(height: 14),
-
-        TeamStandingsSection(future: _futureStandings),
 
         const SizedBox(height: 28),
 

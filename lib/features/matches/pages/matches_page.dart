@@ -5,6 +5,7 @@ import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/match_model.dart';
+import '../../teams/pages/team_standings_page.dart';
 import '../services/match_service.dart';
 
 class MatchesPage extends StatefulWidget {
@@ -116,7 +117,7 @@ class _MatchesPageState extends State<MatchesPage> {
         categoriaAnterior = partido.categoria;
       }
 
-      widgets.add(_MatchCard(partido: partido));
+      widgets.add(PartidoListaCard(partido: partido));
     }
 
     return widgets;
@@ -167,10 +168,12 @@ class _MatchesPageState extends State<MatchesPage> {
   }
 }
 
-class _MatchCard extends StatelessWidget {
+/// Tarjeta de un partido en la pestaña Partidos. Pública solo para poder
+/// probarla en tests de widget.
+class PartidoListaCard extends StatelessWidget {
   final MatchModel partido;
 
-  const _MatchCard({required this.partido});
+  const PartidoListaCard({super.key, required this.partido});
 
   ColorScheme _colors(BuildContext context) => Theme.of(context).colorScheme;
 
@@ -280,10 +283,40 @@ class _MatchCard extends StatelessWidget {
                 Icons.location_on_outlined,
                 partido.campo!,
               ),
+
+            ..._botonClasificacion(context),
           ],
         ),
       ),
     );
+  }
+
+  /// "Ver clasificación" al pie de la tarjeta, alineado a la derecha. Solo
+  /// si el partido trae el equipo. No afecta a lo que haga la propia tarjeta.
+  List<Widget> _botonClasificacion(BuildContext context) {
+    final equipoId = partido.equipoId;
+
+    if (equipoId == null) {
+      return const [];
+    }
+
+    return [
+      Align(
+        alignment: Alignment.centerRight,
+        child: TextButton.icon(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => TeamStandingsPage(
+                equipoId: equipoId,
+                nombreEquipo: partido.equipo,
+              ),
+            ),
+          ),
+          icon: const Icon(Icons.leaderboard_outlined),
+          label: Text(AppLocalizations.of(context).viewStandings),
+        ),
+      ),
+    ];
   }
 
   Widget _buildResultadoCard(BuildContext context) {
@@ -338,6 +371,8 @@ class _MatchCard extends StatelessWidget {
                 style: TextStyle(color: _colors(context).onSurfaceVariant),
               ),
             ],
+
+            ..._botonClasificacion(context),
           ],
         ),
       ),
@@ -364,40 +399,48 @@ class _MatchCard extends StatelessWidget {
       shape: _shapeTipo,
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
+        child: Column(
           children: [
-            Icon(
-              partido.descansa
-                  ? Icons.bedtime_outlined
-                  : Icons.free_breakfast_outlined,
-              color: AppColors.azulOscuro,
-              size: 32,
+            Row(
+              children: [
+                Icon(
+                  partido.descansa
+                      ? Icons.bedtime_outlined
+                      : Icons.free_breakfast_outlined,
+                  color: AppColors.azulOscuro,
+                  size: 32,
+                ),
+
+                const SizedBox(width: 16),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        partido.equipo,
+                        style: TextStyle(
+                          color: _colors(context).onSurface,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(height: 4),
+
+                      Text(
+                        texto,
+                        style: TextStyle(
+                          color: _colors(context).onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
 
-            const SizedBox(width: 16),
-
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    partido.equipo,
-                    style: TextStyle(
-                      color: _colors(context).onSurface,
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  Text(
-                    texto,
-                    style: TextStyle(color: _colors(context).onSurfaceVariant),
-                  ),
-                ],
-              ),
-            ),
+            ..._botonClasificacion(context),
           ],
         ),
       ),

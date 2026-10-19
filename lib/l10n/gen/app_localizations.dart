@@ -2224,6 +2224,12 @@ abstract class AppLocalizations {
   /// **'No se ha podido cargar la plantilla.'**
   String get squadLoadError;
 
+  /// No description provided for @viewStandings.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver clasificación'**
+  String get viewStandings;
+
   /// No description provided for @standingsTitle.
   ///
   /// In es, this message translates to:

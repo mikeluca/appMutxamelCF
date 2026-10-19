@@ -444,6 +444,7 @@
   "noStaffAvailableForTeam": "No coaching staff available for this team.",
   "squadLoadError": "The squad could not be loaded.",
 
+  "viewStandings": "View standings",
   "standingsTitle": "Standings",
   "standingsUpdated": "Matchday {round} · updated on {date}",
   "@standingsUpdated": {
