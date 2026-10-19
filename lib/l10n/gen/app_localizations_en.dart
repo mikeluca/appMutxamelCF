@@ -1161,6 +1161,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get squadLoadError => 'The squad could not be loaded.';
 
   @override
+  String get matchResultPending => 'Result pending';
+
+  @override
   String get viewStandings => 'View standings';
 
   @override

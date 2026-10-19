@@ -444,6 +444,7 @@
   "noStaffAvailableForTeam": "No hi ha cos tècnic disponible per a aquest equip.",
   "squadLoadError": "No s'ha pogut carregar la plantilla.",
 
+  "matchResultPending": "Pendent de resultat",
   "viewStandings": "Veure classificació",
   "standingsTitle": "Classificació",
   "standingsUpdated": "Jornada {round} · actualitzat el {date}",

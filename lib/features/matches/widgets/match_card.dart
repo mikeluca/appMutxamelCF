@@ -23,6 +23,8 @@ class MatchCard extends StatelessWidget {
       tarjeta = _buildRestCard(context);
     } else if (match.estaJugado) {
       tarjeta = _buildPlayedMatchCard(context);
+    } else if (match.pendienteResultado) {
+      tarjeta = _buildPendingResultCard(context);
     } else {
       tarjeta = _buildUpcomingMatchCard(context);
     }
@@ -207,6 +209,74 @@ class MatchCard extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 // Fecha, hora y campo
+                _buildMatchInformation(context),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // JUGADO, PENDIENTE DE RESULTADO
+  // ============================================================
+
+  Widget _buildPendingResultCard(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      shape: _shapeTipo,
+      child: Column(
+        children: [
+          _buildHeader(
+            mostrarPrimerEquipo
+                ? t.matchLastResultFirstTeam
+                : t.matchLastResult,
+            color: AppColors.azulOscuro,
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildTeam(
+                      context,
+                      match.local ? match.equipo : match.rival,
+                      isHomeTeam: match.local,
+                    ),
+
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Text(
+                          t.matchResultPending,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    _buildTeam(
+                      context,
+                      match.local ? match.rival : match.equipo,
+                      isHomeTeam: !match.local,
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
                 _buildMatchInformation(context),
               ],
             ),

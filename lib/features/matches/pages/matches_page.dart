@@ -185,6 +185,8 @@ class PartidoListaCard extends StatelessWidget {
       tarjeta = _buildDescansoCard(context);
     } else if (partido.estaJugado) {
       tarjeta = _buildResultadoCard(context);
+    } else if (partido.pendienteResultado) {
+      tarjeta = _buildPendienteCard(context);
     } else {
       tarjeta = _buildProximoCard(context);
     }
@@ -362,6 +364,69 @@ class PartidoListaCard extends StatelessWidget {
               partido.rival,
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+            ),
+
+            if (partido.dia != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                _formatearFecha(context, partido.dia!),
+                style: TextStyle(color: _colors(context).onSurfaceVariant),
+              ),
+            ],
+
+            ..._botonClasificacion(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Partido ya jugado al que todavía no se le ha puesto el resultado: mismo
+  /// diseño que el de resultado, con los equipos en orden local | visitante
+  /// y "Pendiente de resultado" en gris en lugar del marcador.
+  Widget _buildPendienteCard(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final estiloEquipo = TextStyle(
+      color: _colors(context).onSurface,
+      fontSize: 17,
+      fontWeight: FontWeight.bold,
+    );
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: _shapeTipo,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            _buildHeader(context, t.matchesResult, Icons.sports_soccer),
+
+            const SizedBox(height: 16),
+
+            Text(
+              partido.local ? partido.equipo : partido.rival,
+              textAlign: TextAlign.center,
+              style: estiloEquipo,
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              t.matchResultPending,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: _colors(context).onSurfaceVariant,
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              partido.local ? partido.rival : partido.equipo,
+              textAlign: TextAlign.center,
+              style: estiloEquipo,
             ),
 
             if (partido.dia != null) ...[

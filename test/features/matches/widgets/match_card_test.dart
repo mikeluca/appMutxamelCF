@@ -79,4 +79,25 @@ void main() {
 
     expect(find.text('2-1'), findsOneWidget);
   });
+
+  testWidgets('pendiente de resultado: sin marcador y con "Pendiente de resultado"', (tester) async {
+    await _pintar(
+      tester,
+      const MatchModel(
+        categoria: 'Primer Equipo',
+        equipo: 'Primer Equipo',
+        rival: 'Pego C.F.',
+        pendienteResultado: true,
+        local: false,
+      ),
+    );
+
+    expect(find.text('Pendiente de resultado'), findsOneWidget);
+    expect(find.text('-'), findsNothing);
+
+    final izquierda = tester.getCenter(find.text('Pego C.F.')).dx;
+    final derecha = tester.getCenter(find.text('Primer Equipo')).dx;
+
+    expect(izquierda, lessThan(derecha));
+  });
 }

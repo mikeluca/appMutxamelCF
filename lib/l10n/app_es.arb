@@ -444,6 +444,7 @@
   "noStaffAvailableForTeam": "No hay cuerpo técnico disponible para este equipo.",
   "squadLoadError": "No se ha podido cargar la plantilla.",
 
+  "matchResultPending": "Pendiente de resultado",
   "viewStandings": "Ver clasificación",
   "standingsTitle": "Clasificación",
   "standingsUpdated": "Jornada {round} · actualizado el {date}",

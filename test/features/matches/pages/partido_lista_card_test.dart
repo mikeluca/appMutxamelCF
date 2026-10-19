@@ -89,6 +89,43 @@ void main() {
     });
   }
 
+  testWidgets('pendiente de resultado: gris, local | visitante, fecha y botón', (
+    tester,
+  ) async {
+    await _pintar(
+      tester,
+      MatchModel(
+        equipoId: 7,
+        categoria: 'Cadete',
+        equipo: 'Cadete A',
+        rival: 'Pego C.F.',
+        dia: DateTime(2026, 10, 17),
+        pendienteResultado: true,
+        local: false,
+      ),
+    );
+
+    final texto = tester.widget<Text>(find.text('Pendiente de resultado'));
+    expect(texto.style?.color, isNotNull);
+
+    // Visitante: el rival va primero (arriba) y el Mutxamel después.
+    final rival = tester.getCenter(find.text('Pego C.F.')).dy;
+    final nuestro = tester.getCenter(find.text('Cadete A')).dy;
+    expect(rival, lessThan(nuestro));
+
+    // La fecha va debajo del último equipo, y se mantiene el botón.
+    expect(find.textContaining('17'), findsWidgets);
+    expect(find.text('Ver clasificación'), findsOneWidget);
+  });
+
+  testWidgets('con resultado o próximo no sale "Pendiente de resultado"', (
+    tester,
+  ) async {
+    await _pintar(tester, _proximo);
+
+    expect(find.text('Pendiente de resultado'), findsNothing);
+  });
+
   testWidgets('el botón abre la clasificación del equipo', (tester) async {
     Uri? pedida;
 

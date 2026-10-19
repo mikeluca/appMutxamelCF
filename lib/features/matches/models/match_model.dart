@@ -32,6 +32,10 @@ class MatchModel {
   /// en backends antiguos: se asume local, como se mostraba hasta ahora.
   final bool local;
 
+  /// El último partido ya se jugó y aún no tiene resultado. Ausente en backends
+  /// antiguos: se asume false.
+  final bool pendienteResultado;
+
   const MatchModel({
     this.id,
     this.equipoId,
@@ -50,6 +54,7 @@ class MatchModel {
     this.convocado,
     this.descansa = false,
     this.local = true,
+    this.pendienteResultado = false,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -73,6 +78,7 @@ class MatchModel {
       convocado: json['convocado'] as bool?,
       descansa: json['descansa'] as bool? ?? false,
       local: json['local'] as bool? ?? true,
+      pendienteResultado: json['pendienteResultado'] as bool? ?? false,
     );
   }
 

@@ -1176,6 +1176,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get squadLoadError => 'No se ha podido cargar la plantilla.';
 
   @override
+  String get matchResultPending => 'Pendiente de resultado';
+
+  @override
   String get viewStandings => 'Ver clasificación';
 
   @override
