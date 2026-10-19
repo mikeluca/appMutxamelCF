@@ -444,6 +444,27 @@
   "noStaffAvailableForTeam": "No coaching staff available for this team.",
   "squadLoadError": "The squad could not be loaded.",
 
+  "standingsTitle": "Standings",
+  "standingsUpdated": "Matchday {round} · updated on {date}",
+  "@standingsUpdated": {
+    "placeholders": { "round": { "type": "int" }, "date": { "type": "String" } }
+  },
+  "standingsUpdatedNoRound": "Updated on {date}",
+  "@standingsUpdatedNoRound": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "standingsEmpty": "Standings not available yet",
+  "standingsLoadError": "The standings could not be loaded.",
+  "standingsColPos": "Pos",
+  "standingsColTeam": "Team",
+  "standingsColPlayed": "P",
+  "standingsColPoints": "Pts",
+  "standingsColWon": "W",
+  "standingsColDrawn": "D",
+  "standingsColLost": "L",
+  "standingsColGoalsFor": "GF",
+  "standingsColGoalsAgainst": "GA",
+
   "familiesTitle": "Family members",
   "phoneAppOpenError": "The phone app could not be opened",
   "whatsappOpenError": "WhatsApp could not be opened",

@@ -1161,6 +1161,52 @@ class AppLocalizationsEn extends AppLocalizations {
   String get squadLoadError => 'The squad could not be loaded.';
 
   @override
+  String get standingsTitle => 'Standings';
+
+  @override
+  String standingsUpdated(int round, String date) {
+    return 'Matchday $round · updated on $date';
+  }
+
+  @override
+  String standingsUpdatedNoRound(String date) {
+    return 'Updated on $date';
+  }
+
+  @override
+  String get standingsEmpty => 'Standings not available yet';
+
+  @override
+  String get standingsLoadError => 'The standings could not be loaded.';
+
+  @override
+  String get standingsColPos => 'Pos';
+
+  @override
+  String get standingsColTeam => 'Team';
+
+  @override
+  String get standingsColPlayed => 'P';
+
+  @override
+  String get standingsColPoints => 'Pts';
+
+  @override
+  String get standingsColWon => 'W';
+
+  @override
+  String get standingsColDrawn => 'D';
+
+  @override
+  String get standingsColLost => 'L';
+
+  @override
+  String get standingsColGoalsFor => 'GF';
+
+  @override
+  String get standingsColGoalsAgainst => 'GA';
+
+  @override
   String get familiesTitle => 'Family members';
 
   @override

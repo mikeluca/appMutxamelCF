@@ -1,6 +1,7 @@
 import '../../../core/network/api_client.dart';
 import '../models/player_model.dart';
 import '../models/staff_model.dart';
+import '../models/standings_model.dart';
 import '../models/team_model.dart';
 import '../models/familiar_jugador_model.dart';
 
@@ -45,6 +46,21 @@ class TeamService {
     return data
         .map((json) => StaffModel.fromJson(json as Map<String, dynamic>))
         .toList();
+  }
+
+  /// Clasificación del grupo del equipo, o null si todavía no hay datos (404).
+  Future<StandingsModel?> obtenerClasificacion(int equipoId) async {
+    try {
+      final data = await ApiClient.get('/public/equipos/$equipoId/clasificacion');
+
+      return StandingsModel.fromJson(data as Map<String, dynamic>);
+    } on ApiException catch (e) {
+      if (e.statusCode == 404) {
+        return null;
+      }
+
+      rethrow;
+    }
   }
 
   Future<List<PlayerModel>> obtenerJugadoresGestion(int equipoId) async {

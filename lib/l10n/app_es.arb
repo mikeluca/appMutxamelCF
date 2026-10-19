@@ -444,6 +444,48 @@
   "noStaffAvailableForTeam": "No hay cuerpo técnico disponible para este equipo.",
   "squadLoadError": "No se ha podido cargar la plantilla.",
 
+  "standingsTitle": "Clasificación",
+  "standingsUpdated": "Jornada {round} · actualizado el {date}",
+  "@standingsUpdated": {
+    "placeholders": { "round": { "type": "int" }, "date": { "type": "String" } }
+  },
+  "standingsUpdatedNoRound": "Actualizado el {date}",
+  "@standingsUpdatedNoRound": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "standingsEmpty": "Clasificación no disponible todavía",
+  "standingsLoadError": "No se ha podido cargar la clasificación.",
+  "standingsColPos": "Pos",
+  "standingsColTeam": "Equipo",
+  "standingsColPlayed": "PJ",
+  "standingsColPoints": "Pts",
+  "standingsColWon": "G",
+  "standingsColDrawn": "E",
+  "standingsColLost": "P",
+  "standingsColGoalsFor": "GF",
+  "standingsColGoalsAgainst": "GC",
+
+  "standingsTitle": "Clasificación",
+  "standingsUpdated": "Jornada {round} · actualizado el {date}",
+  "@standingsUpdated": {
+    "placeholders": { "round": { "type": "int" }, "date": { "type": "String" } }
+  },
+  "standingsUpdatedNoRound": "Actualizado el {date}",
+  "@standingsUpdatedNoRound": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "standingsEmpty": "Clasificación no disponible todavía",
+  "standingsLoadError": "No se ha podido cargar la clasificación.",
+  "standingsColPos": "Pos",
+  "standingsColTeam": "Equipo",
+  "standingsColPlayed": "PJ",
+  "standingsColPoints": "Pts",
+  "standingsColWon": "G",
+  "standingsColDrawn": "E",
+  "standingsColLost": "P",
+  "standingsColGoalsFor": "GF",
+  "standingsColGoalsAgainst": "GC",
+
   "familiesTitle": "Familiares",
   "phoneAppOpenError": "No se puede abrir la aplicación de teléfono",
   "whatsappOpenError": "No se puede abrir WhatsApp",

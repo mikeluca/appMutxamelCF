@@ -1167,6 +1167,52 @@ class AppLocalizationsCa extends AppLocalizations {
   String get squadLoadError => 'No s\'ha pogut carregar la plantilla.';
 
   @override
+  String get standingsTitle => 'Classificació';
+
+  @override
+  String standingsUpdated(int round, String date) {
+    return 'Jornada $round · actualitzat el $date';
+  }
+
+  @override
+  String standingsUpdatedNoRound(String date) {
+    return 'Actualitzat el $date';
+  }
+
+  @override
+  String get standingsEmpty => 'Classificació encara no disponible';
+
+  @override
+  String get standingsLoadError => 'No s\'ha pogut carregar la classificació.';
+
+  @override
+  String get standingsColPos => 'Pos';
+
+  @override
+  String get standingsColTeam => 'Equip';
+
+  @override
+  String get standingsColPlayed => 'PJ';
+
+  @override
+  String get standingsColPoints => 'Pts';
+
+  @override
+  String get standingsColWon => 'G';
+
+  @override
+  String get standingsColDrawn => 'E';
+
+  @override
+  String get standingsColLost => 'P';
+
+  @override
+  String get standingsColGoalsFor => 'GF';
+
+  @override
+  String get standingsColGoalsAgainst => 'GC';
+
+  @override
   String get familiesTitle => 'Familiars';
 
   @override

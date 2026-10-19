@@ -2224,6 +2224,90 @@ abstract class AppLocalizations {
   /// **'No se ha podido cargar la plantilla.'**
   String get squadLoadError;
 
+  /// No description provided for @standingsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Clasificación'**
+  String get standingsTitle;
+
+  /// No description provided for @standingsUpdated.
+  ///
+  /// In es, this message translates to:
+  /// **'Jornada {round} · actualizado el {date}'**
+  String standingsUpdated(int round, String date);
+
+  /// No description provided for @standingsUpdatedNoRound.
+  ///
+  /// In es, this message translates to:
+  /// **'Actualizado el {date}'**
+  String standingsUpdatedNoRound(String date);
+
+  /// No description provided for @standingsEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Clasificación no disponible todavía'**
+  String get standingsEmpty;
+
+  /// No description provided for @standingsLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido cargar la clasificación.'**
+  String get standingsLoadError;
+
+  /// No description provided for @standingsColPos.
+  ///
+  /// In es, this message translates to:
+  /// **'Pos'**
+  String get standingsColPos;
+
+  /// No description provided for @standingsColTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipo'**
+  String get standingsColTeam;
+
+  /// No description provided for @standingsColPlayed.
+  ///
+  /// In es, this message translates to:
+  /// **'PJ'**
+  String get standingsColPlayed;
+
+  /// No description provided for @standingsColPoints.
+  ///
+  /// In es, this message translates to:
+  /// **'Pts'**
+  String get standingsColPoints;
+
+  /// No description provided for @standingsColWon.
+  ///
+  /// In es, this message translates to:
+  /// **'G'**
+  String get standingsColWon;
+
+  /// No description provided for @standingsColDrawn.
+  ///
+  /// In es, this message translates to:
+  /// **'E'**
+  String get standingsColDrawn;
+
+  /// No description provided for @standingsColLost.
+  ///
+  /// In es, this message translates to:
+  /// **'P'**
+  String get standingsColLost;
+
+  /// No description provided for @standingsColGoalsFor.
+  ///
+  /// In es, this message translates to:
+  /// **'GF'**
+  String get standingsColGoalsFor;
+
+  /// No description provided for @standingsColGoalsAgainst.
+  ///
+  /// In es, this message translates to:
+  /// **'GC'**
+  String get standingsColGoalsAgainst;
+
   /// No description provided for @familiesTitle.
   ///
   /// In es, this message translates to:

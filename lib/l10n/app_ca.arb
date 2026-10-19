@@ -444,6 +444,27 @@
   "noStaffAvailableForTeam": "No hi ha cos tècnic disponible per a aquest equip.",
   "squadLoadError": "No s'ha pogut carregar la plantilla.",
 
+  "standingsTitle": "Classificació",
+  "standingsUpdated": "Jornada {round} · actualitzat el {date}",
+  "@standingsUpdated": {
+    "placeholders": { "round": { "type": "int" }, "date": { "type": "String" } }
+  },
+  "standingsUpdatedNoRound": "Actualitzat el {date}",
+  "@standingsUpdatedNoRound": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "standingsEmpty": "Classificació encara no disponible",
+  "standingsLoadError": "No s'ha pogut carregar la classificació.",
+  "standingsColPos": "Pos",
+  "standingsColTeam": "Equip",
+  "standingsColPlayed": "PJ",
+  "standingsColPoints": "Pts",
+  "standingsColWon": "G",
+  "standingsColDrawn": "E",
+  "standingsColLost": "P",
+  "standingsColGoalsFor": "GF",
+  "standingsColGoalsAgainst": "GC",
+
   "familiesTitle": "Familiars",
   "phoneAppOpenError": "No es pot obrir l'aplicació de telèfon",
   "whatsappOpenError": "No es pot obrir WhatsApp",
