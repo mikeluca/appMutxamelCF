@@ -101,6 +101,7 @@ class LocalNotificationService {
     int cantidadNoLeidas = 1,
     bool esPrivada = false,
     int? autorId,
+    String? tipo,
   }) async {
     if (comunicacionId <= 0) {
       return;
@@ -133,7 +134,7 @@ class LocalNotificationService {
       iOS: darwinDetails,
     );
 
-    final payload = abreMisConvocatorias(titulo)
+    final payload = abreMisConvocatorias(tipo: tipo, titulo: titulo)
         ? payloadMisConvocatorias
         : esPrivada && autorId != null && autorId > 0
         ? 'PRIVADA:$autorId'

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_mutxamel_cf/features/auth/models/perfil_app.dart';
 import 'package:app_mutxamel_cf/features/auth/models/resumen_temporada_model.dart';
 import 'package:app_mutxamel_cf/features/auth/pages/mis_jugadores_page.dart';
@@ -371,8 +373,196 @@ void main() {
       expect(find.text('Temporada 2026/2027'), findsOneWidget);
     });
   });
+
+  group('carga progresiva de la ficha', () {
+    Widget pagina({
+      required Future<PerfilApp> Function() perfil,
+      required ResumenTemporadaService resumenes,
+      TeamService? equipos,
+    }) => SizedBox(
+      height: 2800,
+      child: MisJugadoresPage(
+        cargarPerfil: perfil,
+        teamService: equipos ?? _FakeTeamService(),
+        resumenService: resumenes,
+      ),
+    );
+
+    Future<void> pintarSinEsperar(WidgetTester tester, Widget home) async {
+      tester.view.physicalSize = const Size(800, 3000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('es'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(body: SingleChildScrollView(child: home)),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+    }
+
+    final cargandoResumen = find.byKey(
+      const ValueKey('resumen-temporada-cargando'),
+    );
+
+    testWidgets('el perfil y las fichas salen antes que los resúmenes', (
+      tester,
+    ) async {
+      final resumenes = _ResumenesPendientes();
+
+      await pintarSinEsperar(
+        tester,
+        pagina(perfil: () async => _perfil(['FAMILIAR']), resumenes: resumenes),
+      );
+
+      // Las dos fichas ya están, cada una con su placeholder.
+      expect(find.text('Pablo Garcia'), findsOneWidget);
+      expect(find.text('Lucia Garcia'), findsOneWidget);
+      expect(cargandoResumen, findsNWidgets(2));
+      expect(find.text('Todavía no hay datos de esta temporada'), findsNothing);
+
+      // Llega el resumen de Lucia: solo su ficha cambia.
+      resumenes.completar(101, _conDatos);
+      await tester.pump();
+
+      expect(cargandoResumen, findsOneWidget);
+      expect(find.text('Entrenamientos 18/20 · 3 goles'), findsOneWidget);
+
+      // Y el de Pablo falla: su ficha dice que no hay datos, sin error global.
+      resumenes.fallar(100);
+      await tester.pump();
+
+      expect(cargandoResumen, findsNothing);
+      expect(
+        find.text('Todavía no hay datos de esta temporada'),
+        findsOneWidget,
+      );
+      expect(find.text('Pablo Garcia'), findsOneWidget);
+    });
+
+    testWidgets('las fotos lentas no retrasan la ficha ni los resúmenes', (
+      tester,
+    ) async {
+      final equipos = _EquiposPendientes();
+
+      await pintarSinEsperar(
+        tester,
+        pagina(
+          perfil: () async => _perfil(['FAMILIAR']),
+          resumenes: _FakeResumenService(
+            resumenes: {100: _conDatos, 101: _conDatos},
+          ),
+          equipos: equipos,
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Pablo Garcia'), findsOneWidget);
+      expect(find.text('Temporada 2026/2027'), findsNWidgets(2));
+      expect(cargandoResumen, findsNothing);
+
+      // Cuando llegan las fotos, la ficha sigue ahí.
+      equipos.completar();
+      await tester.pump();
+
+      expect(find.text('Pablo Garcia'), findsOneWidget);
+    });
+
+    testWidgets('si falla la carga de fotos la ficha sigue sin error', (
+      tester,
+    ) async {
+      await pintarSinEsperar(
+        tester,
+        pagina(
+          perfil: () async => _perfil(['FAMILIAR']),
+          resumenes: _FakeResumenService(resumenes: {100: _conDatos}),
+          equipos: _EquiposQueFallan(),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Pablo Garcia'), findsOneWidget);
+      expect(find.byIcon(Icons.error_outline), findsNothing);
+    });
+
+    testWidgets('si falla el perfil sí se muestra el error', (tester) async {
+      await pintarSinEsperar(
+        tester,
+        pagina(
+          perfil: () async => throw Exception('sin conexión'),
+          resumenes: _FakeResumenService(),
+        ),
+      );
+
+      expect(find.byIcon(Icons.error_outline), findsOneWidget);
+      expect(find.text('sin conexión'), findsOneWidget);
+    });
+
+    testWidgets('un resumen que llega con la pantalla cerrada no falla', (
+      tester,
+    ) async {
+      final resumenes = _ResumenesPendientes();
+
+      await pintarSinEsperar(
+        tester,
+        pagina(perfil: () async => _perfil(['FAMILIAR']), resumenes: resumenes),
+      );
+
+      // Se sale de la pantalla antes de que lleguen.
+      await tester.pumpWidget(const MaterialApp(home: SizedBox()));
+
+      resumenes.completar(100, _conDatos);
+      resumenes.fallar(101);
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+    });
+  });
 }
 
 Future<void> _conLocalizaciones(void Function(AppLocalizations) alta) async {
   alta(await AppLocalizations.delegate.load(const Locale('es')));
+}
+
+/// Resúmenes que se resuelven a mano, por jugador.
+class _ResumenesPendientes extends ResumenTemporadaService {
+  final Map<int, Completer<ResumenTemporadaModel>> _pendientes = {};
+
+  @override
+  Future<ResumenTemporadaModel> obtenerResumen(int jugadorId) {
+    final c = Completer<ResumenTemporadaModel>();
+    _pendientes[jugadorId] = c;
+    return c.future;
+  }
+
+  void completar(int jugadorId, ResumenTemporadaModel resumen) =>
+      _pendientes[jugadorId]!.complete(resumen);
+
+  void fallar(int jugadorId) =>
+      _pendientes[jugadorId]!.completeError(Exception('403'));
+}
+
+/// Listas de jugadores públicos que tardan hasta que el test las libera.
+class _EquiposPendientes extends TeamService {
+  final Completer<List<PlayerModel>> _lista = Completer();
+
+  @override
+  Future<List<PlayerModel>> obtenerJugadores(int equipoId) => _lista.future;
+
+  void completar() => _lista.complete([]);
+}
+
+class _EquiposQueFallan extends TeamService {
+  @override
+  Future<List<PlayerModel>> obtenerJugadores(int equipoId) async =>
+      throw Exception('500');
 }

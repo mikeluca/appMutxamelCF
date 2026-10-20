@@ -11,7 +11,15 @@ class ResumenTemporadaSection extends StatelessWidget {
   /// null si no se pudo cargar o no hay temporada.
   final ResumenTemporadaModel? resumen;
 
-  const ResumenTemporadaSection({super.key, required this.resumen});
+  /// true mientras el resumen todavía se está pidiendo: en su lugar se pinta un
+  /// indicador pequeño y no el "sin datos" (que sería falso).
+  final bool cargando;
+
+  const ResumenTemporadaSection({
+    super.key,
+    required this.resumen,
+    this.cargando = false,
+  });
 
   /// "Entrenamientos 18/20 · 3 goles" para la tarjeta de cada hijo; null si no
   /// hay datos que resumir.
@@ -54,7 +62,17 @@ class ResumenTemporadaSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        if (r == null || !r.hayDatos)
+        if (cargando)
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              key: ValueKey('resumen-temporada-cargando'),
+              width: 22,
+              height: 22,
+              child: CircularProgressIndicator(strokeWidth: 2.5),
+            ),
+          )
+        else if (r == null || !r.hayDatos)
           Text(
             t.seasonNoData,
             style: TextStyle(color: colors.onSurfaceVariant, fontSize: 14),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_mutxamel_cf/features/partido_en_vivo/models/partido_en_vivo_models.dart';
 import 'package:app_mutxamel_cf/features/partido_en_vivo/pages/partido_en_vivo_page.dart';
 import 'package:app_mutxamel_cf/features/partido_en_vivo/services/partido_en_vivo_service.dart';
@@ -27,6 +29,13 @@ class _ServicioFalso extends PartidoEnVivoService {
   final List<String> llamadas = [];
   bool rechazarElSiguiente = false;
 
+  /// Si no es null, el servidor dice que quedan estos segundos para deshacer
+  /// (el reloj del servidor no tiene por qué coincidir con el del móvil).
+  int? segundosForzados;
+
+  /// Si no es null, obtenerConvocados espera a que se complete.
+  Completer<List<ConvocadoEnVivo>>? convocadosPendientes;
+
   _ServicioFalso(this.reloj, this.partidos, {this.local = true});
 
   int get _favor => eventos.where((e) => e.tipo == 'GOL_FAVOR').length;
@@ -53,8 +62,12 @@ class _ServicioFalso extends PartidoEnVivoService {
       ],
       eventos: List.of(eventos),
       deshacibleId: deshacible ? ultimo.id : null,
-      deshacibleExpira: deshacible
-          ? ultimo.fecha!.add(const Duration(minutes: 2))
+      deshacibleSegundos: deshacible
+          ? segundosForzados ??
+                ultimo.fecha!
+                    .add(const Duration(minutes: 2))
+                    .difference(reloj.ahora)
+                    .inSeconds
           : null,
     );
   }
@@ -98,11 +111,20 @@ class _ServicioFalso extends PartidoEnVivoService {
   }
 
   @override
-  Future<List<ConvocadoEnVivo>> obtenerConvocados(int partidoId) async =>
-      const [
-        ConvocadoEnVivo(jugadorId: 11, dorsal: 1, nombre: 'Luis Lopez'),
-        ConvocadoEnVivo(jugadorId: 10, dorsal: 9, nombre: 'Pablo Garcia'),
-      ];
+  Future<List<ConvocadoEnVivo>> obtenerConvocados(int partidoId) async {
+    llamadas.add('convocados:$partidoId');
+
+    final pendientes = convocadosPendientes;
+
+    if (pendientes != null) {
+      return pendientes.future;
+    }
+
+    return const [
+      ConvocadoEnVivo(jugadorId: 11, dorsal: 1, nombre: 'Luis Lopez'),
+      ConvocadoEnVivo(jugadorId: 10, dorsal: 9, nombre: 'Pablo Garcia'),
+    ];
+  }
 
   @override
   Future<EstadoPartidoEnVivo> enviarInicioPartido(int partidoId) async =>
@@ -459,6 +481,63 @@ void main() {
       expect(find.text('⚽ p.p. (propia puerta del rival)'), findsOneWidget);
       expect(find.text('Mutxamel 1 - 0 Pego C.F.'), findsOneWidget);
     });
+
+    testWidgets('el botón de gol está deshabilitado mientras cargan los '
+        'convocados y no abre dos hojas', (tester) async {
+      final servicio = _ServicioFalso(reloj, _unPartido);
+      await _pintar(tester, servicio, reloj);
+      await _pulsarYConfirmar(tester, 'Inicio de partido');
+
+      final pendientes = Completer<List<ConvocadoEnVivo>>();
+      servicio.convocadosPendientes = pendientes;
+
+      expect(_habilitado(tester, 'Gol a favor'), isTrue);
+
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Gol a favor'));
+      await tester.pump();
+
+      // Cargando: el botón no responde y se pidió la lista una sola vez.
+      expect(_habilitado(tester, 'Gol a favor'), isFalse);
+      expect(
+        servicio.llamadas.where((l) => l.startsWith('convocados:')).length,
+        1,
+      );
+      expect(find.text('¿Quién ha marcado?'), findsNothing);
+
+      pendientes.complete(const [
+        ConvocadoEnVivo(jugadorId: 10, dorsal: 9, nombre: 'Pablo Garcia'),
+      ]);
+      await tester.pumpAndSettle();
+
+      expect(find.text('¿Quién ha marcado?'), findsOneWidget);
+      expect(find.text('Pablo Garcia'), findsOneWidget);
+
+      // Con la hoja abierta la carga ya terminó: al cerrarla el botón vuelve.
+      await tester.tapAt(const Offset(10, 10));
+      await tester.pumpAndSettle();
+
+      expect(_habilitado(tester, 'Gol a favor'), isTrue);
+    });
+
+    testWidgets('si falla la carga de convocados el botón vuelve a '
+        'habilitarse', (tester) async {
+      final servicio = _ServicioFalso(reloj, _unPartido);
+      await _pintar(tester, servicio, reloj);
+      await _pulsarYConfirmar(tester, 'Inicio de partido');
+
+      final pendientes = Completer<List<ConvocadoEnVivo>>();
+      servicio.convocadosPendientes = pendientes;
+
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Gol a favor'));
+      await tester.pump();
+      expect(_habilitado(tester, 'Gol a favor'), isFalse);
+
+      pendientes.completeError(Exception('sin conexión'));
+      await tester.pumpAndSettle();
+
+      // Se puede seguir con "Otro…" o "Propia puerta".
+      expect(find.text('Otro…'), findsOneWidget);
+    });
   });
 
   group('deshacer', () {
@@ -552,6 +631,62 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('la cuenta atrás usa los segundos del servidor, no la hora '
+        'del móvil', (tester) async {
+      final servicio = _ServicioFalso(reloj, _unPartido);
+      await _pintar(tester, servicio, reloj);
+      await _pulsarYConfirmar(tester, 'Inicio de partido');
+
+      // El servidor dice que quedan 90 s aunque, con la hora del móvil, el
+      // evento sea de hace unos instantes (el móvil va desfasado).
+      servicio.segundosForzados = 90;
+      await _pulsarYConfirmar(tester, 'Gol en contra');
+
+      expect(find.text('Deshacer (1:30)'), findsOneWidget);
+
+      reloj.avanzar(const Duration(seconds: 30));
+      await tester.pump(const Duration(seconds: 30));
+      expect(find.text('Deshacer (1:00)'), findsOneWidget);
+
+      reloj.avanzar(const Duration(seconds: 60));
+      await tester.pump(const Duration(seconds: 60));
+      expect(find.byIcon(Icons.undo), findsNothing);
+    });
+
+    testWidgets('sin segundos del servidor no se ofrece deshacer', (
+      tester,
+    ) async {
+      final servicio = _ServicioFalso(reloj, _unPartido);
+      await _pintar(tester, servicio, reloj);
+      await _pulsarYConfirmar(tester, 'Inicio de partido');
+
+      servicio.segundosForzados = 0;
+      await _pulsarYConfirmar(tester, 'Gol en contra');
+
+      expect(find.byIcon(Icons.undo), findsNothing);
+    });
+
+    test('el modelo lee segundosRestantesDeshacer', () {
+      final estado = EstadoPartidoEnVivo.fromJson({
+        'partidoId': 30,
+        'eventos': [
+          {'id': 5, 'tipo': 'GOL_CONTRA'},
+        ],
+        'ultimoEventoDeshacible': {
+          'id': 5,
+          'expira': '2026-10-24T11:02:00',
+          'segundosRestantesDeshacer': 87,
+        },
+      });
+
+      expect(estado.deshacibleId, 5);
+      expect(estado.deshacibleSegundos, 87);
+      expect(
+        EstadoPartidoEnVivo.fromJson({'partidoId': 30}).deshacibleSegundos,
+        isNull,
+      );
     });
   });
 

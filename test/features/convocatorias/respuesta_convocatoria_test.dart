@@ -586,21 +586,69 @@ void main() {
   });
 
   group('aviso de convocatoria', () {
-    test('abre "Mis convocatorias" a JUGADOR y FAMILIAR', () async {
-      for (final rol in ['JUGADOR', 'FAMILIAR']) {
+    test(
+      'el tipo CONVOCATORIA abre "Mis convocatorias" a JUGADOR y FAMILIAR',
+      () async {
+        for (final rol in ['JUGADOR', 'FAMILIAR']) {
+          await _conUsuario([rol]);
+
+          // Aunque el título sea otro: manda el tipo del push.
+          expect(
+            abreMisConvocatorias(tipo: 'CONVOCATORIA', titulo: 'Otro título'),
+            isTrue,
+            reason: rol,
+          );
+          expect(
+            abreMisConvocatorias(tipo: 'CONVOCATORIA'),
+            isTrue,
+            reason: rol,
+          );
+        }
+      },
+    );
+
+    test(
+      'un push antiguo (tipo COMUNICACION) se reconoce por el título',
+      () async {
+        for (final rol in ['JUGADOR', 'FAMILIAR']) {
+          await _conUsuario([rol]);
+
+          expect(
+            abreMisConvocatorias(
+              tipo: 'COMUNICACION',
+              titulo: 'Nueva convocatoria',
+            ),
+            isTrue,
+            reason: rol,
+          );
+          expect(abreMisConvocatorias(titulo: ' Nueva convocatoria '), isTrue);
+        }
+      },
+    );
+
+    test('no lo hace para otros roles', () async {
+      for (final rol in ['ENTRENADOR', 'COORDINADOR', 'RETRANSMISION']) {
         await _conUsuario([rol]);
 
-        expect(abreMisConvocatorias('Nueva convocatoria'), isTrue, reason: rol);
+        expect(
+          abreMisConvocatorias(tipo: 'CONVOCATORIA'),
+          isFalse,
+          reason: rol,
+        );
+        expect(abreMisConvocatorias(titulo: 'Nueva convocatoria'), isFalse);
       }
     });
 
-    test('no lo hace para otros roles ni para otros mensajes', () async {
-      await _conUsuario(['ENTRENADOR']);
-      expect(abreMisConvocatorias('Nueva convocatoria'), isFalse);
-
+    test('ni para otros tipos o mensajes', () async {
       await _conUsuario(['JUGADOR']);
-      expect(abreMisConvocatorias('Falta justificada'), isFalse);
-      expect(abreMisConvocatorias(null), isFalse);
+
+      expect(
+        abreMisConvocatorias(tipo: 'COMUNICACION', titulo: 'Falta justificada'),
+        isFalse,
+      );
+      expect(abreMisConvocatorias(tipo: 'RESULTADO'), isFalse);
+      expect(abreMisConvocatorias(), isFalse);
+      expect(abreMisConvocatorias(tipo: '', titulo: ''), isFalse);
     });
   });
 }

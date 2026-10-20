@@ -45,6 +45,13 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
   Map<int, PlayerModel> _jugadoresConFoto = {};
   Map<int, ResumenTemporadaModel?> _resumenes = {};
 
+  /// Jugadores cuyo resumen de temporada todavía no ha llegado.
+  Set<int> _resumenesPendientes = {};
+
+  /// Número de la carga en curso: una respuesta de una carga anterior (por un
+  /// refresco o un reintento) no debe pisar a la actual.
+  int _carga = 0;
+
   bool _cargando = true;
   String? _error;
 
@@ -57,18 +64,69 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
     _cargarJugadores();
   }
 
+  /// El perfil se pinta en cuanto llega. Las fotos y el resumen de cada
+  /// jugador se piden después, en paralelo y cada uno por su cuenta: la ficha
+  /// no espera a ninguno de ellos y, si fallan, sigue sin ellos.
   Future<void> _cargarJugadores() async {
+    final carga = ++_carga;
+
     try {
       final perfil =
           await (widget.cargarPerfil ?? PerfilService.obtenerPerfil)();
 
+      if (!mounted || carga != _carga) return;
+
+      setState(() {
+        _perfil = perfil;
+        _resumenes = {};
+        _resumenesPendientes = {for (final j in perfil.jugadores) j.id};
+        _cargando = false;
+        _error = null;
+      });
+
+      await Future.wait([
+        _cargarFotos(perfil, carga),
+        ...perfil.jugadores.map((j) => _cargarResumen(j.id, carga)),
+      ]);
+    } catch (e) {
+      if (!mounted || carga != _carga) return;
+
+      setState(() {
+        _cargando = false;
+        _error = e.toString().replaceFirst('Exception: ', '');
+      });
+    }
+  }
+
+  /// El resumen es opcional: si falla (o no hay temporada), esa ficha dice que
+  /// todavía no hay datos.
+  Future<void> _cargarResumen(int jugadorId, int carga) async {
+    ResumenTemporadaModel? resumen;
+
+    try {
+      resumen = await _resumenService.obtenerResumen(jugadorId);
+    } catch (_) {
+      resumen = null;
+    }
+
+    if (!mounted || carga != _carga) return;
+
+    setState(() {
+      _resumenes = {..._resumenes, jugadorId: resumen};
+      _resumenesPendientes = {..._resumenesPendientes}..remove(jugadorId);
+    });
+  }
+
+  /// La foto sale de la lista pública del equipo. Cada jugador se pinta con su
+  /// foto en cuanto se conoce; mientras tanto (o si falla) lleva la imagen por
+  /// defecto.
+  Future<void> _cargarFotos(PerfilApp perfil, int carga) async {
+    try {
       // El perfil ya trae el id del equipo; el listado de equipos solo hace
       // falta para un jugador cuyo equipo no se pudo resolver por id.
       final equipos = perfil.jugadores.any((j) => j.equipoId == null)
           ? await _teamService.obtenerEquipos()
           : <TeamModel>[];
-
-      final jugadoresConFoto = <int, PlayerModel>{};
 
       for (final jugador in perfil.jugadores) {
         var equipoId = jugador.equipoId;
@@ -95,46 +153,22 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
 
         final jugadoresEquipo = await _teamService.obtenerJugadores(equipoId);
 
+        if (!mounted || carga != _carga) return;
+
         for (final jugadorPublico in jugadoresEquipo) {
           if (jugadorPublico.id == jugador.id) {
-            jugadoresConFoto[jugador.id] = jugadorPublico;
+            setState(() {
+              _jugadoresConFoto = {
+                ..._jugadoresConFoto,
+                jugador.id: jugadorPublico,
+              };
+            });
             break;
           }
         }
       }
-
-      if (!mounted) return;
-
-      // El resumen de cada jugador se pide en paralelo y es opcional: si falla
-      // (o no hay temporada), esa ficha dice que todavía no hay datos.
-      final resumenes = await Future.wait(
-        perfil.jugadores.map(
-          (jugador) => _resumenService
-              .obtenerResumen(jugador.id)
-              .then<ResumenTemporadaModel?>((r) => r)
-              .catchError((_) => null),
-        ),
-      );
-
-      if (!mounted) return;
-
-      setState(() {
-        _perfil = perfil;
-        _resumenes = {
-          for (var i = 0; i < perfil.jugadores.length; i++)
-            perfil.jugadores[i].id: resumenes[i],
-        };
-        _jugadoresConFoto = jugadoresConFoto;
-        _cargando = false;
-        _error = null;
-      });
-    } catch (e) {
-      if (!mounted) return;
-
-      setState(() {
-        _cargando = false;
-        _error = e.toString().replaceFirst('Exception: ', '');
-      });
+    } catch (_) {
+      // Sin foto la ficha sigue siendo útil: se queda la imagen por defecto.
     }
   }
 
@@ -286,7 +320,10 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
 
                 const Divider(height: 32),
 
-                ResumenTemporadaSection(resumen: _resumenes[jugador.id]),
+                ResumenTemporadaSection(
+                  resumen: _resumenes[jugador.id],
+                  cargando: _resumenesPendientes.contains(jugador.id),
+                ),
               ],
             ),
           ),

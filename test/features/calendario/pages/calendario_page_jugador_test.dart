@@ -114,6 +114,7 @@ Future<void> _pintar(
   _FakeCalendarioService servicio,
   List<String> roles, {
   Map<String, WidgetBuilder> rutas = const {},
+  DateTime Function()? ahora,
 }) async {
   tester.view.physicalSize = const Size(800, 3000);
   tester.view.devicePixelRatio = 1;
@@ -134,6 +135,7 @@ Future<void> _pintar(
         calendarioService: servicio,
         teamService: _FakeTeamService(),
         cargarPerfil: () async => _perfil(roles),
+        ahora: ahora,
       ),
     ),
   );
@@ -224,5 +226,72 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('PANTALLA CONVOCATORIAS'), findsOneWidget);
+  });
+
+  // El partido está en el día de hoy (el calendario abre en hoy): lo que cambia
+  // es el "hoy" con el que la página decide si se puede abrir.
+  Future<void> pulsarPartidoConHoy(WidgetTester tester, DateTime hoy) async {
+    await _pintar(
+      tester,
+      _FakeCalendarioService(_calendario(respuesta: 'VA')),
+      ['JUGADOR'],
+      ahora: () => hoy,
+      rutas: {
+        AppRoutes.myCallups: (_) =>
+            const Scaffold(body: Center(child: Text('PANTALLA CONVOCATORIAS'))),
+      },
+    );
+
+    await tester.tap(find.text('Pego C.F.'));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('un partido ya pasado no lleva a "Mis convocatorias" y enseña '
+      'solo el estado', (tester) async {
+    await pulsarPartidoConHoy(tester, _enDias(1));
+
+    expect(find.text('PANTALLA CONVOCATORIAS'), findsNothing);
+    expect(find.text('Va'), findsOneWidget);
+  });
+
+  testWidgets('un partido a más de 14 días no lleva a "Mis convocatorias"', (
+    tester,
+  ) async {
+    await pulsarPartidoConHoy(tester, _enDias(-15));
+
+    expect(find.text('PANTALLA CONVOCATORIAS'), findsNothing);
+    expect(find.text('Va'), findsOneWidget);
+  });
+
+  testWidgets(
+    'un partido a justo 14 días todavía lleva a "Mis convocatorias"',
+    (tester) async {
+      await pulsarPartidoConHoy(tester, _enDias(-14));
+
+      expect(find.text('PANTALLA CONVOCATORIAS'), findsOneWidget);
+    },
+  );
+
+  group('partidoEnMisConvocatorias', () {
+    final hoy = DateTime(2026, 10, 21, 18, 30);
+
+    test('hoy, aunque ya haya empezado, y hasta 14 días después', () {
+      expect(partidoEnMisConvocatorias(DateTime(2026, 10, 21), hoy), isTrue);
+      expect(partidoEnMisConvocatorias(DateTime(2026, 10, 21, 9), hoy), isTrue);
+      expect(partidoEnMisConvocatorias(DateTime(2026, 11, 4), hoy), isTrue);
+    });
+
+    test('ayer y el día 15 quedan fuera', () {
+      expect(partidoEnMisConvocatorias(DateTime(2026, 10, 20), hoy), isFalse);
+      expect(partidoEnMisConvocatorias(DateTime(2026, 11, 5), hoy), isFalse);
+    });
+
+    test('el cambio de hora de octubre no mueve el límite', () {
+      final antes = DateTime(2026, 10, 20, 12);
+
+      // 14 días después del 20/10 es el 3/11, pasado el cambio al horario de invierno.
+      expect(partidoEnMisConvocatorias(DateTime(2026, 11, 3), antes), isTrue);
+      expect(partidoEnMisConvocatorias(DateTime(2026, 11, 4), antes), isFalse);
+    });
   });
 }

@@ -35,9 +35,6 @@ class _AutorGol {
 
 class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
     with WidgetsBindingObserver {
-  /// Lo que dura la posibilidad de deshacer el último aviso.
-  static const Duration _ventanaDeshacer = Duration(minutes: 2);
-
   late final PartidoEnVivoService _service =
       widget.service ?? PartidoEnVivoService();
 
@@ -50,8 +47,16 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
 
   bool _enviando = false;
 
+  /// Mientras se piden los convocados para elegir al autor del gol, el botón de
+  /// gol está deshabilitado (otro toque abriría una segunda hoja).
+  bool _cargandoConvocados = false;
+
   Timer? _temporizador;
   Duration? _restante;
+
+  /// Cuándo acaba el "deshacer": ahora (reloj del móvil) más los segundos que
+  /// dice el servidor. No depende de que los dos relojes coincidan.
+  DateTime? _finDeshacer;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
   AppLocalizations get _t => AppLocalizations.of(context);
@@ -159,19 +164,12 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
   // Cuenta atrás de "Deshacer"
   // ------------------------------------------------------------------
 
-  Duration? _restanteDe(EstadoPartidoEnVivo? estado) {
-    final expira = estado?.deshacibleExpira;
-
-    if (estado?.deshacibleId == null || expira == null) {
+  Duration? _restanteDe(DateTime? fin) {
+    if (fin == null) {
       return null;
     }
 
-    var restante = expira.difference(_ahora());
-
-    // Nunca más de 2 minutos aunque el reloj del móvil vaya atrasado.
-    if (restante > _ventanaDeshacer) {
-      restante = _ventanaDeshacer;
-    }
+    final restante = fin.difference(_ahora());
 
     return restante > Duration.zero ? restante : null;
   }
@@ -179,7 +177,16 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
   void _reiniciarCuentaAtras() {
     _temporizador?.cancel();
 
-    _restante = _restanteDe(_estado);
+    final estado = _estado;
+    final segundos = estado?.deshacibleId == null
+        ? null
+        : estado?.deshacibleSegundos;
+
+    _finDeshacer = segundos == null || segundos <= 0
+        ? null
+        : _ahora().add(Duration(seconds: segundos));
+
+    _restante = _restanteDe(_finDeshacer);
 
     if (_restante == null) return;
 
@@ -189,7 +196,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
         return;
       }
 
-      final restante = _restanteDe(_estado);
+      final restante = _restanteDe(_finDeshacer);
 
       setState(() => _restante = restante);
 
@@ -363,7 +370,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
       _construirBoton(
         icono: Icons.emoji_events_outlined,
         titulo: _t.liveGoalForButton,
-        habilitado: enCurso,
+        habilitado: enCurso && !_cargandoConvocados,
         onPressed: _abrirSelectorAutor,
       ),
       const SizedBox(height: 12),
@@ -691,7 +698,9 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
   Future<void> _abrirSelectorAutor() async {
     final partido = _partido;
 
-    if (partido == null) return;
+    if (partido == null || _cargandoConvocados) return;
+
+    setState(() => _cargandoConvocados = true);
 
     List<ConvocadoEnVivo> convocados = const [];
 
@@ -705,6 +714,8 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
     }
 
     if (!mounted) return;
+
+    setState(() => _cargandoConvocados = false);
 
     final autor = await showModalBottomSheet<_AutorGol>(
       context: context,

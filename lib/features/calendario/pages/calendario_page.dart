@@ -14,6 +14,21 @@ import '../model/calendario_model.dart';
 import '../services/calendario_service.dart';
 import '../widgets/calendario_mensual.dart';
 
+/// Días hacia delante que cubre "Mis convocatorias" (el backend:
+/// RespuestaConvocatoriaService.DIAS_HACIA_DELANTE).
+const int diasMisConvocatorias = 14;
+
+/// true si un partido de [fecha] aparece en "Mis convocatorias": desde hoy
+/// (aunque ya haya empezado) hasta dentro de [diasMisConvocatorias] días. Un
+/// partido pasado, o de más allá, no se puede abrir desde el calendario.
+bool partidoEnMisConvocatorias(DateTime fecha, DateTime hoy) {
+  final dia = DateTime(fecha.year, fecha.month, fecha.day);
+  final desde = DateTime(hoy.year, hoy.month, hoy.day);
+  final hasta = DateTime(hoy.year, hoy.month, hoy.day + diasMisConvocatorias);
+
+  return !dia.isBefore(desde) && !dia.isAfter(hasta);
+}
+
 /// Vista de solo lectura de UN ÚNICO calendario con los entrenamientos y
 /// partidos de TODOS los equipos a los que el usuario está vinculado
 /// (varios jugadores/equipos aparecen mezclados en el mismo calendario,
@@ -25,11 +40,16 @@ class CalendarioPage extends StatefulWidget {
   final TeamService? teamService;
   final Future<PerfilApp> Function()? cargarPerfil;
 
+  /// Solo para tests: el "hoy" con el que se decide si un evento es futuro o
+  /// si su partido está en "Mis convocatorias".
+  final DateTime Function()? ahora;
+
   const CalendarioPage({
     super.key,
     this.calendarioService,
     this.teamService,
     this.cargarPerfil,
+    this.ahora,
   });
 
   @override
@@ -391,7 +411,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
             primerDia: _desde,
             ultimoDia: _hasta,
             itemBuilder: (context, evento) =>
-                _construirTarjetaItem(evento, DateTime.now()),
+                _construirTarjetaItem(evento, (widget.ahora ?? DateTime.now)()),
           ),
         ],
       ),
@@ -445,11 +465,15 @@ class _CalendarioPageState extends State<CalendarioPage> {
 
     // Partido al que este jugador está convocado: se responde (Va / No
     // puede) en "Mis convocatorias".
+    // "Mis convocatorias" solo lista los de hoy a 14 días: fuera de esa
+    // ventana el partido no estaría allí, y se enseña solo el estado de la
+    // respuesta.
     final abreConvocatorias =
         !item.esEntrenamiento &&
         convocado == true &&
         evento.jugadorId != null &&
-        !item.cancelado;
+        !item.cancelado &&
+        partidoEnMisConvocatorias(item.fecha, hoy);
 
     final icono = item.esEntrenamiento
         ? Icons.fitness_center

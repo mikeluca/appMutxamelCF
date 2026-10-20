@@ -36,6 +36,11 @@ class PushNotificationService {
   static const String _tipoComunicacion = 'COMUNICACION';
   static const String _tipoResultado = 'RESULTADO';
 
+  // Los dos tipos de push que nacen de una comunicación: la normal y la de una
+  // convocatoria (que además abre "Mis convocatorias").
+  static bool _esTipoDeComunicacion(Object? tipo) =>
+      tipo == _tipoComunicacion || tipo == tipoPushConvocatoria;
+
   static Future<void> suscribirATopic(String topic) =>
       _messaging.subscribeToTopic(topic);
 
@@ -107,7 +112,7 @@ class PushNotificationService {
       final tipo = message.data['tipo'];
       final referenciaIdString = message.data['referenciaId'];
 
-      if (tipo != _tipoComunicacion) {
+      if (!_esTipoDeComunicacion(tipo)) {
         if (tipo != _tipoResultado) {
           debugPrint('Push con tipo no reconocido en foreground: $tipo');
         }
@@ -136,6 +141,7 @@ class PushNotificationService {
         cantidadNoLeidas: cantidadNoLeidas,
         esPrivada: esPrivada,
         autorId: autorId,
+        tipo: tipo?.toString(),
       );
     });
 
@@ -210,16 +216,20 @@ class PushNotificationService {
   static Future<void> _procesarNotificacion(RemoteMessage message) async {
     final tipo = message.data['tipo'];
 
-    if (tipo != _tipoComunicacion) {
+    if (!_esTipoDeComunicacion(tipo)) {
       if (tipo != _tipoResultado) {
         debugPrint('Push con tipo no reconocido al abrir: $tipo');
       }
       return;
     }
 
-    // El aviso de una convocatoria lleva a JUGADOR/FAMILIAR a "Mis
+    // El aviso de una convocatoria (data["tipo"] == "CONVOCATORIA"; para los
+    // pushes antiguos, su título) lleva a JUGADOR/FAMILIAR a "Mis
     // convocatorias", donde pueden responder.
-    if (abreMisConvocatorias(message.notification?.title)) {
+    if (abreMisConvocatorias(
+      tipo: tipo?.toString(),
+      titulo: message.notification?.title,
+    )) {
       await AppNavigator.abrirMisConvocatorias();
       return;
     }

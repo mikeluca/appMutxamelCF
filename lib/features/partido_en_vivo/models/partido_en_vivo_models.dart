@@ -111,9 +111,10 @@ class EstadoPartidoEnVivo {
   final List<String> goleadores;
   final List<EventoEnVivo> eventos;
 
-  /// El último evento si todavía se puede deshacer, y hasta cuándo.
+  /// El último evento si todavía se puede deshacer, y cuántos segundos quedan
+  /// según el reloj del servidor (el del móvil puede ir adelantado o atrasado).
   final int? deshacibleId;
-  final DateTime? deshacibleExpira;
+  final int? deshacibleSegundos;
 
   const EstadoPartidoEnVivo({
     required this.partidoId,
@@ -125,7 +126,7 @@ class EstadoPartidoEnVivo {
     this.goleadores = const [],
     this.eventos = const [],
     this.deshacibleId,
-    this.deshacibleExpira,
+    this.deshacibleSegundos,
   });
 
   factory EstadoPartidoEnVivo.fromJson(Map<String, dynamic> json) {
@@ -143,9 +144,8 @@ class EstadoPartidoEnVivo {
           .map((e) => EventoEnVivo.fromJson(e as Map<String, dynamic>))
           .toList(),
       deshacibleId: (deshacible?['id'] as num?)?.toInt(),
-      deshacibleExpira: DateTime.tryParse(
-        deshacible?['expira']?.toString() ?? '',
-      ),
+      deshacibleSegundos: (deshacible?['segundosRestantesDeshacer'] as num?)
+          ?.toInt(),
     );
   }
 

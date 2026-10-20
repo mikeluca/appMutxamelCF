@@ -66,7 +66,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
 
     if (!mounted) return;
 
-    if (abreMisConvocatorias(notificacion.titulo)) {
+    if (abreMisConvocatorias(titulo: notificacion.titulo)) {
       await Navigator.pushNamed(context, AppRoutes.myCallups);
 
       await _cargarNotificaciones();
