@@ -15,6 +15,9 @@ class ReporteModel {
   final int? autorId;
   final String autor;
   final bool autorActivo;
+
+  /// Un ADMIN_APP no se puede desactivar desde la moderación.
+  final bool autorEsAdmin;
   final String? titulo;
   final String contenido;
   final DateTime? fechaMensaje;
@@ -34,6 +37,7 @@ class ReporteModel {
     required this.autorId,
     required this.autor,
     required this.autorActivo,
+    required this.autorEsAdmin,
     required this.titulo,
     required this.contenido,
     required this.fechaMensaje,
@@ -59,6 +63,7 @@ class ReporteModel {
       autorId: (autor['id'] as num?)?.toInt(),
       autor: autor['nombre']?.toString() ?? '',
       autorActivo: autor['activo'] as bool? ?? false,
+      autorEsAdmin: autor['esAdmin'] as bool? ?? false,
       titulo: json['tituloCopia']?.toString(),
       contenido: json['contenidoCopia']?.toString() ?? '',
       fechaMensaje: _fechaHora(json['fechaMensaje']),

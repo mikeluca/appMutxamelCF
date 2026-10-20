@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app_mutxamel_cf/core/navigation/app_navigator.dart';
 import 'package:app_mutxamel_cf/core/network/api_client.dart';
+import 'package:app_mutxamel_cf/core/notifications/services/local_notification_service.dart';
 import 'package:app_mutxamel_cf/core/notifications/services/push_notification_service.dart';
 import 'package:app_mutxamel_cf/core/notifications/utils/convocatoria_notificacion.dart';
 import 'package:app_mutxamel_cf/features/admin/models/admin_model.dart';
@@ -75,6 +76,7 @@ ReporteModel _reporte(
   int otros = 0,
   String estado = estadoReportePendiente,
   String? nota,
+  bool autorEsAdmin = false,
 }) => ReporteModel(
   id: id,
   fechaReporte: DateTime(2026, 10, 21, 12, 30),
@@ -83,6 +85,7 @@ ReporteModel _reporte(
   autorId: 20,
   autor: 'Autor $id',
   autorActivo: true,
+  autorEsAdmin: autorEsAdmin,
   titulo: 'Título $id',
   contenido: 'Texto reportado $id ${'muy largo ' * 40}',
   fechaMensaje: DateTime(2026, 10, 20, 9, 0),
@@ -347,6 +350,181 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('No hay reportes pendientes'), findsOneWidget);
+    });
+  });
+
+  group('Moderación: autor administrador, petición en curso y permisos', () {
+    testWidgets(
+      'no ofrece "Desactivar autor" si el autor es un administrador',
+      (tester) async {
+        _pantallaGrande(tester);
+
+        final servicio = _FakeAdmin()
+          ..pendientes = [_reporte(1, autorEsAdmin: true), _reporte(2)];
+
+        await tester.pumpWidget(_app(ModeracionPage(servicio: servicio)));
+        await tester.pumpAndSettle();
+
+        Finder desactivar(int id) => find.descendant(
+          of: find.byKey(ValueKey('reporte-$id')),
+          matching: find.text('Desactivar autor'),
+        );
+
+        expect(desactivar(1), findsNothing);
+        expect(desactivar(2), findsOneWidget);
+        // Las otras dos acciones siguen disponibles.
+        expect(
+          find.descendant(
+            of: find.byKey(const ValueKey('reporte-1')),
+            matching: find.text('Descartar'),
+          ),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets('mientras hay una petición en curso los botones quedan '
+        'deshabilitados', (tester) async {
+      _pantallaGrande(tester);
+
+      final servicio = _FakeAdminLento();
+
+      await tester.pumpWidget(_app(ModeracionPage(servicio: servicio)));
+      await tester.pumpAndSettle();
+
+      Finder boton(String texto, int id) => find.ancestor(
+        of: find.descendant(
+          of: find.byKey(ValueKey('reporte-$id')),
+          matching: find.text(texto),
+        ),
+        matching: find.bySubtype<ButtonStyleButton>(),
+      );
+
+      await tester.tap(boton('Descartar', 1));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Confirmar'));
+      await tester.pump();
+
+      // La petición no ha terminado.
+      expect(
+        tester.widget<ButtonStyleButton>(boton('Descartar', 2)).onPressed,
+        isNull,
+      );
+      expect(
+        tester.widget<ButtonStyleButton>(boton('Borrar mensaje', 2)).onPressed,
+        isNull,
+      );
+      expect(
+        tester
+            .widget<ButtonStyleButton>(boton('Desactivar autor', 2))
+            .onPressed,
+        isNull,
+      );
+
+      servicio.terminar.complete();
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widget<ButtonStyleButton>(boton('Descartar', 2)).onPressed,
+        isNotNull,
+      );
+    });
+
+    testWidgets('un 403 al cargar o al actuar muestra "No tienes permiso"', (
+      tester,
+    ) async {
+      _pantallaGrande(tester);
+
+      final servicio = _FakeAdmin()
+        ..pendientes = [_reporte(1)]
+        ..fallo = const ApiException('prohibido', statusCode: 403);
+
+      await tester.pumpWidget(_app(ModeracionPage(servicio: servicio)));
+      await tester.pumpAndSettle();
+
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(const ValueKey('reporte-1')),
+          matching: find.text('Descartar'),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Confirmar'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('No tienes permiso'), findsOneWidget);
+      expect(find.textContaining('No se ha podido conectar'), findsNothing);
+    });
+  });
+
+  group('Avisos locales de REPORTE y PASAR_LISTA', () {
+    test('sin permiso para el destino el payload es null y no cae en '
+        'COMUNICACION:<id>', () {
+      AuthManager.olvidarUsuario();
+
+      for (final tipo in ['REPORTE', 'PASAR_LISTA']) {
+        expect(
+          LocalNotificationService.payloadDeAviso(
+            comunicacionId: 90,
+            titulo: 'Aviso',
+            datos: {'tipo': tipo, 'reporteId': '5'},
+          ),
+          isNull,
+          reason: tipo,
+        );
+      }
+
+      // Un aviso normal sigue abriendo su comunicación.
+      expect(
+        LocalNotificationService.payloadDeAviso(
+          comunicacionId: 90,
+          titulo: 'Hola',
+          datos: const {'tipo': 'COMUNICACION'},
+        ),
+        'COMUNICACION:90',
+      );
+    });
+
+    test('un administrador sí tiene payload de REPORTE', () async {
+      await AuthManager.establecerUsuario(
+        AuthUser(usuarioId: 1, email: 'a@b.c', roles: const ['ADMIN_APP']),
+      );
+      addTearDown(AuthManager.olvidarUsuario);
+
+      expect(
+        LocalNotificationService.payloadDeAviso(
+          comunicacionId: 5,
+          titulo: 'Nuevo mensaje reportado',
+          datos: const {'tipo': 'REPORTE'},
+        ),
+        'REPORTE',
+      );
+    });
+
+    test('REPORTE y PASAR_LISTA usan un espacio de ids distinto del de las '
+        'comunicaciones', () {
+      const reporte = {'tipo': 'REPORTE'};
+      const lista = {'tipo': 'PASAR_LISTA'};
+      const normal = {'tipo': 'COMUNICACION'};
+
+      final ids = {
+        LocalNotificationService.idDeNotificacion(5, reporte),
+        LocalNotificationService.idDeNotificacion(5, lista),
+        LocalNotificationService.idDeNotificacion(5, normal),
+      };
+
+      // Mismo número, tres notificaciones distintas.
+      expect(ids, hasLength(3));
+      expect(LocalNotificationService.idDeNotificacion(5, normal), 5);
+      expect(
+        LocalNotificationService.idDeNotificacion(5, reporte),
+        isNot(LocalNotificationService.idDeNotificacion(6, reporte)),
+      );
+      // Dentro del rango de un entero de 32 bits.
+      expect(
+        LocalNotificationService.idDeNotificacion(99999999, lista),
+        lessThan(2147483647),
+      );
     });
   });
 
@@ -627,4 +805,12 @@ void main() {
       expect(find.text('MODERACION'), findsOneWidget);
     });
   });
+}
+
+/// Un servicio cuya acción de descartar no termina hasta que el test lo decide.
+class _FakeAdminLento extends _FakeAdmin {
+  final Completer<void> terminar = Completer<void>();
+
+  @override
+  Future<void> descartar(int reporteId, {String? nota}) => terminar.future;
 }

@@ -130,7 +130,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       _teamService.obtenerJugadores(widget.equipo.id),
       _matchService.obtenerPartidosSinConvocatoria(
         widget.equipo.id,
-        incluirPartidoId: widget.convocatoria?.partidoId,
+        incluirPartidoId: widget.convocatoria?.partidoId ?? widget.partidoIdInicial,
       ),
     ]);
 
@@ -198,6 +198,15 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
         return;
       }
     }
+
+    // Aun pidiéndolo con incluirPartidoId el partido no vino: ya no admite convocatoria.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_t.callupMatchUnavailable)));
+    });
   }
 
   /// Se calcula a partir de partido.dia (en vez de usar diaFormateado tal

@@ -2128,7 +2128,49 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get trackingPeriod30 => 'Últimos 30 días';
+  String trackingPeriodDays(int count) {
+    return 'Últimos $count días';
+  }
+
+  @override
+  String trackingExcusedChip(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count justificadas',
+      one: '$count justificada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trackingLateChip(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count retrasos',
+      one: '$count retraso',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noPermission => 'No tienes permiso';
+
+  @override
+  String get callupMatchUnavailable => 'Este partido ya no admite convocatoria';
+
+  @override
+  String statsUnreviewedNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count entrenamientos sin lista revisada no cuentan en la asistencia',
+      one: '$count entrenamiento sin lista revisada no cuenta en la asistencia',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get trackingPeriodSeason => 'Temporada';

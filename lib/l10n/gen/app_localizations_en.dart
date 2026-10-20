@@ -2105,7 +2105,44 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get trackingPeriod30 => 'Last 30 days';
+  String trackingPeriodDays(int count) {
+    return 'Last $count days';
+  }
+
+  @override
+  String trackingExcusedChip(int count) {
+    return '$count excused';
+  }
+
+  @override
+  String trackingLateChip(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count late arrivals',
+      one: '$count late arrival',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noPermission => 'You don\'t have permission';
+
+  @override
+  String get callupMatchUnavailable => 'This match no longer accepts a call-up';
+
+  @override
+  String statsUnreviewedNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count trainings without a reviewed list do not count towards attendance',
+      one:
+          '$count training without a reviewed list does not count towards attendance',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get trackingPeriodSeason => 'Season';

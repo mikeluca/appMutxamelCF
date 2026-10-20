@@ -431,7 +431,6 @@
   "selectMatchHint": "Select a match",
   "selectMatchError": "Select a match.",
   "noMatchesAvailableForCallup": "There are no matches available to create a call-up. Create a match first.",
-  "matchesLoadError": "The matches could not be loaded.",
   "callupPlayersTitle": "Called-up players",
   "selectedCountLabel": "{count} selected",
   "@selectedCountLabel": {
@@ -790,7 +789,24 @@
   "@weekendRound": {
     "placeholders": { "jornada": { "type": "int" } }
   },
-  "trackingPeriod30": "Last 30 days",
+  "trackingPeriodDays": "Last {count} days",
+  "@trackingPeriodDays": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trackingExcusedChip": "{count} excused",
+  "@trackingExcusedChip": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trackingLateChip": "{count, plural, one{{count} late arrival} other{{count} late arrivals}}",
+  "@trackingLateChip": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "noPermission": "You don't have permission",
+  "callupMatchUnavailable": "This match no longer accepts a call-up",
+  "statsUnreviewedNote": "{count, plural, one{{count} training without a reviewed list does not count towards attendance} other{{count} trainings without a reviewed list do not count towards attendance}}",
+  "@statsUnreviewedNote": {
+    "placeholders": { "count": { "type": "int" } }
+  },
   "trackingPeriodSeason": "Season",
   "trackingAllTeams": "All teams",
   "trackingFaultsChip": "{count, plural, one{{count} absence} other{{count} absences}}",

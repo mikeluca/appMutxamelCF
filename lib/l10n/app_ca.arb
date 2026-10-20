@@ -431,7 +431,6 @@
   "selectMatchHint": "Selecciona un partit",
   "selectMatchError": "Selecciona un partit.",
   "noMatchesAvailableForCallup": "No hi ha partits disponibles per crear una convocatòria. Crea primer un partit.",
-  "matchesLoadError": "No s'han pogut carregar els partits.",
   "callupPlayersTitle": "Jugadors convocats",
   "selectedCountLabel": "{count} seleccionats",
   "@selectedCountLabel": {
@@ -790,7 +789,24 @@
   "@weekendRound": {
     "placeholders": { "jornada": { "type": "int" } }
   },
-  "trackingPeriod30": "Últims 30 dies",
+  "trackingPeriodDays": "Últims {count} dies",
+  "@trackingPeriodDays": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trackingExcusedChip": "{count, plural, one{{count} justificada} other{{count} justificades}}",
+  "@trackingExcusedChip": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trackingLateChip": "{count, plural, one{{count} retard} other{{count} retards}}",
+  "@trackingLateChip": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "noPermission": "No tens permís",
+  "callupMatchUnavailable": "Aquest partit ja no admet convocatòria",
+  "statsUnreviewedNote": "{count, plural, one{{count} entrenament sense llista revisada no compta en l'assistència} other{{count} entrenaments sense llista revisada no compten en l'assistència}}",
+  "@statsUnreviewedNote": {
+    "placeholders": { "count": { "type": "int" } }
+  },
   "trackingPeriodSeason": "Temporada",
   "trackingAllTeams": "Tots els equips",
   "trackingFaultsChip": "{count, plural, one{{count} falta} other{{count} faltes}}",

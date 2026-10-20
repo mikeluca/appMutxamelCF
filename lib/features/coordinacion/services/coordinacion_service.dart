@@ -16,7 +16,7 @@ class CoordinacionService {
     return FinDeSemanaModel.fromJson(data as Map<String, dynamic>);
   }
 
-  Future<List<SeguimientoJugadorModel>> obtenerSeguimiento({
+  Future<SeguimientoModel> obtenerSeguimiento({
     String periodo = periodoSeguimiento30d,
   }) async {
     final data = await ApiClient.get(
@@ -24,9 +24,7 @@ class CoordinacionService {
       autenticado: true,
     );
 
-    return ((data as Map<String, dynamic>)['jugadores'] as List<dynamic>? ?? [])
-        .map((e) => SeguimientoJugadorModel.fromJson(e as Map<String, dynamic>))
-        .toList();
+    return SeguimientoModel.fromJson(data as Map<String, dynamic>);
   }
 
   Future<SeguimientoDetalleModel> obtenerDetalle(

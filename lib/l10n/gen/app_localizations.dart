@@ -3808,11 +3808,41 @@ abstract class AppLocalizations {
   /// **'Jornada {jornada}'**
   String weekendRound(int jornada);
 
-  /// No description provided for @trackingPeriod30.
+  /// No description provided for @trackingPeriodDays.
   ///
   /// In es, this message translates to:
-  /// **'Últimos 30 días'**
-  String get trackingPeriod30;
+  /// **'Últimos {count} días'**
+  String trackingPeriodDays(int count);
+
+  /// No description provided for @trackingExcusedChip.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, one{{count} justificada} other{{count} justificadas}}'**
+  String trackingExcusedChip(int count);
+
+  /// No description provided for @trackingLateChip.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, one{{count} retraso} other{{count} retrasos}}'**
+  String trackingLateChip(int count);
+
+  /// No description provided for @noPermission.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes permiso'**
+  String get noPermission;
+
+  /// No description provided for @callupMatchUnavailable.
+  ///
+  /// In es, this message translates to:
+  /// **'Este partido ya no admite convocatoria'**
+  String get callupMatchUnavailable;
+
+  /// No description provided for @statsUnreviewedNote.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, one{{count} entrenamiento sin lista revisada no cuenta en la asistencia} other{{count} entrenamientos sin lista revisada no cuentan en la asistencia}}'**
+  String statsUnreviewedNote(int count);
 
   /// No description provided for @trackingPeriodSeason.
   ///

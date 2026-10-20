@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/utils/mensaje_error.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
@@ -154,7 +155,7 @@ class _FinDeSemanaPageState extends State<FinDeSemanaPage> {
                   }
 
                   if (snapshot.hasError || snapshot.data == null) {
-                    return _construirError();
+                    return _construirError(snapshot.error);
                   }
 
                   return _construirContenido(snapshot.data!);
@@ -376,7 +377,7 @@ class _FinDeSemanaPageState extends State<FinDeSemanaPage> {
     );
   }
 
-  Widget _construirError() {
+  Widget _construirError(Object? error) {
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(24),
@@ -385,7 +386,7 @@ class _FinDeSemanaPageState extends State<FinDeSemanaPage> {
         const Icon(Icons.error_outline, size: 56, color: Colors.redAccent),
         const SizedBox(height: 16),
         Text(
-          _t.connectionError,
+          mensajeDeError(_t, error),
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 16, color: _colors.onSurface),
         ),

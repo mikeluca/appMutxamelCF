@@ -205,6 +205,97 @@ void main() {
       expect(colorDe('100 %'), isNot(const Color(0xFFF59E0B)));
     });
 
+    testWidgets('con entrenamientos sin lista revisada avisa de que no cuentan '
+        'en la asistencia; sin ellos no hay nota', (tester) async {
+      tester.view.physicalSize = const Size(800, 3000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      EstadisticasEquipoModel con(int sinRevisar) => EstadisticasEquipoModel(
+        goleadores: const [],
+        asistentes: const [],
+        entrenamientos: EntrenamientosEquipoModel(
+          sesiones: 6,
+          sesionesSinRevisar: sinRevisar,
+          asistenciaMedia: 80,
+          porJugador: const [],
+        ),
+        partidos: const PartidosEquipoModel(
+          jugados: 0,
+          ganados: 0,
+          empatados: 0,
+          perdidos: 0,
+          golesFavor: 0,
+          golesContra: 0,
+        ),
+      );
+
+      final servicio = _FakeServicio()..estadisticas = con(2);
+
+      await tester.pumpWidget(
+        _app(EstadisticasEquipoPage(equipo: _equipo, servicio: servicio)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          '2 entrenamientos sin lista revisada no cuentan en la asistencia',
+        ),
+        findsOneWidget,
+      );
+
+      servicio.estadisticas = con(1);
+
+      await tester.pumpWidget(
+        _app(
+          EstadisticasEquipoPage(
+            key: UniqueKey(),
+            equipo: _equipo,
+            servicio: servicio,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          '1 entrenamiento sin lista revisada no cuenta en la asistencia',
+        ),
+        findsOneWidget,
+      );
+
+      servicio.estadisticas = con(0);
+
+      await tester.pumpWidget(
+        _app(
+          EstadisticasEquipoPage(
+            key: UniqueKey(),
+            equipo: _equipo,
+            servicio: servicio,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('nota-sin-revisar')), findsNothing);
+    });
+
+    test('el modelo lee sesionesSinRevisar', () {
+      expect(
+        EntrenamientosEquipoModel.fromJson({
+          'sesiones': 6,
+          'sesionesSinRevisar': 2,
+          'porJugador': <dynamic>[],
+        }).sesionesSinRevisar,
+        2,
+      );
+      expect(
+        EntrenamientosEquipoModel.fromJson({'sesiones': 1}).sesionesSinRevisar,
+        0,
+      );
+    });
+
     testWidgets('sin datos muestra los textos de vacío y los guiones', (
       tester,
     ) async {

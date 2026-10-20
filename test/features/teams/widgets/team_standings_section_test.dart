@@ -8,12 +8,28 @@ import 'package:intl/date_symbol_data_local.dart';
 
 const _filas = [
   StandingsRowModel(
-    posicion: 1, equipo: 'Monnegre', esNuestro: false,
-    puntos: 9, pj: 3, pg: 3, pe: 0, pp: 0, gf: 8, gc: 1,
+    posicion: 1,
+    equipo: 'Monnegre',
+    esNuestro: false,
+    puntos: 9,
+    pj: 3,
+    pg: 3,
+    pe: 0,
+    pp: 0,
+    gf: 8,
+    gc: 1,
   ),
   StandingsRowModel(
-    posicion: 2, equipo: 'Mutxamel C.F.', esNuestro: true,
-    puntos: 6, pj: 3, pg: 2, pe: 0, pp: 1, gf: 5, gc: 3,
+    posicion: 2,
+    equipo: 'Mutxamel C.F.',
+    esNuestro: true,
+    puntos: 6,
+    pj: 3,
+    pg: 2,
+    pe: 0,
+    pp: 1,
+    gf: 5,
+    gc: 3,
   ),
 ];
 
@@ -46,7 +62,9 @@ Future<void> _pintar(
       ],
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
-        body: SingleChildScrollView(child: TeamStandingsSection(future: future)),
+        body: SingleChildScrollView(
+          child: TeamStandingsSection(future: future),
+        ),
       ),
     ),
   );
@@ -66,7 +84,12 @@ void main() {
     await _pintar(
       tester,
       Future.value(
-        StandingsModel(competicion: 'X', jornada: 1, fechaImportacion: null, filas: const []),
+        StandingsModel(
+          competicion: 'X',
+          jornada: 1,
+          fechaImportacion: null,
+          filas: const [],
+        ),
       ),
     );
 
@@ -77,10 +100,16 @@ void main() {
     // Con retraso: el FutureBuilder ya está escuchando cuando falla.
     await _pintar(
       tester,
-      Future<StandingsModel?>.delayed(Duration.zero, () => throw Exception('x')),
+      Future<StandingsModel?>.delayed(
+        Duration.zero,
+        () => throw Exception('x'),
+      ),
     );
 
-    expect(find.text('No se ha podido cargar la clasificación.'), findsOneWidget);
+    expect(
+      find.text('No se ha podido cargar la clasificación.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('en móvil estrecho solo Pos, Equipo, PJ y Pts', (tester) async {
@@ -99,8 +128,14 @@ void main() {
     expect(find.text('G'), findsNothing);
   });
 
-  testWidgets('en pantalla ancha (móvil girado) añade G/E/P/GF/GC', (tester) async {
-    await _pintar(tester, Future.value(_clasificacion), tamano: const Size(800, 400));
+  testWidgets('en pantalla ancha (móvil girado) añade G/E/P/GF/GC', (
+    tester,
+  ) async {
+    await _pintar(
+      tester,
+      Future.value(_clasificacion),
+      tamano: const Size(800, 400),
+    );
 
     for (final columna in ['G', 'E', 'P', 'GF', 'GC']) {
       expect(find.text(columna), findsOneWidget, reason: columna);
@@ -117,7 +152,12 @@ void main() {
     expect(rival.style?.fontWeight, FontWeight.normal);
 
     final contenedor = tester.widget<Container>(
-      find.ancestor(of: find.text('Mutxamel C.F.'), matching: find.byType(Container)).first,
+      find
+          .ancestor(
+            of: find.text('Mutxamel C.F.'),
+            matching: find.byType(Container),
+          )
+          .first,
     );
     final decoracion = contenedor.decoration! as BoxDecoration;
 

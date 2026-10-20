@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/network/api_client.dart';
+import '../../../core/utils/mensaje_error.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/admin_model.dart';
@@ -27,6 +27,9 @@ class _ModeracionPageState extends State<ModeracionPage> {
 
   /// Reportes con el texto desplegado.
   final Set<int> _desplegados = {};
+
+  /// Hay una acción de moderación en curso: los botones quedan deshabilitados.
+  bool _ejecutando = false;
 
   AppLocalizations get _t => AppLocalizations.of(context);
   ColorScheme get _colors => Theme.of(context).colorScheme;
@@ -121,7 +124,11 @@ class _ModeracionPageState extends State<ModeracionPage> {
     // el recolector de basura lo recoge sin más).
     final nota = controlador.text;
 
-    if (confirmado != true || !mounted) return;
+    if (confirmado != true || !mounted || _ejecutando) return;
+
+    setState(() {
+      _ejecutando = true;
+    });
 
     try {
       await accion(nota, borrarMensaje);
@@ -134,18 +141,16 @@ class _ModeracionPageState extends State<ModeracionPage> {
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e is ApiException && e.statusCode != null && e.statusCode! < 500
-                ? e.message
-                : _t.connectionError,
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(mensajeDeAccion(_t, e))));
     }
 
     if (mounted) {
+      setState(() {
+        _ejecutando = false;
+      });
+
       _recargarTodo();
     }
   }
@@ -193,7 +198,10 @@ class _ModeracionPageState extends State<ModeracionPage> {
               padding: const EdgeInsets.all(24),
               children: [
                 const SizedBox(height: 40),
-                Text(_t.connectionError, textAlign: TextAlign.center),
+                Text(
+                  mensajeDeError(_t, snapshot.error),
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: 16),
                 Center(
                   child: ElevatedButton.icon(
@@ -321,31 +329,38 @@ class _ModeracionPageState extends State<ModeracionPage> {
       runSpacing: 4,
       children: [
         OutlinedButton(
-          onPressed: () => _confirmarYEjecutar(
-            mensaje: _t.moderationDiscardConfirm,
-            accion: (nota, _) => _servicio.descartar(r.id, nota: nota),
-          ),
+          onPressed: _ejecutando
+              ? null
+              : () => _confirmarYEjecutar(
+                  mensaje: _t.moderationDiscardConfirm,
+                  accion: (nota, _) => _servicio.descartar(r.id, nota: nota),
+                ),
           child: Text(_t.moderationDiscard),
         ),
         OutlinedButton(
-          onPressed: () => _confirmarYEjecutar(
-            mensaje: _t.moderationDeleteConfirm,
-            accion: (nota, _) => _servicio.borrarMensaje(r.id, nota: nota),
-          ),
+          onPressed: _ejecutando
+              ? null
+              : () => _confirmarYEjecutar(
+                  mensaje: _t.moderationDeleteConfirm,
+                  accion: (nota, _) =>
+                      _servicio.borrarMensaje(r.id, nota: nota),
+                ),
           child: Text(_t.moderationDeleteMessage),
         ),
-        if (r.autorActivo)
+        if (r.autorActivo && !r.autorEsAdmin)
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: _rojo),
-            onPressed: () => _confirmarYEjecutar(
-              mensaje: _t.moderationDeactivateConfirm,
-              conBorrarMensaje: true,
-              accion: (nota, borrar) => _servicio.desactivarAutor(
-                r.id,
-                nota: nota,
-                borrarMensaje: borrar,
-              ),
-            ),
+            onPressed: _ejecutando
+                ? null
+                : () => _confirmarYEjecutar(
+                    mensaje: _t.moderationDeactivateConfirm,
+                    conBorrarMensaje: true,
+                    accion: (nota, borrar) => _servicio.desactivarAutor(
+                      r.id,
+                      nota: nota,
+                      borrarMensaje: borrar,
+                    ),
+                  ),
             child: Text(_t.moderationDeactivateAuthor),
           ),
       ],

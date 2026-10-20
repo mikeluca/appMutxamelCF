@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/utils/mensaje_error.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
@@ -70,7 +71,7 @@ class _EstadisticasEquipoPageState extends State<EstadisticasEquipoPage> {
             }
 
             if (snapshot.hasError || snapshot.data == null) {
-              return _construirError();
+              return _construirError(snapshot.error);
             }
 
             final datos = snapshot.data!;
@@ -116,6 +117,11 @@ class _EstadisticasEquipoPageState extends State<EstadisticasEquipoPage> {
                       : datos.entrenamientos.porJugador
                             .map(_construirFilaAsistencia)
                             .toList(),
+                  nota: datos.entrenamientos.sesionesSinRevisar > 0
+                      ? _t.statsUnreviewedNote(
+                          datos.entrenamientos.sesionesSinRevisar,
+                        )
+                      : null,
                 ),
               ],
             );
@@ -181,7 +187,7 @@ class _EstadisticasEquipoPageState extends State<EstadisticasEquipoPage> {
     );
   }
 
-  Widget _construirSeccion(String titulo, List<Widget> filas) {
+  Widget _construirSeccion(String titulo, List<Widget> filas, {String? nota}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -193,6 +199,19 @@ class _EstadisticasEquipoPageState extends State<EstadisticasEquipoPage> {
             color: _colors.onSurface,
           ),
         ),
+        if (nota != null) ...[
+          Container(
+            key: const ValueKey('nota-sin-revisar'),
+            width: double.infinity,
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.only(top: 8),
+            decoration: BoxDecoration(
+              color: _ambar.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(nota, style: const TextStyle(fontSize: 13)),
+          ),
+        ],
         const SizedBox(height: 10),
         ...filas,
       ],
@@ -284,7 +303,7 @@ class _EstadisticasEquipoPageState extends State<EstadisticasEquipoPage> {
     );
   }
 
-  Widget _construirError() {
+  Widget _construirError(Object? error) {
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(24),
@@ -293,7 +312,7 @@ class _EstadisticasEquipoPageState extends State<EstadisticasEquipoPage> {
         const Icon(Icons.error_outline, size: 56, color: Colors.redAccent),
         const SizedBox(height: 16),
         Text(
-          _t.connectionError,
+          mensajeDeError(_t, error),
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 16, color: _colors.onSurface),
         ),

@@ -111,16 +111,22 @@ class LocalNotificationService {
   }
 
   /// Lo que lleva la notificación local para saber, al tocarla, a dónde ir.
+  ///
+  /// Es null si el aviso es de un tipo con destino propio (REPORTE, PASAR_LISTA) y el
+  /// usuario no tiene permiso para él: su referenciaId no es el de una comunicación
+  /// "normal" y no debe acabar abriendo COMUNICACION:id.
   @visibleForTesting
-  static String payloadDeAviso({
+  static String? payloadDeAviso({
     required int comunicacionId,
     required String titulo,
     bool esPrivada = false,
     int? autorId,
     Map<String, dynamic> datos = const {},
   }) {
+    final tipo = datos['tipo']?.toString();
+
     final destino = destinoDeAvisoConvocatoria(
-      tipo: datos['tipo']?.toString(),
+      tipo: tipo,
       titulo: titulo,
       datos: datos,
     );
@@ -129,9 +135,30 @@ class LocalNotificationService {
       return payloadDeDestino(destino);
     }
 
+    if (tipo == tipoPushReporte || tipo == tipoPushPasarLista) {
+      return null;
+    }
+
     return esPrivada && autorId != null && autorId > 0
         ? 'PRIVADA:$autorId'
         : 'COMUNICACION:$comunicacionId';
+  }
+
+  /// Espacios de ids distintos para los avisos que no son una comunicación: el
+  /// referenciaId de un REPORTE es el de un reporte y el de PASAR_LISTA va ligado a
+  /// su propio aviso, y no deben pisar (ni ser pisados por) la notificación de una
+  /// comunicación con el mismo número.
+  static const int _baseReporte = 1000000000;
+  static const int _basePasarLista = 1100000000;
+  static const int _tamanoEspacio = 100000000;
+
+  @visibleForTesting
+  static int idDeNotificacion(int referenciaId, Map<String, dynamic> datos) {
+    return switch (datos['tipo']?.toString()) {
+      tipoPushReporte => _baseReporte + referenciaId % _tamanoEspacio,
+      tipoPushPasarLista => _basePasarLista + referenciaId % _tamanoEspacio,
+      _ => referenciaId,
+    };
   }
 
   static Future<void> mostrarComunicacion({
@@ -183,7 +210,7 @@ class LocalNotificationService {
     );
 
     await _plugin.show(
-      id: comunicacionId,
+      id: idDeNotificacion(comunicacionId, datos),
       title: titulo,
       body: mensaje,
       notificationDetails: notificationDetails,

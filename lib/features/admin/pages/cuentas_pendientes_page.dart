@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/network/api_client.dart';
+import '../../../core/utils/mensaje_error.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/admin_model.dart';
@@ -101,15 +101,9 @@ class _CuentasPendientesPageState extends State<CuentasPendientesPage> {
       if (!mounted) return;
 
       // Los 4xx traen un mensaje claro del servidor (ya activa, 10 minutos...).
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            e is ApiException && e.statusCode != null && e.statusCode! < 500
-                ? e.message
-                : _t.connectionError,
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(mensajeDeAccion(_t, e))));
     } finally {
       if (mounted) {
         setState(() {
@@ -165,7 +159,10 @@ class _CuentasPendientesPageState extends State<CuentasPendientesPage> {
                       padding: const EdgeInsets.all(24),
                       children: [
                         const SizedBox(height: 40),
-                        Text(_t.connectionError, textAlign: TextAlign.center),
+                        Text(
+                          mensajeDeError(_t, snapshot.error),
+                          textAlign: TextAlign.center,
+                        ),
                         const SizedBox(height: 16),
                         Center(
                           child: ElevatedButton.icon(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/utils/mensaje_error.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/coordinacion_model.dart';
@@ -18,13 +19,13 @@ class SeguimientoJugadoresPage extends StatefulWidget {
 }
 
 class _SeguimientoJugadoresPageState extends State<SeguimientoJugadoresPage> {
-  static const Color _rojo = Color(0xFFDC2626);
-  static const Color _ambar = Color(0xFFF59E0B);
-
   late final CoordinacionService _servicio =
       widget.servicio ?? CoordinacionService();
 
-  late Future<List<SeguimientoJugadorModel>> _futuro;
+  late Future<SeguimientoModel> _futuro;
+
+  /// Días del periodo "30d" según el servidor (seguimiento.dias); 30 hasta la primera respuesta.
+  int _dias = 30;
 
   String _periodo = periodoSeguimiento30d;
 
@@ -83,12 +84,18 @@ class _SeguimientoJugadoresPageState extends State<SeguimientoJugadoresPage> {
       appBar: AppBar(title: ClubAppBarTitle(titulo: _t.clubPagePlayerTracking)),
       body: RefreshIndicator(
         onRefresh: _recargar,
-        child: FutureBuilder<List<SeguimientoJugadorModel>>(
+        child: FutureBuilder<SeguimientoModel>(
           future: _futuro,
           builder: (context, snapshot) {
             final cargando =
                 snapshot.connectionState == ConnectionState.waiting;
-            final jugadores = snapshot.data ?? const [];
+            final jugadores =
+                snapshot.data?.jugadores ?? const <SeguimientoJugadorModel>[];
+            final dias = snapshot.data?.dias;
+
+            if (dias != null) {
+              _dias = dias;
+            }
 
             return ListView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -104,7 +111,7 @@ class _SeguimientoJugadoresPageState extends State<SeguimientoJugadoresPage> {
                     child: Center(child: CircularProgressIndicator()),
                   )
                 else if (snapshot.hasError)
-                  _construirError()
+                  _construirError(snapshot.error)
                 else
                   ..._construirLista(jugadores),
                 const SizedBox(height: 16),
@@ -129,7 +136,7 @@ class _SeguimientoJugadoresPageState extends State<SeguimientoJugadoresPage> {
       segments: [
         ButtonSegment(
           value: periodoSeguimiento30d,
-          label: Text(_t.trackingPeriod30),
+          label: Text(_t.trackingPeriodDays(_dias)),
         ),
         ButtonSegment(
           value: periodoSeguimientoTemporada,
@@ -225,22 +232,7 @@ class _SeguimientoJugadoresPageState extends State<SeguimientoJugadoresPage> {
                 style: TextStyle(color: _colors.onSurfaceVariant),
               ),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 6,
-                children: [
-                  if (jugador.faltas > 0)
-                    _construirChip(
-                      _t.trackingFaultsChip(jugador.faltas),
-                      _rojo,
-                    ),
-                  if (jugador.malComportamiento > 0)
-                    _construirChip(
-                      _t.trackingMisconductChip(jugador.malComportamiento),
-                      _ambar,
-                    ),
-                ],
-              ),
+              chipsDeJugador(_t, jugador),
               if (jugador.ultimaIncidencia != null) ...[
                 const SizedBox(height: 8),
                 Text(
@@ -258,33 +250,14 @@ class _SeguimientoJugadoresPageState extends State<SeguimientoJugadoresPage> {
     );
   }
 
-  Widget _construirChip(String texto, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color),
-      ),
-      child: Text(
-        texto,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: color,
-        ),
-      ),
-    );
-  }
-
-  Widget _construirError() {
+  Widget _construirError(Object? error) {
     return Column(
       children: [
         const SizedBox(height: 30),
         const Icon(Icons.error_outline, size: 56, color: Colors.redAccent),
         const SizedBox(height: 16),
         Text(
-          _t.connectionError,
+          mensajeDeError(_t, error),
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 16, color: _colors.onSurface),
         ),
@@ -369,7 +342,10 @@ class _SeguimientoJugadorDetallePageState
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(_t.connectionError, textAlign: TextAlign.center),
+                    Text(
+                      mensajeDeError(_t, snapshot.error),
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
                       onPressed: () => setState(_cargar),
@@ -382,20 +358,29 @@ class _SeguimientoJugadorDetallePageState
             );
           }
 
-          final incidencias = snapshot.data!.incidencias;
-
-          if (incidencias.isEmpty) {
-            return Center(
-              child: Text(
-                _t.trackingNoIncidents,
-                style: TextStyle(color: _colors.onSurfaceVariant),
-              ),
-            );
-          }
+          final datos = snapshot.data!;
+          final incidencias = datos.incidencias;
 
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              // Cabecera con todos los contadores del periodo.
+              Text(
+                datos.jugador.equipo,
+                style: TextStyle(color: _colors.onSurfaceVariant),
+              ),
+              const SizedBox(height: 8),
+              chipsDeJugador(_t, datos.jugador),
+              const SizedBox(height: 16),
+              if (incidencias.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Text(
+                    _t.trackingNoIncidents,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: _colors.onSurfaceVariant),
+                  ),
+                ),
               for (final incidencia in incidencias)
                 Card(
                   margin: const EdgeInsets.only(bottom: 8),
@@ -423,4 +408,38 @@ String fechaCorta(DateTime? fecha) {
   final mes = fecha.month.toString().padLeft(2, '0');
 
   return '$dia/$mes/${fecha.year}';
+}
+
+/// Chips con los contadores de un jugador: faltas, mal comportamiento, justificadas
+/// y retrasos (solo los que no son cero). Los usan la tarjeta y la cabecera del detalle.
+Widget chipsDeJugador(AppLocalizations t, SeguimientoJugadorModel j) {
+  const rojo = Color(0xFFDC2626);
+  const ambar = Color(0xFFF59E0B);
+  const gris = Color(0xFF6B7280);
+
+  Widget chip(String texto, Color color) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: 0.15),
+      borderRadius: BorderRadius.circular(20),
+      border: Border.all(color: color),
+    ),
+    child: Text(
+      texto,
+      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: color),
+    ),
+  );
+
+  return Wrap(
+    spacing: 8,
+    runSpacing: 6,
+    children: [
+      if (j.faltas > 0) chip(t.trackingFaultsChip(j.faltas), rojo),
+      if (j.malComportamiento > 0)
+        chip(t.trackingMisconductChip(j.malComportamiento), ambar),
+      if (j.faltasJustificadas > 0)
+        chip(t.trackingExcusedChip(j.faltasJustificadas), gris),
+      if (j.retrasos > 0) chip(t.trackingLateChip(j.retrasos), gris),
+    ],
+  );
 }

@@ -431,7 +431,6 @@
   "selectMatchHint": "Selecciona un partido",
   "selectMatchError": "Selecciona un partido.",
   "noMatchesAvailableForCallup": "No hay partidos disponibles para crear una convocatoria. Crea primero un partido.",
-  "matchesLoadError": "No se han podido cargar los partidos.",
   "callupPlayersTitle": "Jugadores convocados",
   "selectedCountLabel": "{count} seleccionados",
   "@selectedCountLabel": {
@@ -790,7 +789,24 @@
   "@weekendRound": {
     "placeholders": { "jornada": { "type": "int" } }
   },
-  "trackingPeriod30": "Últimos 30 días",
+  "trackingPeriodDays": "Últimos {count} días",
+  "@trackingPeriodDays": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trackingExcusedChip": "{count, plural, one{{count} justificada} other{{count} justificadas}}",
+  "@trackingExcusedChip": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trackingLateChip": "{count, plural, one{{count} retraso} other{{count} retrasos}}",
+  "@trackingLateChip": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "noPermission": "No tienes permiso",
+  "callupMatchUnavailable": "Este partido ya no admite convocatoria",
+  "statsUnreviewedNote": "{count, plural, one{{count} entrenamiento sin lista revisada no cuenta en la asistencia} other{{count} entrenamientos sin lista revisada no cuentan en la asistencia}}",
+  "@statsUnreviewedNote": {
+    "placeholders": { "count": { "type": "int" } }
+  },
   "trackingPeriodSeason": "Temporada",
   "trackingAllTeams": "Todos los equipos",
   "trackingFaultsChip": "{count, plural, one{{count} falta} other{{count} faltas}}",

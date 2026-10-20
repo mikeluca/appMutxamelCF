@@ -207,3 +207,23 @@ class SeguimientoDetalleModel {
     );
   }
 }
+
+/// Respuesta de GET /app/coordinacion/seguimiento-jugadores: la longitud en días
+/// del periodo "30d" (seguimiento.dias del servidor) y los jugadores.
+class SeguimientoModel {
+  final int dias;
+  final List<SeguimientoJugadorModel> jugadores;
+
+  const SeguimientoModel({required this.dias, required this.jugadores});
+
+  factory SeguimientoModel.fromJson(Map<String, dynamic> json) {
+    return SeguimientoModel(
+      dias: (json['dias'] as num?)?.toInt() ?? 30,
+      jugadores: (json['jugadores'] as List<dynamic>? ?? [])
+          .map(
+            (e) => SeguimientoJugadorModel.fromJson(e as Map<String, dynamic>),
+          )
+          .toList(),
+    );
+  }
+}

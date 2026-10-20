@@ -95,12 +95,16 @@ class AsistenciaJugadorModel {
 class EntrenamientosEquipoModel {
   final int sesiones;
 
-  /// null sin entrenamientos.
+  /// Entrenamientos pasados cuya lista no está revisada: no cuentan en la asistencia.
+  final int sesionesSinRevisar;
+
+  /// null sin entrenamientos con lista revisada.
   final int? asistenciaMedia;
   final List<AsistenciaJugadorModel> porJugador;
 
   const EntrenamientosEquipoModel({
     required this.sesiones,
+    this.sesionesSinRevisar = 0,
     required this.asistenciaMedia,
     required this.porJugador,
   });
@@ -108,6 +112,7 @@ class EntrenamientosEquipoModel {
   factory EntrenamientosEquipoModel.fromJson(Map<String, dynamic> json) {
     return EntrenamientosEquipoModel(
       sesiones: (json['sesiones'] as num?)?.toInt() ?? 0,
+      sesionesSinRevisar: (json['sesionesSinRevisar'] as num?)?.toInt() ?? 0,
       asistenciaMedia: (json['asistenciaMedia'] as num?)?.toInt(),
       porJugador: (json['porJugador'] as List<dynamic>? ?? [])
           .map(

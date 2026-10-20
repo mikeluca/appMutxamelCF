@@ -1,3 +1,4 @@
+import 'package:app_mutxamel_cf/core/network/api_client.dart';
 import 'package:app_mutxamel_cf/features/auth/models/auth_user.dart';
 import 'package:app_mutxamel_cf/features/auth/models/perfil_app.dart';
 import 'package:app_mutxamel_cf/features/auth/pages/club_page.dart';
@@ -22,6 +23,7 @@ import 'package:intl/date_symbol_data_local.dart';
 class _FakeCoordinacion extends CoordinacionService {
   FinDeSemanaModel finDeSemana = _panel();
   List<SeguimientoJugadorModel> seguimiento = _jugadores();
+  int dias = 30;
   Object? fallo;
 
   final List<DateTime?> fechasPedidas = [];
@@ -49,19 +51,22 @@ class _FakeCoordinacion extends CoordinacionService {
   }
 
   @override
-  Future<List<SeguimientoJugadorModel>> obtenerSeguimiento({
+  Future<SeguimientoModel> obtenerSeguimiento({
     String periodo = periodoSeguimiento30d,
   }) async {
     periodosPedidos.add(periodo);
 
     if (fallo != null) throw fallo!;
 
-    return periodo == periodoSeguimientoTemporada
-        ? [
-            ...seguimiento,
-            _jugador(9, 'Marta Gil', 'Alevín A', faltas: 6, mal: 0),
-          ]
-        : seguimiento;
+    return SeguimientoModel(
+      dias: dias,
+      jugadores: periodo == periodoSeguimientoTemporada
+          ? [
+              ...seguimiento,
+              _jugador(9, 'Marta Gil', 'Alevín A', faltas: 6, mal: 0),
+            ]
+          : seguimiento,
+    );
   }
 
   @override
@@ -125,6 +130,7 @@ SeguimientoJugadorModel _jugador(
   String equipo, {
   int faltas = 0,
   int mal = 0,
+  int retrasos = 0,
 }) => SeguimientoJugadorModel(
   jugadorId: id,
   nombre: nombre,
@@ -132,7 +138,7 @@ SeguimientoJugadorModel _jugador(
   faltas: faltas,
   faltasJustificadas: 1,
   malComportamiento: mal,
-  retrasos: 0,
+  retrasos: retrasos,
   ultimaIncidencia: DateTime(2026, 10, 19),
   motivo: faltas > 0 && mal > 0
       ? 'AMBOS'
@@ -140,7 +146,7 @@ SeguimientoJugadorModel _jugador(
 );
 
 List<SeguimientoJugadorModel> _jugadores() => [
-  _jugador(1, 'Pablo Garcia', 'Cadete A', faltas: 5, mal: 2),
+  _jugador(1, 'Pablo Garcia', 'Cadete A', faltas: 5, mal: 2, retrasos: 3),
   _jugador(2, 'Luis Lopez', 'Infantil A', mal: 2),
   _jugador(3, 'Ana Ruiz', 'Cadete A', faltas: 3),
 ];
@@ -494,6 +500,139 @@ void main() {
     });
   });
 
+  group('Seguimiento: contadores, periodo y permisos', () {
+    testWidgets('la tarjeta lleva los chips de justificadas y retrasos y el '
+        'periodo usa los días que manda el servidor', (tester) async {
+      _pantallaGrande(tester);
+
+      final servicio = _FakeCoordinacion()..dias = 45;
+
+      await tester.pumpWidget(
+        _app(SeguimientoJugadoresPage(servicio: servicio)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Últimos 45 días'), findsOneWidget);
+      expect(find.text('Últimos 30 días'), findsNothing);
+      expect(find.text('1 justificada'), findsNWidgets(3));
+      expect(find.text('3 retrasos'), findsOneWidget);
+    });
+
+    testWidgets('el detalle muestra en la cabecera todos los contadores', (
+      tester,
+    ) async {
+      _pantallaGrande(tester);
+
+      await tester.pumpWidget(
+        _app(SeguimientoJugadoresPage(servicio: _FakeCoordinacion())),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Pablo Garcia'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('5 faltas'), findsOneWidget);
+      expect(find.text('2 mal comportamiento'), findsOneWidget);
+      expect(find.text('1 justificada'), findsOneWidget);
+      expect(find.text('3 retrasos'), findsOneWidget);
+    });
+
+    testWidgets('un 403 muestra "No tienes permiso", no un error de conexión', (
+      tester,
+    ) async {
+      _pantallaGrande(tester);
+
+      final servicio = _FakeCoordinacion()
+        ..fallo = const ApiException('prohibido', statusCode: 403);
+
+      await tester.pumpWidget(
+        _app(SeguimientoJugadoresPage(servicio: servicio)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('No tienes permiso'), findsOneWidget);
+      expect(find.textContaining('No se ha podido conectar'), findsNothing);
+    });
+
+    testWidgets('el panel del fin de semana también distingue el 403', (
+      tester,
+    ) async {
+      _pantallaGrande(tester);
+
+      final servicio = _FakeCoordinacion()
+        ..fallo = const ApiException('prohibido', statusCode: 403);
+
+      await tester.pumpWidget(_app(FinDeSemanaPage(servicio: servicio)));
+      await tester.pumpAndSettle();
+
+      expect(find.text('No tienes permiso'), findsOneWidget);
+      expect(find.textContaining('No se ha podido conectar'), findsNothing);
+    });
+
+    testWidgets('un fallo de red sigue siendo un error de conexión', (
+      tester,
+    ) async {
+      _pantallaGrande(tester);
+
+      final servicio = _FakeCoordinacion()..fallo = Exception('sin red');
+
+      await tester.pumpWidget(
+        _app(SeguimientoJugadoresPage(servicio: servicio)),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('No se ha podido conectar'), findsOneWidget);
+    });
+  });
+
+  group('Formulario de convocatoria desde el panel', () {
+    testWidgets('pide el partido con incluirPartidoId para poder '
+        'preseleccionarlo', (tester) async {
+      _pantallaGrande(tester);
+
+      final partidos = _FakeMatches();
+
+      await tester.pumpWidget(
+        _app(
+          ConvocatoriaFormPage(
+            equipo: PerfilEquipo(id: 5, nombre: 'Cadete A'),
+            partidoIdInicial: 31,
+            teamService: _FakeTeam(),
+            matchService: partidos,
+            justificacionService: _FakeJustificaciones(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(partidos.incluidos, [31]);
+    });
+
+    testWidgets('si el partido no viene en la lista se avisa con un SnackBar', (
+      tester,
+    ) async {
+      _pantallaGrande(tester);
+
+      await tester.pumpWidget(
+        _app(
+          ConvocatoriaFormPage(
+            equipo: PerfilEquipo(id: 5, nombre: 'Cadete A'),
+            partidoIdInicial: 999,
+            teamService: _FakeTeam(),
+            matchService: _FakeMatches(),
+            justificacionService: _FakeJustificaciones(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Este partido ya no admite convocatoria'),
+        findsOneWidget,
+      );
+    });
+  });
+
   group('Menú del Área club por rol', () {
     Future<void> pintarClub(WidgetTester tester, List<String> roles) async {
       _pantallaGrande(tester);
@@ -587,11 +726,19 @@ class _FakeTeam extends TeamService {
 }
 
 class _FakeMatches extends MatchService {
+  final List<int?> incluidos = [];
+
   @override
   Future<List<MatchModel>> obtenerPartidosSinConvocatoria(
     int equipoId, {
     int? incluirPartidoId,
-  }) async => [
+  }) async {
+    incluidos.add(incluirPartidoId);
+
+    return _partidos();
+  }
+
+  List<MatchModel> _partidos() => [
     MatchModel(
       id: 30,
       equipoId: 5,
