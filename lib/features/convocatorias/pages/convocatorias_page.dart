@@ -7,6 +7,7 @@ import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
 import '../model/convocatoria_model.dart';
 import '../services/convocatoria_service.dart';
+import 'convocatoria_detalle_page.dart';
 import 'convocatoria_form_page.dart';
 
 class ConvocatoriasPage extends StatefulWidget {
@@ -108,17 +109,18 @@ class _ConvocatoriasPageState extends State<ConvocatoriasPage> {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () async {
-          final resultado = await Navigator.push(
+          // El detalle puede editar la convocatoria: se recarga siempre al volver.
+          await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => ConvocatoriaFormPage(
+              builder: (_) => ConvocatoriaDetallePage(
                 equipo: widget.equipo,
                 convocatoria: convocatoria,
               ),
             ),
           );
 
-          if (resultado == true && mounted) {
+          if (mounted) {
             _recargar();
           }
         },
@@ -168,17 +170,32 @@ class _ConvocatoriasPageState extends State<ConvocatoriasPage> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      _t.callupSummary(
-                        convocatoria.van,
-                        convocatoria.noPueden,
-                        convocatoria.sinResponder,
-                      ),
+                      _t.callupPlayersCount(convocatoria.jugadores.length),
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: _colors.primary,
                       ),
                     ),
+                    if (convocatoria.ausentes.isNotEmpty)
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.warning_amber_rounded,
+                            size: 16,
+                            color: Colors.redAccent,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            _t.callupAbsentCount(convocatoria.ausentes.length),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.redAccent,
+                            ),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),

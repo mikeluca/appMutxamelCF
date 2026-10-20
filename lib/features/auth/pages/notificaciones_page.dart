@@ -4,7 +4,7 @@ import '../../../core/notifications/utils/convocatoria_notificacion.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
-import '../../../routing/app_routes.dart';
+import '../../../core/navigation/app_navigator.dart';
 import '../models/notificacion_model.dart';
 import '../services/notificacion_service.dart';
 import 'comunicacion_detail_page.dart';
@@ -66,8 +66,12 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
 
     if (!mounted) return;
 
-    if (abreMisConvocatorias(titulo: notificacion.titulo)) {
-      await Navigator.pushNamed(context, AppRoutes.myCallups);
+    // La fila de la lista no guarda el data del push: aquí solo se reconoce el
+    // aviso de convocatoria por su título (abre el calendario en hoy).
+    final destino = destinoDeAvisoConvocatoria(titulo: notificacion.titulo);
+
+    if (destino != null) {
+      await AppNavigator.abrirDestinoConvocatoria(destino);
 
       await _cargarNotificaciones();
     } else if (notificacion.tipo == 'COMUNICACION' &&

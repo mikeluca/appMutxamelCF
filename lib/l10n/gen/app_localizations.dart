@@ -2230,12 +2230,6 @@ abstract class AppLocalizations {
   /// **'Jugadores convocados'**
   String get callupPlayersTitle;
 
-  /// No description provided for @notModifiable.
-  ///
-  /// In es, this message translates to:
-  /// **'No modificables'**
-  String get notModifiable;
-
   /// No description provided for @selectedCountLabel.
   ///
   /// In es, this message translates to:
@@ -2470,18 +2464,6 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 justificada} other{{count} justificadas}}'**
   String seasonExcused(int count);
 
-  /// No description provided for @seasonCallupsTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Convocatorias'**
-  String get seasonCallupsTitle;
-
-  /// No description provided for @seasonCallupsLine.
-  ///
-  /// In es, this message translates to:
-  /// **'Va: {going} · No puede: {cannot} · Sin responder: {pending}'**
-  String seasonCallupsLine(int going, int cannot, int pending);
-
   /// No description provided for @seasonShortTrainings.
   ///
   /// In es, this message translates to:
@@ -2493,18 +2475,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'{goals, plural, =1{1 gol} other{{goals} goles}}'**
   String seasonShortGoals(int goals);
-
-  /// No description provided for @clubPageMyCallups.
-  ///
-  /// In es, this message translates to:
-  /// **'Mis convocatorias'**
-  String get clubPageMyCallups;
-
-  /// No description provided for @clubPageMyCallupsDesc.
-  ///
-  /// In es, this message translates to:
-  /// **'Responde si puedes ir a los partidos'**
-  String get clubPageMyCallupsDesc;
 
   /// No description provided for @clubPageMyCard.
   ///
@@ -2518,48 +2488,6 @@ abstract class AppLocalizations {
   /// **'Tus datos de jugador'**
   String get clubPageMyCardDesc;
 
-  /// No description provided for @callupStatusPending.
-  ///
-  /// In es, this message translates to:
-  /// **'Sin responder'**
-  String get callupStatusPending;
-
-  /// No description provided for @callupStatusGoing.
-  ///
-  /// In es, this message translates to:
-  /// **'Va'**
-  String get callupStatusGoing;
-
-  /// No description provided for @callupStatusCannot.
-  ///
-  /// In es, this message translates to:
-  /// **'No puede'**
-  String get callupStatusCannot;
-
-  /// No description provided for @callupAnswerGoing.
-  ///
-  /// In es, this message translates to:
-  /// **'Va'**
-  String get callupAnswerGoing;
-
-  /// No description provided for @callupAnswerCannot.
-  ///
-  /// In es, this message translates to:
-  /// **'No puede'**
-  String get callupAnswerCannot;
-
-  /// No description provided for @callupNoUpcoming.
-  ///
-  /// In es, this message translates to:
-  /// **'No tienes convocatorias próximas'**
-  String get callupNoUpcoming;
-
-  /// No description provided for @callupsLoadFailed.
-  ///
-  /// In es, this message translates to:
-  /// **'No se han podido cargar las convocatorias.'**
-  String get callupsLoadFailed;
-
   /// No description provided for @callupMatchLine.
   ///
   /// In es, this message translates to:
@@ -2572,59 +2500,11 @@ abstract class AppLocalizations {
   /// **'Convocatoria: {time} · {place}'**
   String callupMeetingLine(String time, String place);
 
-  /// No description provided for @callupDeadlineClosed.
-  ///
-  /// In es, this message translates to:
-  /// **'Plazo de respuesta cerrado ({deadline})'**
-  String callupDeadlineClosed(String deadline);
-
-  /// No description provided for @callupMatchCancelled.
-  ///
-  /// In es, this message translates to:
-  /// **'Partido cancelado'**
-  String get callupMatchCancelled;
-
   /// No description provided for @callupReasonShown.
   ///
   /// In es, this message translates to:
   /// **'Motivo: {reason}'**
   String callupReasonShown(String reason);
-
-  /// No description provided for @callupCannotDialogTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'¿Por qué no puede ir?'**
-  String get callupCannotDialogTitle;
-
-  /// No description provided for @callupReasonLabel.
-  ///
-  /// In es, this message translates to:
-  /// **'Motivo'**
-  String get callupReasonLabel;
-
-  /// No description provided for @callupReasonRequired.
-  ///
-  /// In es, this message translates to:
-  /// **'Indica el motivo (mínimo 3 caracteres)'**
-  String get callupReasonRequired;
-
-  /// No description provided for @callupAnswerSaved.
-  ///
-  /// In es, this message translates to:
-  /// **'Respuesta guardada'**
-  String get callupAnswerSaved;
-
-  /// No description provided for @callupAnswerError.
-  ///
-  /// In es, this message translates to:
-  /// **'No se ha podido guardar la respuesta: {error}'**
-  String callupAnswerError(String error);
-
-  /// No description provided for @callupSummary.
-  ///
-  /// In es, this message translates to:
-  /// **'{going} van · {cannot} no pueden · {pending} sin responder'**
-  String callupSummary(int going, int cannot, int pending);
 
   /// No description provided for @clubPageMyStandings.
   ///
@@ -3537,6 +3417,132 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No se ha podido enviar el reporte. Inténtalo de nuevo.'**
   String get reportError;
+
+  /// No description provided for @matchAbsenceJustifyButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Justificar ausencia'**
+  String get matchAbsenceJustifyButton;
+
+  /// No description provided for @matchAbsenceJustifyTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Justificar ausencia al partido'**
+  String get matchAbsenceJustifyTitle;
+
+  /// No description provided for @matchAbsenceEditTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar motivo de la ausencia'**
+  String get matchAbsenceEditTitle;
+
+  /// No description provided for @matchAbsenceHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Avisa al cuerpo técnico de que no podrás jugar este partido. Puedes cambiar el motivo o retirarlo hasta la hora de convocatoria.'**
+  String get matchAbsenceHint;
+
+  /// No description provided for @matchAbsenceReasonLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo'**
+  String get matchAbsenceReasonLabel;
+
+  /// No description provided for @matchAbsenceReasonRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Indica el motivo (mínimo 3 caracteres)'**
+  String get matchAbsenceReasonRequired;
+
+  /// No description provided for @matchAbsenceBadge.
+  ///
+  /// In es, this message translates to:
+  /// **'Ausencia justificada'**
+  String get matchAbsenceBadge;
+
+  /// No description provided for @matchAbsenceEditButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar motivo'**
+  String get matchAbsenceEditButton;
+
+  /// No description provided for @matchAbsenceWithdrawButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Retirar'**
+  String get matchAbsenceWithdrawButton;
+
+  /// No description provided for @matchAbsenceWithdrawTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Retirar la ausencia?'**
+  String get matchAbsenceWithdrawTitle;
+
+  /// No description provided for @matchAbsenceWithdrawBody.
+  ///
+  /// In es, this message translates to:
+  /// **'El cuerpo técnico sabrá que ya puedes jugar. No se te volverá a convocar automáticamente.'**
+  String get matchAbsenceWithdrawBody;
+
+  /// No description provided for @matchAbsenceWithdrawConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Retirar'**
+  String get matchAbsenceWithdrawConfirm;
+
+  /// No description provided for @matchAbsenceDeadlineClosed.
+  ///
+  /// In es, this message translates to:
+  /// **'Plazo cerrado ({deadline})'**
+  String matchAbsenceDeadlineClosed(String deadline);
+
+  /// No description provided for @matchAbsenceJustifiedSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Ausencia justificada'**
+  String get matchAbsenceJustifiedSnack;
+
+  /// No description provided for @matchAbsenceWithdrawnSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Ausencia retirada'**
+  String get matchAbsenceWithdrawnSnack;
+
+  /// No description provided for @matchAbsenceError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido retirar la ausencia: {error}'**
+  String matchAbsenceError(String error);
+
+  /// No description provided for @callupDetailTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Convocatoria'**
+  String get callupDetailTitle;
+
+  /// No description provided for @callupPlayersCount.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{1 convocado} other{{count} convocados}}'**
+  String callupPlayersCount(int count);
+
+  /// No description provided for @callupAbsentBanner.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{1 jugador convocado ha justificado su ausencia} other{{count} jugadores convocados han justificado su ausencia}}'**
+  String callupAbsentBanner(int count);
+
+  /// No description provided for @callupAbsentCount.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{1 ausencia justificada} other{{count} ausencias justificadas}}'**
+  String callupAbsentCount(int count);
+
+  /// No description provided for @seasonMatchAbsencesLine.
+  ///
+  /// In es, this message translates to:
+  /// **'Partidos con ausencia justificada: {count}'**
+  String seasonMatchAbsencesLine(int count);
 }
 
 class _AppLocalizationsDelegate

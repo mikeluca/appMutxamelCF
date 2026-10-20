@@ -96,13 +96,14 @@ class ResumenTemporadaSection extends StatelessWidget {
                   ],
           ),
           const SizedBox(height: 14),
-          _bloque(context, t.seasonCallupsTitle, [
-            t.seasonCallupsLine(
-              r.convocatoriasVa,
-              r.convocatoriasNoPuede,
-              r.convocatoriasSinResponder,
+          Text(
+            t.seasonMatchAbsencesLine(r.ausenciasJustificadas),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
             ),
-          ]),
+          ),
         ],
       ],
     );

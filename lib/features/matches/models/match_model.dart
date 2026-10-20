@@ -36,9 +36,13 @@ class MatchModel {
   /// antiguos: se asume false.
   final bool pendienteResultado;
 
-  /// Respuesta del jugador consultado a la convocatoria de este partido:
-  /// 'VA', 'NO_PUEDE' o null (sin responder, no convocado o sin convocatoria).
-  final String? respuestaConvocatoria;
+  /// Solo en el calendario de un jugador (JUGADOR/FAMILIAR): si ha justificado
+  /// su ausencia a este partido y por qué, si todavía puede justificarla o
+  /// retirarla (puedeJustificar) y hasta cuándo (limiteJustificacion).
+  final bool ausenciaJustificada;
+  final String? motivoAusencia;
+  final bool puedeJustificar;
+  final DateTime? limiteJustificacion;
 
   const MatchModel({
     this.id,
@@ -59,7 +63,10 @@ class MatchModel {
     this.descansa = false,
     this.local = true,
     this.pendienteResultado = false,
-    this.respuestaConvocatoria,
+    this.ausenciaJustificada = false,
+    this.motivoAusencia,
+    this.puedeJustificar = false,
+    this.limiteJustificacion,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -84,7 +91,12 @@ class MatchModel {
       descansa: json['descansa'] as bool? ?? false,
       local: json['local'] as bool? ?? true,
       pendienteResultado: json['pendienteResultado'] as bool? ?? false,
-      respuestaConvocatoria: json['respuestaConvocatoria'] as String?,
+      ausenciaJustificada: json['ausenciaJustificada'] as bool? ?? false,
+      motivoAusencia: json['motivoAusencia'] as String?,
+      puedeJustificar: json['puedeJustificar'] as bool? ?? false,
+      limiteJustificacion: DateTime.tryParse(
+        json['limiteJustificacion']?.toString() ?? '',
+      ),
     );
   }
 

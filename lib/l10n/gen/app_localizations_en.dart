@@ -1161,9 +1161,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get callupPlayersTitle => 'Called-up players';
 
   @override
-  String get notModifiable => 'Not editable';
-
-  @override
   String selectedCountLabel(int count) {
     return '$count selected';
   }
@@ -1310,14 +1307,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get seasonCallupsTitle => 'Call-ups';
-
-  @override
-  String seasonCallupsLine(int going, int cannot, int pending) {
-    return 'Going: $going · Can\'t go: $cannot · No answer: $pending';
-  }
-
-  @override
   String seasonShortTrainings(int attended, int total) {
     return 'Training $attended/$total';
   }
@@ -1334,37 +1323,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get clubPageMyCallups => 'My call-ups';
-
-  @override
-  String get clubPageMyCallupsDesc => 'Say whether you can attend the matches';
-
-  @override
   String get clubPageMyCard => 'My player card';
 
   @override
   String get clubPageMyCardDesc => 'Your player details';
-
-  @override
-  String get callupStatusPending => 'No answer yet';
-
-  @override
-  String get callupStatusGoing => 'Going';
-
-  @override
-  String get callupStatusCannot => 'Can\'t go';
-
-  @override
-  String get callupAnswerGoing => 'Going';
-
-  @override
-  String get callupAnswerCannot => 'Can\'t go';
-
-  @override
-  String get callupNoUpcoming => 'You have no upcoming call-ups';
-
-  @override
-  String get callupsLoadFailed => 'The call-ups could not be loaded.';
 
   @override
   String callupMatchLine(String date) {
@@ -1377,38 +1339,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String callupDeadlineClosed(String deadline) {
-    return 'Response deadline closed ($deadline)';
-  }
-
-  @override
-  String get callupMatchCancelled => 'Match cancelled';
-
-  @override
   String callupReasonShown(String reason) {
     return 'Reason: $reason';
-  }
-
-  @override
-  String get callupCannotDialogTitle => 'Why can\'t they go?';
-
-  @override
-  String get callupReasonLabel => 'Reason';
-
-  @override
-  String get callupReasonRequired => 'Enter the reason (at least 3 characters)';
-
-  @override
-  String get callupAnswerSaved => 'Answer saved';
-
-  @override
-  String callupAnswerError(String error) {
-    return 'The answer could not be saved: $error';
-  }
-
-  @override
-  String callupSummary(int going, int cannot, int pending) {
-    return '$going going · $cannot can\'t go · $pending no answer';
   }
 
   @override
@@ -1908,4 +1840,100 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportError => 'The report could not be sent. Please try again.';
+
+  @override
+  String get matchAbsenceJustifyButton => 'Justify absence';
+
+  @override
+  String get matchAbsenceJustifyTitle => 'Justify absence from the match';
+
+  @override
+  String get matchAbsenceEditTitle => 'Edit absence reason';
+
+  @override
+  String get matchAbsenceHint =>
+      'Let the coaching staff know you can\'t play this match. You can change the reason or withdraw it until the call-up time.';
+
+  @override
+  String get matchAbsenceReasonLabel => 'Reason';
+
+  @override
+  String get matchAbsenceReasonRequired =>
+      'Enter the reason (at least 3 characters)';
+
+  @override
+  String get matchAbsenceBadge => 'Absence justified';
+
+  @override
+  String get matchAbsenceEditButton => 'Edit reason';
+
+  @override
+  String get matchAbsenceWithdrawButton => 'Withdraw';
+
+  @override
+  String get matchAbsenceWithdrawTitle => 'Withdraw the absence?';
+
+  @override
+  String get matchAbsenceWithdrawBody =>
+      'The coaching staff will know you can play. You won\'t be called up again automatically.';
+
+  @override
+  String get matchAbsenceWithdrawConfirm => 'Withdraw';
+
+  @override
+  String matchAbsenceDeadlineClosed(String deadline) {
+    return 'Deadline passed ($deadline)';
+  }
+
+  @override
+  String get matchAbsenceJustifiedSnack => 'Absence justified';
+
+  @override
+  String get matchAbsenceWithdrawnSnack => 'Absence withdrawn';
+
+  @override
+  String matchAbsenceError(String error) {
+    return 'Could not withdraw the absence: $error';
+  }
+
+  @override
+  String get callupDetailTitle => 'Call-up';
+
+  @override
+  String callupPlayersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count players called up',
+      one: '1 player called up',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String callupAbsentBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count called-up players have justified their absence',
+      one: '1 called-up player has justified their absence',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String callupAbsentCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count justified absences',
+      one: '1 justified absence',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String seasonMatchAbsencesLine(int count) {
+    return 'Matches with justified absence: $count';
+  }
 }

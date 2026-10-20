@@ -6,28 +6,14 @@ import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
 import '../../auth/services/perfil_service.dart';
-import '../../../routing/app_routes.dart';
 import '../../entrenamientos/utils/estado_asistencia_utils.dart';
+import '../../matches/models/match_model.dart';
+import '../../matches/services/justificacion_partido_service.dart';
 import '../../teams/models/team_model.dart';
 import '../../teams/services/team_services.dart';
 import '../model/calendario_model.dart';
 import '../services/calendario_service.dart';
 import '../widgets/calendario_mensual.dart';
-
-/// Días hacia delante que cubre "Mis convocatorias" (el backend:
-/// RespuestaConvocatoriaService.DIAS_HACIA_DELANTE).
-const int diasMisConvocatorias = 14;
-
-/// true si un partido de [fecha] aparece en "Mis convocatorias": desde hoy
-/// (aunque ya haya empezado) hasta dentro de [diasMisConvocatorias] días. Un
-/// partido pasado, o de más allá, no se puede abrir desde el calendario.
-bool partidoEnMisConvocatorias(DateTime fecha, DateTime hoy) {
-  final dia = DateTime(fecha.year, fecha.month, fecha.day);
-  final desde = DateTime(hoy.year, hoy.month, hoy.day);
-  final hasta = DateTime(hoy.year, hoy.month, hoy.day + diasMisConvocatorias);
-
-  return !dia.isBefore(desde) && !dia.isAfter(hasta);
-}
 
 /// Vista de solo lectura de UN ÚNICO calendario con los entrenamientos y
 /// partidos de TODOS los equipos a los que el usuario está vinculado
@@ -40,16 +26,23 @@ class CalendarioPage extends StatefulWidget {
   final TeamService? teamService;
   final Future<PerfilApp> Function()? cargarPerfil;
 
-  /// Solo para tests: el "hoy" con el que se decide si un evento es futuro o
-  /// si su partido está en "Mis convocatorias".
+  final JustificacionPartidoService? justificacionPartidoService;
+
+  /// Solo para tests: el "hoy" con el que se decide si un evento es futuro.
   final DateTime Function()? ahora;
+
+  /// Día que aparece seleccionado al abrir (hoy si es null): al tocar el aviso
+  /// de una convocatoria se abre en el día del partido.
+  final DateTime? diaInicial;
 
   const CalendarioPage({
     super.key,
     this.calendarioService,
     this.teamService,
     this.cargarPerfil,
+    this.justificacionPartidoService,
     this.ahora,
+    this.diaInicial,
   });
 
   @override
@@ -89,6 +82,8 @@ class _EventoUsuario {
 class _CalendarioPageState extends State<CalendarioPage> {
   late final CalendarioService _calendarioService =
       widget.calendarioService ?? CalendarioService();
+  late final JustificacionPartidoService _justificacionPartidoService =
+      widget.justificacionPartidoService ?? JustificacionPartidoService();
 
   PerfilApp? _perfil;
   List<_EquipoCalendarioEntrada> _equipos = [];
@@ -410,6 +405,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
             locale: Localizations.localeOf(context).languageCode,
             primerDia: _desde,
             ultimoDia: _hasta,
+            diaInicial: widget.diaInicial,
             itemBuilder: (context, evento) =>
                 _construirTarjetaItem(evento, (widget.ahora ?? DateTime.now)()),
           ),
@@ -463,17 +459,13 @@ class _CalendarioPageState extends State<CalendarioPage> {
         !item.cancelado &&
         esFuturo;
 
-    // Partido al que este jugador está convocado: se responde (Va / No
-    // puede) en "Mis convocatorias".
-    // "Mis convocatorias" solo lista los de hoy a 14 días: fuera de esa
-    // ventana el partido no estaría allí, y se enseña solo el estado de la
-    // respuesta.
-    final abreConvocatorias =
+    // Partido de un jugador (JUGADOR/FAMILIAR): se puede justificar su
+    // ausencia, igual que la falta a un entrenamiento.
+    final partidoDelJugador =
         !item.esEntrenamiento &&
-        convocado == true &&
         evento.jugadorId != null &&
         !item.cancelado &&
-        partidoEnMisConvocatorias(item.fecha, hoy);
+        item.partido?.id != null;
 
     final icono = item.esEntrenamiento
         ? Icons.fitness_center
@@ -509,11 +501,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
-        onTap: puedeJustificar
-            ? () => _justificarFalta(evento)
-            : abreConvocatorias
-            ? _abrirMisConvocatorias
-            : null,
+        onTap: puedeJustificar ? () => _justificarFalta(evento) : null,
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
@@ -556,12 +544,6 @@ class _CalendarioPageState extends State<CalendarioPage> {
                         ] else if (convocado != null) ...[
                           const SizedBox(width: 8),
                           _construirBadgeConvocado(convocado),
-                          if (convocado && evento.jugadorId != null) ...[
-                            const SizedBox(width: 6),
-                            _construirBadgeRespuesta(
-                              item.partido?.respuestaConvocatoria,
-                            ),
-                          ],
                         ],
                       ],
                     ),
@@ -630,6 +612,8 @@ class _CalendarioPageState extends State<CalendarioPage> {
                         ),
                       ),
                     ],
+                    if (partidoDelJugador)
+                      _construirAusenciaPartido(evento, item.partido!),
                     if (puedeJustificar) ...[
                       const SizedBox(height: 8),
                       Row(
@@ -699,37 +683,190 @@ class _CalendarioPageState extends State<CalendarioPage> {
     );
   }
 
-  void _abrirMisConvocatorias() {
-    Navigator.pushNamed(context, AppRoutes.myCallups).then((_) {
-      // La respuesta ha podido cambiar: se vuelve a leer el calendario.
-      if (mounted) _cargarDatos();
-    });
+  // ============================================================
+  // AUSENCIA JUSTIFICADA A PARTIDOS
+  // ============================================================
+
+  /// Estado de la ausencia del jugador a este partido y sus acciones: justificar
+  /// mientras hay plazo; si ya está justificada, la etiqueta con el motivo y,
+  /// dentro del plazo, "Editar motivo" y "Retirar"; fuera de plazo, el plazo
+  /// cerrado.
+  Widget _construirAusenciaPartido(_EventoUsuario evento, MatchModel partido) {
+    final limite = partido.limiteJustificacion;
+
+    if (partido.ausenciaJustificada) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _construirBadgeAusencia(),
+            if (partido.motivoAusencia?.trim().isNotEmpty == true) ...[
+              const SizedBox(height: 4),
+              Text(
+                _t.callupReasonShown(partido.motivoAusencia!),
+                style: TextStyle(fontSize: 13, color: _colors.onSurfaceVariant),
+              ),
+            ],
+            if (partido.puedeJustificar)
+              Wrap(
+                spacing: 4,
+                children: [
+                  TextButton.icon(
+                    onPressed: () => _justificarAusencia(evento, partido),
+                    icon: const Icon(Icons.edit_outlined, size: 16),
+                    label: Text(_t.matchAbsenceEditButton),
+                  ),
+                  TextButton.icon(
+                    onPressed: () => _retirarAusencia(evento, partido),
+                    icon: const Icon(Icons.undo, size: 16),
+                    label: Text(_t.matchAbsenceWithdrawButton),
+                  ),
+                ],
+              )
+            else if (limite != null) ...[
+              const SizedBox(height: 4),
+              _construirPlazoCerrado(limite),
+            ],
+          ],
+        ),
+      );
+    }
+
+    if (partido.puedeJustificar) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: OutlinedButton.icon(
+          onPressed: () => _justificarAusencia(evento, partido),
+          icon: const Icon(Icons.event_busy_outlined, size: 18),
+          label: Text(_t.matchAbsenceJustifyButton),
+        ),
+      );
+    }
+
+    if (limite != null) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: _construirPlazoCerrado(limite),
+      );
+    }
+
+    return const SizedBox.shrink();
   }
 
-  /// Estado de la respuesta a la convocatoria: Va (verde), No puede (rojo) o
-  /// Sin responder (ámbar).
-  Widget _construirBadgeRespuesta(String? respuesta) {
-    final (texto, color) = switch (respuesta) {
-      'VA' => (_t.callupStatusGoing, Colors.green),
-      'NO_PUEDE' => (_t.callupStatusCannot, Colors.red),
-      _ => (_t.callupStatusPending, Colors.amber.shade800),
-    };
+  Widget _construirPlazoCerrado(DateTime limite) {
+    return Text(
+      _t.matchAbsenceDeadlineClosed(_formatearLimite(limite)),
+      style: TextStyle(
+        fontSize: 12,
+        fontStyle: FontStyle.italic,
+        color: _colors.onSurfaceVariant,
+      ),
+    );
+  }
 
+  String _formatearLimite(DateTime limite) {
+    String dos(int n) => n.toString().padLeft(2, '0');
+
+    return '${dos(limite.day)}/${dos(limite.month)} '
+        '${dos(limite.hour)}:${dos(limite.minute)}';
+  }
+
+  Widget _construirBadgeAusencia() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
+        color: Colors.green.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
-        texto,
-        style: TextStyle(
+        _t.matchAbsenceBadge,
+        style: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.bold,
-          color: color,
+          color: Colors.green,
         ),
       ),
     );
+  }
+
+  Future<void> _justificarAusencia(
+    _EventoUsuario evento,
+    MatchModel partido,
+  ) async {
+    final jugadorId = evento.jugadorId;
+
+    if (partido.id == null || jugadorId == null) return;
+
+    final resultado = await showDialog<bool>(
+      context: context,
+      builder: (_) => _JustificarAusenciaPartidoDialog(
+        servicio: _justificacionPartidoService,
+        partidoId: partido.id!,
+        jugadorId: jugadorId,
+        motivoActual: partido.ausenciaJustificada
+            ? partido.motivoAusencia
+            : null,
+      ),
+    );
+
+    if (resultado == true && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_t.matchAbsenceJustifiedSnack)));
+
+      _cargarDatos();
+    }
+  }
+
+  Future<void> _retirarAusencia(
+    _EventoUsuario evento,
+    MatchModel partido,
+  ) async {
+    final jugadorId = evento.jugadorId;
+
+    if (partido.id == null || jugadorId == null) return;
+
+    final confirmado = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(_t.matchAbsenceWithdrawTitle),
+        content: Text(_t.matchAbsenceWithdrawBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(_t.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(_t.matchAbsenceWithdrawConfirm),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmado != true || !mounted) return;
+
+    try {
+      await _justificacionPartidoService.retirar(
+        partidoId: partido.id!,
+        jugadorId: jugadorId,
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_t.matchAbsenceWithdrawnSnack)));
+
+      _cargarDatos();
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_t.matchAbsenceError(e.toString()))),
+      );
+    }
   }
 
   Widget _construirBadgeConvocado(bool convocado) {
@@ -774,6 +911,133 @@ class _CalendarioPageState extends State<CalendarioPage> {
 
   String _formatearFecha(DateTime fecha) =>
       formatearFechaConDiaSemana(fecha, _t);
+}
+
+// ============================================================
+// DIÁLOGO DE JUSTIFICACIÓN DE AUSENCIA A UN PARTIDO
+// ============================================================
+
+class _JustificarAusenciaPartidoDialog extends StatefulWidget {
+  final JustificacionPartidoService servicio;
+  final int partidoId;
+  final int jugadorId;
+
+  /// El motivo ya guardado si se está editando; null si es una justificación nueva.
+  final String? motivoActual;
+
+  const _JustificarAusenciaPartidoDialog({
+    required this.servicio,
+    required this.partidoId,
+    required this.jugadorId,
+    this.motivoActual,
+  });
+
+  @override
+  State<_JustificarAusenciaPartidoDialog> createState() =>
+      _JustificarAusenciaPartidoDialogState();
+}
+
+class _JustificarAusenciaPartidoDialogState
+    extends State<_JustificarAusenciaPartidoDialog> {
+  late final TextEditingController _motivoController = TextEditingController(
+    text: widget.motivoActual ?? '',
+  );
+
+  bool _enviando = false;
+  String? _error;
+
+  bool get _editando => widget.motivoActual != null;
+
+  AppLocalizations get _t => AppLocalizations.of(context);
+
+  @override
+  void dispose() {
+    _motivoController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _enviar() async {
+    final motivo = _motivoController.text.trim();
+
+    // El backend exige de 3 a 500 caracteres; se avisa antes de enviar.
+    if (motivo.length < 3) {
+      setState(() => _error = _t.matchAbsenceReasonRequired);
+      return;
+    }
+
+    setState(() {
+      _enviando = true;
+      _error = null;
+    });
+
+    try {
+      await widget.servicio.justificar(
+        partidoId: widget.partidoId,
+        jugadorId: widget.jugadorId,
+        motivo: motivo,
+      );
+
+      if (!mounted) return;
+
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _error = e.toString();
+        _enviando = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        _editando ? _t.matchAbsenceEditTitle : _t.matchAbsenceJustifyTitle,
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(_t.matchAbsenceHint),
+            const SizedBox(height: 14),
+            TextField(
+              controller: _motivoController,
+              enabled: !_enviando,
+              maxLines: 3,
+              maxLength: 500,
+              decoration: InputDecoration(
+                labelText: _t.matchAbsenceReasonLabel,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              Text(_error!, style: const TextStyle(color: Colors.redAccent)),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _enviando ? null : () => Navigator.pop(context),
+          child: Text(_t.cancel),
+        ),
+        FilledButton(
+          onPressed: _enviando ? null : _enviar,
+          child: _enviando
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(_t.calendarJustifyAbsenceSubmit),
+        ),
+      ],
+    );
+  }
 }
 
 // ============================================================

@@ -19,6 +19,10 @@ class CalendarioMensual<T> extends StatefulWidget {
   final DateTime? primerDia;
   final DateTime? ultimoDia;
 
+  /// Día que aparece seleccionado al abrir (hoy si es null o si cae fuera de
+  /// [primerDia]-[ultimoDia]).
+  final DateTime? diaInicial;
+
   const CalendarioMensual({
     super.key,
     required this.items,
@@ -28,6 +32,7 @@ class CalendarioMensual<T> extends StatefulWidget {
     required this.locale,
     this.primerDia,
     this.ultimoDia,
+    this.diaInicial,
   });
 
   @override
@@ -43,8 +48,19 @@ class _CalendarioMensualState<T> extends State<CalendarioMensual<T>> {
   void initState() {
     super.initState();
 
-    final hoy = DateTime.now();
-    _focusedDay = _soloFecha(hoy);
+    final hoy = _soloFecha(DateTime.now());
+    final inicial = widget.diaInicial == null
+        ? null
+        : _soloFecha(widget.diaInicial!);
+
+    final dentroDeLaVentana =
+        inicial != null &&
+        (widget.primerDia == null ||
+            !inicial.isBefore(_soloFecha(widget.primerDia!))) &&
+        (widget.ultimoDia == null ||
+            !inicial.isAfter(_soloFecha(widget.ultimoDia!)));
+
+    _focusedDay = dentroDeLaVentana ? inicial : hoy;
     _selectedDay = _focusedDay;
   }
 
@@ -71,7 +87,9 @@ class _CalendarioMensualState<T> extends State<CalendarioMensual<T>> {
           margin: EdgeInsets.zero,
           color: colors.surface,
           elevation: 1,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           clipBehavior: Clip.antiAlias,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
@@ -159,7 +177,9 @@ class _CalendarioMensualState<T> extends State<CalendarioMensual<T>> {
           Card(
             margin: EdgeInsets.zero,
             color: colors.surface,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Row(

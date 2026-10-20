@@ -17,13 +17,10 @@ class ConvocatoriaModel {
   final int usuarioEntrenadorId;
   final List<ConvocatoriaJugadorModel> jugadores;
 
-  /// Cuántos convocados van, no pueden o aún no han respondido.
-  int get van => jugadores.where((j) => j.respuesta == 'VA').length;
-
-  int get noPueden =>
-      jugadores.where((j) => j.respuesta == 'NO_PUEDE').length;
-
-  int get sinResponder => jugadores.length - van - noPueden;
+  /// Convocados que han justificado su ausencia a este partido (siguen en la
+  /// convocatoria hasta que el entrenador los sustituya).
+  List<ConvocatoriaJugadorModel> get ausentes =>
+      jugadores.where((j) => j.ausenciaJustificada).toList();
 
   ConvocatoriaModel({
     required this.id,
@@ -67,26 +64,23 @@ class ConvocatoriaJugadorModel {
   final int jugadorId;
   final String jugador;
 
-  /// 'VA', 'NO_PUEDE' o null (sin responder).
-  final String? respuesta;
-  final String? motivo;
-  final DateTime? fechaRespuesta;
+  /// El jugador ha justificado su ausencia a este partido, y su motivo.
+  final bool ausenciaJustificada;
+  final String? motivoAusencia;
 
   ConvocatoriaJugadorModel({
     required this.jugadorId,
     required this.jugador,
-    this.respuesta,
-    this.motivo,
-    this.fechaRespuesta,
+    this.ausenciaJustificada = false,
+    this.motivoAusencia,
   });
 
   factory ConvocatoriaJugadorModel.fromJson(Map<String, dynamic> json) {
     return ConvocatoriaJugadorModel(
       jugadorId: json['jugadorId'],
       jugador: json['jugador'] ?? '',
-      respuesta: json['respuesta'] as String?,
-      motivo: json['motivo'] as String?,
-      fechaRespuesta: DateTime.tryParse(json['fechaRespuesta']?.toString() ?? ''),
+      ausenciaJustificada: json['ausenciaJustificada'] as bool? ?? false,
+      motivoAusencia: json['motivoAusencia'] as String?,
     );
   }
 }

@@ -141,7 +141,7 @@ class PushNotificationService {
         cantidadNoLeidas: cantidadNoLeidas,
         esPrivada: esPrivada,
         autorId: autorId,
-        tipo: tipo?.toString(),
+        datos: message.data,
       );
     });
 
@@ -223,14 +223,17 @@ class PushNotificationService {
       return;
     }
 
-    // El aviso de una convocatoria (data["tipo"] == "CONVOCATORIA"; para los
-    // pushes antiguos, su título) lleva a JUGADOR/FAMILIAR a "Mis
-    // convocatorias", donde pueden responder.
-    if (abreMisConvocatorias(
+    // El aviso de una convocatoria lleva a JUGADOR/FAMILIAR al calendario, en
+    // el día del partido (data["tipo"] == "CONVOCATORIA"; para los pushes
+    // antiguos, su título), y al entrenador a editarla ("CONVOCATORIA_EDITAR").
+    final destino = destinoDeAvisoConvocatoria(
       tipo: tipo?.toString(),
       titulo: message.notification?.title,
-    )) {
-      await AppNavigator.abrirMisConvocatorias();
+      datos: message.data,
+    );
+
+    if (destino != null) {
+      await AppNavigator.abrirDestinoConvocatoria(destino);
       return;
     }
 

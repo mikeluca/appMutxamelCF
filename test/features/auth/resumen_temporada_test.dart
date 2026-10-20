@@ -24,9 +24,7 @@ const _conDatos = ResumenTemporadaModel(
   faltas: 1,
   justificadas: 1,
   porcentaje: 90,
-  convocatoriasVa: 8,
-  convocatoriasNoPuede: 1,
-  convocatoriasSinResponder: 0,
+  ausenciasJustificadas: 2,
 );
 
 class _FakeResumenService extends ResumenTemporadaService {
@@ -108,6 +106,7 @@ void main() {
           'asistencias': 2,
           'amarillas': 1,
           'rojas': 0,
+          'ausenciasJustificadas': 4,
         },
         'entrenamientos': {
           'total': 20,
@@ -116,14 +115,13 @@ void main() {
           'justificadas': 1,
           'porcentaje': 90,
         },
-        'convocatorias': {'va': 8, 'noPuede': 1, 'sinResponder': 0},
       });
 
       expect(r.temporada, '2026/2027');
       expect(r.goles, 3);
       expect(r.entrenamientosAsistidos, 18);
       expect(r.porcentaje, 90);
-      expect(r.convocatoriasNoPuede, 1);
+      expect(r.ausenciasJustificadas, 4);
       expect(r.hayDatos, isTrue);
     });
 
@@ -132,12 +130,21 @@ void main() {
         'temporada': null,
         'partidos': {'goles': 0},
         'entrenamientos': {'total': 0, 'porcentaje': null},
-        'convocatorias': <String, dynamic>{},
       });
 
       expect(r.temporada, isNull);
       expect(r.porcentaje, isNull);
       expect(r.hayDatos, isFalse);
+    });
+
+    test('solo con ausencias justificadas ya hay datos', () {
+      expect(
+        const ResumenTemporadaModel(
+          temporada: '2026/2027',
+          ausenciasJustificadas: 1,
+        ).hayDatos,
+        isTrue,
+      );
     });
 
     test('con temporada pero todo a cero tampoco hay datos', () {
@@ -173,10 +180,9 @@ void main() {
       expect(find.text('18 de 20 (90 %)'), findsOneWidget);
       expect(find.text('1 falta · 1 justificada'), findsOneWidget);
 
-      expect(
-        find.text('Va: 8 · No puede: 1 · Sin responder: 0'),
-        findsOneWidget,
-      );
+      expect(find.text('Partidos con ausencia justificada: 2'), findsOneWidget);
+      // Ya no hay bloque "Va / No puede".
+      expect(find.textContaining('No puede'), findsNothing);
       expect(find.text('Todavía no hay datos de esta temporada'), findsNothing);
     });
 

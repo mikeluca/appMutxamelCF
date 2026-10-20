@@ -6,6 +6,7 @@ import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
 import '../../matches/models/match_model.dart';
+import '../../matches/services/justificacion_partido_service.dart';
 import '../../matches/services/match_service.dart';
 import '../../teams/models/player_model.dart';
 import '../../teams/services/team_services.dart';
@@ -20,6 +21,7 @@ class ConvocatoriaFormPage extends StatefulWidget {
   final TeamService? teamService;
   final MatchService? matchService;
   final ConvocatoriaService? convocatoriaService;
+  final JustificacionPartidoService? justificacionService;
 
   const ConvocatoriaFormPage({
     super.key,
@@ -28,6 +30,7 @@ class ConvocatoriaFormPage extends StatefulWidget {
     this.teamService,
     this.matchService,
     this.convocatoriaService,
+    this.justificacionService,
   });
 
   @override
@@ -49,6 +52,8 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
   late final MatchService _matchService = widget.matchService ?? MatchService();
   late final ConvocatoriaService _convocatoriaService =
       widget.convocatoriaService ?? ConvocatoriaService();
+  late final JustificacionPartidoService _justificacionService =
+      widget.justificacionService ?? JustificacionPartidoService();
 
   final TextEditingController _lugarController = TextEditingController();
 
@@ -65,6 +70,11 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
 
   final Set<int> _jugadoresSeleccionados = {};
 
+  /// Jugadores que han justificado su ausencia al partido elegido (id -> motivo).
+  /// No se pueden añadir a la convocatoria; uno que ya estaba convocado sí se
+  /// puede quitar.
+  Map<int, String> _ausencias = {};
+
   ColorScheme get _colors => Theme.of(context).colorScheme;
   AppLocalizations get _t => AppLocalizations.of(context);
 
@@ -75,6 +85,37 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
     super.initState();
 
     _futureDatos = _cargarDatos();
+  }
+
+  /// Pide al servidor quién ha justificado su ausencia a [partidoId]. Si falla
+  /// (o el partido cambió mientras tanto), el formulario sigue sin ese aviso:
+  /// el servidor rechaza igualmente al guardar a un jugador justificado.
+  Future<void> _cargarAusencias(int? partidoId) async {
+    if (partidoId == null) {
+      return;
+    }
+
+    Map<int, String> ausencias;
+
+    try {
+      final lista = await _justificacionService.obtener(partidoId);
+
+      ausencias = {for (final a in lista) a.jugadorId: a.motivo};
+    } catch (_) {
+      ausencias = {};
+    }
+
+    if (!mounted || _partidoSeleccionado?.id != partidoId) return;
+
+    setState(() {
+      _ausencias = ausencias;
+
+      // Al cambiar de partido, quien está justificado en el nuevo y todavía no
+      // estaba convocado deja de estar marcado.
+      _jugadoresSeleccionados.removeWhere(
+        (id) => ausencias.containsKey(id) && _convocado(id) == null,
+      );
+    });
   }
 
   Future<_DatosFormulario> _cargarDatos() async {
@@ -130,6 +171,8 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
     );
 
     _partidoSeleccionado = partido;
+
+    _cargarAusencias(partido.id);
   }
 
   /// Se calcula a partir de partido.dia (en vez de usar diaFormateado tal
@@ -176,7 +219,12 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
   }
 
   void _alternarJugador(int jugadorId) {
-    if (_esEdicion) return;
+    // Uno con ausencia justificada no se puede marcar; si ya estaba marcado, sí
+    // se puede quitar.
+    if (_ausencias.containsKey(jugadorId) &&
+        !_jugadoresSeleccionados.contains(jugadorId)) {
+      return;
+    }
 
     setState(() {
       if (_jugadoresSeleccionados.contains(jugadorId)) {
@@ -223,21 +271,6 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
                     _construirDatosPartido(partidos),
                     const SizedBox(height: 24),
                     _construirTituloJugadores(),
-                    if (_esEdicion) ...[
-                      const SizedBox(height: 6),
-                      Text(
-                        _t.callupSummary(
-                          widget.convocatoria!.van,
-                          widget.convocatoria!.noPueden,
-                          widget.convocatoria!.sinResponder,
-                        ),
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: _colors.primary,
-                        ),
-                      ),
-                    ],
                     const SizedBox(height: 12),
                     if (jugadores.isEmpty)
                       _construirSinJugadores()
@@ -353,7 +386,10 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
           _partidoSeleccionado = partidos.firstWhere(
             (partido) => partido.id == id,
           );
+          _ausencias = {};
         });
+
+        _cargarAusencias(id);
       },
     );
   }
@@ -368,7 +404,11 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _construirFilaInfo(Icons.stadium_outlined, _t.fieldLabelCampo, partido.campo),
+          _construirFilaInfo(
+            Icons.stadium_outlined,
+            _t.fieldLabelCampo,
+            partido.campo,
+          ),
           const SizedBox(height: 6),
           _construirFilaInfo(
             Icons.calendar_today_outlined,
@@ -376,7 +416,11 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
             _formatearFechaPartido(partido),
           ),
           const SizedBox(height: 6),
-          _construirFilaInfo(Icons.access_time, _t.matchTimeLabel, partido.hora),
+          _construirFilaInfo(
+            Icons.access_time,
+            _t.matchTimeLabel,
+            partido.hora,
+          ),
         ],
       ),
     );
@@ -431,9 +475,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
           ),
         ),
         Text(
-          _esEdicion
-              ? _t.notModifiable
-              : _t.selectedCountLabel(_jugadoresSeleccionados.length),
+          _t.selectedCountLabel(_jugadoresSeleccionados.length),
           style: TextStyle(fontSize: 12, color: _colors.onSurfaceVariant),
         ),
       ],
@@ -447,51 +489,36 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
         .firstOrNull;
   }
 
-  /// ✓ verde (va), ✗ rojo (no puede) o ? gris (sin responder).
-  Widget _iconoRespuesta(String? respuesta) {
-    return switch (respuesta) {
-      'VA' => Tooltip(
-        message: _t.callupStatusGoing,
-        child: const Icon(Icons.check_circle, color: Colors.green),
-      ),
-      'NO_PUEDE' => Tooltip(
-        message: _t.callupStatusCannot,
-        child: const Icon(Icons.cancel, color: Colors.red),
-      ),
-      _ => Tooltip(
-        message: _t.callupStatusPending,
-        child: Icon(Icons.help_outline, color: _colors.onSurfaceVariant),
-      ),
-    };
-  }
-
   Widget _construirJugador(PlayerModel jugador) {
     final seleccionado = _jugadoresSeleccionados.contains(jugador.id);
-    final convocado = _esEdicion && seleccionado
-        ? _convocado(jugador.id)
-        : null;
-    final bloqueado = _esEdicion;
+    final motivoAusencia = _ausencias[jugador.id];
+    final ausente = motivoAusencia != null;
+
+    // Con ausencia justificada no se puede marcar; si ya estaba convocado, sí
+    // se puede quitar.
+    final deshabilitado = ausente && !seleccionado;
 
     final nombre = '${jugador.nombre} ${jugador.apellidos}'.trim();
 
     return Card(
+      key: ValueKey('jugador-convocatoria-${jugador.id}'),
       margin: const EdgeInsets.only(bottom: 10),
-      color: bloqueado
+      color: deshabilitado
           ? _colors.surfaceContainerHighest
           : (seleccionado ? _colors.primaryContainer : _colors.surface),
       elevation: 1,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
         side: BorderSide(
-          color: seleccionado
-              ? (bloqueado ? _colors.onSurfaceVariant : _colors.primary)
-              : _colors.onSurfaceVariant,
-          width: seleccionado ? 1.5 : 1,
+          color: ausente
+              ? Colors.redAccent
+              : (seleccionado ? _colors.primary : _colors.onSurfaceVariant),
+          width: seleccionado || ausente ? 1.5 : 1,
         ),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
-        onTap: bloqueado ? null : () => _alternarJugador(jugador.id),
+        onTap: deshabilitado ? null : () => _alternarJugador(jugador.id),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
@@ -518,35 +545,45 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: _colors.onSurface,
+                        color: deshabilitado
+                            ? _colors.onSurfaceVariant
+                            : _colors.onSurface,
                       ),
                     ),
-                    if (convocado?.respuesta == 'NO_PUEDE' &&
-                        convocado?.motivo?.isNotEmpty == true)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 3),
-                        child: Text(
-                          _t.callupReasonShown(convocado!.motivo!),
+                    if (ausente) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        _t.matchAbsenceBadge,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.redAccent,
+                        ),
+                      ),
+                      if (motivoAusencia.trim().isNotEmpty)
+                        Text(
+                          _t.callupReasonShown(motivoAusencia),
                           style: TextStyle(
                             fontSize: 13,
                             color: _colors.onSurfaceVariant,
                           ),
                         ),
-                      ),
+                    ],
                   ],
                 ),
               ),
-              if (_esEdicion && seleccionado)
-                _iconoRespuesta(convocado?.respuesta)
-              else
-                Icon(
-                  seleccionado
-                      ? Icons.check_circle
-                      : Icons.radio_button_unchecked,
-                  color: seleccionado
-                      ? _colors.primary
-                      : _colors.onSurfaceVariant,
-                ),
+              Icon(
+                deshabilitado
+                    ? Icons.block
+                    : (seleccionado
+                          ? Icons.check_circle
+                          : Icons.radio_button_unchecked),
+                color: deshabilitado
+                    ? _colors.onSurfaceVariant
+                    : (seleccionado
+                          ? _colors.primary
+                          : _colors.onSurfaceVariant),
+              ),
             ],
           ),
         ),
@@ -587,7 +624,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       return;
     }
 
-    if (!_esEdicion && _jugadoresSeleccionados.isEmpty) {
+    if (_jugadoresSeleccionados.isEmpty) {
       _mostrarMensaje(_t.selectAtLeastOnePlayerError);
       return;
     }
@@ -603,6 +640,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
           partidoId: partido.id!,
           horaConvocatoria: horaConvocatoria,
           lugarConvocatoria: _lugarController.text.trim(),
+          jugadoresIds: _jugadoresSeleccionados.toList(),
         );
       } else {
         await _convocatoriaService.crear(
@@ -618,9 +656,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _esEdicion
-                ? _t.callupUpdatedSuccess
-                : _t.callupCreatedSuccess,
+            _esEdicion ? _t.callupUpdatedSuccess : _t.callupCreatedSuccess,
           ),
         ),
       );

@@ -88,8 +88,6 @@ class _ClubPageState extends State<ClubPage> {
 
     final soloJugador = esJugador && !tieneJugadores;
 
-    final respondeConvocatorias = esJugador || tieneJugadores;
-
     final veClasificaciones =
         esGestionGlobal ||
         usuario?.tieneRol('JUGADOR') == true ||
@@ -182,19 +180,6 @@ class _ClubPageState extends State<ClubPage> {
           ),
 
           const SizedBox(height: 12),
-
-          if (respondeConvocatorias)
-            _construirOpcion(
-              context,
-              icono: Icons.how_to_reg_outlined,
-              titulo: t.clubPageMyCallups,
-              descripcion: t.clubPageMyCallupsDesc,
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.myCallups);
-              },
-            ),
-
-          if (respondeConvocatorias) const SizedBox(height: 12),
 
           if (veClasificaciones)
             _construirOpcion(

@@ -5,11 +5,12 @@ import 'package:app_mutxamel_cf/features/calendario/model/sesion_entrenamiento_m
 import 'package:app_mutxamel_cf/features/calendario/model/temporada_model.dart';
 import 'package:app_mutxamel_cf/features/calendario/pages/calendario_page.dart';
 import 'package:app_mutxamel_cf/features/calendario/services/calendario_service.dart';
+import 'package:app_mutxamel_cf/features/matches/models/justificacion_partido_model.dart';
 import 'package:app_mutxamel_cf/features/matches/models/match_model.dart';
+import 'package:app_mutxamel_cf/features/matches/services/justificacion_partido_service.dart';
 import 'package:app_mutxamel_cf/features/teams/models/team_model.dart';
 import 'package:app_mutxamel_cf/features/teams/services/team_services.dart';
 import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
-import 'package:app_mutxamel_cf/routing/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -55,6 +56,42 @@ class _FakeCalendarioService extends CalendarioService {
   }
 }
 
+/// Justificaciones de ausencia a partidos: anota las llamadas; con [error]
+/// lanza una excepción en justificar/retirar.
+class _FakeJustificacionPartidoService extends JustificacionPartidoService {
+  final List<String> llamadas = [];
+  String? error;
+
+  @override
+  Future<JustificacionPartidoModel> justificar({
+    required int partidoId,
+    required int jugadorId,
+    required String motivo,
+  }) async {
+    if (error != null) {
+      throw Exception(error);
+    }
+
+    llamadas.add('justificar:$partidoId:$jugadorId:$motivo');
+
+    return JustificacionPartidoModel(
+      partidoId: partidoId,
+      jugadorId: jugadorId,
+      jugador: 'Pablo Garcia',
+      motivo: motivo,
+    );
+  }
+
+  @override
+  Future<void> retirar({required int partidoId, required int jugadorId}) async {
+    if (error != null) {
+      throw Exception(error);
+    }
+
+    llamadas.add('retirar:$partidoId:$jugadorId');
+  }
+}
+
 class _FakeTeamService extends TeamService {
   @override
   Future<List<TeamModel>> obtenerEquipos() async => [];
@@ -82,7 +119,14 @@ PerfilApp _perfil(List<String> roles) => PerfilApp(
   equipos: const [],
 );
 
-CalendarioModel _calendario({String? respuesta}) => CalendarioModel(
+CalendarioModel _calendario({
+  bool ausenciaJustificada = false,
+  bool puedeJustificar = true,
+  bool cancelado = false,
+  String? motivoAusencia,
+  DateTime? limite,
+  DateTime? diaPartido,
+}) => CalendarioModel(
   sesiones: [
     SesionEntrenamientoModel(
       id: 7,
@@ -101,10 +145,14 @@ CalendarioModel _calendario({String? respuesta}) => CalendarioModel(
       categoria: 'Cadete',
       equipo: 'Cadete A',
       rival: 'Pego C.F.',
-      dia: _enDias(0),
+      dia: diaPartido ?? _enDias(0),
       hora: '11:00',
       convocado: true,
-      respuestaConvocatoria: respuesta,
+      cancelado: cancelado,
+      ausenciaJustificada: ausenciaJustificada,
+      motivoAusencia: motivoAusencia,
+      puedeJustificar: puedeJustificar,
+      limiteJustificacion: limite ?? DateTime(2026, 10, 24, 9, 30),
     ),
   ],
 );
@@ -113,8 +161,9 @@ Future<void> _pintar(
   WidgetTester tester,
   _FakeCalendarioService servicio,
   List<String> roles, {
-  Map<String, WidgetBuilder> rutas = const {},
+  JustificacionPartidoService? justificaciones,
   DateTime Function()? ahora,
+  DateTime? diaInicial,
 }) async {
   tester.view.physicalSize = const Size(800, 3000);
   tester.view.devicePixelRatio = 1;
@@ -130,8 +179,9 @@ Future<void> _pintar(
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      routes: rutas,
       home: CalendarioPage(
+        justificacionPartidoService: justificaciones,
+        diaInicial: diaInicial,
         calendarioService: servicio,
         teamService: _FakeTeamService(),
         cargarPerfil: () async => _perfil(roles),
@@ -189,109 +239,220 @@ void main() {
     expect(find.text('Justificar falta a entrenamiento'), findsOneWidget);
   });
 
-  testWidgets('un partido convocado muestra el estado de la respuesta', (
-    tester,
-  ) async {
+  // ---- ausencia justificada a partidos ------------------------------------------------
+
+  Future<_FakeJustificacionPartidoService> pintarPartido(
+    WidgetTester tester, {
+    bool justificada = false,
+    bool puedeJustificar = true,
+    bool cancelado = false,
+    String? motivo,
+    DateTime? limite,
+    List<String> roles = const ['JUGADOR'],
+    DateTime? dia,
+    DateTime? diaInicial,
+  }) async {
+    final justificaciones = _FakeJustificacionPartidoService();
+
     await _pintar(
       tester,
-      _FakeCalendarioService(_calendario(respuesta: 'NO_PUEDE')),
-      ['JUGADOR'],
+      _FakeCalendarioService(
+        _calendario(
+          ausenciaJustificada: justificada,
+          puedeJustificar: puedeJustificar,
+          cancelado: cancelado,
+          motivoAusencia: motivo,
+          limite: limite,
+          diaPartido: dia,
+        ),
+      ),
+      roles,
+      justificaciones: justificaciones,
+      diaInicial: diaInicial,
     );
 
-    expect(find.text('Convocado'), findsOneWidget);
-    expect(find.text('No puede'), findsOneWidget);
-  });
-
-  testWidgets('un partido convocado sin responder lo indica', (tester) async {
-    await _pintar(tester, _FakeCalendarioService(_calendario()), ['FAMILIAR']);
-
-    expect(find.text('Convocado'), findsOneWidget);
-    expect(find.text('Sin responder'), findsOneWidget);
-  });
-
-  testWidgets('pulsar el partido convocado lleva a "Mis convocatorias"', (
-    tester,
-  ) async {
-    await _pintar(
-      tester,
-      _FakeCalendarioService(_calendario()),
-      ['JUGADOR'],
-      rutas: {
-        AppRoutes.myCallups: (_) =>
-            const Scaffold(body: Center(child: Text('PANTALLA CONVOCATORIAS'))),
-      },
-    );
-
-    await tester.tap(find.text('Pego C.F.'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('PANTALLA CONVOCATORIAS'), findsOneWidget);
-  });
-
-  // El partido está en el día de hoy (el calendario abre en hoy): lo que cambia
-  // es el "hoy" con el que la página decide si se puede abrir.
-  Future<void> pulsarPartidoConHoy(WidgetTester tester, DateTime hoy) async {
-    await _pintar(
-      tester,
-      _FakeCalendarioService(_calendario(respuesta: 'VA')),
-      ['JUGADOR'],
-      ahora: () => hoy,
-      rutas: {
-        AppRoutes.myCallups: (_) =>
-            const Scaffold(body: Center(child: Text('PANTALLA CONVOCATORIAS'))),
-      },
-    );
-
-    await tester.tap(find.text('Pego C.F.'));
-    await tester.pumpAndSettle();
+    return justificaciones;
   }
 
-  testWidgets('un partido ya pasado no lleva a "Mis convocatorias" y enseña '
-      'solo el estado', (tester) async {
-    await pulsarPartidoConHoy(tester, _enDias(1));
-
-    expect(find.text('PANTALLA CONVOCATORIAS'), findsNothing);
-    expect(find.text('Va'), findsOneWidget);
-  });
-
-  testWidgets('un partido a más de 14 días no lleva a "Mis convocatorias"', (
+  testWidgets('un partido convocado sigue mostrando que está convocado', (
     tester,
   ) async {
-    await pulsarPartidoConHoy(tester, _enDias(-15));
+    await pintarPartido(tester);
 
-    expect(find.text('PANTALLA CONVOCATORIAS'), findsNothing);
-    expect(find.text('Va'), findsOneWidget);
+    expect(find.text('Convocado'), findsOneWidget);
+    // Ya no hay respuesta "Va / No puede".
+    expect(find.text('Va'), findsNothing);
+    expect(find.text('No puede'), findsNothing);
+    expect(find.text('Sin responder'), findsNothing);
   });
 
-  testWidgets(
-    'un partido a justo 14 días todavía lleva a "Mis convocatorias"',
-    (tester) async {
-      await pulsarPartidoConHoy(tester, _enDias(-14));
+  testWidgets('con plazo se puede justificar la ausencia con un motivo', (
+    tester,
+  ) async {
+    final servicio = await pintarPartido(tester);
 
-      expect(find.text('PANTALLA CONVOCATORIAS'), findsOneWidget);
-    },
-  );
+    expect(find.text('Justificar ausencia'), findsOneWidget);
+    expect(find.text('Ausencia justificada'), findsNothing);
 
-  group('partidoEnMisConvocatorias', () {
-    final hoy = DateTime(2026, 10, 21, 18, 30);
+    await tester.tap(find.text('Justificar ausencia'));
+    await tester.pumpAndSettle();
 
-    test('hoy, aunque ya haya empezado, y hasta 14 días después', () {
-      expect(partidoEnMisConvocatorias(DateTime(2026, 10, 21), hoy), isTrue);
-      expect(partidoEnMisConvocatorias(DateTime(2026, 10, 21, 9), hoy), isTrue);
-      expect(partidoEnMisConvocatorias(DateTime(2026, 11, 4), hoy), isTrue);
-    });
+    expect(find.text('Justificar ausencia al partido'), findsOneWidget);
 
-    test('ayer y el día 15 quedan fuera', () {
-      expect(partidoEnMisConvocatorias(DateTime(2026, 10, 20), hoy), isFalse);
-      expect(partidoEnMisConvocatorias(DateTime(2026, 11, 5), hoy), isFalse);
-    });
+    // El motivo es obligatorio: sin él no se envía nada.
+    await tester.tap(find.widgetWithText(FilledButton, 'Enviar'));
+    await tester.pumpAndSettle();
 
-    test('el cambio de hora de octubre no mueve el límite', () {
-      final antes = DateTime(2026, 10, 20, 12);
+    expect(find.text('Indica el motivo (mínimo 3 caracteres)'), findsOneWidget);
+    expect(servicio.llamadas, isEmpty);
 
-      // 14 días después del 20/10 es el 3/11, pasado el cambio al horario de invierno.
-      expect(partidoEnMisConvocatorias(DateTime(2026, 11, 3), antes), isTrue);
-      expect(partidoEnMisConvocatorias(DateTime(2026, 11, 4), antes), isFalse);
-    });
+    await tester.enterText(find.byType(TextField), 'Examen de mates');
+    await tester.tap(find.widgetWithText(FilledButton, 'Enviar'));
+    await tester.pumpAndSettle();
+
+    expect(servicio.llamadas, ['justificar:30:100:Examen de mates']);
+    expect(find.text('Ausencia justificada'), findsOneWidget);
+  });
+
+  testWidgets('si el servidor rechaza la ausencia el diálogo lo dice', (
+    tester,
+  ) async {
+    final servicio = await pintarPartido(tester);
+    servicio.error = 'El plazo para justificar la ausencia terminó';
+
+    await tester.tap(find.text('Justificar ausencia'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Examen');
+    await tester.tap(find.widgetWithText(FilledButton, 'Enviar'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('El plazo para justificar'), findsOneWidget);
+    expect(find.text('Justificar ausencia al partido'), findsOneWidget);
+  });
+
+  testWidgets('ya justificada: etiqueta, motivo y editar o retirar', (
+    tester,
+  ) async {
+    final servicio = await pintarPartido(
+      tester,
+      justificada: true,
+      motivo: 'Examen de mates',
+    );
+
+    expect(find.text('Ausencia justificada'), findsOneWidget);
+    expect(find.text('Motivo: Examen de mates'), findsOneWidget);
+    expect(find.text('Editar motivo'), findsOneWidget);
+    expect(find.text('Retirar'), findsOneWidget);
+    expect(find.text('Justificar ausencia'), findsNothing);
+
+    // Editar: el diálogo ya trae el motivo.
+    await tester.tap(find.text('Editar motivo'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Editar motivo de la ausencia'), findsOneWidget);
+    expect(find.text('Examen de mates'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), 'Otro motivo');
+    await tester.tap(find.widgetWithText(FilledButton, 'Enviar'));
+    await tester.pumpAndSettle();
+
+    expect(servicio.llamadas, ['justificar:30:100:Otro motivo']);
+  });
+
+  testWidgets('retirar pide confirmación y solo entonces retira', (
+    tester,
+  ) async {
+    final servicio = await pintarPartido(
+      tester,
+      justificada: true,
+      motivo: 'Examen',
+    );
+
+    await tester.tap(find.text('Retirar'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('¿Retirar la ausencia?'), findsOneWidget);
+
+    // Cancelar no retira nada.
+    await tester.tap(find.widgetWithText(TextButton, 'Cancelar'));
+    await tester.pumpAndSettle();
+
+    expect(servicio.llamadas, isEmpty);
+
+    await tester.tap(find.text('Retirar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Retirar'));
+    await tester.pumpAndSettle();
+
+    expect(servicio.llamadas, ['retirar:30:100']);
+    expect(find.text('Ausencia retirada'), findsOneWidget);
+  });
+
+  testWidgets('fuera de plazo: plazo cerrado y sin botones', (tester) async {
+    await pintarPartido(
+      tester,
+      puedeJustificar: false,
+      limite: DateTime(2026, 10, 24, 9, 30),
+    );
+
+    expect(find.text('Plazo cerrado (24/10 09:30)'), findsOneWidget);
+    expect(find.text('Justificar ausencia'), findsNothing);
+    expect(find.text('Editar motivo'), findsNothing);
+    expect(find.text('Retirar'), findsNothing);
+  });
+
+  testWidgets('justificada y fuera de plazo: se ve pero ya no se cambia', (
+    tester,
+  ) async {
+    await pintarPartido(
+      tester,
+      justificada: true,
+      motivo: 'Examen',
+      puedeJustificar: false,
+      limite: DateTime(2026, 10, 24, 9, 30),
+    );
+
+    expect(find.text('Ausencia justificada'), findsOneWidget);
+    expect(find.text('Motivo: Examen'), findsOneWidget);
+    expect(find.text('Plazo cerrado (24/10 09:30)'), findsOneWidget);
+    expect(find.text('Editar motivo'), findsNothing);
+    expect(find.text('Retirar'), findsNothing);
+  });
+
+  testWidgets('un partido cancelado no ofrece justificar', (tester) async {
+    await pintarPartido(tester, cancelado: true);
+
+    expect(find.text('Justificar ausencia'), findsNothing);
+    expect(find.textContaining('Plazo cerrado'), findsNothing);
+  });
+
+  testWidgets('un FAMILIAR justifica la ausencia por cada hijo', (
+    tester,
+  ) async {
+    final servicio = await pintarPartido(tester, roles: const ['FAMILIAR']);
+
+    await tester.tap(find.text('Justificar ausencia'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Viaje familiar');
+    await tester.tap(find.widgetWithText(FilledButton, 'Enviar'));
+    await tester.pumpAndSettle();
+
+    expect(servicio.llamadas, ['justificar:30:100:Viaje familiar']);
+  });
+
+  // ---- día inicial (al tocar el aviso de una convocatoria) --------------------------------
+
+  testWidgets('abre en el día del partido cuando se le indica', (tester) async {
+    await pintarPartido(tester, dia: _enDias(3), diaInicial: _enDias(3));
+
+    expect(find.text('Pego C.F.'), findsOneWidget);
+  });
+
+  testWidgets('sin día inicial abre en hoy', (tester) async {
+    await pintarPartido(tester, dia: _enDias(3));
+
+    expect(find.text('Pego C.F.'), findsNothing);
+    // El entrenamiento de hoy sí está.
+    expect(find.text('Campo Municipal'), findsOneWidget);
   });
 }

@@ -1168,9 +1168,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String get callupPlayersTitle => 'Jugadors convocats';
 
   @override
-  String get notModifiable => 'No modificables';
-
-  @override
   String selectedCountLabel(int count) {
     return '$count seleccionats';
   }
@@ -1316,14 +1313,6 @@ class AppLocalizationsCa extends AppLocalizations {
   }
 
   @override
-  String get seasonCallupsTitle => 'Convocatòries';
-
-  @override
-  String seasonCallupsLine(int going, int cannot, int pending) {
-    return 'Va: $going · No pot: $cannot · Sense respondre: $pending';
-  }
-
-  @override
   String seasonShortTrainings(int attended, int total) {
     return 'Entrenaments $attended/$total';
   }
@@ -1340,37 +1329,10 @@ class AppLocalizationsCa extends AppLocalizations {
   }
 
   @override
-  String get clubPageMyCallups => 'Les meues convocatòries';
-
-  @override
-  String get clubPageMyCallupsDesc => 'Respon si pots anar als partits';
-
-  @override
   String get clubPageMyCard => 'La meua fitxa';
 
   @override
   String get clubPageMyCardDesc => 'Les teues dades de jugador';
-
-  @override
-  String get callupStatusPending => 'Sense respondre';
-
-  @override
-  String get callupStatusGoing => 'Va';
-
-  @override
-  String get callupStatusCannot => 'No pot';
-
-  @override
-  String get callupAnswerGoing => 'Va';
-
-  @override
-  String get callupAnswerCannot => 'No pot';
-
-  @override
-  String get callupNoUpcoming => 'No tens convocatòries properes';
-
-  @override
-  String get callupsLoadFailed => 'No s\'han pogut carregar les convocatòries.';
 
   @override
   String callupMatchLine(String date) {
@@ -1383,38 +1345,8 @@ class AppLocalizationsCa extends AppLocalizations {
   }
 
   @override
-  String callupDeadlineClosed(String deadline) {
-    return 'Termini de resposta tancat ($deadline)';
-  }
-
-  @override
-  String get callupMatchCancelled => 'Partit cancel·lat';
-
-  @override
   String callupReasonShown(String reason) {
     return 'Motiu: $reason';
-  }
-
-  @override
-  String get callupCannotDialogTitle => 'Per què no pot anar?';
-
-  @override
-  String get callupReasonLabel => 'Motiu';
-
-  @override
-  String get callupReasonRequired => 'Indica el motiu (mínim 3 caràcters)';
-
-  @override
-  String get callupAnswerSaved => 'Resposta guardada';
-
-  @override
-  String callupAnswerError(String error) {
-    return 'No s\'ha pogut guardar la resposta: $error';
-  }
-
-  @override
-  String callupSummary(int going, int cannot, int pending) {
-    return '$going van · $cannot no poden · $pending sense respondre';
   }
 
   @override
@@ -1919,4 +1851,100 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get reportError =>
       'No s\'ha pogut enviar el report. Torna-ho a provar.';
+
+  @override
+  String get matchAbsenceJustifyButton => 'Justificar absència';
+
+  @override
+  String get matchAbsenceJustifyTitle => 'Justificar absència al partit';
+
+  @override
+  String get matchAbsenceEditTitle => 'Editar el motiu de l\'absència';
+
+  @override
+  String get matchAbsenceHint =>
+      'Avisa el cos tècnic que no podràs jugar aquest partit. Pots canviar el motiu o retirar-lo fins a l\'hora de convocatòria.';
+
+  @override
+  String get matchAbsenceReasonLabel => 'Motiu';
+
+  @override
+  String get matchAbsenceReasonRequired =>
+      'Indica el motiu (mínim 3 caràcters)';
+
+  @override
+  String get matchAbsenceBadge => 'Absència justificada';
+
+  @override
+  String get matchAbsenceEditButton => 'Editar motiu';
+
+  @override
+  String get matchAbsenceWithdrawButton => 'Retirar';
+
+  @override
+  String get matchAbsenceWithdrawTitle => 'Retirar l\'absència?';
+
+  @override
+  String get matchAbsenceWithdrawBody =>
+      'El cos tècnic sabrà que ja pots jugar. No se\'t tornarà a convocar automàticament.';
+
+  @override
+  String get matchAbsenceWithdrawConfirm => 'Retirar';
+
+  @override
+  String matchAbsenceDeadlineClosed(String deadline) {
+    return 'Termini tancat ($deadline)';
+  }
+
+  @override
+  String get matchAbsenceJustifiedSnack => 'Absència justificada';
+
+  @override
+  String get matchAbsenceWithdrawnSnack => 'Absència retirada';
+
+  @override
+  String matchAbsenceError(String error) {
+    return 'No s\'ha pogut retirar l\'absència: $error';
+  }
+
+  @override
+  String get callupDetailTitle => 'Convocatòria';
+
+  @override
+  String callupPlayersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count convocats',
+      one: '1 convocat',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String callupAbsentBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jugadors convocats han justificat la seva absència',
+      one: '1 jugador convocat ha justificat la seva absència',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String callupAbsentCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count absències justificades',
+      one: '1 absència justificada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String seasonMatchAbsencesLine(int count) {
+    return 'Partits amb absència justificada: $count';
+  }
 }

@@ -4,10 +4,6 @@ import '../../../core/navigation/app_navigator.dart';
 import '../utils/convocatoria_notificacion.dart';
 
 class LocalNotificationService {
-  /// Payload de la notificación local de una convocatoria: abre "Mis
-  /// convocatorias".
-  static const String payloadMisConvocatorias = 'CONVOCATORIA';
-
   LocalNotificationService._();
 
   static final FlutterLocalNotificationsPlugin _plugin =
@@ -64,8 +60,11 @@ class LocalNotificationService {
     const prefijoPrivada = 'PRIVADA:';
     const prefijoComunicacion = 'COMUNICACION:';
 
-    if (payload == payloadMisConvocatorias) {
-      AppNavigator.abrirMisConvocatorias();
+    // Aviso de una convocatoria: el calendario o la edición de la convocatoria.
+    final destino = destinoDePayload(payload);
+
+    if (destino != null) {
+      AppNavigator.abrirDestinoConvocatoria(destino);
       return;
     }
 
@@ -101,7 +100,7 @@ class LocalNotificationService {
     int cantidadNoLeidas = 1,
     bool esPrivada = false,
     int? autorId,
-    String? tipo,
+    Map<String, dynamic> datos = const {},
   }) async {
     if (comunicacionId <= 0) {
       return;
@@ -134,8 +133,14 @@ class LocalNotificationService {
       iOS: darwinDetails,
     );
 
-    final payload = abreMisConvocatorias(tipo: tipo, titulo: titulo)
-        ? payloadMisConvocatorias
+    final destino = destinoDeAvisoConvocatoria(
+      tipo: datos['tipo']?.toString(),
+      titulo: titulo,
+      datos: datos,
+    );
+
+    final payload = destino != null
+        ? payloadDeDestino(destino)
         : esPrivada && autorId != null && autorId > 0
         ? 'PRIVADA:$autorId'
         : 'COMUNICACION:$comunicacionId';

@@ -10,6 +10,9 @@ class ResumenTemporadaModel {
   final int amarillas;
   final int rojas;
 
+  /// Partidos de la temporada con una ausencia justificada del jugador.
+  final int ausenciasJustificadas;
+
   final int entrenamientosTotal;
   final int entrenamientosAsistidos;
   final int faltas;
@@ -18,10 +21,6 @@ class ResumenTemporadaModel {
   /// Porcentaje de asistencia (0-100); null si todavía no hay entrenamientos.
   final int? porcentaje;
 
-  final int convocatoriasVa;
-  final int convocatoriasNoPuede;
-  final int convocatoriasSinResponder;
-
   const ResumenTemporadaModel({
     this.temporada,
     this.convocado = 0,
@@ -29,14 +28,12 @@ class ResumenTemporadaModel {
     this.asistencias = 0,
     this.amarillas = 0,
     this.rojas = 0,
+    this.ausenciasJustificadas = 0,
     this.entrenamientosTotal = 0,
     this.entrenamientosAsistidos = 0,
     this.faltas = 0,
     this.justificadas = 0,
     this.porcentaje,
-    this.convocatoriasVa = 0,
-    this.convocatoriasNoPuede = 0,
-    this.convocatoriasSinResponder = 0,
   });
 
   factory ResumenTemporadaModel.fromJson(Map<String, dynamic> json) {
@@ -44,8 +41,6 @@ class ResumenTemporadaModel {
     final partidos = json['partidos'] as Map<String, dynamic>? ?? const {};
     final entrenamientos =
         json['entrenamientos'] as Map<String, dynamic>? ?? const {};
-    final convocatorias =
-        json['convocatorias'] as Map<String, dynamic>? ?? const {};
 
     int entero(Map<String, dynamic> mapa, String clave) =>
         (mapa[clave] as num?)?.toInt() ?? 0;
@@ -57,14 +52,12 @@ class ResumenTemporadaModel {
       asistencias: entero(partidos, 'asistencias'),
       amarillas: entero(partidos, 'amarillas'),
       rojas: entero(partidos, 'rojas'),
+      ausenciasJustificadas: entero(partidos, 'ausenciasJustificadas'),
       entrenamientosTotal: entero(entrenamientos, 'total'),
       entrenamientosAsistidos: entero(entrenamientos, 'asistidos'),
       faltas: entero(entrenamientos, 'faltas'),
       justificadas: entero(entrenamientos, 'justificadas'),
       porcentaje: (entrenamientos['porcentaje'] as num?)?.toInt(),
-      convocatoriasVa: entero(convocatorias, 'va'),
-      convocatoriasNoPuede: entero(convocatorias, 'noPuede'),
-      convocatoriasSinResponder: entero(convocatorias, 'sinResponder'),
     );
   }
 
@@ -76,8 +69,6 @@ class ResumenTemporadaModel {
           asistencias > 0 ||
           amarillas > 0 ||
           rojas > 0 ||
-          entrenamientosTotal > 0 ||
-          convocatoriasVa > 0 ||
-          convocatoriasNoPuede > 0 ||
-          convocatoriasSinResponder > 0);
+          ausenciasJustificadas > 0 ||
+          entrenamientosTotal > 0);
 }
