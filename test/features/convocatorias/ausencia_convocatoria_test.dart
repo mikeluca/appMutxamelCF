@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app_mutxamel_cf/core/navigation/app_navigator.dart';
+import 'package:app_mutxamel_cf/core/network/api_client.dart';
 import 'package:app_mutxamel_cf/core/notifications/utils/convocatoria_notificacion.dart';
 import 'package:app_mutxamel_cf/features/auth/models/auth_user.dart';
 import 'package:app_mutxamel_cf/features/auth/models/perfil_app.dart';
@@ -937,7 +938,7 @@ void main() {
       );
 
       final servicio = _FakeConvocatoriaService()
-        ..falloAlObtener = Exception('403');
+        ..falloAlObtener = const ApiException('Prohibido', statusCode: 403);
 
       unawaited(AppNavigator.abrirEdicionConvocatoria(20, servicio: servicio));
       await tester.pumpAndSettle();
@@ -966,7 +967,7 @@ void main() {
       );
 
       final servicio = _FakeConvocatoriaService()
-        ..falloAlObtener = Exception('La convocatoria no existe');
+        ..falloAlObtener = const ApiException('No existe', statusCode: 404);
 
       unawaited(AppNavigator.abrirEdicionConvocatoria(99, servicio: servicio));
       await tester.pumpAndSettle();
@@ -977,5 +978,46 @@ void main() {
         findsOneWidget,
       );
     });
+
+    for (final fallo in <Object>[
+      const ApiException('No hay conexión a internet.'),
+      const ApiException('El servidor no responde. Inténtalo de nuevo.'),
+      const ApiException('Error en la petición (500).', statusCode: 500),
+      const ApiException('Error de red: x', statusCode: null),
+      Exception('boom'),
+    ]) {
+      testWidgets('un fallo de red o de servidor ($fallo) da el mensaje '
+          'genérico de conexión, no "no disponible"', (tester) async {
+        await _conUsuario(['ENTRENADOR']);
+
+        AppNavigator.constructorEdicion = (_) =>
+            const Scaffold(body: Text('EDICION FALSA'));
+
+        await _pintar(
+          tester,
+          const Scaffold(body: Text('INICIO')),
+          key: AppNavigator.navigatorKey,
+        );
+
+        final servicio = _FakeConvocatoriaService()..falloAlObtener = fallo;
+
+        unawaited(
+          AppNavigator.abrirEdicionConvocatoria(20, servicio: servicio),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('EDICION FALSA'), findsNothing);
+        expect(
+          find.text(
+            'No se ha podido conectar. Comprueba tu conexión e inténtalo de nuevo.',
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.text('Esta convocatoria ya no está disponible'),
+          findsNothing,
+        );
+      });
+    }
   });
 }

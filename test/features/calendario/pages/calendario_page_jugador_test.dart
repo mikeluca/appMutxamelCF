@@ -29,6 +29,10 @@ class _FakeCalendarioService extends CalendarioService {
   /// Si no es null, la siguiente consulta del calendario espera a que se complete.
   Completer<void>? bloquearSiguiente;
 
+  /// Respuestas programadas para las consultas posteriores a la primera, en
+  /// orden; cada una puede esperar a que se complete su [espera].
+  final List<({Completer<void>? espera, CalendarioModel calendario})> cola = [];
+
   /// Si es true, las consultas posteriores a la primera fallan.
   bool falloAlCargar = false;
 
@@ -47,6 +51,14 @@ class _FakeCalendarioService extends CalendarioService {
     jugadoresConsultados.add(jugadorId);
 
     final espera = bloquearSiguiente;
+
+    if (cola.isNotEmpty && jugadoresConsultados.length > 1) {
+      final siguiente = cola.removeAt(0);
+
+      await siguiente.espera?.future;
+
+      return siguiente.calendario;
+    }
 
     if (falloAlCargar && jugadoresConsultados.length > 1) {
       throw Exception('sin red');
@@ -630,6 +642,158 @@ void main() {
     expect(find.text('Pego C.F.'), findsOneWidget);
   });
 
+  // ---- pull-to-refresh y recargas solapadas ------------------------------------------------------
+
+  testWidgets('el pull-to-refresh recarga en segundo plano: conserva el día '
+      'seleccionado y no cambia el calendario por el indicador de carga', (
+    tester,
+  ) async {
+    final calendario = _FakeCalendarioService(
+      _calendario(diaPartido: _enDias(3)),
+    );
+
+    await _pintar(
+      tester,
+      calendario,
+      const ['JUGADOR'],
+      justificaciones: _FakeJustificacionPartidoService(),
+      diaInicial: _enDias(3),
+    );
+
+    expect(find.text('Pego C.F.'), findsOneWidget);
+
+    // La recarga tarda: mientras tanto el calendario sigue en su día.
+    final espera = Completer<void>();
+    calendario.cola.add((
+      espera: espera,
+      calendario: _calendario(diaPartido: _enDias(3), motivoAusencia: 'Nuevo'),
+    ));
+
+    await _tirarParaRecargar(tester);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(calendario.jugadoresConsultados, hasLength(2));
+    expect(find.text('Pego C.F.'), findsOneWidget);
+    // Solo el indicador del propio pull-to-refresh, no la pantalla de carga.
+    expect(find.byType(CalendarioPage), findsOneWidget);
+    expect(find.text('Campo Municipal'), findsNothing);
+
+    espera.complete();
+    await tester.pumpAndSettle();
+
+    // Terminada la recarga, sigue en el mismo día.
+    expect(find.text('Pego C.F.'), findsOneWidget);
+    expect(find.text('Campo Municipal'), findsNothing);
+  });
+
+  testWidgets('con dos recargas seguidas se ignora el resultado de la más '
+      'antigua aunque llegue después', (tester) async {
+    final calendario = _FakeCalendarioService(
+      _calendario(diaPartido: _enDias(3)),
+    );
+
+    await _pintar(
+      tester,
+      calendario,
+      const ['JUGADOR'],
+      justificaciones: _FakeJustificacionPartidoService(),
+      diaInicial: _enDias(3),
+    );
+
+    expect(find.text('Justificar ausencia'), findsOneWidget);
+    expect(find.text('Ausencia justificada'), findsNothing);
+
+    // 1.ª recarga (pull-to-refresh): lenta y con datos ya antiguos.
+    final lenta = Completer<void>();
+    calendario.cola.add((
+      espera: lenta,
+      calendario: _calendario(diaPartido: _enDias(3)),
+    ));
+
+    // 2.ª recarga (tras justificar): rápida y con el dato nuevo.
+    calendario.cola.add((
+      espera: null,
+      calendario: _calendario(
+        diaPartido: _enDias(3),
+        ausenciaJustificada: true,
+        motivoAusencia: 'Examen',
+      ),
+    ));
+
+    await _tirarParaRecargar(tester);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    await tester.tap(find.text('Justificar ausencia'));
+    await tester.pump(
+      const Duration(milliseconds: 500),
+    ); // el indicador de recarga sigue girando
+    await tester.enterText(find.byType(TextField), 'Examen');
+    await tester.tap(find.widgetWithText(FilledButton, 'Enviar'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    // Ya se ve el resultado de la 2.ª recarga.
+    expect(find.text('Motivo: Examen'), findsOneWidget);
+    expect(calendario.jugadoresConsultados, hasLength(3));
+
+    // La 1.ª llega tarde con datos antiguos: no pisa lo nuevo.
+    lenta.complete();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Motivo: Examen'), findsOneWidget);
+    expect(find.text('Justificar ausencia'), findsNothing);
+  });
+
+  testWidgets('si la recarga más antigua falla después, tampoco estropea lo '
+      'nuevo', (tester) async {
+    final calendario = _FakeCalendarioService(
+      _calendario(diaPartido: _enDias(3)),
+    );
+
+    await _pintar(
+      tester,
+      calendario,
+      const ['JUGADOR'],
+      justificaciones: _FakeJustificacionPartidoService(),
+      diaInicial: _enDias(3),
+    );
+
+    final lenta = Completer<void>();
+    calendario.cola.add((
+      espera: lenta,
+      calendario: _calendario(diaPartido: _enDias(3)),
+    ));
+    calendario.cola.add((
+      espera: null,
+      calendario: _calendario(
+        diaPartido: _enDias(3),
+        ausenciaJustificada: true,
+        motivoAusencia: 'Examen',
+      ),
+    ));
+
+    await _tirarParaRecargar(tester);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    await tester.tap(find.text('Justificar ausencia'));
+    await tester.pump(
+      const Duration(milliseconds: 500),
+    ); // el indicador de recarga sigue girando
+    await tester.enterText(find.byType(TextField), 'Examen');
+    await tester.tap(find.widgetWithText(FilledButton, 'Enviar'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    lenta.completeError(Exception('sin red'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Motivo: Examen'), findsOneWidget);
+    expect(find.byIcon(Icons.error_outline), findsNothing);
+  });
+
   // ---- recargar sin perder el día --------------------------------------------------------------
 
   testWidgets('tras justificar se recarga sin perder el día seleccionado ni '
@@ -702,4 +866,21 @@ void main() {
     expect(find.text('Pego C.F.'), findsOneWidget);
     expect(find.byIcon(Icons.error_outline), findsNothing);
   });
+}
+
+/// Gesto de pull-to-refresh sobre la lista del calendario.
+Future<void> _tirarParaRecargar(WidgetTester tester) async {
+  // El indicador pide arrastrar un cuarto del alto de la lista: con una
+  // pantalla de 3000 px haría falta un gesto enorme.
+  tester.view.physicalSize = const Size(800, 800);
+  await tester.pumpAndSettle();
+
+  final lista = find
+      .descendant(
+        of: find.byType(RefreshIndicator),
+        matching: find.byType(Scrollable),
+      )
+      .first;
+
+  await tester.drag(lista, const Offset(0, 700));
 }

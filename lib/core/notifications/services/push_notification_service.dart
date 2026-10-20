@@ -332,14 +332,20 @@ class PushNotificationService {
     // Espera a que home se haya pintado: el destino se abre encima de ella.
     await WidgetsBinding.instance.endOfFrame;
 
+    var sesionValida = false;
+
     try {
-      await restaurarSesion();
+      sesionValida = await restaurarSesion();
     } catch (e) {
       debugPrint('NO SE PUDO RESTAURAR LA SESIÓN PARA EL AVISO: $e');
     }
 
-    // Sin sesión válida, el destino de la convocatoria no se resuelve (rol) y
-    // no se abre nada.
+    // Sin una sesión válida el aviso se descarta: no se navega y la app se
+    // queda en su pantalla normal (o en el login al abrir el área del club).
+    if (!sesionValida) {
+      return;
+    }
+
     await procesarNotificacion(message);
   }
 }

@@ -1960,4 +1960,8 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get callupUnavailable => 'Esta convocatoria ya no está disponible';
+
+  @override
+  String get connectionError =>
+      'No se ha podido conectar. Comprueba tu conexión e inténtalo de nuevo.';
 }

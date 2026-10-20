@@ -1937,4 +1937,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get callupUnavailable => 'This call-up is no longer available';
+
+  @override
+  String get connectionError =>
+      'Could not connect. Check your connection and try again.';
 }

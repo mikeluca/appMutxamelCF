@@ -99,6 +99,11 @@ class _CalendarioPageState extends State<CalendarioPage> {
   bool _cargando = true;
   String? _error;
 
+  /// Número de la última carga pedida: si hay dos seguidas (por ejemplo, un
+  /// pull-to-refresh y una recarga tras justificar), el resultado de la más
+  /// antigua se ignora, aunque llegue después.
+  int _generacion = 0;
+
   ColorScheme get _colors => Theme.of(context).colorScheme;
   AppLocalizations get _t => AppLocalizations.of(context);
 
@@ -120,6 +125,8 @@ class _CalendarioPageState extends State<CalendarioPage> {
   /// sigue en pantalla con el día seleccionado, y si la recarga falla se queda
   /// lo que había.
   Future<void> _cargarDatos({bool enSegundoPlano = false}) async {
+    final generacion = ++_generacion;
+
     if (!enSegundoPlano) {
       setState(() {
         _cargando = true;
@@ -212,7 +219,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
       // recarga entera (se queda lo que había) en vez de dejar su hueco.
       final eventos = await _cargarEventos(equipos, estricto: enSegundoPlano);
 
-      if (!mounted) return;
+      if (!mounted || generacion != _generacion) return;
 
       setState(() {
         _perfil = perfil;
@@ -222,7 +229,11 @@ class _CalendarioPageState extends State<CalendarioPage> {
         _error = null;
       });
     } catch (e) {
-      if (!mounted || enSegundoPlano) return;
+      if (!mounted || generacion != _generacion) return;
+
+      // Una recarga en segundo plano que falla deja lo que había; solo si
+      // todavía no había nada (primera carga en curso) se enseña el error.
+      if (enSegundoPlano && !_cargando) return;
 
       setState(() {
         _error = e.toString();
@@ -230,6 +241,10 @@ class _CalendarioPageState extends State<CalendarioPage> {
       });
     }
   }
+
+  /// Pull-to-refresh: recarga sin sustituir el calendario por el indicador de
+  /// carga, para no perder el día seleccionado.
+  Future<void> _recargarEnSegundoPlano() => _cargarDatos(enSegundoPlano: true);
 
   /// Pide el calendario de cada equipo (en paralelo) y los combina en
   /// una única lista. Con el calendario de un jugador (JUGADOR/FAMILIAR)
@@ -382,7 +397,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
 
     if (_equipos.isEmpty) {
       return RefreshIndicator(
-        onRefresh: _cargarDatos,
+        onRefresh: _recargarEnSegundoPlano,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(24),
@@ -407,7 +422,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
     }
 
     return RefreshIndicator(
-      onRefresh: _cargarDatos,
+      onRefresh: _recargarEnSegundoPlano,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),

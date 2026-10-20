@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/gen/app_localizations.dart';
+import '../network/api_client.dart';
 import '../notifications/utils/convocatoria_notificacion.dart';
 import '../../features/auth/models/perfil_app.dart';
 import '../../features/calendario/pages/calendario_page.dart';
@@ -110,16 +111,25 @@ class AppNavigator {
     } catch (e) {
       debugPrint('No se pudo abrir la convocatoria $convocatoriaId: $e');
 
-      // No existe (ya borrada) o ya no se puede gestionar (403): se avisa.
       final contexto = navigatorState.context;
 
-      if (contexto.mounted) {
-        ScaffoldMessenger.maybeOf(contexto)?.showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(contexto).callupUnavailable),
-          ),
-        );
+      if (!contexto.mounted) {
+        return;
       }
+
+      final t = AppLocalizations.of(contexto);
+
+      // Solo "ya no existe" (404) o "ya no se puede gestionar" (403) significan
+      // que la convocatoria no está disponible; cualquier otro fallo (red,
+      // servidor caído...) es un problema de conexión, reintentable.
+      final noDisponible =
+          e is ApiException && (e.statusCode == 403 || e.statusCode == 404);
+
+      ScaffoldMessenger.maybeOf(contexto)?.showSnackBar(
+        SnackBar(
+          content: Text(noDisponible ? t.callupUnavailable : t.connectionError),
+        ),
+      );
     }
   }
 

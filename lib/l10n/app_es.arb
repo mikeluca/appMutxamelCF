@@ -723,6 +723,7 @@
   "@callupAbsentCount": { "placeholders": { "count": { "type": "int" } } },
   "seasonMatchAbsencesLine": "Partidos con ausencia justificada: {count}",
   "@seasonMatchAbsencesLine": { "placeholders": { "count": { "type": "int" } } },
-  "callupUnavailable": "Esta convocatoria ya no está disponible"
+  "callupUnavailable": "Esta convocatoria ya no está disponible",
+  "connectionError": "No se ha podido conectar. Comprueba tu conexión e inténtalo de nuevo."
 
 }

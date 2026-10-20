@@ -1948,4 +1948,8 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get callupUnavailable => 'Aquesta convocatòria ja no està disponible';
+
+  @override
+  String get connectionError =>
+      'No s\'ha pogut connectar. Comprova la connexió i torna-ho a provar.';
 }

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:app_mutxamel_cf/core/navigation/app_navigator.dart';
+import 'package:app_mutxamel_cf/core/network/api_client.dart';
+import 'package:app_mutxamel_cf/features/auth/pages/comunicacion_detail_page.dart';
 import 'package:app_mutxamel_cf/core/notifications/services/local_notification_service.dart';
 import 'package:app_mutxamel_cf/core/notifications/services/push_notification_service.dart';
 import 'package:app_mutxamel_cf/features/auth/models/auth_user.dart';
@@ -364,7 +366,7 @@ void main() {
       await _conUsuario(['ENTRENADOR']);
       await _pintarApp(tester);
 
-      convocatorias.fallo = Exception('403');
+      convocatorias.fallo = const ApiException('Prohibido', statusCode: 403);
 
       _tocar(_pushEditar());
       await tester.pumpAndSettle();
@@ -455,16 +457,14 @@ void main() {
       expect(calendarios, [DateTime(2026, 10, 24)]);
     });
 
-    testWidgets('sin sesión válida no se abre nada', (tester) async {
+    testWidgets('sin sesión válida el aviso se descarta y no se navega a nada', (
+      tester,
+    ) async {
       await _pintarApp(tester);
 
-      // Con los datos justos para que, sin rol, no caiga en abrir una comunicación.
-      PushNotificationService.simularMensajeInicial(
-        _push(
-          titulo: 'Nueva convocatoria',
-          data: {'tipo': 'CONVOCATORIA', 'convocatoriaId': '20'},
-        ),
-      );
+      // Un push CONVOCATORIA real, con su referenciaId (la comunicación 78): sin
+      // el descarte, al no resolverse el rol acabaría abriendo esa comunicación.
+      PushNotificationService.simularMensajeInicial(_pushConvocatoria());
 
       await PushNotificationService.procesarNotificacionInicial();
       _abrirPendiente();
@@ -472,10 +472,43 @@ void main() {
 
       expect(sesionesRestauradas, 1);
       expect(find.text('CALENDARIO'), findsNothing);
+      expect(find.text('EDICION'), findsNothing);
+      expect(find.byType(ComunicacionDetallePage), findsNothing);
+      expect(find.text('HOME'), findsOneWidget);
+      expect(calendarios, isEmpty);
+      expect(convocatorias.pedidas, isEmpty);
+
+      // Y el aviso no se queda guardado para más tarde.
+      _abrirPendiente();
+      await tester.pumpAndSettle();
+
+      expect(sesionesRestauradas, 1);
+      expect(find.byType(ComunicacionDetallePage), findsNothing);
+    });
+
+    testWidgets('con sesión inválida se descarta aunque quedara un usuario en '
+        'memoria', (tester) async {
+      await _conUsuario(['ENTRENADOR']);
+      await _pintarApp(tester);
+
+      // restaurarSesion() dice que la sesión ya no vale (devuelve false).
+      PushNotificationService.restaurarSesion = () async {
+        sesionesRestauradas++;
+        return false;
+      };
+      PushNotificationService.simularMensajeInicial(_pushEditar());
+
+      await PushNotificationService.procesarNotificacionInicial();
+      _abrirPendiente();
+      await tester.pumpAndSettle();
+
+      expect(sesionesRestauradas, 1);
+      expect(find.text('EDICION'), findsNothing);
+      expect(convocatorias.pedidas, isEmpty);
       expect(find.text('HOME'), findsOneWidget);
     });
 
-    testWidgets('si falla la restauración de la sesión no se rompe', (
+    testWidgets('si falla la restauración de la sesión también se descarta', (
       tester,
     ) async {
       await _conUsuario(['ENTRENADOR']);
@@ -489,8 +522,8 @@ void main() {
       _abrirPendiente();
       await tester.pumpAndSettle();
 
-      // La sesión ya estaba en memoria: el aviso se abre igualmente.
-      expect(find.text('EDICION'), findsOneWidget);
+      expect(find.text('EDICION'), findsNothing);
+      expect(find.text('HOME'), findsOneWidget);
     });
   });
 

@@ -3549,6 +3549,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Esta convocatoria ya no está disponible'**
   String get callupUnavailable;
+
+  /// No description provided for @connectionError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido conectar. Comprueba tu conexión e inténtalo de nuevo.'**
+  String get connectionError;
 }
 
 class _AppLocalizationsDelegate
