@@ -130,7 +130,8 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       _teamService.obtenerJugadores(widget.equipo.id),
       _matchService.obtenerPartidosSinConvocatoria(
         widget.equipo.id,
-        incluirPartidoId: widget.convocatoria?.partidoId ?? widget.partidoIdInicial,
+        incluirPartidoId:
+            widget.convocatoria?.partidoId ?? widget.partidoIdInicial,
       ),
     ]);
 
@@ -193,13 +194,18 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
 
     for (final partido in partidos) {
       if (partido.id == id) {
-        _partidoSeleccionado = partido;
-        _cargarAusencias(partido.id);
-        return;
+        if (_admiteConvocatoria(partido)) {
+          _partidoSeleccionado = partido;
+          _cargarAusencias(partido.id);
+          return;
+        }
+
+        break;
       }
     }
 
-    // Aun pidiéndolo con incluirPartidoId el partido no vino: ya no admite convocatoria.
+    // Aunque se pidió con incluirPartidoId, el partido no vino o ya no admite convocatoria
+    // (cancelado, pasado o con convocatoria): no se selecciona.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
@@ -207,6 +213,24 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
         context,
       ).showSnackBar(SnackBar(content: Text(_t.callupMatchUnavailable)));
     });
+  }
+
+  /// Un partido admite convocatoria si no está cancelado, no es anterior a hoy y todavía no
+  /// tiene una (el servidor lo vuelve a comprobar al guardar).
+  bool _admiteConvocatoria(MatchModel partido) {
+    if (partido.cancelado || partido.tieneConvocatoria == true) return false;
+
+    final dia = partido.dia;
+
+    if (dia == null) return true;
+
+    final ahora = DateTime.now();
+
+    return !DateTime(
+      dia.year,
+      dia.month,
+      dia.day,
+    ).isBefore(DateTime(ahora.year, ahora.month, ahora.day));
   }
 
   /// Se calcula a partir de partido.dia (en vez de usar diaFormateado tal

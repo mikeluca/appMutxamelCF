@@ -102,7 +102,7 @@ PartidoPanelModel _partido(
   equipo: equipo,
   partidoId: id * 10,
   rival: rival,
-  dia: DateTime(2026, 10, 24),
+  dia: DateTime(2099, 10, 24),
   hora: '11:00',
   local: true,
   diasDeRetraso: retraso,
@@ -608,6 +608,101 @@ void main() {
       expect(partidos.incluidos, [31]);
     });
 
+    for (final caso in {
+      'cancelado': MatchModel(
+        id: 32,
+        equipoId: 5,
+        categoria: 'Cadete',
+        equipo: 'Cadete A',
+        rival: 'Cancelado FC',
+        dia: DateTime(2099, 10, 26),
+        cancelado: true,
+      ),
+      'de un día anterior a hoy': MatchModel(
+        id: 33,
+        equipoId: 5,
+        categoria: 'Cadete',
+        equipo: 'Cadete A',
+        rival: 'Pasado FC',
+        dia: DateTime(2020, 1, 15),
+      ),
+      'que ya tiene convocatoria': MatchModel(
+        id: 34,
+        equipoId: 5,
+        categoria: 'Cadete',
+        equipo: 'Cadete A',
+        rival: 'Convocado FC',
+        dia: DateTime(2099, 10, 27),
+        tieneConvocatoria: true,
+      ),
+    }.entries) {
+      testWidgets('un partido ${caso.key} no se preselecciona y avisa con el '
+          'SnackBar', (tester) async {
+        _pantallaGrande(tester);
+
+        final justificaciones = _FakeJustificaciones();
+
+        await tester.pumpWidget(
+          _app(
+            ConvocatoriaFormPage(
+              equipo: PerfilEquipo(id: 5, nombre: 'Cadete A'),
+              partidoIdInicial: caso.value.id,
+              teamService: _FakeTeam(),
+              matchService: _FakeMatches([caso.value]),
+              justificacionService: justificaciones,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // No se eligió: ni se pidieron sus ausencias ni aparece su rival como elegido.
+        expect(justificaciones.consultas, isEmpty);
+        expect(
+          find.text('Este partido ya no admite convocatoria'),
+          findsOneWidget,
+        );
+        expect(find.text(caso.value.rival), findsNothing);
+      });
+    }
+
+    testWidgets('un partido válido sí se preselecciona y no hay SnackBar', (
+      tester,
+    ) async {
+      _pantallaGrande(tester);
+
+      final justificaciones = _FakeJustificaciones();
+
+      await tester.pumpWidget(
+        _app(
+          ConvocatoriaFormPage(
+            equipo: PerfilEquipo(id: 5, nombre: 'Cadete A'),
+            partidoIdInicial: 31,
+            teamService: _FakeTeam(),
+            matchService: _FakeMatches(),
+            justificacionService: justificaciones,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(justificaciones.consultas, [31]);
+      expect(find.text('Este partido ya no admite convocatoria'), findsNothing);
+    });
+
+    test(
+      'MatchModel lee tieneConvocatoria (nulo si el servidor no lo manda)',
+      () {
+        expect(
+          MatchModel.fromJson({
+            'rival': 'X',
+            'tieneConvocatoria': true,
+          }).tieneConvocatoria,
+          isTrue,
+        );
+        expect(MatchModel.fromJson({'rival': 'X'}).tieneConvocatoria, isNull);
+      },
+    );
+
     testWidgets('si el partido no viene en la lista se avisa con un SnackBar', (
       tester,
     ) async {
@@ -728,6 +823,11 @@ class _FakeTeam extends TeamService {
 class _FakeMatches extends MatchService {
   final List<int?> incluidos = [];
 
+  /// Partidos extra que devuelve el servidor (p. ej. el pedido con incluirPartidoId).
+  final List<MatchModel> extra;
+
+  _FakeMatches([this.extra = const []]);
+
   @override
   Future<List<MatchModel>> obtenerPartidosSinConvocatoria(
     int equipoId, {
@@ -739,13 +839,14 @@ class _FakeMatches extends MatchService {
   }
 
   List<MatchModel> _partidos() => [
+    ...extra,
     MatchModel(
       id: 30,
       equipoId: 5,
       categoria: 'Cadete',
       equipo: 'Cadete A',
       rival: 'Pego C.F.',
-      dia: DateTime(2026, 10, 24),
+      dia: DateTime(2099, 10, 24),
       hora: '11:00',
     ),
     MatchModel(
@@ -754,7 +855,7 @@ class _FakeMatches extends MatchService {
       categoria: 'Cadete',
       equipo: 'Cadete A',
       rival: 'Elx',
-      dia: DateTime(2026, 10, 25),
+      dia: DateTime(2099, 10, 25),
       hora: '12:00',
     ),
   ];

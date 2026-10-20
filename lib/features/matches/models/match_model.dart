@@ -36,6 +36,10 @@ class MatchModel {
   /// antiguos: se asume false.
   final bool pendienteResultado;
 
+  /// Solo en partidos-sin-convocatoria: si el partido ya tiene convocatoria (puede
+  /// ocurrir con el pedido con incluirPartidoId). null en el resto de listados.
+  final bool? tieneConvocatoria;
+
   /// Solo en el calendario de un jugador (JUGADOR/FAMILIAR): si ha justificado
   /// su ausencia a este partido y por qué, si todavía puede justificarla o
   /// retirarla (puedeJustificar) y hasta cuándo (limiteJustificacion).
@@ -63,6 +67,7 @@ class MatchModel {
     this.descansa = false,
     this.local = true,
     this.pendienteResultado = false,
+    this.tieneConvocatoria,
     this.ausenciaJustificada = false,
     this.motivoAusencia,
     this.puedeJustificar = false,
@@ -91,6 +96,7 @@ class MatchModel {
       descansa: json['descansa'] as bool? ?? false,
       local: json['local'] as bool? ?? true,
       pendienteResultado: json['pendienteResultado'] as bool? ?? false,
+      tieneConvocatoria: json['tieneConvocatoria'] as bool?,
       ausenciaJustificada: json['ausenciaJustificada'] as bool? ?? false,
       motivoAusencia: json['motivoAusencia'] as String?,
       puedeJustificar: json['puedeJustificar'] as bool? ?? false,

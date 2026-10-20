@@ -38,7 +38,21 @@ class _SeguimientoJugadoresPageState extends State<SeguimientoJugadoresPage> {
   @override
   void initState() {
     super.initState();
-    _futuro = _servicio.obtenerSeguimiento(periodo: _periodo);
+    _futuro = _pedir(_periodo);
+  }
+
+  /// Pide el seguimiento y, al llegar, guarda los días del periodo "30d" que manda el
+  /// servidor (con setState, fuera de build).
+  Future<SeguimientoModel> _pedir(String periodo) async {
+    final datos = await _servicio.obtenerSeguimiento(periodo: periodo);
+
+    if (mounted && datos.dias != _dias) {
+      setState(() {
+        _dias = datos.dias;
+      });
+    }
+
+    return datos;
   }
 
   void _cambiarPeriodo(String periodo) {
@@ -47,12 +61,12 @@ class _SeguimientoJugadoresPageState extends State<SeguimientoJugadoresPage> {
     setState(() {
       _periodo = periodo;
       _equipo = null;
-      _futuro = _servicio.obtenerSeguimiento(periodo: periodo);
+      _futuro = _pedir(periodo);
     });
   }
 
   Future<void> _recargar() async {
-    final nuevo = _servicio.obtenerSeguimiento(periodo: _periodo);
+    final nuevo = _pedir(_periodo);
 
     setState(() {
       _futuro = nuevo;
@@ -91,11 +105,6 @@ class _SeguimientoJugadoresPageState extends State<SeguimientoJugadoresPage> {
                 snapshot.connectionState == ConnectionState.waiting;
             final jugadores =
                 snapshot.data?.jugadores ?? const <SeguimientoJugadorModel>[];
-            final dias = snapshot.data?.dias;
-
-            if (dias != null) {
-              _dias = dias;
-            }
 
             return ListView(
               physics: const AlwaysScrollableScrollPhysics(),
