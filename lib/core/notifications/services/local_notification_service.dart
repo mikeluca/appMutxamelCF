@@ -1,7 +1,20 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../../../core/navigation/app_navigator.dart';
 import '../utils/convocatoria_notificacion.dart';
+
+/// Firma de [LocalNotificationService.mostrarComunicacion].
+typedef MostrarNotificacionLocal =
+    Future<void> Function({
+      required int comunicacionId,
+      required String titulo,
+      required String mensaje,
+      int cantidadNoLeidas,
+      bool esPrivada,
+      int? autorId,
+      Map<String, dynamic> datos,
+    });
 
 class LocalNotificationService {
   LocalNotificationService._();
@@ -51,8 +64,12 @@ class LocalNotificationService {
   }
 
   static void _onNotificationResponse(NotificationResponse response) {
-    final payload = response.payload;
+    procesarPayload(response.payload);
+  }
 
+  /// Navega según el payload de una notificación local tocada.
+  @visibleForTesting
+  static void procesarPayload(String? payload) {
     if (payload == null || payload.isEmpty) {
       return;
     }
@@ -91,6 +108,30 @@ class LocalNotificationService {
     }
 
     AppNavigator.abrirComunicacion(comunicacionId);
+  }
+
+  /// Lo que lleva la notificación local para saber, al tocarla, a dónde ir.
+  @visibleForTesting
+  static String payloadDeAviso({
+    required int comunicacionId,
+    required String titulo,
+    bool esPrivada = false,
+    int? autorId,
+    Map<String, dynamic> datos = const {},
+  }) {
+    final destino = destinoDeAvisoConvocatoria(
+      tipo: datos['tipo']?.toString(),
+      titulo: titulo,
+      datos: datos,
+    );
+
+    if (destino != null) {
+      return payloadDeDestino(destino);
+    }
+
+    return esPrivada && autorId != null && autorId > 0
+        ? 'PRIVADA:$autorId'
+        : 'COMUNICACION:$comunicacionId';
   }
 
   static Future<void> mostrarComunicacion({
@@ -133,17 +174,13 @@ class LocalNotificationService {
       iOS: darwinDetails,
     );
 
-    final destino = destinoDeAvisoConvocatoria(
-      tipo: datos['tipo']?.toString(),
+    final payload = payloadDeAviso(
+      comunicacionId: comunicacionId,
       titulo: titulo,
+      esPrivada: esPrivada,
+      autorId: autorId,
       datos: datos,
     );
-
-    final payload = destino != null
-        ? payloadDeDestino(destino)
-        : esPrivada && autorId != null && autorId > 0
-        ? 'PRIVADA:$autorId'
-        : 'COMUNICACION:$comunicacionId';
 
     await _plugin.show(
       id: comunicacionId,

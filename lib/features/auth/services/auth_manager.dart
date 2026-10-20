@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../../../core/config/app_preferences.dart';
 import '../../../core/notifications/services/push_notification_service.dart';
 import '../models/auth_user.dart';
@@ -13,6 +15,10 @@ class AuthManager {
   static AuthUser? get usuarioActual => _usuarioActual;
 
   static bool get estaAutenticado => _usuarioActual != null;
+
+  /// Solo para tests: deja la app sin usuario, sin tocar el almacenamiento.
+  @visibleForTesting
+  static void olvidarUsuario() => _usuarioActual = null;
 
   /// Deja la sesión lista tras un login o una activación de cuenta:
   /// guarda el token, registra el dispositivo para notificaciones
@@ -71,7 +77,9 @@ class AuthManager {
   /// volvería a devolver 401 y a llamar a cerrarSesion() en bucle
   /// infinito (N-01). El valor por defecto (true) es para un logout real
   /// iniciado por el usuario, donde el token todavía es válido.
-  static Future<void> cerrarSesion({bool desregistrarDispositivo = true}) async {
+  static Future<void> cerrarSesion({
+    bool desregistrarDispositivo = true,
+  }) async {
     // SEC-07: desregistrar el dispositivo requiere el token de sesión
     // actual, así que debe hacerse antes de borrarlo.
     if (desregistrarDispositivo) {

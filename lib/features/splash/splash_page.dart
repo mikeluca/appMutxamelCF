@@ -8,7 +8,18 @@ import '../../core/notifications/services/push_notification_service.dart';
 import '../../l10n/gen/app_localizations.dart';
 
 class SplashPage extends StatefulWidget {
-  const SplashPage({super.key});
+  /// Lo que dura el splash antes de pasar a home.
+  final Duration duracion;
+
+  /// Solo para tests: sustituye a la inicialización real de las notificaciones
+  /// (Firebase, permisos, plugin local).
+  final Future<void> Function()? inicializarNotificaciones;
+
+  const SplashPage({
+    super.key,
+    this.duracion = const Duration(seconds: 3),
+    this.inicializarNotificaciones,
+  });
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -20,16 +31,36 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
 
     // Permisos/red de notificaciones corren en paralelo, sin bloquear el primer frame.
-    _inicializarNotificaciones();
+    // Un fallo al inicializar las notificaciones se anota aquí mismo (no se
+    // queda como error sin capturar) y no impide pasar a home.
+    final notificacionesListas = _inicializarNotificaciones().then<void>(
+      (_) {},
+      onError: (Object e) {
+        debugPrint('ERROR AL INICIALIZAR LAS NOTIFICACIONES: $e');
+      },
+    );
 
-    Timer(const Duration(seconds: 3), () {
+    Timer(widget.duracion, () async {
       if (!mounted) return;
 
       Navigator.pushReplacementNamed(context, AppRoutes.public);
+
+      // El aviso de convocatoria con el que se arrancó la app se abre ahora,
+      // ya sobre home: antes, el pushReplacement de arriba lo habría tapado.
+      await notificacionesListas;
+
+      await PushNotificationService.procesarAvisoPendiente();
     });
   }
 
   Future<void> _inicializarNotificaciones() async {
+    final sustituta = widget.inicializarNotificaciones;
+
+    if (sustituta != null) {
+      await sustituta();
+      return;
+    }
+
     await LocalNotificationService.inicializar();
 
     await PushNotificationService.inicializar();

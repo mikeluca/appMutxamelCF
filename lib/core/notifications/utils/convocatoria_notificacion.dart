@@ -15,6 +15,14 @@ const String tipoPushConvocatoriaEditar = 'CONVOCATORIA_EDITAR';
 /// filas no guardan el data del push).
 const String tituloNuevaConvocatoria = 'Nueva convocatoria';
 
+/// true si el aviso es de una convocatoria (de cualquier tipo): por su
+/// data["tipo"] o, como reserva para los pushes antiguos, por el título.
+bool esAvisoDeConvocatoria({String? tipo, String? titulo}) {
+  return tipo == tipoPushConvocatoria ||
+      tipo == tipoPushConvocatoriaEditar ||
+      titulo?.trim() == tituloNuevaConvocatoria;
+}
+
 /// A dónde lleva tocar el aviso de una convocatoria.
 sealed class DestinoConvocatoria {
   const DestinoConvocatoria();

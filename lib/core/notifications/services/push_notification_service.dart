@@ -1,13 +1,14 @@
 import 'dart:io' show Platform;
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import '../../../features/auth/services/notificacion_service.dart';
 
 import 'dispositivo_app_service.dart';
 import 'local_notification_service.dart';
 
 import '../../../core/navigation/app_navigator.dart';
+import '../../../features/auth/services/auth_manager.dart';
 import '../utils/convocatoria_notificacion.dart';
 
 class PushNotificationService {
@@ -36,10 +37,36 @@ class PushNotificationService {
   static const String _tipoComunicacion = 'COMUNICACION';
   static const String _tipoResultado = 'RESULTADO';
 
-  // Los dos tipos de push que nacen de una comunicación: la normal y la de una
-  // convocatoria (que además abre "Mis convocatorias").
+  // Los tipos de push que nacen de una comunicación: la normal y las de una
+  // convocatoria (CONVOCATORIA abre el calendario; CONVOCATORIA_EDITAR, la
+  // edición de esa convocatoria).
   static bool _esTipoDeComunicacion(Object? tipo) =>
-      tipo == _tipoComunicacion || tipo == tipoPushConvocatoria;
+      tipo == _tipoComunicacion ||
+      tipo == tipoPushConvocatoria ||
+      tipo == tipoPushConvocatoriaEditar;
+
+  /// Solo para tests: sustituyen a las llamadas a la red, a las notificaciones
+  /// locales y a la restauración de la sesión.
+  @visibleForTesting
+  static Future<int> Function() contarNoLeidas =
+      NotificacionService.contarNoLeidas;
+
+  @visibleForTesting
+  static MostrarNotificacionLocal mostrarNotificacionLocal =
+      LocalNotificationService.mostrarComunicacion;
+
+  @visibleForTesting
+  static Future<bool> Function() restaurarSesion = AuthManager.restaurarSesion;
+
+  /// Aviso de una convocatoria con el que se abrió la app en frío. Se guarda
+  /// hasta que haya sesión y home: abrirlo antes lo taparía el splash.
+  static RemoteMessage? _avisoPendiente;
+
+  @visibleForTesting
+  static void simularMensajeInicial(RemoteMessage? mensaje) {
+    _notificacionInicial = mensaje;
+    _avisoPendiente = null;
+  }
 
   static Future<void> suscribirATopic(String topic) =>
       _messaging.subscribeToTopic(topic);
@@ -108,46 +135,9 @@ class PushNotificationService {
       }
     });
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      final tipo = message.data['tipo'];
-      final referenciaIdString = message.data['referenciaId'];
+    FirebaseMessaging.onMessage.listen(mostrarEnPrimerPlano);
 
-      if (!_esTipoDeComunicacion(tipo)) {
-        if (tipo != _tipoResultado) {
-          debugPrint('Push con tipo no reconocido en foreground: $tipo');
-        }
-        return;
-      }
-
-      final referenciaId = int.tryParse(referenciaIdString?.toString() ?? '');
-
-      if (referenciaId == null || referenciaId <= 0) {
-        return;
-      }
-
-      final titulo = message.notification?.title ?? 'Comunicación del club';
-
-      final mensaje = message.notification?.body ?? '';
-
-      final esPrivada = message.data['esPrivada'] == 'true';
-      final autorId = int.tryParse(message.data['autorId']?.toString() ?? '');
-
-      final cantidadNoLeidas = await NotificacionService.contarNoLeidas();
-
-      await LocalNotificationService.mostrarComunicacion(
-        comunicacionId: referenciaId,
-        titulo: titulo,
-        mensaje: mensaje,
-        cantidadNoLeidas: cantidadNoLeidas,
-        esPrivada: esPrivada,
-        autorId: autorId,
-        datos: message.data,
-      );
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-      await _procesarNotificacion(message);
-    });
+    FirebaseMessaging.onMessageOpenedApp.listen(procesarNotificacion);
 
     final initialMessage = await _messaging.getInitialMessage();
 
@@ -213,7 +203,50 @@ class PushNotificationService {
     }
   }
 
-  static Future<void> _procesarNotificacion(RemoteMessage message) async {
+  /// Push recibido con la app abierta: se enseña como notificación local, que
+  /// al tocarla navega igual que el push de fondo.
+  @visibleForTesting
+  static Future<void> mostrarEnPrimerPlano(RemoteMessage message) async {
+    final tipo = message.data['tipo'];
+    final referenciaIdString = message.data['referenciaId'];
+
+    if (!_esTipoDeComunicacion(tipo)) {
+      if (tipo != _tipoResultado) {
+        debugPrint('Push con tipo no reconocido en foreground: $tipo');
+      }
+      return;
+    }
+
+    final referenciaId = int.tryParse(referenciaIdString?.toString() ?? '');
+
+    if (referenciaId == null || referenciaId <= 0) {
+      return;
+    }
+
+    final titulo = message.notification?.title ?? 'Comunicación del club';
+
+    final mensaje = message.notification?.body ?? '';
+
+    final esPrivada = message.data['esPrivada'] == 'true';
+    final autorId = int.tryParse(message.data['autorId']?.toString() ?? '');
+
+    final cantidadNoLeidas = await contarNoLeidas();
+
+    await mostrarNotificacionLocal(
+      comunicacionId: referenciaId,
+      titulo: titulo,
+      mensaje: mensaje,
+      cantidadNoLeidas: cantidadNoLeidas,
+      esPrivada: esPrivada,
+      autorId: autorId,
+      datos: message.data,
+    );
+  }
+
+  /// Push tocado con la app en segundo plano (o ya iniciada): navega a donde
+  /// corresponda.
+  @visibleForTesting
+  static Future<void> procesarNotificacion(RemoteMessage message) async {
     final tipo = message.data['tipo'];
 
     if (!_esTipoDeComunicacion(tipo)) {
@@ -270,6 +303,43 @@ class PushNotificationService {
 
     _notificacionInicial = null;
 
-    await _procesarNotificacion(message);
+    // El aviso de una convocatoria necesita la sesión (su destino depende del
+    // rol) y que el splash ya haya dado paso a home: se guarda y lo abre
+    // procesarAvisoPendiente() después. El resto se abre al momento.
+    if (esAvisoDeConvocatoria(
+      tipo: message.data['tipo']?.toString(),
+      titulo: message.notification?.title,
+    )) {
+      _avisoPendiente = message;
+      return;
+    }
+
+    await procesarNotificacion(message);
+  }
+
+  /// Abre el aviso de convocatoria con el que se arrancó la app, si lo hubo:
+  /// restaura la sesión y navega encima de home. Se llama cuando el splash ya
+  /// ha navegado a home.
+  static Future<void> procesarAvisoPendiente() async {
+    final message = _avisoPendiente;
+
+    if (message == null) {
+      return;
+    }
+
+    _avisoPendiente = null;
+
+    // Espera a que home se haya pintado: el destino se abre encima de ella.
+    await WidgetsBinding.instance.endOfFrame;
+
+    try {
+      await restaurarSesion();
+    } catch (e) {
+      debugPrint('NO SE PUDO RESTAURAR LA SESIÓN PARA EL AVISO: $e');
+    }
+
+    // Sin sesión válida, el destino de la convocatoria no se resuelve (rol) y
+    // no se abre nada.
+    await procesarNotificacion(message);
   }
 }

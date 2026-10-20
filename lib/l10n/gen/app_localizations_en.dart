@@ -1852,7 +1852,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get matchAbsenceHint =>
-      'Let the coaching staff know you can\'t play this match. You can change the reason or withdraw it until the call-up time.';
+      'Let the coaching staff know the player can\'t play this match. You can change the reason or withdraw it until the call-up time.';
 
   @override
   String get matchAbsenceReasonLabel => 'Reason';
@@ -1875,7 +1875,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get matchAbsenceWithdrawBody =>
-      'The coaching staff will know you can play. You won\'t be called up again automatically.';
+      'The coaching staff will know the player can play. The player can be called up again, but won\'t be added to the call-up automatically.';
 
   @override
   String get matchAbsenceWithdrawConfirm => 'Withdraw';
@@ -1892,9 +1892,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get matchAbsenceWithdrawnSnack => 'Absence withdrawn';
 
   @override
-  String matchAbsenceError(String error) {
-    return 'Could not withdraw the absence: $error';
-  }
+  String get matchAbsenceError => 'Could not save. Please try again.';
 
   @override
   String get callupDetailTitle => 'Call-up';
@@ -1936,4 +1934,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String seasonMatchAbsencesLine(int count) {
     return 'Matches with justified absence: $count';
   }
+
+  @override
+  String get callupUnavailable => 'This call-up is no longer available';
 }

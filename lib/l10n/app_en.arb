@@ -700,21 +700,20 @@
   "matchAbsenceJustifyButton": "Justify absence",
   "matchAbsenceJustifyTitle": "Justify absence from the match",
   "matchAbsenceEditTitle": "Edit absence reason",
-  "matchAbsenceHint": "Let the coaching staff know you can't play this match. You can change the reason or withdraw it until the call-up time.",
+  "matchAbsenceHint": "Let the coaching staff know the player can't play this match. You can change the reason or withdraw it until the call-up time.",
   "matchAbsenceReasonLabel": "Reason",
   "matchAbsenceReasonRequired": "Enter the reason (at least 3 characters)",
   "matchAbsenceBadge": "Absence justified",
   "matchAbsenceEditButton": "Edit reason",
   "matchAbsenceWithdrawButton": "Withdraw",
   "matchAbsenceWithdrawTitle": "Withdraw the absence?",
-  "matchAbsenceWithdrawBody": "The coaching staff will know you can play. You won't be called up again automatically.",
+  "matchAbsenceWithdrawBody": "The coaching staff will know the player can play. The player can be called up again, but won't be added to the call-up automatically.",
   "matchAbsenceWithdrawConfirm": "Withdraw",
   "matchAbsenceDeadlineClosed": "Deadline passed ({deadline})",
   "@matchAbsenceDeadlineClosed": { "placeholders": { "deadline": { "type": "String" } } },
   "matchAbsenceJustifiedSnack": "Absence justified",
   "matchAbsenceWithdrawnSnack": "Absence withdrawn",
-  "matchAbsenceError": "Could not withdraw the absence: {error}",
-  "@matchAbsenceError": { "placeholders": { "error": { "type": "String" } } },
+  "matchAbsenceError": "Could not save. Please try again.",
   "callupDetailTitle": "Call-up",
   "callupPlayersCount": "{count, plural, =1{1 player called up} other{{count} players called up}}",
   "@callupPlayersCount": { "placeholders": { "count": { "type": "int" } } },
@@ -723,6 +722,7 @@
   "callupAbsentCount": "{count, plural, =1{1 justified absence} other{{count} justified absences}}",
   "@callupAbsentCount": { "placeholders": { "count": { "type": "int" } } },
   "seasonMatchAbsencesLine": "Matches with justified absence: {count}",
-  "@seasonMatchAbsencesLine": { "placeholders": { "count": { "type": "int" } } }
+  "@seasonMatchAbsencesLine": { "placeholders": { "count": { "type": "int" } } },
+  "callupUnavailable": "This call-up is no longer available"
 
 }

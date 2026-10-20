@@ -700,21 +700,20 @@
   "matchAbsenceJustifyButton": "Justificar absència",
   "matchAbsenceJustifyTitle": "Justificar absència al partit",
   "matchAbsenceEditTitle": "Editar el motiu de l'absència",
-  "matchAbsenceHint": "Avisa el cos tècnic que no podràs jugar aquest partit. Pots canviar el motiu o retirar-lo fins a l'hora de convocatòria.",
+  "matchAbsenceHint": "Avisa el cos tècnic que el jugador no podrà jugar aquest partit. Pots canviar el motiu o retirar-lo fins a l'hora de convocatòria.",
   "matchAbsenceReasonLabel": "Motiu",
   "matchAbsenceReasonRequired": "Indica el motiu (mínim 3 caràcters)",
   "matchAbsenceBadge": "Absència justificada",
   "matchAbsenceEditButton": "Editar motiu",
   "matchAbsenceWithdrawButton": "Retirar",
   "matchAbsenceWithdrawTitle": "Retirar l'absència?",
-  "matchAbsenceWithdrawBody": "El cos tècnic sabrà que ja pots jugar. No se't tornarà a convocar automàticament.",
+  "matchAbsenceWithdrawBody": "El cos tècnic sabrà que el jugador ja pot jugar. El jugador podrà ser convocat de nou, però no s'afegirà a la convocatòria automàticament.",
   "matchAbsenceWithdrawConfirm": "Retirar",
   "matchAbsenceDeadlineClosed": "Termini tancat ({deadline})",
   "@matchAbsenceDeadlineClosed": { "placeholders": { "deadline": { "type": "String" } } },
   "matchAbsenceJustifiedSnack": "Absència justificada",
   "matchAbsenceWithdrawnSnack": "Absència retirada",
-  "matchAbsenceError": "No s'ha pogut retirar l'absència: {error}",
-  "@matchAbsenceError": { "placeholders": { "error": { "type": "String" } } },
+  "matchAbsenceError": "No s'ha pogut desar. Torna-ho a provar.",
   "callupDetailTitle": "Convocatòria",
   "callupPlayersCount": "{count, plural, =1{1 convocat} other{{count} convocats}}",
   "@callupPlayersCount": { "placeholders": { "count": { "type": "int" } } },
@@ -723,6 +722,7 @@
   "callupAbsentCount": "{count, plural, =1{1 absència justificada} other{{count} absències justificades}}",
   "@callupAbsentCount": { "placeholders": { "count": { "type": "int" } } },
   "seasonMatchAbsencesLine": "Partits amb absència justificada: {count}",
-  "@seasonMatchAbsencesLine": { "placeholders": { "count": { "type": "int" } } }
+  "@seasonMatchAbsencesLine": { "placeholders": { "count": { "type": "int" } } },
+  "callupUnavailable": "Aquesta convocatòria ja no està disponible"
 
 }

@@ -3439,7 +3439,7 @@ abstract class AppLocalizations {
   /// No description provided for @matchAbsenceHint.
   ///
   /// In es, this message translates to:
-  /// **'Avisa al cuerpo técnico de que no podrás jugar este partido. Puedes cambiar el motivo o retirarlo hasta la hora de convocatoria.'**
+  /// **'Avisa al cuerpo técnico de que el jugador no podrá jugar este partido. Puedes cambiar el motivo o retirarlo hasta la hora de convocatoria.'**
   String get matchAbsenceHint;
 
   /// No description provided for @matchAbsenceReasonLabel.
@@ -3481,7 +3481,7 @@ abstract class AppLocalizations {
   /// No description provided for @matchAbsenceWithdrawBody.
   ///
   /// In es, this message translates to:
-  /// **'El cuerpo técnico sabrá que ya puedes jugar. No se te volverá a convocar automáticamente.'**
+  /// **'El cuerpo técnico sabrá que el jugador ya puede jugar. El jugador podrá ser convocado de nuevo, pero no se añadirá a la convocatoria automáticamente.'**
   String get matchAbsenceWithdrawBody;
 
   /// No description provided for @matchAbsenceWithdrawConfirm.
@@ -3511,8 +3511,8 @@ abstract class AppLocalizations {
   /// No description provided for @matchAbsenceError.
   ///
   /// In es, this message translates to:
-  /// **'No se ha podido retirar la ausencia: {error}'**
-  String matchAbsenceError(String error);
+  /// **'No se ha podido guardar. Inténtalo de nuevo.'**
+  String get matchAbsenceError;
 
   /// No description provided for @callupDetailTitle.
   ///
@@ -3543,6 +3543,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Partidos con ausencia justificada: {count}'**
   String seasonMatchAbsencesLine(int count);
+
+  /// No description provided for @callupUnavailable.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta convocatoria ya no está disponible'**
+  String get callupUnavailable;
 }
 
 class _AppLocalizationsDelegate

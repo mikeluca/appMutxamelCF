@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/gen/app_localizations.dart';
 import '../notifications/utils/convocatoria_notificacion.dart';
 import '../../features/auth/models/perfil_app.dart';
 import '../../features/calendario/pages/calendario_page.dart';
@@ -24,6 +25,9 @@ class AppNavigator {
 
   @visibleForTesting
   static Widget Function(ConvocatoriaModel convocatoria)? constructorEdicion;
+
+  @visibleForTesting
+  static ConvocatoriaService Function()? fabricaConvocatoriaService;
 
   static Future<void> abrirComunicacion(int comunicacionId) async {
     final navigatorState = navigator;
@@ -83,8 +87,11 @@ class AppNavigator {
     }
 
     try {
-      final convocatoria = await (servicio ?? ConvocatoriaService())
-          .obtenerPorId(convocatoriaId);
+      final convocatoria =
+          await (servicio ??
+                  fabricaConvocatoriaService?.call() ??
+                  ConvocatoriaService())
+              .obtenerPorId(convocatoriaId);
 
       if (!navigatorState.mounted) {
         return;
@@ -102,6 +109,17 @@ class AppNavigator {
       );
     } catch (e) {
       debugPrint('No se pudo abrir la convocatoria $convocatoriaId: $e');
+
+      // No existe (ya borrada) o ya no se puede gestionar (403): se avisa.
+      final contexto = navigatorState.context;
+
+      if (contexto.mounted) {
+        ScaffoldMessenger.maybeOf(contexto)?.showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(contexto).callupUnavailable),
+          ),
+        );
+      }
     }
   }
 

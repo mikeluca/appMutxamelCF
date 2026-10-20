@@ -115,11 +115,17 @@ class _CalendarioPageState extends State<CalendarioPage> {
     _cargarDatos();
   }
 
-  Future<void> _cargarDatos() async {
-    setState(() {
-      _cargando = true;
-      _error = null;
-    });
+  /// Carga el calendario. Con [enSegundoPlano] (tras justificar, editar o
+  /// retirar) no se cambia la vista por el indicador de carga: el calendario
+  /// sigue en pantalla con el día seleccionado, y si la recarga falla se queda
+  /// lo que había.
+  Future<void> _cargarDatos({bool enSegundoPlano = false}) async {
+    if (!enSegundoPlano) {
+      setState(() {
+        _cargando = true;
+        _error = null;
+      });
+    }
 
     try {
       // Los partidos pasados se muestran solo desde el inicio de la
@@ -202,7 +208,9 @@ class _CalendarioPageState extends State<CalendarioPage> {
         }
       }
 
-      final eventos = await _cargarEventos(equipos);
+      // En una recarga en segundo plano, que falle un equipo hace fallar la
+      // recarga entera (se queda lo que había) en vez de dejar su hueco.
+      final eventos = await _cargarEventos(equipos, estricto: enSegundoPlano);
 
       if (!mounted) return;
 
@@ -214,7 +222,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
         _error = null;
       });
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted || enSegundoPlano) return;
 
       setState(() {
         _error = e.toString();
@@ -224,15 +232,16 @@ class _CalendarioPageState extends State<CalendarioPage> {
   }
 
   /// Pide el calendario de cada equipo (en paralelo) y los combina en
-  /// una única lista. Los partidos se deduplican por id (si dos
-  /// jugadores del usuario comparten equipo, su partido no debe salir
-  /// dos veces); las sesiones de entrenamiento NO se deduplican, ya
-  /// que cada una lleva el estado de justificación propio de CADA
-  /// jugador, y ambos hijos deben poder justificar su falta por
-  /// separado a la misma sesión.
+  /// una única lista. Con el calendario de un jugador (JUGADOR/FAMILIAR)
+  /// NADA se deduplica: tanto las sesiones como los partidos llevan el estado
+  /// de justificación propio de CADA jugador, y dos hijos del mismo equipo
+  /// deben ver su ficha (con su nombre) y justificar por separado. Solo los
+  /// partidos del calendario de un equipo (entrenador/coordinador, sin
+  /// jugador) se deduplican por id, también frente a los de un jugador.
   Future<List<_EventoUsuario>> _cargarEventos(
-    List<_EquipoCalendarioEntrada> equipos,
-  ) async {
+    List<_EquipoCalendarioEntrada> equipos, {
+    bool estricto = false,
+  }) async {
     final calendarios = await Future.wait(
       equipos.map((entrada) async {
         final equipoId = entrada.equipoId;
@@ -248,7 +257,10 @@ class _CalendarioPageState extends State<CalendarioPage> {
           );
         } catch (_) {
           // Si falla un equipo concreto no se bloquea la vista
-          // completa: se omite y se muestran los demás.
+          // completa: se omite y se muestran los demás (salvo en una
+          // recarga estricta, donde se prefiere conservar lo anterior).
+          if (estricto) rethrow;
+
           return null;
         }
       }),
@@ -275,7 +287,9 @@ class _CalendarioPageState extends State<CalendarioPage> {
       }
 
       for (final partido in calendario.partidos) {
-        if (partido.id != null && !partidosVistos.add(partido.id!)) {
+        if (partido.id != null &&
+            !partidosVistos.add(partido.id!) &&
+            entrada.jugadorId == null) {
           continue;
         }
 
@@ -335,7 +349,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
 
       // El estado "justificado" de esta sesión ha podido cambiar:
       // recargamos para reflejarlo en la tarjeta.
-      _cargarDatos();
+      _cargarDatos(enSegundoPlano: true);
     }
   }
 
@@ -815,7 +829,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
         context,
       ).showSnackBar(SnackBar(content: Text(_t.matchAbsenceJustifiedSnack)));
 
-      _cargarDatos();
+      _cargarDatos(enSegundoPlano: true);
     }
   }
 
@@ -859,13 +873,15 @@ class _CalendarioPageState extends State<CalendarioPage> {
         context,
       ).showSnackBar(SnackBar(content: Text(_t.matchAbsenceWithdrawnSnack)));
 
-      _cargarDatos();
-    } catch (e) {
+      _cargarDatos(enSegundoPlano: true);
+    } catch (_) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_t.matchAbsenceError(e.toString()))),
-      );
+      // Sin el detalle técnico del error: el usuario solo necesita saber que
+      // no se guardó.
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_t.matchAbsenceError)));
     }
   }
 
@@ -980,11 +996,12 @@ class _JustificarAusenciaPartidoDialogState
       if (!mounted) return;
 
       Navigator.pop(context, true);
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
 
+      // Sin e.toString(): un mensaje genérico, no la excepción en pantalla.
       setState(() {
-        _error = e.toString();
+        _error = _t.matchAbsenceError;
         _enviando = false;
       });
     }

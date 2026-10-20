@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_mutxamel_cf/features/auth/models/perfil_app.dart';
 import 'package:app_mutxamel_cf/features/calendario/model/calendario_model.dart';
 import 'package:app_mutxamel_cf/features/calendario/model/justificacion_falta_model.dart';
@@ -18,10 +20,19 @@ import 'package:intl/date_symbol_data_local.dart';
 
 class _FakeCalendarioService extends CalendarioService {
   final CalendarioModel calendario;
+
+  /// Calendario distinto por jugador (cada hijo tiene su propio estado).
+  final Map<int, CalendarioModel> porJugador;
   final List<({int sesion, int jugador, String? motivo})> justificaciones = [];
   final List<int?> jugadoresConsultados = [];
 
-  _FakeCalendarioService(this.calendario);
+  /// Si no es null, la siguiente consulta del calendario espera a que se complete.
+  Completer<void>? bloquearSiguiente;
+
+  /// Si es true, las consultas posteriores a la primera fallan.
+  bool falloAlCargar = false;
+
+  _FakeCalendarioService(this.calendario, {this.porJugador = const {}});
 
   @override
   Future<TemporadaModel?> obtenerTemporadaActiva() async => null;
@@ -34,7 +45,19 @@ class _FakeCalendarioService extends CalendarioService {
     int? jugadorId,
   }) async {
     jugadoresConsultados.add(jugadorId);
-    return calendario;
+
+    final espera = bloquearSiguiente;
+
+    if (falloAlCargar && jugadoresConsultados.length > 1) {
+      throw Exception('sin red');
+    }
+
+    if (espera != null && jugadoresConsultados.length > 1) {
+      bloquearSiguiente = null;
+      await espera.future;
+    }
+
+    return porJugador[jugadorId] ?? calendario;
   }
 
   @override
@@ -164,6 +187,7 @@ Future<void> _pintar(
   JustificacionPartidoService? justificaciones,
   DateTime Function()? ahora,
   DateTime? diaInicial,
+  PerfilApp? perfil,
 }) async {
   tester.view.physicalSize = const Size(800, 3000);
   tester.view.devicePixelRatio = 1;
@@ -184,7 +208,7 @@ Future<void> _pintar(
         diaInicial: diaInicial,
         calendarioService: servicio,
         teamService: _FakeTeamService(),
-        cargarPerfil: () async => _perfil(roles),
+        cargarPerfil: () async => perfil ?? _perfil(roles),
         ahora: ahora,
       ),
     ),
@@ -326,8 +350,36 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Enviar'));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('El plazo para justificar'), findsOneWidget);
+    // Mensaje genérico: ni la excepción ni el detalle del servidor en pantalla.
+    expect(
+      find.text('No se ha podido guardar. Inténtalo de nuevo.'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('Exception'), findsNothing);
+    expect(find.textContaining('El plazo para justificar'), findsNothing);
     expect(find.text('Justificar ausencia al partido'), findsOneWidget);
+  });
+
+  testWidgets('si falla retirar, un aviso genérico y sin la excepción', (
+    tester,
+  ) async {
+    final servicio = await pintarPartido(
+      tester,
+      justificada: true,
+      motivo: 'Examen',
+    );
+    servicio.error = 'ORA-00942 tabla inexistente';
+
+    await tester.tap(find.text('Retirar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Retirar'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('No se ha podido guardar. Inténtalo de nuevo.'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('ORA-00942'), findsNothing);
   });
 
   testWidgets('ya justificada: etiqueta, motivo y editar o retirar', (
@@ -454,5 +506,200 @@ void main() {
     expect(find.text('Pego C.F.'), findsNothing);
     // El entrenamiento de hoy sí está.
     expect(find.text('Campo Municipal'), findsOneWidget);
+  });
+
+  // ---- varios hijos en el mismo partido ------------------------------------------------------
+
+  PerfilApp perfilConDosHijos() => PerfilApp(
+    usuarioId: 1,
+    email: 'a@b.c',
+    roles: const ['FAMILIAR'],
+    jugadores: [
+      PerfilJugador(
+        id: 100,
+        nombre: 'Pablo',
+        apellidos: 'Garcia',
+        equipo: 'Cadete A',
+        equipoId: 5,
+      ),
+      PerfilJugador(
+        id: 101,
+        nombre: 'Lucia',
+        apellidos: 'Garcia',
+        equipo: 'Cadete A',
+        equipoId: 5,
+      ),
+    ],
+    equipos: const [],
+  );
+
+  testWidgets('dos hijos en el mismo partido: una ficha por hijo, cada una con '
+      'su estado y sus botones', (tester) async {
+    final justificaciones = _FakeJustificacionPartidoService();
+
+    await _pintar(
+      tester,
+      _FakeCalendarioService(
+        _calendario(),
+        porJugador: {
+          // Pablo ya ha justificado; Lucia todavía no.
+          100: _calendario(ausenciaJustificada: true, motivoAusencia: 'Examen'),
+          101: _calendario(),
+        },
+      ),
+      const ['FAMILIAR'],
+      perfil: perfilConDosHijos(),
+      justificaciones: justificaciones,
+    );
+
+    // El mismo partido sale dos veces, una por hijo, con su nombre.
+    expect(find.text('Pego C.F.'), findsNWidgets(2));
+    expect(find.text('Cadete A — Pablo Garcia'), findsNWidgets(2));
+    expect(find.text('Cadete A — Lucia Garcia'), findsNWidgets(2));
+
+    // Cada ficha con su propio estado: Pablo justificado, Lucia con el botón.
+    expect(find.text('Ausencia justificada'), findsOneWidget);
+    expect(find.text('Motivo: Examen'), findsOneWidget);
+    expect(find.text('Editar motivo'), findsOneWidget);
+    expect(find.text('Justificar ausencia'), findsOneWidget);
+
+    // Y justificar por Lucia lo hace con SU jugador, no con el de Pablo.
+    await tester.tap(find.text('Justificar ausencia'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Viaje');
+    await tester.tap(find.widgetWithText(FilledButton, 'Enviar'));
+    await tester.pumpAndSettle();
+
+    expect(justificaciones.llamadas, ['justificar:30:101:Viaje']);
+  });
+
+  testWidgets('retirar por un hijo solo afecta a ese hijo', (tester) async {
+    final justificaciones = _FakeJustificacionPartidoService();
+
+    await _pintar(
+      tester,
+      _FakeCalendarioService(
+        _calendario(),
+        porJugador: {
+          100: _calendario(ausenciaJustificada: true, motivoAusencia: 'Examen'),
+          101: _calendario(ausenciaJustificada: true, motivoAusencia: 'Viaje'),
+        },
+      ),
+      const ['FAMILIAR'],
+      perfil: perfilConDosHijos(),
+      justificaciones: justificaciones,
+    );
+
+    expect(find.text('Retirar'), findsNWidgets(2));
+
+    // El orden de las fichas es el de los hijos del perfil: la primera es Pablo.
+    await tester.tap(find.text('Retirar').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Retirar'));
+    await tester.pumpAndSettle();
+
+    expect(justificaciones.llamadas, ['retirar:30:101']);
+  });
+
+  testWidgets('el calendario de un entrenador sigue sin repetir el partido', (
+    tester,
+  ) async {
+    // Entrenador de un equipo y también con un jugador del mismo equipo: su
+    // partido no debe salir dos veces (la ficha del jugador ya lo incluye).
+    final perfil = PerfilApp(
+      usuarioId: 1,
+      email: 'a@b.c',
+      roles: const ['ENTRENADOR', 'FAMILIAR'],
+      jugadores: [
+        PerfilJugador(
+          id: 100,
+          nombre: 'Pablo',
+          apellidos: 'Garcia',
+          equipo: 'Cadete A',
+          equipoId: 5,
+        ),
+      ],
+      equipos: [PerfilEquipo(id: 5, nombre: 'Cadete A')],
+    );
+
+    await _pintar(tester, _FakeCalendarioService(_calendario()), const [
+      'ENTRENADOR',
+      'FAMILIAR',
+    ], perfil: perfil);
+
+    expect(find.text('Pego C.F.'), findsOneWidget);
+  });
+
+  // ---- recargar sin perder el día --------------------------------------------------------------
+
+  testWidgets('tras justificar se recarga sin perder el día seleccionado ni '
+      'cambiar el calendario por el indicador de carga', (tester) async {
+    final calendario = _FakeCalendarioService(
+      _calendario(diaPartido: _enDias(3)),
+    );
+    final justificaciones = _FakeJustificacionPartidoService();
+
+    await _pintar(
+      tester,
+      calendario,
+      const ['JUGADOR'],
+      justificaciones: justificaciones,
+      diaInicial: _enDias(3),
+    );
+
+    expect(find.text('Pego C.F.'), findsOneWidget);
+    expect(calendario.jugadoresConsultados, hasLength(1));
+
+    // La recarga tras justificar se queda esperando al servidor...
+    calendario.bloquearSiguiente = Completer<void>();
+
+    await tester.tap(find.text('Justificar ausencia'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Examen');
+    await tester.tap(find.widgetWithText(FilledButton, 'Enviar'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(justificaciones.llamadas, ['justificar:30:100:Examen']);
+    expect(calendario.jugadoresConsultados, hasLength(2));
+
+    // ...y mientras tanto el calendario sigue ahí, en su día, sin spinner.
+    expect(find.text('Pego C.F.'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+
+    calendario.bloquearSiguiente?.complete();
+    await tester.pumpAndSettle();
+
+    // Al terminar, sigue en el mismo día (no vuelve a hoy).
+    expect(find.text('Pego C.F.'), findsOneWidget);
+    expect(find.text('Campo Municipal'), findsNothing);
+  });
+
+  testWidgets('si la recarga falla tras justificar se queda lo que había', (
+    tester,
+  ) async {
+    final calendario = _FakeCalendarioService(
+      _calendario(diaPartido: _enDias(3)),
+    );
+
+    await _pintar(
+      tester,
+      calendario,
+      const ['JUGADOR'],
+      justificaciones: _FakeJustificacionPartidoService(),
+      diaInicial: _enDias(3),
+    );
+
+    calendario.falloAlCargar = true;
+
+    await tester.tap(find.text('Justificar ausencia'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Examen');
+    await tester.tap(find.widgetWithText(FilledButton, 'Enviar'));
+    await tester.pumpAndSettle();
+
+    // Sin pantalla de error: el calendario y su día siguen.
+    expect(find.text('Pego C.F.'), findsOneWidget);
+    expect(find.byIcon(Icons.error_outline), findsNothing);
   });
 }

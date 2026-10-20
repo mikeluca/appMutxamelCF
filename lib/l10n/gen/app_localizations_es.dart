@@ -1874,7 +1874,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get matchAbsenceHint =>
-      'Avisa al cuerpo técnico de que no podrás jugar este partido. Puedes cambiar el motivo o retirarlo hasta la hora de convocatoria.';
+      'Avisa al cuerpo técnico de que el jugador no podrá jugar este partido. Puedes cambiar el motivo o retirarlo hasta la hora de convocatoria.';
 
   @override
   String get matchAbsenceReasonLabel => 'Motivo';
@@ -1897,7 +1897,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get matchAbsenceWithdrawBody =>
-      'El cuerpo técnico sabrá que ya puedes jugar. No se te volverá a convocar automáticamente.';
+      'El cuerpo técnico sabrá que el jugador ya puede jugar. El jugador podrá ser convocado de nuevo, pero no se añadirá a la convocatoria automáticamente.';
 
   @override
   String get matchAbsenceWithdrawConfirm => 'Retirar';
@@ -1914,9 +1914,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get matchAbsenceWithdrawnSnack => 'Ausencia retirada';
 
   @override
-  String matchAbsenceError(String error) {
-    return 'No se ha podido retirar la ausencia: $error';
-  }
+  String get matchAbsenceError =>
+      'No se ha podido guardar. Inténtalo de nuevo.';
 
   @override
   String get callupDetailTitle => 'Convocatoria';
@@ -1958,4 +1957,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String seasonMatchAbsencesLine(int count) {
     return 'Partidos con ausencia justificada: $count';
   }
+
+  @override
+  String get callupUnavailable => 'Esta convocatoria ya no está disponible';
 }

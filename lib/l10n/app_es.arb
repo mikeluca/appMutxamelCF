@@ -700,21 +700,20 @@
   "matchAbsenceJustifyButton": "Justificar ausencia",
   "matchAbsenceJustifyTitle": "Justificar ausencia al partido",
   "matchAbsenceEditTitle": "Editar motivo de la ausencia",
-  "matchAbsenceHint": "Avisa al cuerpo técnico de que no podrás jugar este partido. Puedes cambiar el motivo o retirarlo hasta la hora de convocatoria.",
+  "matchAbsenceHint": "Avisa al cuerpo técnico de que el jugador no podrá jugar este partido. Puedes cambiar el motivo o retirarlo hasta la hora de convocatoria.",
   "matchAbsenceReasonLabel": "Motivo",
   "matchAbsenceReasonRequired": "Indica el motivo (mínimo 3 caracteres)",
   "matchAbsenceBadge": "Ausencia justificada",
   "matchAbsenceEditButton": "Editar motivo",
   "matchAbsenceWithdrawButton": "Retirar",
   "matchAbsenceWithdrawTitle": "¿Retirar la ausencia?",
-  "matchAbsenceWithdrawBody": "El cuerpo técnico sabrá que ya puedes jugar. No se te volverá a convocar automáticamente.",
+  "matchAbsenceWithdrawBody": "El cuerpo técnico sabrá que el jugador ya puede jugar. El jugador podrá ser convocado de nuevo, pero no se añadirá a la convocatoria automáticamente.",
   "matchAbsenceWithdrawConfirm": "Retirar",
   "matchAbsenceDeadlineClosed": "Plazo cerrado ({deadline})",
   "@matchAbsenceDeadlineClosed": { "placeholders": { "deadline": { "type": "String" } } },
   "matchAbsenceJustifiedSnack": "Ausencia justificada",
   "matchAbsenceWithdrawnSnack": "Ausencia retirada",
-  "matchAbsenceError": "No se ha podido retirar la ausencia: {error}",
-  "@matchAbsenceError": { "placeholders": { "error": { "type": "String" } } },
+  "matchAbsenceError": "No se ha podido guardar. Inténtalo de nuevo.",
   "callupDetailTitle": "Convocatoria",
   "callupPlayersCount": "{count, plural, =1{1 convocado} other{{count} convocados}}",
   "@callupPlayersCount": { "placeholders": { "count": { "type": "int" } } },
@@ -723,6 +722,7 @@
   "callupAbsentCount": "{count, plural, =1{1 ausencia justificada} other{{count} ausencias justificadas}}",
   "@callupAbsentCount": { "placeholders": { "count": { "type": "int" } } },
   "seasonMatchAbsencesLine": "Partidos con ausencia justificada: {count}",
-  "@seasonMatchAbsencesLine": { "placeholders": { "count": { "type": "int" } } }
+  "@seasonMatchAbsencesLine": { "placeholders": { "count": { "type": "int" } } },
+  "callupUnavailable": "Esta convocatoria ya no está disponible"
 
 }

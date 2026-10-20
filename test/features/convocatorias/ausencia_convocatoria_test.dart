@@ -944,6 +944,38 @@ void main() {
 
       expect(find.text('EDICION FALSA'), findsNothing);
       expect(find.text('INICIO'), findsOneWidget);
+      // Y se avisa de que ya no está disponible.
+      expect(
+        find.text('Esta convocatoria ya no está disponible'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('si la convocatoria ya no existe se avisa igual', (
+      tester,
+    ) async {
+      await _conUsuario(['ENTRENADOR']);
+
+      AppNavigator.constructorEdicion = (_) =>
+          const Scaffold(body: Text('EDICION FALSA'));
+
+      await _pintar(
+        tester,
+        const Scaffold(body: Text('INICIO')),
+        key: AppNavigator.navigatorKey,
+      );
+
+      final servicio = _FakeConvocatoriaService()
+        ..falloAlObtener = Exception('La convocatoria no existe');
+
+      unawaited(AppNavigator.abrirEdicionConvocatoria(99, servicio: servicio));
+      await tester.pumpAndSettle();
+
+      expect(find.text('EDICION FALSA'), findsNothing);
+      expect(
+        find.text('Esta convocatoria ya no está disponible'),
+        findsOneWidget,
+      );
     });
   });
 }
