@@ -764,6 +764,49 @@
     "placeholders": { "percent": { "type": "int" } }
   },
   "trainingListNotReviewed": "Lista sin revisar",
-  "trainingNotFound": "Este entrenamiento ya no está disponible"
+  "trainingNotFound": "Este entrenamiento ya no está disponible",
+
+  "clubPageWeekend": "Fin de semana",
+  "clubPageWeekendDesc": "Convocatorias, resultados y jornadas por revisar",
+  "clubPagePlayerTracking": "Seguimiento de jugadores",
+  "clubPagePlayerTrackingDesc": "Faltas y mal comportamiento en entrenamientos",
+  "weekendPrevious": "Fin de semana anterior",
+  "weekendNext": "Fin de semana siguiente",
+  "weekendNoCallup": "Sin convocatoria",
+  "weekendPendingResults": "Resultados pendientes",
+  "weekendResting": "Descansan",
+  "weekendNoMatch": "Sin partido ni descanso",
+  "weekendNoMatchNote": "¿Falta importar la jornada?",
+  "weekendAllClear": "Todo al día",
+  "weekendLastImport": "Última importación FFCV: {fecha}",
+  "@weekendLastImport": {
+    "placeholders": { "fecha": { "type": "String" } }
+  },
+  "weekendDelayDays": "{count, plural, =0{Hoy} one{Hace {count} día} other{Hace {count} días}}",
+  "@weekendDelayDays": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "weekendRound": "Jornada {jornada}",
+  "@weekendRound": {
+    "placeholders": { "jornada": { "type": "int" } }
+  },
+  "trackingPeriod30": "Últimos 30 días",
+  "trackingPeriodSeason": "Temporada",
+  "trackingAllTeams": "Todos los equipos",
+  "trackingFaultsChip": "{count, plural, one{{count} falta} other{{count} faltas}}",
+  "@trackingFaultsChip": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trackingMisconductChip": "{count} mal comportamiento",
+  "@trackingMisconductChip": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trackingLastIncident": "Última incidencia: {fecha}",
+  "@trackingLastIncident": {
+    "placeholders": { "fecha": { "type": "String" } }
+  },
+  "trackingEmpty": "Ningún jugador llega a los umbrales en este periodo",
+  "trackingCoordinationOnly": "Datos solo para coordinación",
+  "trackingNoIncidents": "Sin incidencias en este periodo"
 
 }

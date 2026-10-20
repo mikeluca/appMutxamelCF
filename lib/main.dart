@@ -21,6 +21,8 @@ import 'features/auth/pages/mis_clasificaciones_page.dart';
 import 'features/auth/pages/mis_partidos_page.dart';
 import 'features/calendario/pages/calendario_page.dart';
 import 'features/auth/pages/mis_equipos_page.dart';
+import 'features/coordinacion/pages/fin_de_semana_page.dart';
+import 'features/coordinacion/pages/seguimiento_jugadores_page.dart';
 import 'features/auth/pages/ajustes_page.dart';
 import 'features/auth/pages/comunicaciones_page.dart';
 import 'features/partido_en_vivo/pages/partido_en_vivo_page.dart';
@@ -161,9 +163,12 @@ class _MutxamelCfAppState extends State<MutxamelCfApp> {
         AppRoutes.players: (context) => const MisJugadoresPage(),
         AppRoutes.myMatches: (context) => const MisPartidosPage(),
         AppRoutes.myStandings: (context) => const MisClasificacionesPage(),
-        AppRoutes.myCard: (context) => const MisJugadoresPage(soloMiFicha: true),
+        AppRoutes.myCard: (context) =>
+            const MisJugadoresPage(soloMiFicha: true),
         AppRoutes.calendar: (context) => const CalendarioPage(),
         AppRoutes.myTeams: (context) => const MisEquiposPage(),
+        AppRoutes.weekend: (context) => const FinDeSemanaPage(),
+        AppRoutes.playerTracking: (context) => const SeguimientoJugadoresPage(),
         AppRoutes.settings: (context) => AjustesPage(
           temaActual: _temaActual,
           onTemaChanged: _cambiarTema,

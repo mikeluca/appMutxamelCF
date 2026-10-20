@@ -2054,4 +2054,104 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get trainingNotFound => 'Aquest entrenament ja no està disponible';
+
+  @override
+  String get clubPageWeekend => 'Cap de setmana';
+
+  @override
+  String get clubPageWeekendDesc =>
+      'Convocatòries, resultats i jornades per revisar';
+
+  @override
+  String get clubPagePlayerTracking => 'Seguiment de jugadors';
+
+  @override
+  String get clubPagePlayerTrackingDesc =>
+      'Faltes i mal comportament en entrenaments';
+
+  @override
+  String get weekendPrevious => 'Cap de setmana anterior';
+
+  @override
+  String get weekendNext => 'Cap de setmana següent';
+
+  @override
+  String get weekendNoCallup => 'Sense convocatòria';
+
+  @override
+  String get weekendPendingResults => 'Resultats pendents';
+
+  @override
+  String get weekendResting => 'Descansen';
+
+  @override
+  String get weekendNoMatch => 'Sense partit ni descans';
+
+  @override
+  String get weekendNoMatchNote => 'Falta importar la jornada?';
+
+  @override
+  String get weekendAllClear => 'Tot al dia';
+
+  @override
+  String weekendLastImport(String fecha) {
+    return 'Última importació FFCV: $fecha';
+  }
+
+  @override
+  String weekendDelayDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Fa $count dies',
+      one: 'Fa $count dia',
+      zero: 'Hui',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String weekendRound(int jornada) {
+    return 'Jornada $jornada';
+  }
+
+  @override
+  String get trackingPeriod30 => 'Últims 30 dies';
+
+  @override
+  String get trackingPeriodSeason => 'Temporada';
+
+  @override
+  String get trackingAllTeams => 'Tots els equips';
+
+  @override
+  String trackingFaultsChip(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count faltes',
+      one: '$count falta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trackingMisconductChip(int count) {
+    return '$count mal comportament';
+  }
+
+  @override
+  String trackingLastIncident(String fecha) {
+    return 'Última incidència: $fecha';
+  }
+
+  @override
+  String get trackingEmpty =>
+      'Cap jugador arriba als llindars en aquest període';
+
+  @override
+  String get trackingCoordinationOnly => 'Dades només per a coordinació';
+
+  @override
+  String get trackingNoIncidents => 'Sense incidències en aquest període';
 }

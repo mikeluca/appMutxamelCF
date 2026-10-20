@@ -169,6 +169,32 @@ class _ClubPageState extends State<ClubPage> {
 
           if (tieneEquipos) const SizedBox(height: 12),
 
+          if (esGestionGlobal)
+            _construirOpcion(
+              context,
+              icono: Icons.dashboard_outlined,
+              titulo: t.clubPageWeekend,
+              descripcion: t.clubPageWeekendDesc,
+              onTap: () {
+                Navigator.pushNamed(context, AppRoutes.weekend);
+              },
+            ),
+
+          if (esGestionGlobal) const SizedBox(height: 12),
+
+          if (esGestionGlobal)
+            _construirOpcion(
+              context,
+              icono: Icons.report_problem_outlined,
+              titulo: t.clubPagePlayerTracking,
+              descripcion: t.clubPagePlayerTrackingDesc,
+              onTap: () {
+                Navigator.pushNamed(context, AppRoutes.playerTracking);
+              },
+            ),
+
+          if (esGestionGlobal) const SizedBox(height: 12),
+
           _construirOpcion(
             context,
             icono: Icons.calendar_month_outlined,

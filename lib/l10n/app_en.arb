@@ -764,6 +764,49 @@
     "placeholders": { "percent": { "type": "int" } }
   },
   "trainingListNotReviewed": "Attendance not reviewed",
-  "trainingNotFound": "This training is no longer available"
+  "trainingNotFound": "This training is no longer available",
+
+  "clubPageWeekend": "Weekend",
+  "clubPageWeekendDesc": "Call-ups, results and rounds to review",
+  "clubPagePlayerTracking": "Player follow-up",
+  "clubPagePlayerTrackingDesc": "Absences and misconduct in training",
+  "weekendPrevious": "Previous weekend",
+  "weekendNext": "Next weekend",
+  "weekendNoCallup": "No call-up",
+  "weekendPendingResults": "Pending results",
+  "weekendResting": "Resting",
+  "weekendNoMatch": "No match or rest",
+  "weekendNoMatchNote": "Is the round missing from the import?",
+  "weekendAllClear": "All up to date",
+  "weekendLastImport": "Last FFCV import: {fecha}",
+  "@weekendLastImport": {
+    "placeholders": { "fecha": { "type": "String" } }
+  },
+  "weekendDelayDays": "{count, plural, =0{Today} one{{count} day ago} other{{count} days ago}}",
+  "@weekendDelayDays": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "weekendRound": "Round {jornada}",
+  "@weekendRound": {
+    "placeholders": { "jornada": { "type": "int" } }
+  },
+  "trackingPeriod30": "Last 30 days",
+  "trackingPeriodSeason": "Season",
+  "trackingAllTeams": "All teams",
+  "trackingFaultsChip": "{count, plural, one{{count} absence} other{{count} absences}}",
+  "@trackingFaultsChip": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trackingMisconductChip": "{count} misconduct",
+  "@trackingMisconductChip": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trackingLastIncident": "Last incident: {fecha}",
+  "@trackingLastIncident": {
+    "placeholders": { "fecha": { "type": "String" } }
+  },
+  "trackingEmpty": "No player reaches the thresholds in this period",
+  "trackingCoordinationOnly": "Data for coordination only",
+  "trackingNoIncidents": "No incidents in this period"
 
 }

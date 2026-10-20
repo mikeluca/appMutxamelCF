@@ -17,6 +17,10 @@ class ConvocatoriaFormPage extends StatefulWidget {
   final PerfilEquipo equipo;
   final ConvocatoriaModel? convocatoria;
 
+  /// Partido que se deja elegido al crear una convocatoria nueva (si sigue sin
+  /// convocatoria).
+  final int? partidoIdInicial;
+
   /// Solo para tests: sustituyen a los servicios reales.
   final TeamService? teamService;
   final MatchService? matchService;
@@ -27,6 +31,7 @@ class ConvocatoriaFormPage extends StatefulWidget {
     super.key,
     required this.equipo,
     this.convocatoria,
+    this.partidoIdInicial,
     this.teamService,
     this.matchService,
     this.convocatoriaService,
@@ -65,6 +70,8 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
   /// solo lectura una vez elegido el partido (se leen en vivo del
   /// partido, nunca se duplican en la convocatoria).
   MatchModel? _partidoSeleccionado;
+
+  bool _partidoInicialAplicado = false;
 
   TimeOfDay _horaConvocatoria = const TimeOfDay(hour: 17, minute: 0);
 
@@ -175,6 +182,24 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
     _cargarAusencias(partido.id);
   }
 
+  /// Una sola vez: deja elegido el partido con el que se abrió el formulario
+  /// (desde el panel de coordinación), si sigue sin convocatoria.
+  void _aplicarPartidoInicial(List<MatchModel> partidos) {
+    _partidoInicialAplicado = true;
+
+    final id = widget.partidoIdInicial;
+
+    if (id == null) return;
+
+    for (final partido in partidos) {
+      if (partido.id == id) {
+        _partidoSeleccionado = partido;
+        _cargarAusencias(partido.id);
+        return;
+      }
+    }
+  }
+
   /// Se calcula a partir de partido.dia (en vez de usar diaFormateado tal
   /// cual llega del backend) para poder anteponer el nombre del día y
   /// respetar el idioma activo; diaFormateado queda como respaldo para el
@@ -260,6 +285,10 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
 
           if (_esEdicion && _partidoSeleccionado == null) {
             _cargarConvocatoria(partidos);
+          } else if (!_esEdicion &&
+              _partidoSeleccionado == null &&
+              !_partidoInicialAplicado) {
+            _aplicarPartidoInicial(partidos);
           }
 
           return Column(

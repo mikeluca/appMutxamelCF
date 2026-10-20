@@ -3717,6 +3717,150 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Este entrenamiento ya no está disponible'**
   String get trainingNotFound;
+
+  /// No description provided for @clubPageWeekend.
+  ///
+  /// In es, this message translates to:
+  /// **'Fin de semana'**
+  String get clubPageWeekend;
+
+  /// No description provided for @clubPageWeekendDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Convocatorias, resultados y jornadas por revisar'**
+  String get clubPageWeekendDesc;
+
+  /// No description provided for @clubPagePlayerTracking.
+  ///
+  /// In es, this message translates to:
+  /// **'Seguimiento de jugadores'**
+  String get clubPagePlayerTracking;
+
+  /// No description provided for @clubPagePlayerTrackingDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Faltas y mal comportamiento en entrenamientos'**
+  String get clubPagePlayerTrackingDesc;
+
+  /// No description provided for @weekendPrevious.
+  ///
+  /// In es, this message translates to:
+  /// **'Fin de semana anterior'**
+  String get weekendPrevious;
+
+  /// No description provided for @weekendNext.
+  ///
+  /// In es, this message translates to:
+  /// **'Fin de semana siguiente'**
+  String get weekendNext;
+
+  /// No description provided for @weekendNoCallup.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin convocatoria'**
+  String get weekendNoCallup;
+
+  /// No description provided for @weekendPendingResults.
+  ///
+  /// In es, this message translates to:
+  /// **'Resultados pendientes'**
+  String get weekendPendingResults;
+
+  /// No description provided for @weekendResting.
+  ///
+  /// In es, this message translates to:
+  /// **'Descansan'**
+  String get weekendResting;
+
+  /// No description provided for @weekendNoMatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin partido ni descanso'**
+  String get weekendNoMatch;
+
+  /// No description provided for @weekendNoMatchNote.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Falta importar la jornada?'**
+  String get weekendNoMatchNote;
+
+  /// No description provided for @weekendAllClear.
+  ///
+  /// In es, this message translates to:
+  /// **'Todo al día'**
+  String get weekendAllClear;
+
+  /// No description provided for @weekendLastImport.
+  ///
+  /// In es, this message translates to:
+  /// **'Última importación FFCV: {fecha}'**
+  String weekendLastImport(String fecha);
+
+  /// No description provided for @weekendDelayDays.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =0{Hoy} one{Hace {count} día} other{Hace {count} días}}'**
+  String weekendDelayDays(int count);
+
+  /// No description provided for @weekendRound.
+  ///
+  /// In es, this message translates to:
+  /// **'Jornada {jornada}'**
+  String weekendRound(int jornada);
+
+  /// No description provided for @trackingPeriod30.
+  ///
+  /// In es, this message translates to:
+  /// **'Últimos 30 días'**
+  String get trackingPeriod30;
+
+  /// No description provided for @trackingPeriodSeason.
+  ///
+  /// In es, this message translates to:
+  /// **'Temporada'**
+  String get trackingPeriodSeason;
+
+  /// No description provided for @trackingAllTeams.
+  ///
+  /// In es, this message translates to:
+  /// **'Todos los equipos'**
+  String get trackingAllTeams;
+
+  /// No description provided for @trackingFaultsChip.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, one{{count} falta} other{{count} faltas}}'**
+  String trackingFaultsChip(int count);
+
+  /// No description provided for @trackingMisconductChip.
+  ///
+  /// In es, this message translates to:
+  /// **'{count} mal comportamiento'**
+  String trackingMisconductChip(int count);
+
+  /// No description provided for @trackingLastIncident.
+  ///
+  /// In es, this message translates to:
+  /// **'Última incidencia: {fecha}'**
+  String trackingLastIncident(String fecha);
+
+  /// No description provided for @trackingEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Ningún jugador llega a los umbrales en este periodo'**
+  String get trackingEmpty;
+
+  /// No description provided for @trackingCoordinationOnly.
+  ///
+  /// In es, this message translates to:
+  /// **'Datos solo para coordinación'**
+  String get trackingCoordinationOnly;
+
+  /// No description provided for @trackingNoIncidents.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin incidencias en este periodo'**
+  String get trackingNoIncidents;
 }
 
 class _AppLocalizationsDelegate

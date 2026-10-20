@@ -2044,4 +2044,102 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trainingNotFound => 'This training is no longer available';
+
+  @override
+  String get clubPageWeekend => 'Weekend';
+
+  @override
+  String get clubPageWeekendDesc => 'Call-ups, results and rounds to review';
+
+  @override
+  String get clubPagePlayerTracking => 'Player follow-up';
+
+  @override
+  String get clubPagePlayerTrackingDesc =>
+      'Absences and misconduct in training';
+
+  @override
+  String get weekendPrevious => 'Previous weekend';
+
+  @override
+  String get weekendNext => 'Next weekend';
+
+  @override
+  String get weekendNoCallup => 'No call-up';
+
+  @override
+  String get weekendPendingResults => 'Pending results';
+
+  @override
+  String get weekendResting => 'Resting';
+
+  @override
+  String get weekendNoMatch => 'No match or rest';
+
+  @override
+  String get weekendNoMatchNote => 'Is the round missing from the import?';
+
+  @override
+  String get weekendAllClear => 'All up to date';
+
+  @override
+  String weekendLastImport(String fecha) {
+    return 'Last FFCV import: $fecha';
+  }
+
+  @override
+  String weekendDelayDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days ago',
+      one: '$count day ago',
+      zero: 'Today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String weekendRound(int jornada) {
+    return 'Round $jornada';
+  }
+
+  @override
+  String get trackingPeriod30 => 'Last 30 days';
+
+  @override
+  String get trackingPeriodSeason => 'Season';
+
+  @override
+  String get trackingAllTeams => 'All teams';
+
+  @override
+  String trackingFaultsChip(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count absences',
+      one: '$count absence',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trackingMisconductChip(int count) {
+    return '$count misconduct';
+  }
+
+  @override
+  String trackingLastIncident(String fecha) {
+    return 'Last incident: $fecha';
+  }
+
+  @override
+  String get trackingEmpty => 'No player reaches the thresholds in this period';
+
+  @override
+  String get trackingCoordinationOnly => 'Data for coordination only';
+
+  @override
+  String get trackingNoIncidents => 'No incidents in this period';
 }

@@ -764,6 +764,49 @@
     "placeholders": { "percent": { "type": "int" } }
   },
   "trainingListNotReviewed": "Llista sense revisar",
-  "trainingNotFound": "Aquest entrenament ja no està disponible"
+  "trainingNotFound": "Aquest entrenament ja no està disponible",
+
+  "clubPageWeekend": "Cap de setmana",
+  "clubPageWeekendDesc": "Convocatòries, resultats i jornades per revisar",
+  "clubPagePlayerTracking": "Seguiment de jugadors",
+  "clubPagePlayerTrackingDesc": "Faltes i mal comportament en entrenaments",
+  "weekendPrevious": "Cap de setmana anterior",
+  "weekendNext": "Cap de setmana següent",
+  "weekendNoCallup": "Sense convocatòria",
+  "weekendPendingResults": "Resultats pendents",
+  "weekendResting": "Descansen",
+  "weekendNoMatch": "Sense partit ni descans",
+  "weekendNoMatchNote": "Falta importar la jornada?",
+  "weekendAllClear": "Tot al dia",
+  "weekendLastImport": "Última importació FFCV: {fecha}",
+  "@weekendLastImport": {
+    "placeholders": { "fecha": { "type": "String" } }
+  },
+  "weekendDelayDays": "{count, plural, =0{Hui} one{Fa {count} dia} other{Fa {count} dies}}",
+  "@weekendDelayDays": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "weekendRound": "Jornada {jornada}",
+  "@weekendRound": {
+    "placeholders": { "jornada": { "type": "int" } }
+  },
+  "trackingPeriod30": "Últims 30 dies",
+  "trackingPeriodSeason": "Temporada",
+  "trackingAllTeams": "Tots els equips",
+  "trackingFaultsChip": "{count, plural, one{{count} falta} other{{count} faltes}}",
+  "@trackingFaultsChip": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trackingMisconductChip": "{count} mal comportament",
+  "@trackingMisconductChip": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "trackingLastIncident": "Última incidència: {fecha}",
+  "@trackingLastIncident": {
+    "placeholders": { "fecha": { "type": "String" } }
+  },
+  "trackingEmpty": "Cap jugador arriba als llindars en aquest període",
+  "trackingCoordinationOnly": "Dades només per a coordinació",
+  "trackingNoIncidents": "Sense incidències en aquest període"
 
 }

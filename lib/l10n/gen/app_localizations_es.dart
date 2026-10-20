@@ -2066,4 +2066,104 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get trainingNotFound => 'Este entrenamiento ya no está disponible';
+
+  @override
+  String get clubPageWeekend => 'Fin de semana';
+
+  @override
+  String get clubPageWeekendDesc =>
+      'Convocatorias, resultados y jornadas por revisar';
+
+  @override
+  String get clubPagePlayerTracking => 'Seguimiento de jugadores';
+
+  @override
+  String get clubPagePlayerTrackingDesc =>
+      'Faltas y mal comportamiento en entrenamientos';
+
+  @override
+  String get weekendPrevious => 'Fin de semana anterior';
+
+  @override
+  String get weekendNext => 'Fin de semana siguiente';
+
+  @override
+  String get weekendNoCallup => 'Sin convocatoria';
+
+  @override
+  String get weekendPendingResults => 'Resultados pendientes';
+
+  @override
+  String get weekendResting => 'Descansan';
+
+  @override
+  String get weekendNoMatch => 'Sin partido ni descanso';
+
+  @override
+  String get weekendNoMatchNote => '¿Falta importar la jornada?';
+
+  @override
+  String get weekendAllClear => 'Todo al día';
+
+  @override
+  String weekendLastImport(String fecha) {
+    return 'Última importación FFCV: $fecha';
+  }
+
+  @override
+  String weekendDelayDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Hace $count días',
+      one: 'Hace $count día',
+      zero: 'Hoy',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String weekendRound(int jornada) {
+    return 'Jornada $jornada';
+  }
+
+  @override
+  String get trackingPeriod30 => 'Últimos 30 días';
+
+  @override
+  String get trackingPeriodSeason => 'Temporada';
+
+  @override
+  String get trackingAllTeams => 'Todos los equipos';
+
+  @override
+  String trackingFaultsChip(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count faltas',
+      one: '$count falta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trackingMisconductChip(int count) {
+    return '$count mal comportamiento';
+  }
+
+  @override
+  String trackingLastIncident(String fecha) {
+    return 'Última incidencia: $fecha';
+  }
+
+  @override
+  String get trackingEmpty =>
+      'Ningún jugador llega a los umbrales en este periodo';
+
+  @override
+  String get trackingCoordinationOnly => 'Datos solo para coordinación';
+
+  @override
+  String get trackingNoIncidents => 'Sin incidencias en este periodo';
 }

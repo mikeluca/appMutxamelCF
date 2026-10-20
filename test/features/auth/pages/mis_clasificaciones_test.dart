@@ -88,6 +88,13 @@ PerfilJugador _jugador(int id, String nombre, String equipo, int? equipoId) =>
     );
 
 Future<void> _pintar(WidgetTester tester, Widget home) async {
+  // Alto de sobra: el menú del Área club es una lista perezosa y, con más
+  // opciones, las últimas quedarían sin construir.
+  tester.view.physicalSize = const Size(800, 3000);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+
   await tester.pumpWidget(
     MaterialApp(
       locale: const Locale('es'),
