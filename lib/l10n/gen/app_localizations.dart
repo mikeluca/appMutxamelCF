@@ -3861,6 +3861,234 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Sin incidencias en este periodo'**
   String get trackingNoIncidents;
+
+  /// No description provided for @clubPageModeration.
+  ///
+  /// In es, this message translates to:
+  /// **'Moderación'**
+  String get clubPageModeration;
+
+  /// No description provided for @clubPageModerationDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Mensajes reportados por los usuarios'**
+  String get clubPageModerationDesc;
+
+  /// No description provided for @clubPagePendingAccounts.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuentas pendientes'**
+  String get clubPagePendingAccounts;
+
+  /// No description provided for @clubPagePendingAccountsDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitaciones que todavía no se han activado'**
+  String get clubPagePendingAccountsDesc;
+
+  /// No description provided for @moderationTabPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendientes'**
+  String get moderationTabPending;
+
+  /// No description provided for @moderationTabResolved.
+  ///
+  /// In es, this message translates to:
+  /// **'Resueltos'**
+  String get moderationTabResolved;
+
+  /// No description provided for @moderationEmptyPending.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay reportes pendientes'**
+  String get moderationEmptyPending;
+
+  /// No description provided for @moderationEmptyResolved.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay reportes resueltos'**
+  String get moderationEmptyResolved;
+
+  /// No description provided for @moderationAuthor.
+  ///
+  /// In es, this message translates to:
+  /// **'Autor: {nombre}'**
+  String moderationAuthor(String nombre);
+
+  /// No description provided for @moderationReporter.
+  ///
+  /// In es, this message translates to:
+  /// **'Reportado por: {nombre}'**
+  String moderationReporter(String nombre);
+
+  /// No description provided for @moderationReason.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo: {motivo}'**
+  String moderationReason(String motivo);
+
+  /// No description provided for @moderationNoReason.
+  ///
+  /// In es, this message translates to:
+  /// **'sin motivo indicado'**
+  String get moderationNoReason;
+
+  /// No description provided for @moderationMessageDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Mensaje: {fecha}'**
+  String moderationMessageDate(String fecha);
+
+  /// No description provided for @moderationReportDate.
+  ///
+  /// In es, this message translates to:
+  /// **'Reportado: {fecha}'**
+  String moderationReportDate(String fecha);
+
+  /// No description provided for @moderationAuthorReports.
+  ///
+  /// In es, this message translates to:
+  /// **'El autor tiene {count} reportes'**
+  String moderationAuthorReports(int count);
+
+  /// No description provided for @moderationShowMore.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver más'**
+  String get moderationShowMore;
+
+  /// No description provided for @moderationShowLess.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver menos'**
+  String get moderationShowLess;
+
+  /// No description provided for @moderationDiscard.
+  ///
+  /// In es, this message translates to:
+  /// **'Descartar'**
+  String get moderationDiscard;
+
+  /// No description provided for @moderationDeleteMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Borrar mensaje'**
+  String get moderationDeleteMessage;
+
+  /// No description provided for @moderationDeactivateAuthor.
+  ///
+  /// In es, this message translates to:
+  /// **'Desactivar autor'**
+  String get moderationDeactivateAuthor;
+
+  /// No description provided for @moderationNoteLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nota (opcional)'**
+  String get moderationNoteLabel;
+
+  /// No description provided for @moderationDiscardConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Descartar este reporte? El mensaje se queda como está.'**
+  String get moderationDiscardConfirm;
+
+  /// No description provided for @moderationDeleteConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Borrar el mensaje para todos los usuarios?'**
+  String get moderationDeleteConfirm;
+
+  /// No description provided for @moderationDeactivateConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Desactivar la cuenta del autor? Dejará de poder entrar en la app.'**
+  String get moderationDeactivateConfirm;
+
+  /// No description provided for @moderationAlsoDeleteMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Borrar también el mensaje'**
+  String get moderationAlsoDeleteMessage;
+
+  /// No description provided for @moderationConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar'**
+  String get moderationConfirm;
+
+  /// No description provided for @moderationResolvedDone.
+  ///
+  /// In es, this message translates to:
+  /// **'Reporte resuelto'**
+  String get moderationResolvedDone;
+
+  /// No description provided for @moderationStateDiscarded.
+  ///
+  /// In es, this message translates to:
+  /// **'Descartado'**
+  String get moderationStateDiscarded;
+
+  /// No description provided for @moderationStateMessageDeleted.
+  ///
+  /// In es, this message translates to:
+  /// **'Mensaje borrado'**
+  String get moderationStateMessageDeleted;
+
+  /// No description provided for @moderationStateAuthorDeactivated.
+  ///
+  /// In es, this message translates to:
+  /// **'Autor desactivado'**
+  String get moderationStateAuthorDeactivated;
+
+  /// No description provided for @moderationResolvedBy.
+  ///
+  /// In es, this message translates to:
+  /// **'Resuelto por {nombre} el {fecha}'**
+  String moderationResolvedBy(String nombre, String fecha);
+
+  /// No description provided for @pendingAccountsEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay cuentas pendientes'**
+  String get pendingAccountsEmpty;
+
+  /// No description provided for @pendingAccountsSearch.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar por nombre o email'**
+  String get pendingAccountsSearch;
+
+  /// No description provided for @pendingAccountsInvited.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitado el {fecha}'**
+  String pendingAccountsInvited(String fecha);
+
+  /// No description provided for @pendingAccountsCodeExpired.
+  ///
+  /// In es, this message translates to:
+  /// **'Código caducado'**
+  String get pendingAccountsCodeExpired;
+
+  /// No description provided for @pendingAccountsResend.
+  ///
+  /// In es, this message translates to:
+  /// **'Reenviar activación'**
+  String get pendingAccountsResend;
+
+  /// No description provided for @pendingAccountsResendConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Reenviar la invitación de activación a {email}?'**
+  String pendingAccountsResendConfirm(String email);
+
+  /// No description provided for @pendingAccountsResent.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitación reenviada a {email}'**
+  String pendingAccountsResent(String email);
 }
 
 class _AppLocalizationsDelegate

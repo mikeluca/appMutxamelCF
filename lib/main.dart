@@ -21,6 +21,8 @@ import 'features/auth/pages/mis_clasificaciones_page.dart';
 import 'features/auth/pages/mis_partidos_page.dart';
 import 'features/calendario/pages/calendario_page.dart';
 import 'features/auth/pages/mis_equipos_page.dart';
+import 'features/admin/pages/cuentas_pendientes_page.dart';
+import 'features/admin/pages/moderacion_page.dart';
 import 'features/coordinacion/pages/fin_de_semana_page.dart';
 import 'features/coordinacion/pages/seguimiento_jugadores_page.dart';
 import 'features/auth/pages/ajustes_page.dart';
@@ -167,6 +169,8 @@ class _MutxamelCfAppState extends State<MutxamelCfApp> {
             const MisJugadoresPage(soloMiFicha: true),
         AppRoutes.calendar: (context) => const CalendarioPage(),
         AppRoutes.myTeams: (context) => const MisEquiposPage(),
+        AppRoutes.moderation: (context) => const ModeracionPage(),
+        AppRoutes.pendingAccounts: (context) => const CuentasPendientesPage(),
         AppRoutes.weekend: (context) => const FinDeSemanaPage(),
         AppRoutes.playerTracking: (context) => const SeguimientoJugadoresPage(),
         AppRoutes.settings: (context) => AjustesPage(

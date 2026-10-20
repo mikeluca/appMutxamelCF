@@ -807,6 +807,75 @@
   },
   "trackingEmpty": "No player reaches the thresholds in this period",
   "trackingCoordinationOnly": "Data for coordination only",
-  "trackingNoIncidents": "No incidents in this period"
+  "trackingNoIncidents": "No incidents in this period",
+
+  "clubPageModeration": "Moderation",
+  "clubPageModerationDesc": "Messages reported by users",
+  "clubPagePendingAccounts": "Pending accounts",
+  "clubPagePendingAccountsDesc": "Invitations that have not been activated yet",
+  "moderationTabPending": "Pending",
+  "moderationTabResolved": "Resolved",
+  "moderationEmptyPending": "There are no pending reports",
+  "moderationEmptyResolved": "There are no resolved reports yet",
+  "moderationAuthor": "Author: {nombre}",
+  "@moderationAuthor": {
+    "placeholders": { "nombre": { "type": "String" } }
+  },
+  "moderationReporter": "Reported by: {nombre}",
+  "@moderationReporter": {
+    "placeholders": { "nombre": { "type": "String" } }
+  },
+  "moderationReason": "Reason: {motivo}",
+  "@moderationReason": {
+    "placeholders": { "motivo": { "type": "String" } }
+  },
+  "moderationNoReason": "no reason given",
+  "moderationMessageDate": "Message: {fecha}",
+  "@moderationMessageDate": {
+    "placeholders": { "fecha": { "type": "String" } }
+  },
+  "moderationReportDate": "Reported: {fecha}",
+  "@moderationReportDate": {
+    "placeholders": { "fecha": { "type": "String" } }
+  },
+  "moderationAuthorReports": "The author has {count} reports",
+  "@moderationAuthorReports": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "moderationShowMore": "Show more",
+  "moderationShowLess": "Show less",
+  "moderationDiscard": "Dismiss",
+  "moderationDeleteMessage": "Delete message",
+  "moderationDeactivateAuthor": "Deactivate author",
+  "moderationNoteLabel": "Note (optional)",
+  "moderationDiscardConfirm": "Dismiss this report? The message stays as it is.",
+  "moderationDeleteConfirm": "Delete the message for all users?",
+  "moderationDeactivateConfirm": "Deactivate the author's account? They will no longer be able to use the app.",
+  "moderationAlsoDeleteMessage": "Also delete the message",
+  "moderationConfirm": "Confirm",
+  "moderationResolvedDone": "Report resolved",
+  "moderationStateDiscarded": "Dismissed",
+  "moderationStateMessageDeleted": "Message deleted",
+  "moderationStateAuthorDeactivated": "Author deactivated",
+  "moderationResolvedBy": "Resolved by {nombre} on {fecha}",
+  "@moderationResolvedBy": {
+    "placeholders": { "nombre": { "type": "String" }, "fecha": { "type": "String" } }
+  },
+  "pendingAccountsEmpty": "There are no pending accounts",
+  "pendingAccountsSearch": "Search by name or email",
+  "pendingAccountsInvited": "Invited on {fecha}",
+  "@pendingAccountsInvited": {
+    "placeholders": { "fecha": { "type": "String" } }
+  },
+  "pendingAccountsCodeExpired": "Code expired",
+  "pendingAccountsResend": "Resend activation",
+  "pendingAccountsResendConfirm": "Resend the activation invitation to {email}?",
+  "@pendingAccountsResendConfirm": {
+    "placeholders": { "email": { "type": "String" } }
+  },
+  "pendingAccountsResent": "Invitation resent to {email}",
+  "@pendingAccountsResent": {
+    "placeholders": { "email": { "type": "String" } }
+  }
 
 }

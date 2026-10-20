@@ -2166,4 +2166,142 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get trackingNoIncidents => 'Sin incidencias en este periodo';
+
+  @override
+  String get clubPageModeration => 'Moderación';
+
+  @override
+  String get clubPageModerationDesc => 'Mensajes reportados por los usuarios';
+
+  @override
+  String get clubPagePendingAccounts => 'Cuentas pendientes';
+
+  @override
+  String get clubPagePendingAccountsDesc =>
+      'Invitaciones que todavía no se han activado';
+
+  @override
+  String get moderationTabPending => 'Pendientes';
+
+  @override
+  String get moderationTabResolved => 'Resueltos';
+
+  @override
+  String get moderationEmptyPending => 'No hay reportes pendientes';
+
+  @override
+  String get moderationEmptyResolved => 'Todavía no hay reportes resueltos';
+
+  @override
+  String moderationAuthor(String nombre) {
+    return 'Autor: $nombre';
+  }
+
+  @override
+  String moderationReporter(String nombre) {
+    return 'Reportado por: $nombre';
+  }
+
+  @override
+  String moderationReason(String motivo) {
+    return 'Motivo: $motivo';
+  }
+
+  @override
+  String get moderationNoReason => 'sin motivo indicado';
+
+  @override
+  String moderationMessageDate(String fecha) {
+    return 'Mensaje: $fecha';
+  }
+
+  @override
+  String moderationReportDate(String fecha) {
+    return 'Reportado: $fecha';
+  }
+
+  @override
+  String moderationAuthorReports(int count) {
+    return 'El autor tiene $count reportes';
+  }
+
+  @override
+  String get moderationShowMore => 'Ver más';
+
+  @override
+  String get moderationShowLess => 'Ver menos';
+
+  @override
+  String get moderationDiscard => 'Descartar';
+
+  @override
+  String get moderationDeleteMessage => 'Borrar mensaje';
+
+  @override
+  String get moderationDeactivateAuthor => 'Desactivar autor';
+
+  @override
+  String get moderationNoteLabel => 'Nota (opcional)';
+
+  @override
+  String get moderationDiscardConfirm =>
+      '¿Descartar este reporte? El mensaje se queda como está.';
+
+  @override
+  String get moderationDeleteConfirm =>
+      '¿Borrar el mensaje para todos los usuarios?';
+
+  @override
+  String get moderationDeactivateConfirm =>
+      '¿Desactivar la cuenta del autor? Dejará de poder entrar en la app.';
+
+  @override
+  String get moderationAlsoDeleteMessage => 'Borrar también el mensaje';
+
+  @override
+  String get moderationConfirm => 'Confirmar';
+
+  @override
+  String get moderationResolvedDone => 'Reporte resuelto';
+
+  @override
+  String get moderationStateDiscarded => 'Descartado';
+
+  @override
+  String get moderationStateMessageDeleted => 'Mensaje borrado';
+
+  @override
+  String get moderationStateAuthorDeactivated => 'Autor desactivado';
+
+  @override
+  String moderationResolvedBy(String nombre, String fecha) {
+    return 'Resuelto por $nombre el $fecha';
+  }
+
+  @override
+  String get pendingAccountsEmpty => 'No hay cuentas pendientes';
+
+  @override
+  String get pendingAccountsSearch => 'Buscar por nombre o email';
+
+  @override
+  String pendingAccountsInvited(String fecha) {
+    return 'Invitado el $fecha';
+  }
+
+  @override
+  String get pendingAccountsCodeExpired => 'Código caducado';
+
+  @override
+  String get pendingAccountsResend => 'Reenviar activación';
+
+  @override
+  String pendingAccountsResendConfirm(String email) {
+    return '¿Reenviar la invitación de activación a $email?';
+  }
+
+  @override
+  String pendingAccountsResent(String email) {
+    return 'Invitación reenviada a $email';
+  }
 }

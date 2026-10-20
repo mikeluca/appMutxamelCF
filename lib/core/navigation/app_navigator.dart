@@ -4,6 +4,7 @@ import '../../l10n/gen/app_localizations.dart';
 import '../network/api_client.dart';
 import '../notifications/utils/convocatoria_notificacion.dart';
 import '../../features/auth/models/perfil_app.dart';
+import '../../features/admin/pages/moderacion_page.dart';
 import '../../features/calendario/pages/calendario_page.dart';
 import '../../features/convocatorias/model/convocatoria_model.dart';
 import '../../features/convocatorias/pages/convocatoria_form_page.dart';
@@ -40,6 +41,9 @@ class AppNavigator {
   @visibleForTesting
   static EntrenamientoService Function()? fabricaEntrenamientoService;
 
+  @visibleForTesting
+  static Widget Function()? constructorModeracion;
+
   static Future<void> abrirComunicacion(int comunicacionId) async {
     final navigatorState = navigator;
 
@@ -66,7 +70,25 @@ class AppNavigator {
         await abrirEdicionConvocatoria(convocatoriaId);
       case PasarLista(:final entrenamientoId):
         await abrirAsistenciaEntrenamiento(entrenamientoId);
+      case AbrirModeracion():
+        await abrirModeracion();
     }
+  }
+
+  /// La cola de moderación (ADMIN_APP).
+  static Future<void> abrirModeracion() async {
+    final navigatorState = navigator;
+
+    if (navigatorState == null) {
+      return;
+    }
+
+    await navigatorState.push(
+      MaterialPageRoute(
+        builder: (_) =>
+            (constructorModeracion ?? () => const ModeracionPage())(),
+      ),
+    );
   }
 
   /// La asistencia del entrenamiento [entrenamientoId], para pasar lista. Sin

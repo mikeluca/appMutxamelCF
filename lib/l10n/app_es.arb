@@ -807,6 +807,75 @@
   },
   "trackingEmpty": "Ningún jugador llega a los umbrales en este periodo",
   "trackingCoordinationOnly": "Datos solo para coordinación",
-  "trackingNoIncidents": "Sin incidencias en este periodo"
+  "trackingNoIncidents": "Sin incidencias en este periodo",
+
+  "clubPageModeration": "Moderación",
+  "clubPageModerationDesc": "Mensajes reportados por los usuarios",
+  "clubPagePendingAccounts": "Cuentas pendientes",
+  "clubPagePendingAccountsDesc": "Invitaciones que todavía no se han activado",
+  "moderationTabPending": "Pendientes",
+  "moderationTabResolved": "Resueltos",
+  "moderationEmptyPending": "No hay reportes pendientes",
+  "moderationEmptyResolved": "Todavía no hay reportes resueltos",
+  "moderationAuthor": "Autor: {nombre}",
+  "@moderationAuthor": {
+    "placeholders": { "nombre": { "type": "String" } }
+  },
+  "moderationReporter": "Reportado por: {nombre}",
+  "@moderationReporter": {
+    "placeholders": { "nombre": { "type": "String" } }
+  },
+  "moderationReason": "Motivo: {motivo}",
+  "@moderationReason": {
+    "placeholders": { "motivo": { "type": "String" } }
+  },
+  "moderationNoReason": "sin motivo indicado",
+  "moderationMessageDate": "Mensaje: {fecha}",
+  "@moderationMessageDate": {
+    "placeholders": { "fecha": { "type": "String" } }
+  },
+  "moderationReportDate": "Reportado: {fecha}",
+  "@moderationReportDate": {
+    "placeholders": { "fecha": { "type": "String" } }
+  },
+  "moderationAuthorReports": "El autor tiene {count} reportes",
+  "@moderationAuthorReports": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "moderationShowMore": "Ver más",
+  "moderationShowLess": "Ver menos",
+  "moderationDiscard": "Descartar",
+  "moderationDeleteMessage": "Borrar mensaje",
+  "moderationDeactivateAuthor": "Desactivar autor",
+  "moderationNoteLabel": "Nota (opcional)",
+  "moderationDiscardConfirm": "¿Descartar este reporte? El mensaje se queda como está.",
+  "moderationDeleteConfirm": "¿Borrar el mensaje para todos los usuarios?",
+  "moderationDeactivateConfirm": "¿Desactivar la cuenta del autor? Dejará de poder entrar en la app.",
+  "moderationAlsoDeleteMessage": "Borrar también el mensaje",
+  "moderationConfirm": "Confirmar",
+  "moderationResolvedDone": "Reporte resuelto",
+  "moderationStateDiscarded": "Descartado",
+  "moderationStateMessageDeleted": "Mensaje borrado",
+  "moderationStateAuthorDeactivated": "Autor desactivado",
+  "moderationResolvedBy": "Resuelto por {nombre} el {fecha}",
+  "@moderationResolvedBy": {
+    "placeholders": { "nombre": { "type": "String" }, "fecha": { "type": "String" } }
+  },
+  "pendingAccountsEmpty": "No hay cuentas pendientes",
+  "pendingAccountsSearch": "Buscar por nombre o email",
+  "pendingAccountsInvited": "Invitado el {fecha}",
+  "@pendingAccountsInvited": {
+    "placeholders": { "fecha": { "type": "String" } }
+  },
+  "pendingAccountsCodeExpired": "Código caducado",
+  "pendingAccountsResend": "Reenviar activación",
+  "pendingAccountsResendConfirm": "¿Reenviar la invitación de activación a {email}?",
+  "@pendingAccountsResendConfirm": {
+    "placeholders": { "email": { "type": "String" } }
+  },
+  "pendingAccountsResent": "Invitación reenviada a {email}",
+  "@pendingAccountsResent": {
+    "placeholders": { "email": { "type": "String" } }
+  }
 
 }

@@ -13,6 +13,11 @@ const String tipoPushConvocatoriaEditar = 'CONVOCATORIA_EDITAR';
 /// a la asistencia de ese entrenamiento ("entrenamientoId").
 const String tipoPushPasarLista = 'PASAR_LISTA';
 
+/// Valor de data["tipo"] del push que avisa a ADMIN_APP de un mensaje reportado:
+/// lleva a la pantalla de Moderación ("reporteId" y "referenciaId" son el id del
+/// reporte, no de una comunicación).
+const String tipoPushReporte = 'REPORTE';
+
 /// Título que pone el backend a la comunicación privada de una convocatoria
 /// nueva o modificada. Solo sirve de reserva para los pushes y avisos enviados
 /// antes de que existiera el tipo (y para la lista de notificaciones, cuyas
@@ -27,6 +32,7 @@ bool esAvisoDeConvocatoria({String? tipo, String? titulo}) {
   return tipo == tipoPushConvocatoria ||
       tipo == tipoPushConvocatoriaEditar ||
       tipo == tipoPushPasarLista ||
+      tipo == tipoPushReporte ||
       titulo?.trim() == tituloNuevaConvocatoria;
 }
 
@@ -78,6 +84,17 @@ class PasarLista extends DestinoConvocatoria {
   int get hashCode => entrenamientoId.hashCode;
 }
 
+/// ADMIN_APP: la pantalla de Moderación.
+class AbrirModeracion extends DestinoConvocatoria {
+  const AbrirModeracion();
+
+  @override
+  bool operator ==(Object other) => other is AbrirModeracion;
+
+  @override
+  int get hashCode => 'AbrirModeracion'.hashCode;
+}
+
 /// El destino del aviso de una convocatoria o de pasar lista, o null si no lo
 /// es (se mantiene el comportamiento de siempre).
 ///
@@ -94,6 +111,13 @@ DestinoConvocatoria? destinoDeAvisoConvocatoria({
   String? titulo,
   Map<String, dynamic> datos = const {},
 }) {
+  if (tipo == tipoPushReporte) {
+    // Solo un administrador puede abrir la cola de moderación.
+    return AuthManager.usuarioActual?.tieneRol('ADMIN_APP') == true
+        ? const AbrirModeracion()
+        : null;
+  }
+
   if (tipo == tipoPushPasarLista) {
     final id = int.tryParse(datos['entrenamientoId']?.toString() ?? '');
 
@@ -143,6 +167,7 @@ String payloadDeDestino(DestinoConvocatoria destino) {
     EditarConvocatoria(:final convocatoriaId) =>
       'CONVOCATORIA_EDITAR:$convocatoriaId',
     PasarLista(:final entrenamientoId) => 'PASAR_LISTA:$entrenamientoId',
+    AbrirModeracion() => 'REPORTE',
   };
 }
 
@@ -157,6 +182,10 @@ DestinoConvocatoria? destinoDePayload(String payload) {
     return AbrirCalendario(
       diaDeFechaPartido(payload.substring('CALENDARIO:'.length)),
     );
+  }
+
+  if (payload == 'REPORTE') {
+    return const AbrirModeracion();
   }
 
   if (payload.startsWith('PASAR_LISTA:')) {

@@ -44,7 +44,8 @@ class PushNotificationService {
       tipo == _tipoComunicacion ||
       tipo == tipoPushConvocatoria ||
       tipo == tipoPushConvocatoriaEditar ||
-      tipo == tipoPushPasarLista;
+      tipo == tipoPushPasarLista ||
+      tipo == tipoPushReporte;
 
   /// Solo para tests: sustituyen a las llamadas a la red, a las notificaciones
   /// locales y a la restauración de la sesión.
@@ -268,6 +269,12 @@ class PushNotificationService {
 
     if (destino != null) {
       await AppNavigator.abrirDestinoConvocatoria(destino);
+      return;
+    }
+
+    // Su referenciaId es el de un reporte, no el de una comunicación: sin destino
+    // (no es administrador) no se abre nada.
+    if (tipo == tipoPushReporte) {
       return;
     }
 

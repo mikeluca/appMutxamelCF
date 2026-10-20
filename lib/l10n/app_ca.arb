@@ -807,6 +807,75 @@
   },
   "trackingEmpty": "Cap jugador arriba als llindars en aquest període",
   "trackingCoordinationOnly": "Dades només per a coordinació",
-  "trackingNoIncidents": "Sense incidències en aquest període"
+  "trackingNoIncidents": "Sense incidències en aquest període",
+
+  "clubPageModeration": "Moderació",
+  "clubPageModerationDesc": "Missatges reportats pels usuaris",
+  "clubPagePendingAccounts": "Comptes pendents",
+  "clubPagePendingAccountsDesc": "Invitacions que encara no s'han activat",
+  "moderationTabPending": "Pendents",
+  "moderationTabResolved": "Resolts",
+  "moderationEmptyPending": "No hi ha reports pendents",
+  "moderationEmptyResolved": "Encara no hi ha reports resolts",
+  "moderationAuthor": "Autor: {nombre}",
+  "@moderationAuthor": {
+    "placeholders": { "nombre": { "type": "String" } }
+  },
+  "moderationReporter": "Reportat per: {nombre}",
+  "@moderationReporter": {
+    "placeholders": { "nombre": { "type": "String" } }
+  },
+  "moderationReason": "Motiu: {motivo}",
+  "@moderationReason": {
+    "placeholders": { "motivo": { "type": "String" } }
+  },
+  "moderationNoReason": "sense motiu indicat",
+  "moderationMessageDate": "Missatge: {fecha}",
+  "@moderationMessageDate": {
+    "placeholders": { "fecha": { "type": "String" } }
+  },
+  "moderationReportDate": "Reportat: {fecha}",
+  "@moderationReportDate": {
+    "placeholders": { "fecha": { "type": "String" } }
+  },
+  "moderationAuthorReports": "L'autor té {count} reports",
+  "@moderationAuthorReports": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "moderationShowMore": "Veure més",
+  "moderationShowLess": "Veure menys",
+  "moderationDiscard": "Descartar",
+  "moderationDeleteMessage": "Esborrar missatge",
+  "moderationDeactivateAuthor": "Desactivar autor",
+  "moderationNoteLabel": "Nota (opcional)",
+  "moderationDiscardConfirm": "Descartar aquest report? El missatge es queda tal com està.",
+  "moderationDeleteConfirm": "Esborrar el missatge per a tots els usuaris?",
+  "moderationDeactivateConfirm": "Desactivar el compte de l'autor? Deixarà de poder entrar a l'app.",
+  "moderationAlsoDeleteMessage": "Esborrar també el missatge",
+  "moderationConfirm": "Confirmar",
+  "moderationResolvedDone": "Report resolt",
+  "moderationStateDiscarded": "Descartat",
+  "moderationStateMessageDeleted": "Missatge esborrat",
+  "moderationStateAuthorDeactivated": "Autor desactivat",
+  "moderationResolvedBy": "Resolt per {nombre} el {fecha}",
+  "@moderationResolvedBy": {
+    "placeholders": { "nombre": { "type": "String" }, "fecha": { "type": "String" } }
+  },
+  "pendingAccountsEmpty": "No hi ha comptes pendents",
+  "pendingAccountsSearch": "Cercar per nom o email",
+  "pendingAccountsInvited": "Convidat el {fecha}",
+  "@pendingAccountsInvited": {
+    "placeholders": { "fecha": { "type": "String" } }
+  },
+  "pendingAccountsCodeExpired": "Codi caducat",
+  "pendingAccountsResend": "Reenviar activació",
+  "pendingAccountsResendConfirm": "Reenviar la invitació d'activació a {email}?",
+  "@pendingAccountsResendConfirm": {
+    "placeholders": { "email": { "type": "String" } }
+  },
+  "pendingAccountsResent": "Invitació reenviada a {email}",
+  "@pendingAccountsResent": {
+    "placeholders": { "email": { "type": "String" } }
+  }
 
 }

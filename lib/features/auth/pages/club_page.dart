@@ -4,11 +4,15 @@ import '../../../core/config/app_config.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../routing/app_routes.dart';
+import '../../admin/services/admin_service.dart';
 import '../services/auth_manager.dart';
 import '../services/comunicacion_service.dart';
 
 class ClubPage extends StatefulWidget {
-  const ClubPage({super.key});
+  /// Solo para tests: sustituye al servicio real del contador de moderación.
+  final AdminService? adminService;
+
+  const ClubPage({super.key, this.adminService});
 
   @override
   State<ClubPage> createState() => _ClubPageState();
@@ -16,11 +20,39 @@ class ClubPage extends StatefulWidget {
 
 class _ClubPageState extends State<ClubPage> {
   int _comunicacionesNoLeidas = 0;
+  int _reportesPendientes = 0;
 
   @override
   void initState() {
     super.initState();
     _cargarContadorComunicaciones();
+
+    if (AuthManager.usuarioActual?.tieneRol('ADMIN_APP') == true) {
+      _cargarContadorModeracion();
+    }
+  }
+
+  Future<void> _cargarContadorModeracion() async {
+    try {
+      final cantidad = await (widget.adminService ?? AdminService())
+          .contarReportesPendientes();
+
+      if (!mounted) return;
+
+      setState(() {
+        _reportesPendientes = cantidad;
+      });
+    } catch (_) {
+      // Si falla el contador, la opción sigue funcionando sin él.
+    }
+  }
+
+  Future<void> _abrirModeracion() async {
+    await Navigator.pushNamed(context, AppRoutes.moderation);
+
+    if (!mounted) return;
+
+    await _cargarContadorModeracion();
   }
 
   Future<void> _cargarContadorComunicaciones() async {
@@ -83,6 +115,8 @@ class _ClubPageState extends State<ClubPage> {
     final esGestionGlobal =
         usuario?.tieneRol('COORDINADOR') == true ||
         usuario?.tieneRol('ADMIN_APP') == true;
+
+    final esAdmin = usuario?.tieneRol('ADMIN_APP') == true;
 
     final esJugador = usuario?.tieneRol('JUGADOR') == true;
 
@@ -194,6 +228,31 @@ class _ClubPageState extends State<ClubPage> {
             ),
 
           if (esGestionGlobal) const SizedBox(height: 12),
+
+          if (esAdmin)
+            _construirOpcion(
+              context,
+              icono: Icons.shield_outlined,
+              titulo: t.clubPageModeration,
+              descripcion: t.clubPageModerationDesc,
+              contador: _reportesPendientes,
+              onTap: _abrirModeracion,
+            ),
+
+          if (esAdmin) const SizedBox(height: 12),
+
+          if (esAdmin)
+            _construirOpcion(
+              context,
+              icono: Icons.mark_email_unread_outlined,
+              titulo: t.clubPagePendingAccounts,
+              descripcion: t.clubPagePendingAccountsDesc,
+              onTap: () {
+                Navigator.pushNamed(context, AppRoutes.pendingAccounts);
+              },
+            ),
+
+          if (esAdmin) const SizedBox(height: 12),
 
           _construirOpcion(
             context,
@@ -449,6 +508,7 @@ class _ClubPageState extends State<ClubPage> {
     required String titulo,
     required String descripcion,
     required VoidCallback onTap,
+    int contador = 0,
   }) {
     return Material(
       color: Theme.of(context).colorScheme.surface,
@@ -501,6 +561,12 @@ class _ClubPageState extends State<ClubPage> {
                   ],
                 ),
               ),
+
+              if (contador > 0) ...[
+                const SizedBox(width: 8),
+                _construirBurbuja(context, contador),
+                const SizedBox(width: 8),
+              ],
 
               Icon(
                 Icons.chevron_right,
