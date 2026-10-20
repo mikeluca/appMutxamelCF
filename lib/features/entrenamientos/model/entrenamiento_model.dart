@@ -6,6 +6,11 @@ class EntrenamientoModel {
   final int usuarioEntrenadorId;
   final List<EntrenamientoAsistenciaModel> asistencias;
 
+  /// true si el staff ya ha guardado la asistencia. Si el backend no lo envía
+  /// se da por revisada, para no marcar listas que no sabemos si lo están.
+  final bool listaRevisada;
+  final String? fechaRevision;
+
   EntrenamientoModel({
     required this.id,
     required this.equipoId,
@@ -13,6 +18,8 @@ class EntrenamientoModel {
     required this.fecha,
     required this.usuarioEntrenadorId,
     required this.asistencias,
+    this.listaRevisada = true,
+    this.fechaRevision,
   });
 
   factory EntrenamientoModel.fromJson(Map<String, dynamic> json) {
@@ -29,6 +36,8 @@ class EntrenamientoModel {
             ),
           )
           .toList(),
+      listaRevisada: json['listaRevisada'] as bool? ?? true,
+      fechaRevision: json['fechaRevision']?.toString(),
     );
   }
 }

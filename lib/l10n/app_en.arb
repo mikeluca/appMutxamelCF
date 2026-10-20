@@ -724,6 +724,46 @@
   "seasonMatchAbsencesLine": "Matches with justified absence: {count}",
   "@seasonMatchAbsencesLine": { "placeholders": { "count": { "type": "int" } } },
   "callupUnavailable": "This call-up is no longer available",
-  "connectionError": "Could not connect. Check your connection and try again."
+  "connectionError": "Could not connect. Check your connection and try again.",
+
+  "teamCardsTitle": "Cards",
+  "teamCardsDesc": "Players' yellow and red cards and possible suspensions",
+  "cardsNoPlayers": "There are no players in this team",
+  "cardsStatusOneAway": "One away from suspension",
+  "cardsStatusSanction": "Possible suspension",
+  "cardsFooterNote": "For guidance only: the FFCV decides on suspensions.",
+  "yellowCardsLabel": "Yellow",
+  "redCardsLabel": "Red",
+  "teamStatsTitle": "Statistics",
+  "teamStatsDesc": "Top scorers, assists, attendance and results",
+  "statsPlayedShort": "P",
+  "statsWonShort": "W",
+  "statsDrawnShort": "D",
+  "statsLostShort": "L",
+  "statsGoalsForShort": "GF",
+  "statsGoalsAgainstShort": "GA",
+  "statsAttendanceAverage": "Average attendance",
+  "statsTopScorers": "Top scorers",
+  "statsTopAssisters": "Top assisters",
+  "statsTrainingAttendance": "Training attendance",
+  "statsNoData": "No data yet",
+  "statsGoalsCount": "{count, plural, one{{count} goal} other{{count} goals}}",
+  "@statsGoalsCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "statsAssistsCount": "{count, plural, one{{count} assist} other{{count} assists}}",
+  "@statsAssistsCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "statsAttendedOf": "{asistidos} of {total}",
+  "@statsAttendedOf": {
+    "placeholders": { "asistidos": { "type": "int" }, "total": { "type": "int" } }
+  },
+  "statsPercent": "{percent}%",
+  "@statsPercent": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "trainingListNotReviewed": "Attendance not reviewed",
+  "trainingNotFound": "This training is no longer available"
 
 }

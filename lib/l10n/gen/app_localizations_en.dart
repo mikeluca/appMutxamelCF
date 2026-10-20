@@ -1941,4 +1941,107 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get connectionError =>
       'Could not connect. Check your connection and try again.';
+
+  @override
+  String get teamCardsTitle => 'Cards';
+
+  @override
+  String get teamCardsDesc =>
+      'Players\' yellow and red cards and possible suspensions';
+
+  @override
+  String get cardsNoPlayers => 'There are no players in this team';
+
+  @override
+  String get cardsStatusOneAway => 'One away from suspension';
+
+  @override
+  String get cardsStatusSanction => 'Possible suspension';
+
+  @override
+  String get cardsFooterNote =>
+      'For guidance only: the FFCV decides on suspensions.';
+
+  @override
+  String get yellowCardsLabel => 'Yellow';
+
+  @override
+  String get redCardsLabel => 'Red';
+
+  @override
+  String get teamStatsTitle => 'Statistics';
+
+  @override
+  String get teamStatsDesc => 'Top scorers, assists, attendance and results';
+
+  @override
+  String get statsPlayedShort => 'P';
+
+  @override
+  String get statsWonShort => 'W';
+
+  @override
+  String get statsDrawnShort => 'D';
+
+  @override
+  String get statsLostShort => 'L';
+
+  @override
+  String get statsGoalsForShort => 'GF';
+
+  @override
+  String get statsGoalsAgainstShort => 'GA';
+
+  @override
+  String get statsAttendanceAverage => 'Average attendance';
+
+  @override
+  String get statsTopScorers => 'Top scorers';
+
+  @override
+  String get statsTopAssisters => 'Top assisters';
+
+  @override
+  String get statsTrainingAttendance => 'Training attendance';
+
+  @override
+  String get statsNoData => 'No data yet';
+
+  @override
+  String statsGoalsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count goals',
+      one: '$count goal',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsAssistsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count assists',
+      one: '$count assist',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsAttendedOf(int asistidos, int total) {
+    return '$asistidos of $total';
+  }
+
+  @override
+  String statsPercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String get trainingListNotReviewed => 'Attendance not reviewed';
+
+  @override
+  String get trainingNotFound => 'This training is no longer available';
 }

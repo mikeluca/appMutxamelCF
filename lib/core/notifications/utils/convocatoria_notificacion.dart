@@ -9,17 +9,24 @@ const String tipoPushConvocatoria = 'CONVOCATORIA';
 /// ha justificado su ausencia: lleva a editar esa convocatoria.
 const String tipoPushConvocatoriaEditar = 'CONVOCATORIA_EDITAR';
 
+/// Valor de data["tipo"] del push que recuerda al entrenador pasar lista: lleva
+/// a la asistencia de ese entrenamiento ("entrenamientoId").
+const String tipoPushPasarLista = 'PASAR_LISTA';
+
 /// Título que pone el backend a la comunicación privada de una convocatoria
 /// nueva o modificada. Solo sirve de reserva para los pushes y avisos enviados
 /// antes de que existiera el tipo (y para la lista de notificaciones, cuyas
 /// filas no guardan el data del push).
 const String tituloNuevaConvocatoria = 'Nueva convocatoria';
 
-/// true si el aviso es de una convocatoria (de cualquier tipo): por su
-/// data["tipo"] o, como reserva para los pushes antiguos, por el título.
+/// true si el aviso tiene un destino propio (una convocatoria de cualquier
+/// tipo o pasar lista) y por tanto, al abrir la app en frío, espera a que haya
+/// sesión y home: por su data["tipo"] o, como reserva para los pushes antiguos
+/// de convocatoria, por el título.
 bool esAvisoDeConvocatoria({String? tipo, String? titulo}) {
   return tipo == tipoPushConvocatoria ||
       tipo == tipoPushConvocatoriaEditar ||
+      tipo == tipoPushPasarLista ||
       titulo?.trim() == tituloNuevaConvocatoria;
 }
 
@@ -57,9 +64,25 @@ class EditarConvocatoria extends DestinoConvocatoria {
   int get hashCode => convocatoriaId.hashCode;
 }
 
-/// El destino del aviso de una convocatoria, o null si no lo es (se mantiene
-/// el comportamiento de siempre).
+/// Entrenador: la asistencia de ese entrenamiento, para pasar lista.
+class PasarLista extends DestinoConvocatoria {
+  final int entrenamientoId;
+
+  const PasarLista(this.entrenamientoId);
+
+  @override
+  bool operator ==(Object other) =>
+      other is PasarLista && other.entrenamientoId == entrenamientoId;
+
+  @override
+  int get hashCode => entrenamientoId.hashCode;
+}
+
+/// El destino del aviso de una convocatoria o de pasar lista, o null si no lo
+/// es (se mantiene el comportamiento de siempre).
 ///
+/// - [tipo] "PASAR_LISTA" con un "entrenamientoId" válido: la asistencia de
+///   ese entrenamiento.
 /// - [tipo] "CONVOCATORIA_EDITAR" con un "convocatoriaId" válido: editar esa
 ///   convocatoria.
 /// - [tipo] "CONVOCATORIA" o, como reserva para los pushes antiguos (que
@@ -71,6 +94,12 @@ DestinoConvocatoria? destinoDeAvisoConvocatoria({
   String? titulo,
   Map<String, dynamic> datos = const {},
 }) {
+  if (tipo == tipoPushPasarLista) {
+    final id = int.tryParse(datos['entrenamientoId']?.toString() ?? '');
+
+    return id != null && id > 0 ? PasarLista(id) : null;
+  }
+
   if (tipo == tipoPushConvocatoriaEditar) {
     final id = int.tryParse(datos['convocatoriaId']?.toString() ?? '');
 
@@ -113,6 +142,7 @@ String payloadDeDestino(DestinoConvocatoria destino) {
                 '${dia.day.toString().padLeft(2, '0')}',
     EditarConvocatoria(:final convocatoriaId) =>
       'CONVOCATORIA_EDITAR:$convocatoriaId',
+    PasarLista(:final entrenamientoId) => 'PASAR_LISTA:$entrenamientoId',
   };
 }
 
@@ -127,6 +157,12 @@ DestinoConvocatoria? destinoDePayload(String payload) {
     return AbrirCalendario(
       diaDeFechaPartido(payload.substring('CALENDARIO:'.length)),
     );
+  }
+
+  if (payload.startsWith('PASAR_LISTA:')) {
+    final id = int.tryParse(payload.substring('PASAR_LISTA:'.length));
+
+    return id != null && id > 0 ? PasarLista(id) : null;
   }
 
   if (payload.startsWith('CONVOCATORIA_EDITAR:')) {

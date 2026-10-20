@@ -8,6 +8,9 @@ import '../../features/calendario/pages/calendario_page.dart';
 import '../../features/convocatorias/model/convocatoria_model.dart';
 import '../../features/convocatorias/pages/convocatoria_form_page.dart';
 import '../../features/convocatorias/services/convocatoria_service.dart';
+import '../../features/entrenamientos/model/entrenamiento_model.dart';
+import '../../features/entrenamientos/pages/entrenamiento_form_page.dart';
+import '../../features/entrenamientos/services/entrenamiento_service.dart';
 import '../../../features/auth/pages/chat_privado_page.dart';
 import '../../../features/auth/pages/comunicacion_detail_page.dart';
 
@@ -29,6 +32,13 @@ class AppNavigator {
 
   @visibleForTesting
   static ConvocatoriaService Function()? fabricaConvocatoriaService;
+
+  @visibleForTesting
+  static Widget Function(EntrenamientoModel entrenamiento)?
+  constructorAsistencia;
+
+  @visibleForTesting
+  static EntrenamientoService Function()? fabricaEntrenamientoService;
 
   static Future<void> abrirComunicacion(int comunicacionId) async {
     final navigatorState = navigator;
@@ -54,6 +64,63 @@ class AppNavigator {
         await abrirCalendario(dia);
       case EditarConvocatoria(:final convocatoriaId):
         await abrirEdicionConvocatoria(convocatoriaId);
+      case PasarLista(:final entrenamientoId):
+        await abrirAsistenciaEntrenamiento(entrenamientoId);
+    }
+  }
+
+  /// La asistencia del entrenamiento [entrenamientoId], para pasar lista. Sin
+  /// permiso (403) o con el entrenamiento ya borrado (404) no se abre nada.
+  static Future<void> abrirAsistenciaEntrenamiento(
+    int entrenamientoId, {
+    EntrenamientoService? servicio,
+  }) async {
+    final navigatorState = navigator;
+
+    if (navigatorState == null) {
+      return;
+    }
+
+    try {
+      final entrenamiento =
+          await (servicio ??
+                  fabricaEntrenamientoService?.call() ??
+                  EntrenamientoService())
+              .obtenerPorId(entrenamientoId);
+
+      if (!navigatorState.mounted) {
+        return;
+      }
+
+      await navigatorState.push(
+        MaterialPageRoute(
+          builder: (_) =>
+              (constructorAsistencia ??
+              (e) => EntrenamientoFormPage(
+                equipo: PerfilEquipo(id: e.equipoId, nombre: e.equipo),
+                entrenamiento: e,
+              ))(entrenamiento),
+        ),
+      );
+    } catch (e) {
+      debugPrint('No se pudo abrir el entrenamiento $entrenamientoId: $e');
+
+      final contexto = navigatorState.context;
+
+      if (!contexto.mounted) {
+        return;
+      }
+
+      final t = AppLocalizations.of(contexto);
+
+      final noDisponible =
+          e is ApiException && (e.statusCode == 403 || e.statusCode == 404);
+
+      ScaffoldMessenger.maybeOf(contexto)?.showSnackBar(
+        SnackBar(
+          content: Text(noDisponible ? t.trainingNotFound : t.connectionError),
+        ),
+      );
     }
   }
 

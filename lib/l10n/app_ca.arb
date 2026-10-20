@@ -724,6 +724,46 @@
   "seasonMatchAbsencesLine": "Partits amb absència justificada: {count}",
   "@seasonMatchAbsencesLine": { "placeholders": { "count": { "type": "int" } } },
   "callupUnavailable": "Aquesta convocatòria ja no està disponible",
-  "connectionError": "No s'ha pogut connectar. Comprova la connexió i torna-ho a provar."
+  "connectionError": "No s'ha pogut connectar. Comprova la connexió i torna-ho a provar.",
+
+  "teamCardsTitle": "Targetes",
+  "teamCardsDesc": "Grogues i vermelles dels jugadors i possibles sancions",
+  "cardsNoPlayers": "No hi ha jugadors en aquest equip",
+  "cardsStatusOneAway": "A una de sanció",
+  "cardsStatusSanction": "Possible sanció",
+  "cardsFooterNote": "Orientatiu: la sanció la determina la FFCV.",
+  "yellowCardsLabel": "Grogues",
+  "redCardsLabel": "Vermelles",
+  "teamStatsTitle": "Estadístiques",
+  "teamStatsDesc": "Golejadors, assistents, assistència i resultats",
+  "statsPlayedShort": "PJ",
+  "statsWonShort": "G",
+  "statsDrawnShort": "E",
+  "statsLostShort": "P",
+  "statsGoalsForShort": "GF",
+  "statsGoalsAgainstShort": "GC",
+  "statsAttendanceAverage": "Assistència mitjana",
+  "statsTopScorers": "Golejadors",
+  "statsTopAssisters": "Assistents",
+  "statsTrainingAttendance": "Assistència a entrenaments",
+  "statsNoData": "Encara no hi ha dades",
+  "statsGoalsCount": "{count, plural, one{{count} gol} other{{count} gols}}",
+  "@statsGoalsCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "statsAssistsCount": "{count, plural, one{{count} assistència} other{{count} assistències}}",
+  "@statsAssistsCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "statsAttendedOf": "{asistidos} de {total}",
+  "@statsAttendedOf": {
+    "placeholders": { "asistidos": { "type": "int" }, "total": { "type": "int" } }
+  },
+  "statsPercent": "{percent} %",
+  "@statsPercent": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "trainingListNotReviewed": "Llista sense revisar",
+  "trainingNotFound": "Aquest entrenament ja no està disponible"
 
 }

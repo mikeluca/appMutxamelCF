@@ -4,7 +4,9 @@ import '../../convocatorias/pages/convocatorias_page.dart';
 import '../../calendario/pages/calendario_gestion_page.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
+import '../../teams/pages/estadisticas_equipo_page.dart';
 import '../../teams/pages/jugadores_equipo_page.dart';
+import '../../teams/pages/tarjetas_equipo_page.dart';
 import '../models/perfil_app.dart';
 
 class EquipoGestionPage extends StatelessWidget {
@@ -94,6 +96,40 @@ class EquipoGestionPage extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (_) => CalendarioGestionPage(equipo: equipo),
+                ),
+              );
+            },
+          ),
+
+          const SizedBox(height: 12),
+
+          _construirOpcion(
+            context,
+            icono: Icons.style_outlined,
+            titulo: t.teamCardsTitle,
+            descripcion: t.teamCardsDesc,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => TarjetasEquipoPage(equipo: equipo),
+                ),
+              );
+            },
+          ),
+
+          const SizedBox(height: 12),
+
+          _construirOpcion(
+            context,
+            icono: Icons.bar_chart_outlined,
+            titulo: t.teamStatsTitle,
+            descripcion: t.teamStatsDesc,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => EstadisticasEquipoPage(equipo: equipo),
                 ),
               );
             },

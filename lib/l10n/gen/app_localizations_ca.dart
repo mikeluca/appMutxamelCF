@@ -1952,4 +1952,106 @@ class AppLocalizationsCa extends AppLocalizations {
   @override
   String get connectionError =>
       'No s\'ha pogut connectar. Comprova la connexió i torna-ho a provar.';
+
+  @override
+  String get teamCardsTitle => 'Targetes';
+
+  @override
+  String get teamCardsDesc =>
+      'Grogues i vermelles dels jugadors i possibles sancions';
+
+  @override
+  String get cardsNoPlayers => 'No hi ha jugadors en aquest equip';
+
+  @override
+  String get cardsStatusOneAway => 'A una de sanció';
+
+  @override
+  String get cardsStatusSanction => 'Possible sanció';
+
+  @override
+  String get cardsFooterNote => 'Orientatiu: la sanció la determina la FFCV.';
+
+  @override
+  String get yellowCardsLabel => 'Grogues';
+
+  @override
+  String get redCardsLabel => 'Vermelles';
+
+  @override
+  String get teamStatsTitle => 'Estadístiques';
+
+  @override
+  String get teamStatsDesc => 'Golejadors, assistents, assistència i resultats';
+
+  @override
+  String get statsPlayedShort => 'PJ';
+
+  @override
+  String get statsWonShort => 'G';
+
+  @override
+  String get statsDrawnShort => 'E';
+
+  @override
+  String get statsLostShort => 'P';
+
+  @override
+  String get statsGoalsForShort => 'GF';
+
+  @override
+  String get statsGoalsAgainstShort => 'GC';
+
+  @override
+  String get statsAttendanceAverage => 'Assistència mitjana';
+
+  @override
+  String get statsTopScorers => 'Golejadors';
+
+  @override
+  String get statsTopAssisters => 'Assistents';
+
+  @override
+  String get statsTrainingAttendance => 'Assistència a entrenaments';
+
+  @override
+  String get statsNoData => 'Encara no hi ha dades';
+
+  @override
+  String statsGoalsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count gols',
+      one: '$count gol',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsAssistsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count assistències',
+      one: '$count assistència',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statsAttendedOf(int asistidos, int total) {
+    return '$asistidos de $total';
+  }
+
+  @override
+  String statsPercent(int percent) {
+    return '$percent %';
+  }
+
+  @override
+  String get trainingListNotReviewed => 'Llista sense revisar';
+
+  @override
+  String get trainingNotFound => 'Aquest entrenament ja no està disponible';
 }

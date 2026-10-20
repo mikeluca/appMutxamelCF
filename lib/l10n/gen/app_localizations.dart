@@ -3555,6 +3555,168 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No se ha podido conectar. Comprueba tu conexión e inténtalo de nuevo.'**
   String get connectionError;
+
+  /// No description provided for @teamCardsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Tarjetas'**
+  String get teamCardsTitle;
+
+  /// No description provided for @teamCardsDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Amarillas y rojas de los jugadores y posibles sanciones'**
+  String get teamCardsDesc;
+
+  /// No description provided for @cardsNoPlayers.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay jugadores en este equipo'**
+  String get cardsNoPlayers;
+
+  /// No description provided for @cardsStatusOneAway.
+  ///
+  /// In es, this message translates to:
+  /// **'A una de sanción'**
+  String get cardsStatusOneAway;
+
+  /// No description provided for @cardsStatusSanction.
+  ///
+  /// In es, this message translates to:
+  /// **'Posible sanción'**
+  String get cardsStatusSanction;
+
+  /// No description provided for @cardsFooterNote.
+  ///
+  /// In es, this message translates to:
+  /// **'Orientativo: la sanción la determina la FFCV.'**
+  String get cardsFooterNote;
+
+  /// No description provided for @yellowCardsLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Amarillas'**
+  String get yellowCardsLabel;
+
+  /// No description provided for @redCardsLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Rojas'**
+  String get redCardsLabel;
+
+  /// No description provided for @teamStatsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Estadísticas'**
+  String get teamStatsTitle;
+
+  /// No description provided for @teamStatsDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Goleadores, asistentes, asistencia y resultados'**
+  String get teamStatsDesc;
+
+  /// No description provided for @statsPlayedShort.
+  ///
+  /// In es, this message translates to:
+  /// **'PJ'**
+  String get statsPlayedShort;
+
+  /// No description provided for @statsWonShort.
+  ///
+  /// In es, this message translates to:
+  /// **'G'**
+  String get statsWonShort;
+
+  /// No description provided for @statsDrawnShort.
+  ///
+  /// In es, this message translates to:
+  /// **'E'**
+  String get statsDrawnShort;
+
+  /// No description provided for @statsLostShort.
+  ///
+  /// In es, this message translates to:
+  /// **'P'**
+  String get statsLostShort;
+
+  /// No description provided for @statsGoalsForShort.
+  ///
+  /// In es, this message translates to:
+  /// **'GF'**
+  String get statsGoalsForShort;
+
+  /// No description provided for @statsGoalsAgainstShort.
+  ///
+  /// In es, this message translates to:
+  /// **'GC'**
+  String get statsGoalsAgainstShort;
+
+  /// No description provided for @statsAttendanceAverage.
+  ///
+  /// In es, this message translates to:
+  /// **'Asistencia media'**
+  String get statsAttendanceAverage;
+
+  /// No description provided for @statsTopScorers.
+  ///
+  /// In es, this message translates to:
+  /// **'Goleadores'**
+  String get statsTopScorers;
+
+  /// No description provided for @statsTopAssisters.
+  ///
+  /// In es, this message translates to:
+  /// **'Asistentes'**
+  String get statsTopAssisters;
+
+  /// No description provided for @statsTrainingAttendance.
+  ///
+  /// In es, this message translates to:
+  /// **'Asistencia a entrenamientos'**
+  String get statsTrainingAttendance;
+
+  /// No description provided for @statsNoData.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay datos'**
+  String get statsNoData;
+
+  /// No description provided for @statsGoalsCount.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, one{{count} gol} other{{count} goles}}'**
+  String statsGoalsCount(int count);
+
+  /// No description provided for @statsAssistsCount.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, one{{count} asistencia} other{{count} asistencias}}'**
+  String statsAssistsCount(int count);
+
+  /// No description provided for @statsAttendedOf.
+  ///
+  /// In es, this message translates to:
+  /// **'{asistidos} de {total}'**
+  String statsAttendedOf(int asistidos, int total);
+
+  /// No description provided for @statsPercent.
+  ///
+  /// In es, this message translates to:
+  /// **'{percent} %'**
+  String statsPercent(int percent);
+
+  /// No description provided for @trainingListNotReviewed.
+  ///
+  /// In es, this message translates to:
+  /// **'Lista sin revisar'**
+  String get trainingListNotReviewed;
+
+  /// No description provided for @trainingNotFound.
+  ///
+  /// In es, this message translates to:
+  /// **'Este entrenamiento ya no está disponible'**
+  String get trainingNotFound;
 }
 
 class _AppLocalizationsDelegate

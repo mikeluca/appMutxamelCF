@@ -20,6 +20,25 @@ class EntrenamientoCard extends StatelessWidget {
     this.destacado = false,
   });
 
+  static const Color _colorSinRevisar = Color(0xFFF59E0B);
+
+  /// Un entrenamiento de un día anterior a hoy cuya asistencia nadie ha guardado.
+  bool get _listaSinRevisar {
+    if (entrenamiento.listaRevisada) return false;
+
+    final fecha = parseFechaTextoBackend(entrenamiento.fecha);
+
+    if (fecha == null) return false;
+
+    final ahora = DateTime.now();
+
+    return DateTime(
+      fecha.year,
+      fecha.month,
+      fecha.day,
+    ).isBefore(DateTime(ahora.year, ahora.month, ahora.day));
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
@@ -100,6 +119,29 @@ class EntrenamientoCard extends StatelessWidget {
                           ),
                           style: TextStyle(color: colors.onSurfaceVariant),
                         ),
+                        if (_listaSinRevisar) ...[
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.pending_actions,
+                                size: 16,
+                                color: _colorSinRevisar,
+                              ),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  t.trainingListNotReviewed,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: _colorSinRevisar,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ],
                     ),
                   ),

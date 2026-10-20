@@ -28,6 +28,15 @@ class EntrenamientoService {
         .toList();
   }
 
+  Future<EntrenamientoModel> obtenerPorId(int entrenamientoId) async {
+    final data = await ApiClient.get(
+      '/app/entrenamientos/$entrenamientoId',
+      autenticado: true,
+    );
+
+    return EntrenamientoModel.fromJson(data as Map<String, dynamic>);
+  }
+
   static String _fechaApi(DateTime fecha) {
     final mes = fecha.month.toString().padLeft(2, '0');
     final dia = fecha.day.toString().padLeft(2, '0');

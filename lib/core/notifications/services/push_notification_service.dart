@@ -43,7 +43,8 @@ class PushNotificationService {
   static bool _esTipoDeComunicacion(Object? tipo) =>
       tipo == _tipoComunicacion ||
       tipo == tipoPushConvocatoria ||
-      tipo == tipoPushConvocatoriaEditar;
+      tipo == tipoPushConvocatoriaEditar ||
+      tipo == tipoPushPasarLista;
 
   /// Solo para tests: sustituyen a las llamadas a la red, a las notificaciones
   /// locales y a la restauración de la sesión.

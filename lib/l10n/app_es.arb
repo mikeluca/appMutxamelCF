@@ -724,6 +724,46 @@
   "seasonMatchAbsencesLine": "Partidos con ausencia justificada: {count}",
   "@seasonMatchAbsencesLine": { "placeholders": { "count": { "type": "int" } } },
   "callupUnavailable": "Esta convocatoria ya no está disponible",
-  "connectionError": "No se ha podido conectar. Comprueba tu conexión e inténtalo de nuevo."
+  "connectionError": "No se ha podido conectar. Comprueba tu conexión e inténtalo de nuevo.",
+
+  "teamCardsTitle": "Tarjetas",
+  "teamCardsDesc": "Amarillas y rojas de los jugadores y posibles sanciones",
+  "cardsNoPlayers": "No hay jugadores en este equipo",
+  "cardsStatusOneAway": "A una de sanción",
+  "cardsStatusSanction": "Posible sanción",
+  "cardsFooterNote": "Orientativo: la sanción la determina la FFCV.",
+  "yellowCardsLabel": "Amarillas",
+  "redCardsLabel": "Rojas",
+  "teamStatsTitle": "Estadísticas",
+  "teamStatsDesc": "Goleadores, asistentes, asistencia y resultados",
+  "statsPlayedShort": "PJ",
+  "statsWonShort": "G",
+  "statsDrawnShort": "E",
+  "statsLostShort": "P",
+  "statsGoalsForShort": "GF",
+  "statsGoalsAgainstShort": "GC",
+  "statsAttendanceAverage": "Asistencia media",
+  "statsTopScorers": "Goleadores",
+  "statsTopAssisters": "Asistentes",
+  "statsTrainingAttendance": "Asistencia a entrenamientos",
+  "statsNoData": "Todavía no hay datos",
+  "statsGoalsCount": "{count, plural, one{{count} gol} other{{count} goles}}",
+  "@statsGoalsCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "statsAssistsCount": "{count, plural, one{{count} asistencia} other{{count} asistencias}}",
+  "@statsAssistsCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "statsAttendedOf": "{asistidos} de {total}",
+  "@statsAttendedOf": {
+    "placeholders": { "asistidos": { "type": "int" }, "total": { "type": "int" } }
+  },
+  "statsPercent": "{percent} %",
+  "@statsPercent": {
+    "placeholders": { "percent": { "type": "int" } }
+  },
+  "trainingListNotReviewed": "Lista sin revisar",
+  "trainingNotFound": "Este entrenamiento ya no está disponible"
 
 }
