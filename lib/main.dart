@@ -5,7 +5,6 @@ import 'core/config/app_preferences.dart';
 import 'core/theme/app_theme.dart';
 import 'l10n/gen/app_localizations.dart';
 
-import 'features/matches/pages/matches_page.dart';
 import 'features/public/public_shell_page.dart';
 import 'features/splash/splash_page.dart';
 
@@ -157,7 +156,6 @@ class _MutxamelCfAppState extends State<MutxamelCfApp> {
       routes: {
         AppRoutes.splash: (context) => const SplashPage(),
         AppRoutes.public: (context) => const PublicShellPage(),
-        AppRoutes.matches: (context) => const MatchesPage(),
 
         AppRoutes.login: (context) => const LoginPage(),
         AppRoutes.club: (context) => const ClubPage(),

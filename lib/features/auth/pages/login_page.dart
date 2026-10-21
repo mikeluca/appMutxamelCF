@@ -6,6 +6,7 @@ import '../../../routing/app_routes.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import 'activar_cuenta_page.dart';
+import 'recuperar_password_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -200,6 +201,20 @@ class _LoginPageState extends State<LoginPage> {
                               )
                             : Text(t.loginButton),
                       ),
+                    ),
+
+                    TextButton(
+                      onPressed: _cargando
+                          ? null
+                          : () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => RecuperarPasswordPage(
+                                  emailInicial: _emailController.text,
+                                ),
+                              ),
+                            ),
+                      child: Text(t.loginForgotPassword),
                     ),
 
                     const SizedBox(height: 12),

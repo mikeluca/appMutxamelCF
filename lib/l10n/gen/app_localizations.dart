@@ -1180,6 +1180,90 @@ abstract class AppLocalizations {
   /// **'No tienes notificaciones.'**
   String get noNotifications;
 
+  /// No description provided for @notificationsSignedOutMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Inicia sesión en el Área Club para ver tus avisos personales (convocatorias, mensajes…)'**
+  String get notificationsSignedOutMessage;
+
+  /// No description provided for @notificationsPublicHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Los avisos de noticias y resultados se activan en Club → Ajustes'**
+  String get notificationsPublicHint;
+
+  /// No description provided for @notificationsOpenSettings.
+  ///
+  /// In es, this message translates to:
+  /// **'Ir a Ajustes'**
+  String get notificationsOpenSettings;
+
+  /// No description provided for @loginForgotPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Has olvidado tu contraseña?'**
+  String get loginForgotPassword;
+
+  /// No description provided for @recoverTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Recuperar contraseña'**
+  String get recoverTitle;
+
+  /// No description provided for @recoverSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Te enviaremos un código por email para que elijas una contraseña nueva.'**
+  String get recoverSubtitle;
+
+  /// No description provided for @recoverSendCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar código'**
+  String get recoverSendCode;
+
+  /// No description provided for @recoverCodeSent.
+  ///
+  /// In es, this message translates to:
+  /// **'Si el email tiene una cuenta en el club, recibirás un código en unos minutos. Revisa también la carpeta de spam.'**
+  String get recoverCodeSent;
+
+  /// No description provided for @recoverResetHeading.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige tu nueva contraseña'**
+  String get recoverResetHeading;
+
+  /// No description provided for @recoverChangePassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar contraseña'**
+  String get recoverChangePassword;
+
+  /// No description provided for @recoverResend.
+  ///
+  /// In es, this message translates to:
+  /// **'Reenviar código'**
+  String get recoverResend;
+
+  /// No description provided for @recoverResendIn.
+  ///
+  /// In es, this message translates to:
+  /// **'Reenviar código ({time})'**
+  String recoverResendIn(String time);
+
+  /// No description provided for @recoverPasswordChanged.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña cambiada'**
+  String get recoverPasswordChanged;
+
+  /// No description provided for @recoverCodeInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'Código incorrecto o caducado'**
+  String get recoverCodeInvalid;
+
   /// No description provided for @markAllReadError.
   ///
   /// In es, this message translates to:
@@ -1726,12 +1810,6 @@ abstract class AppLocalizations {
   /// **'Alineación enviada.'**
   String get liveLineupSentMessage;
 
-  /// No description provided for @liveGoalAuthorLabel.
-  ///
-  /// In es, this message translates to:
-  /// **'Autor del gol'**
-  String get liveGoalAuthorLabel;
-
   /// No description provided for @liveEnterGoalAuthorError.
   ///
   /// In es, this message translates to:
@@ -1965,18 +2043,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Nuevo'**
   String get newMasculineButton;
-
-  /// No description provided for @noTrainingsYet.
-  ///
-  /// In es, this message translates to:
-  /// **'Todavía no hay entrenamientos.'**
-  String get noTrainingsYet;
-
-  /// No description provided for @createFirstTrainingHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Crea el primero pulsando el botón Nuevo.'**
-  String get createFirstTrainingHint;
 
   /// No description provided for @trainingsNextBadge.
   ///
@@ -2242,18 +2308,6 @@ abstract class AppLocalizations {
   /// **'Guardar convocatoria'**
   String get saveCallupButton;
 
-  /// No description provided for @enterRivalError.
-  ///
-  /// In es, this message translates to:
-  /// **'Introduce el rival.'**
-  String get enterRivalError;
-
-  /// No description provided for @enterFieldError.
-  ///
-  /// In es, this message translates to:
-  /// **'Introduce el campo.'**
-  String get enterFieldError;
-
   /// No description provided for @enterCallupPlaceError.
   ///
   /// In es, this message translates to:
@@ -2320,59 +2374,11 @@ abstract class AppLocalizations {
   /// **'Consultar los jugadores del equipo'**
   String get playersMenuDesc;
 
-  /// No description provided for @teamsPageTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Equipos'**
-  String get teamsPageTitle;
-
-  /// No description provided for @ourTeamsTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Nuestros equipos'**
-  String get ourTeamsTitle;
-
-  /// No description provided for @teamsSubtitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Consulta las plantillas y la información de cada equipo del club.'**
-  String get teamsSubtitle;
-
   /// No description provided for @noPlayersInTeam.
   ///
   /// In es, this message translates to:
   /// **'No hay jugadores en este equipo.'**
   String get noPlayersInTeam;
-
-  /// No description provided for @squadTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Plantilla'**
-  String get squadTitle;
-
-  /// No description provided for @staffTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Cuerpo técnico'**
-  String get staffTitle;
-
-  /// No description provided for @staffLoadError.
-  ///
-  /// In es, this message translates to:
-  /// **'No se ha podido cargar el cuerpo técnico.'**
-  String get staffLoadError;
-
-  /// No description provided for @noStaffAvailableForTeam.
-  ///
-  /// In es, this message translates to:
-  /// **'No hay cuerpo técnico disponible para este equipo.'**
-  String get noStaffAvailableForTeam;
-
-  /// No description provided for @squadLoadError.
-  ///
-  /// In es, this message translates to:
-  /// **'No se ha podido cargar la plantilla.'**
-  String get squadLoadError;
 
   /// No description provided for @matchResultPending.
   ///
@@ -2547,12 +2553,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'{pos}º · {pts} pts'**
   String standingsSummaryNoRound(int pos, int pts);
-
-  /// No description provided for @standingsTitle.
-  ///
-  /// In es, this message translates to:
-  /// **'Clasificación'**
-  String get standingsTitle;
 
   /// No description provided for @standingsUpdated.
   ///
@@ -2746,12 +2746,6 @@ abstract class AppLocalizations {
   /// **'Torneo'**
   String get matchTypeTorneo;
 
-  /// No description provided for @resultFormatError.
-  ///
-  /// In es, this message translates to:
-  /// **'El resultado debe tener el formato N-N (ej. 2-1).'**
-  String get resultFormatError;
-
   /// No description provided for @rivalRequiredError.
   ///
   /// In es, this message translates to:
@@ -2811,12 +2805,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Hora (ej. 18:00)'**
   String get hourLabelHint;
-
-  /// No description provided for @resultLabelHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Resultado (ej. 2-1)'**
-  String get resultLabelHint;
 
   /// No description provided for @save.
   ///
@@ -2878,12 +2866,6 @@ abstract class AppLocalizations {
   /// **'No convocado'**
   String get calendarNotCalledUpBadge;
 
-  /// No description provided for @calendarPlaceLabel.
-  ///
-  /// In es, this message translates to:
-  /// **'Lugar'**
-  String get calendarPlaceLabel;
-
   /// No description provided for @matchResultLabel.
   ///
   /// In es, this message translates to:
@@ -2943,12 +2925,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Falta justificada correctamente.'**
   String get calendarJustifyAbsenceSuccess;
-
-  /// No description provided for @calendarJustifyAbsenceError.
-  ///
-  /// In es, this message translates to:
-  /// **'No se ha podido enviar la justificación: {error}'**
-  String calendarJustifyAbsenceError(String error);
 
   /// No description provided for @calendarManagementTitle.
   ///
@@ -3028,12 +3004,6 @@ abstract class AppLocalizations {
   /// **'Horario guardado correctamente.'**
   String get weeklyScheduleSavedSuccess;
 
-  /// No description provided for @weeklyScheduleSaveError.
-  ///
-  /// In es, this message translates to:
-  /// **'No se ha podido guardar el horario: {error}'**
-  String weeklyScheduleSaveError(String error);
-
   /// No description provided for @weeklyScheduleFormTitleNew.
   ///
   /// In es, this message translates to:
@@ -3105,12 +3075,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Sesión actualizada correctamente.'**
   String get sessionEditSavedSuccess;
-
-  /// No description provided for @sessionEditError.
-  ///
-  /// In es, this message translates to:
-  /// **'No se ha podido actualizar la sesión: {error}'**
-  String sessionEditError(String error);
 
   /// No description provided for @sessionCancelTooltip.
   ///

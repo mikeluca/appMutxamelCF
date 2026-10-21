@@ -1,5 +1,6 @@
 import '../../../core/network/api_client.dart';
 import '../models/notificacion_model.dart';
+import 'auth_session.dart';
 
 class NotificacionService {
   static Future<List<NotificacionModel>> obtenerNotificaciones() async {
@@ -24,7 +25,12 @@ class NotificacionService {
         .toList();
   }
 
+  /// Sin sesión no hay avisos personales: devuelve 0 sin llamar al servidor.
   static Future<int> contarNoLeidas() async {
+    if (!await AuthSession.estaAutenticado()) {
+      return 0;
+    }
+
     final data = await ApiClient.get(
       '/app/notificaciones/no-leidas/count',
       autenticado: true,

@@ -590,6 +590,54 @@ class AppLocalizationsCa extends AppLocalizations {
   String get noNotifications => 'No tens notificacions.';
 
   @override
+  String get notificationsSignedOutMessage =>
+      'Inicia sessió a l\'Àrea Club per a veure els teus avisos personals (convocatòries, missatges…)';
+
+  @override
+  String get notificationsPublicHint =>
+      'Els avisos de notícies i resultats s\'activen a Club → Ajustos';
+
+  @override
+  String get notificationsOpenSettings => 'Anar a Ajustos';
+
+  @override
+  String get loginForgotPassword => 'Has oblidat la teua contrasenya?';
+
+  @override
+  String get recoverTitle => 'Recuperar contrasenya';
+
+  @override
+  String get recoverSubtitle =>
+      'T\'enviarem un codi per email perquè triïs una contrasenya nova.';
+
+  @override
+  String get recoverSendCode => 'Enviar codi';
+
+  @override
+  String get recoverCodeSent =>
+      'Si l\'email té un compte al club, rebràs un codi en uns minuts. Revisa també la carpeta de correu brossa.';
+
+  @override
+  String get recoverResetHeading => 'Tria la teua nova contrasenya';
+
+  @override
+  String get recoverChangePassword => 'Canviar contrasenya';
+
+  @override
+  String get recoverResend => 'Reenviar codi';
+
+  @override
+  String recoverResendIn(String time) {
+    return 'Reenviar codi ($time)';
+  }
+
+  @override
+  String get recoverPasswordChanged => 'Contrasenya canviada';
+
+  @override
+  String get recoverCodeInvalid => 'Codi incorrecte o caducat';
+
+  @override
   String get markAllReadError =>
       'No s\'han pogut marcar les notificacions com a llegides.';
 
@@ -899,9 +947,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String get liveLineupSentMessage => 'Alineació enviada.';
 
   @override
-  String get liveGoalAuthorLabel => 'Autor del gol';
-
-  @override
   String get liveEnterGoalAuthorError => 'Escriu l\'autor del gol.';
 
   @override
@@ -1027,12 +1072,6 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get newMasculineButton => 'Nou';
-
-  @override
-  String get noTrainingsYet => 'Encara no hi ha entrenaments.';
-
-  @override
-  String get createFirstTrainingHint => 'Crea el primer prement el botó Nou.';
 
   @override
   String get trainingsNextBadge => 'PRÒXIM ENTRENAMENT';
@@ -1176,12 +1215,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String get saveCallupButton => 'Guarda la convocatòria';
 
   @override
-  String get enterRivalError => 'Introdueix el rival.';
-
-  @override
-  String get enterFieldError => 'Introdueix el camp.';
-
-  @override
   String get enterCallupPlaceError => 'Introdueix el lloc de convocatòria.';
 
   @override
@@ -1219,33 +1252,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get playersMenuDesc => 'Consultar els jugadors de l\'equip';
 
   @override
-  String get teamsPageTitle => 'Equips';
-
-  @override
-  String get ourTeamsTitle => 'Els nostres equips';
-
-  @override
-  String get teamsSubtitle =>
-      'Consulta les plantilles i la informació de cada equip del club.';
-
-  @override
   String get noPlayersInTeam => 'No hi ha jugadors en aquest equip.';
-
-  @override
-  String get squadTitle => 'Plantilla';
-
-  @override
-  String get staffTitle => 'Cos tècnic';
-
-  @override
-  String get staffLoadError => 'No s\'ha pogut carregar el cos tècnic.';
-
-  @override
-  String get noStaffAvailableForTeam =>
-      'No hi ha cos tècnic disponible per a aquest equip.';
-
-  @override
-  String get squadLoadError => 'No s\'ha pogut carregar la plantilla.';
 
   @override
   String get matchResultPending => 'Pendent de resultat';
@@ -1375,9 +1382,6 @@ class AppLocalizationsCa extends AppLocalizations {
   }
 
   @override
-  String get standingsTitle => 'Classificació';
-
-  @override
   String standingsUpdated(int round, String date) {
     return 'Jornada $round · actualitzat el $date';
   }
@@ -1480,10 +1484,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String get matchTypeTorneo => 'Torneig';
 
   @override
-  String get resultFormatError =>
-      'El resultat ha de tindre el format N-N (ex. 2-1).';
-
-  @override
   String get rivalRequiredError => 'El rival és obligatori.';
 
   @override
@@ -1515,9 +1515,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String get hourLabelHint => 'Hora (ex. 18:00)';
 
   @override
-  String get resultLabelHint => 'Resultat (ex. 2-1)';
-
-  @override
   String get save => 'Guarda';
 
   @override
@@ -1546,9 +1543,6 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get calendarNotCalledUpBadge => 'No convocat';
-
-  @override
-  String get calendarPlaceLabel => 'Lloc';
 
   @override
   String get matchResultLabel => 'Resultat';
@@ -1583,11 +1577,6 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get calendarJustifyAbsenceSuccess => 'Falta justificada correctament.';
-
-  @override
-  String calendarJustifyAbsenceError(String error) {
-    return 'No s\'ha pogut enviar la justificació: $error';
-  }
 
   @override
   String get calendarManagementTitle => 'Calendari';
@@ -1635,11 +1624,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String get weeklyScheduleSavedSuccess => 'Horari guardat correctament.';
 
   @override
-  String weeklyScheduleSaveError(String error) {
-    return 'No s\'ha pogut guardar l\'horari: $error';
-  }
-
-  @override
   String get weeklyScheduleFormTitleNew => 'Nou horari';
 
   @override
@@ -1675,11 +1659,6 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get sessionEditSavedSuccess => 'Sessió actualitzada correctament.';
-
-  @override
-  String sessionEditError(String error) {
-    return 'No s\'ha pogut actualitzar la sessió: $error';
-  }
 
   @override
   String get sessionCancelTooltip => 'Cancel·la la sessió';

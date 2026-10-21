@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/network/api_client.dart';
 import '../../../core/notifications/utils/convocatoria_notificacion.dart';
+import '../../../routing/app_routes.dart';
+import '../services/auth_session.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
@@ -19,6 +22,7 @@ class NotificacionesPage extends StatefulWidget {
 class _NotificacionesPageState extends State<NotificacionesPage> {
   List<NotificacionModel> _notificaciones = [];
   bool _cargando = true;
+  bool _sinSesion = false;
   String? _error;
 
   @override
@@ -33,15 +37,39 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
       _error = null;
     });
 
+    // Sin sesión no se llama al servidor: solo se enseña el estado propio.
+    if (!await AuthSession.estaAutenticado()) {
+      if (!mounted) return;
+
+      setState(() {
+        _sinSesion = true;
+        _notificaciones = [];
+        _cargando = false;
+      });
+
+      return;
+    }
+
     try {
       final notificaciones = await NotificacionService.obtenerNotificaciones();
 
       if (!mounted) return;
 
       setState(() {
+        _sinSesion = false;
         _notificaciones = notificaciones
             .where((notificacion) => !notificacion.leida)
             .toList();
+        _cargando = false;
+      });
+    } on ApiException catch (e) {
+      if (!mounted) return;
+
+      // 401: la sesión ha caducado (ApiClient ya la ha limpiado). No es un
+      // error: se enseña el mismo estado que sin sesión.
+      setState(() {
+        _sinSesion = e.statusCode == 401;
+        _error = _sinSesion ? null : e.message;
         _cargando = false;
       });
     } catch (e) {
@@ -52,6 +80,14 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
         _cargando = false;
       });
     }
+  }
+
+  Future<void> _iniciarSesion() async {
+    await Navigator.pushNamed(context, AppRoutes.login);
+
+    if (!mounted) return;
+
+    await _cargarNotificaciones();
   }
 
   Future<void> _abrirNotificacion(NotificacionModel notificacion) async {
@@ -180,6 +216,51 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
 
     if (_cargando) {
       return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_sinSesion) {
+      return Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.notifications_none,
+                size: 64,
+                color: AppColors.azulOscuro,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                t.notificationsSignedOutMessage,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _iniciarSesion,
+                child: Text(t.loginButton),
+              ),
+              const SizedBox(height: 28),
+              Text(
+                t.notificationsPublicHint,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+              TextButton(
+                onPressed: () =>
+                    Navigator.pushNamed(context, AppRoutes.settings),
+                child: Text(t.notificationsOpenSettings),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     if (_error != null) {

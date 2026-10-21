@@ -3,10 +3,7 @@ class AppRoutes {
 
   static const String splash = '/splash';
   static const String public = '/public';
-  static const String home = '/home';
-  static const String matches = '/matches';
   static const String login = '/login';
-  static const String teams = '/teams';
   static const String club = '/club';
   static const String profile = '/profile';
   static const String players = '/players';

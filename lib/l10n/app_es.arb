@@ -217,6 +217,24 @@
   "markAllReadTooltip": "Marcar todas como leídas",
   "notificationsLoadError": "No se pudieron cargar las notificaciones.",
   "noNotifications": "No tienes notificaciones.",
+  "notificationsSignedOutMessage": "Inicia sesión en el Área Club para ver tus avisos personales (convocatorias, mensajes…)",
+  "notificationsPublicHint": "Los avisos de noticias y resultados se activan en Club → Ajustes",
+  "notificationsOpenSettings": "Ir a Ajustes",
+
+  "loginForgotPassword": "¿Has olvidado tu contraseña?",
+  "recoverTitle": "Recuperar contraseña",
+  "recoverSubtitle": "Te enviaremos un código por email para que elijas una contraseña nueva.",
+  "recoverSendCode": "Enviar código",
+  "recoverCodeSent": "Si el email tiene una cuenta en el club, recibirás un código en unos minutos. Revisa también la carpeta de spam.",
+  "recoverResetHeading": "Elige tu nueva contraseña",
+  "recoverChangePassword": "Cambiar contraseña",
+  "recoverResend": "Reenviar código",
+  "recoverResendIn": "Reenviar código ({time})",
+  "@recoverResendIn": {
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "recoverPasswordChanged": "Contraseña cambiada",
+  "recoverCodeInvalid": "Código incorrecto o caducado",
   "markAllReadError": "No se pudieron marcar las notificaciones como leídas.",
   "todayAt": "Hoy, {time}",
   "@todayAt": {
@@ -334,7 +352,6 @@
   "liveSubstitutesLabel": "Suplentes",
   "liveFillLineupError": "Rellena el once inicial y los suplentes.",
   "liveLineupSentMessage": "Alineación enviada.",
-  "liveGoalAuthorLabel": "Autor del gol",
   "liveEnterGoalAuthorError": "Escribe el autor del gol.",
   "liveGoalSentMessage": "Gol enviado.",
   "liveNoMatchesToday": "No hay ningún partido del Primer Equipo hoy",
@@ -384,8 +401,6 @@
 
   "trainingsTitle": "Entrenamientos",
   "newMasculineButton": "Nuevo",
-  "noTrainingsYet": "Todavía no hay entrenamientos.",
-  "createFirstTrainingHint": "Crea el primero pulsando el botón Nuevo.",
   "trainingsNextBadge": "PRÓXIMO ENTRENAMIENTO",
   "noUpcomingTrainings": "No hay entrenamientos en las próximas dos semanas.",
   "pastTrainingsButton": "Entrenamientos pasados",
@@ -437,8 +452,6 @@
     "placeholders": { "count": { "type": "int" } }
   },
   "saveCallupButton": "Guardar convocatoria",
-  "enterRivalError": "Introduce el rival.",
-  "enterFieldError": "Introduce el campo.",
   "enterCallupPlaceError": "Introduce el lugar de convocatoria.",
   "selectAtLeastOnePlayerError": "Selecciona al menos un jugador.",
   "callupUpdatedSuccess": "Convocatoria actualizada correctamente.",
@@ -458,17 +471,9 @@
   "playersMenuLabel": "Jugadores",
   "playersMenuDesc": "Consultar los jugadores del equipo",
 
-  "teamsPageTitle": "Equipos",
-  "ourTeamsTitle": "Nuestros equipos",
-  "teamsSubtitle": "Consulta las plantillas y la información de cada equipo del club.",
 
   "noPlayersInTeam": "No hay jugadores en este equipo.",
 
-  "squadTitle": "Plantilla",
-  "staffTitle": "Cuerpo técnico",
-  "staffLoadError": "No se ha podido cargar el cuerpo técnico.",
-  "noStaffAvailableForTeam": "No hay cuerpo técnico disponible para este equipo.",
-  "squadLoadError": "No se ha podido cargar la plantilla.",
 
   "matchResultPending": "Pendiente de resultado",
   "viewStandings": "Ver clasificación",
@@ -514,7 +519,6 @@
   "@standingsSummaryNoRound": {
     "placeholders": { "pos": { "type": "int" }, "pts": { "type": "int" } }
   },
-  "standingsTitle": "Clasificación",
   "standingsUpdated": "Jornada {round} · actualizado el {date}",
   "@standingsUpdated": {
     "placeholders": { "round": { "type": "int" }, "date": { "type": "String" } }
@@ -555,7 +559,6 @@
   "matchTypeAmistoso": "Amistoso",
   "matchTypeCopa": "Copa",
   "matchTypeTorneo": "Torneo",
-  "resultFormatError": "El resultado debe tener el formato N-N (ej. 2-1).",
   "rivalRequiredError": "El rival es obligatorio.",
   "deleteMatchTitle": "Eliminar partido",
   "deleteMatchConfirm": "¿Eliminar este partido? Esta acción no se puede deshacer.",
@@ -566,7 +569,6 @@
   "noDateSelected": "Sin fecha",
   "dateLabel": "Fecha",
   "hourLabelHint": "Hora (ej. 18:00)",
-  "resultLabelHint": "Resultado (ej. 2-1)",
   "save": "Guardar",
 
   "calendarAllTeamsTitle": "Calendario de equipos",
@@ -578,7 +580,6 @@
   "calendarJustifiedBadge": "Justificada",
   "calendarCalledUpBadge": "Convocado",
   "calendarNotCalledUpBadge": "No convocado",
-  "calendarPlaceLabel": "Lugar",
   "matchResultLabel": "Resultado",
   "calendarJustifyAbsenceButton": "Justificar falta",
   "calendarEditJustificationButton": "Editar justificación",
@@ -589,10 +590,6 @@
   "calendarJustifyAbsenceReasonLabel": "Motivo",
   "calendarJustifyAbsenceSubmit": "Enviar",
   "calendarJustifyAbsenceSuccess": "Falta justificada correctamente.",
-  "calendarJustifyAbsenceError": "No se ha podido enviar la justificación: {error}",
-  "@calendarJustifyAbsenceError": {
-    "placeholders": { "error": { "type": "String" } }
-  },
 
   "calendarManagementTitle": "Calendario",
   "calendarManagementDesc": "Horario semanal, sesiones y partidos del equipo",
@@ -611,10 +608,6 @@
     "placeholders": { "error": { "type": "String" } }
   },
   "weeklyScheduleSavedSuccess": "Horario guardado correctamente.",
-  "weeklyScheduleSaveError": "No se ha podido guardar el horario: {error}",
-  "@weeklyScheduleSaveError": {
-    "placeholders": { "error": { "type": "String" } }
-  },
   "weeklyScheduleFormTitleNew": "Nuevo horario",
   "weeklyScheduleFormTitleEdit": "Editar horario",
   "weeklyScheduleDayLabel": "Día de la semana",
@@ -629,10 +622,6 @@
   "sessionEditTooltip": "Editar sesión",
   "sessionEditFormTitle": "Editar sesión de entrenamiento",
   "sessionEditSavedSuccess": "Sesión actualizada correctamente.",
-  "sessionEditError": "No se ha podido actualizar la sesión: {error}",
-  "@sessionEditError": {
-    "placeholders": { "error": { "type": "String" } }
-  },
   "sessionCancelTooltip": "Cancelar sesión",
   "sessionCancelConfirmTitle": "Cancelar sesión",
   "sessionCancelConfirmMessage": "Se avisará a los jugadores y familiares. Esta acción no se puede deshacer. Indica el motivo de la cancelación:",

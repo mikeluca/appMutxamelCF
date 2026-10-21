@@ -55,6 +55,36 @@ class AuthService {
     return AuthUser.fromJson(data as Map<String, dynamic>);
   }
 
+  /// Pide el código para cambiar la contraseña. El backend responde 204 exista
+  /// o no la cuenta, así que el llamador no debe deducir nada de la respuesta.
+  static Future<void> recuperarPassword({required String email}) async {
+    await ApiClient.post(
+      '/app/auth/recuperar',
+      body: {'email': email.trim().toLowerCase()},
+    );
+  }
+
+  /// Cambia la contraseña con el código recibido por email. Si es correcto el
+  /// backend inicia sesión directamente: la respuesta es un login válido.
+  /// Lanza [ApiException] con `statusCode` 400 si el código es incorrecto o ha
+  /// caducado.
+  static Future<LoginResponse> restablecerPassword({
+    required String email,
+    required String codigo,
+    required String password,
+  }) async {
+    final data = await ApiClient.post(
+      '/app/auth/restablecer',
+      body: {
+        'email': email.trim().toLowerCase(),
+        'codigo': codigo.trim(),
+        'password': password,
+      },
+    );
+
+    return LoginResponse.fromJson(data as Map<String, dynamic>);
+  }
+
   /// Activa la cuenta con el código de 6 dígitos recibido por email
   /// y fija la contraseña elegida. El backend, tras activarla, inicia
   /// sesión directamente: la respuesta es un login válido (mismo

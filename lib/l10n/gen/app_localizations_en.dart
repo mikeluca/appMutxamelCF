@@ -584,6 +584,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noNotifications => 'You have no notifications.';
 
   @override
+  String get notificationsSignedOutMessage =>
+      'Sign in to the Club Area to see your personal alerts (call-ups, messages…)';
+
+  @override
+  String get notificationsPublicHint =>
+      'News and results alerts are turned on in Club → Settings';
+
+  @override
+  String get notificationsOpenSettings => 'Go to Settings';
+
+  @override
+  String get loginForgotPassword => 'Forgot your password?';
+
+  @override
+  String get recoverTitle => 'Recover password';
+
+  @override
+  String get recoverSubtitle =>
+      'We will email you a code so you can choose a new password.';
+
+  @override
+  String get recoverSendCode => 'Send code';
+
+  @override
+  String get recoverCodeSent =>
+      'If the email has an account at the club, you will receive a code in a few minutes. Check your spam folder too.';
+
+  @override
+  String get recoverResetHeading => 'Choose your new password';
+
+  @override
+  String get recoverChangePassword => 'Change password';
+
+  @override
+  String get recoverResend => 'Resend code';
+
+  @override
+  String recoverResendIn(String time) {
+    return 'Resend code ($time)';
+  }
+
+  @override
+  String get recoverPasswordChanged => 'Password changed';
+
+  @override
+  String get recoverCodeInvalid => 'Wrong or expired code';
+
+  @override
   String get markAllReadError =>
       'The notifications could not be marked as read.';
 
@@ -891,9 +939,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get liveLineupSentMessage => 'Line-up sent.';
 
   @override
-  String get liveGoalAuthorLabel => 'Goal scorer';
-
-  @override
   String get liveEnterGoalAuthorError => 'Enter the goal scorer.';
 
   @override
@@ -1019,13 +1064,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newMasculineButton => 'New';
-
-  @override
-  String get noTrainingsYet => 'There are no training sessions yet.';
-
-  @override
-  String get createFirstTrainingHint =>
-      'Create the first one using the New button.';
 
   @override
   String get trainingsNextBadge => 'NEXT TRAINING';
@@ -1169,12 +1207,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveCallupButton => 'Save call-up';
 
   @override
-  String get enterRivalError => 'Enter the opponent.';
-
-  @override
-  String get enterFieldError => 'Enter the ground.';
-
-  @override
   String get enterCallupPlaceError => 'Enter the call-up place.';
 
   @override
@@ -1213,33 +1245,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playersMenuDesc => 'View the team\'s players';
 
   @override
-  String get teamsPageTitle => 'Teams';
-
-  @override
-  String get ourTeamsTitle => 'Our teams';
-
-  @override
-  String get teamsSubtitle =>
-      'View the squads and information for each of the club\'s teams.';
-
-  @override
   String get noPlayersInTeam => 'There are no players in this team.';
-
-  @override
-  String get squadTitle => 'Squad';
-
-  @override
-  String get staffTitle => 'Coaching staff';
-
-  @override
-  String get staffLoadError => 'The coaching staff could not be loaded.';
-
-  @override
-  String get noStaffAvailableForTeam =>
-      'No coaching staff available for this team.';
-
-  @override
-  String get squadLoadError => 'The squad could not be loaded.';
 
   @override
   String get matchResultPending => 'Result pending';
@@ -1369,9 +1375,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get standingsTitle => 'Standings';
-
-  @override
   String standingsUpdated(int round, String date) {
     return 'Matchday $round · updated on $date';
   }
@@ -1474,10 +1477,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get matchTypeTorneo => 'Tournament';
 
   @override
-  String get resultFormatError =>
-      'The result must be in the format N-N (e.g. 2-1).';
-
-  @override
   String get rivalRequiredError => 'The opponent is required.';
 
   @override
@@ -1507,9 +1506,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hourLabelHint => 'Time (e.g. 18:00)';
-
-  @override
-  String get resultLabelHint => 'Result (e.g. 2-1)';
 
   @override
   String get save => 'Save';
@@ -1542,9 +1538,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calendarNotCalledUpBadge => 'Not called up';
 
   @override
-  String get calendarPlaceLabel => 'Place';
-
-  @override
   String get matchResultLabel => 'Result';
 
   @override
@@ -1575,11 +1568,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get calendarJustifyAbsenceSuccess => 'Absence justified successfully.';
-
-  @override
-  String calendarJustifyAbsenceError(String error) {
-    return 'The justification could not be sent: $error';
-  }
 
   @override
   String get calendarManagementTitle => 'Calendar';
@@ -1627,11 +1615,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weeklyScheduleSavedSuccess => 'Schedule saved successfully.';
 
   @override
-  String weeklyScheduleSaveError(String error) {
-    return 'The schedule could not be saved: $error';
-  }
-
-  @override
   String get weeklyScheduleFormTitleNew => 'New schedule';
 
   @override
@@ -1667,11 +1650,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sessionEditSavedSuccess => 'Session updated successfully.';
-
-  @override
-  String sessionEditError(String error) {
-    return 'The session could not be updated: $error';
-  }
 
   @override
   String get sessionCancelTooltip => 'Cancel session';

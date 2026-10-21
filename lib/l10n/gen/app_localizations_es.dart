@@ -596,6 +596,54 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noNotifications => 'No tienes notificaciones.';
 
   @override
+  String get notificationsSignedOutMessage =>
+      'Inicia sesión en el Área Club para ver tus avisos personales (convocatorias, mensajes…)';
+
+  @override
+  String get notificationsPublicHint =>
+      'Los avisos de noticias y resultados se activan en Club → Ajustes';
+
+  @override
+  String get notificationsOpenSettings => 'Ir a Ajustes';
+
+  @override
+  String get loginForgotPassword => '¿Has olvidado tu contraseña?';
+
+  @override
+  String get recoverTitle => 'Recuperar contraseña';
+
+  @override
+  String get recoverSubtitle =>
+      'Te enviaremos un código por email para que elijas una contraseña nueva.';
+
+  @override
+  String get recoverSendCode => 'Enviar código';
+
+  @override
+  String get recoverCodeSent =>
+      'Si el email tiene una cuenta en el club, recibirás un código en unos minutos. Revisa también la carpeta de spam.';
+
+  @override
+  String get recoverResetHeading => 'Elige tu nueva contraseña';
+
+  @override
+  String get recoverChangePassword => 'Cambiar contraseña';
+
+  @override
+  String get recoverResend => 'Reenviar código';
+
+  @override
+  String recoverResendIn(String time) {
+    return 'Reenviar código ($time)';
+  }
+
+  @override
+  String get recoverPasswordChanged => 'Contraseña cambiada';
+
+  @override
+  String get recoverCodeInvalid => 'Código incorrecto o caducado';
+
+  @override
   String get markAllReadError =>
       'No se pudieron marcar las notificaciones como leídas.';
 
@@ -904,9 +952,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get liveLineupSentMessage => 'Alineación enviada.';
 
   @override
-  String get liveGoalAuthorLabel => 'Autor del gol';
-
-  @override
   String get liveEnterGoalAuthorError => 'Escribe el autor del gol.';
 
   @override
@@ -1033,13 +1078,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get newMasculineButton => 'Nuevo';
-
-  @override
-  String get noTrainingsYet => 'Todavía no hay entrenamientos.';
-
-  @override
-  String get createFirstTrainingHint =>
-      'Crea el primero pulsando el botón Nuevo.';
 
   @override
   String get trainingsNextBadge => 'PRÓXIMO ENTRENAMIENTO';
@@ -1186,12 +1224,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get saveCallupButton => 'Guardar convocatoria';
 
   @override
-  String get enterRivalError => 'Introduce el rival.';
-
-  @override
-  String get enterFieldError => 'Introduce el campo.';
-
-  @override
   String get enterCallupPlaceError => 'Introduce el lugar de convocatoria.';
 
   @override
@@ -1229,33 +1261,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get playersMenuDesc => 'Consultar los jugadores del equipo';
 
   @override
-  String get teamsPageTitle => 'Equipos';
-
-  @override
-  String get ourTeamsTitle => 'Nuestros equipos';
-
-  @override
-  String get teamsSubtitle =>
-      'Consulta las plantillas y la información de cada equipo del club.';
-
-  @override
   String get noPlayersInTeam => 'No hay jugadores en este equipo.';
-
-  @override
-  String get squadTitle => 'Plantilla';
-
-  @override
-  String get staffTitle => 'Cuerpo técnico';
-
-  @override
-  String get staffLoadError => 'No se ha podido cargar el cuerpo técnico.';
-
-  @override
-  String get noStaffAvailableForTeam =>
-      'No hay cuerpo técnico disponible para este equipo.';
-
-  @override
-  String get squadLoadError => 'No se ha podido cargar la plantilla.';
 
   @override
   String get matchResultPending => 'Pendiente de resultado';
@@ -1385,9 +1391,6 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get standingsTitle => 'Clasificación';
-
-  @override
   String standingsUpdated(int round, String date) {
     return 'Jornada $round · actualizado el $date';
   }
@@ -1491,10 +1494,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get matchTypeTorneo => 'Torneo';
 
   @override
-  String get resultFormatError =>
-      'El resultado debe tener el formato N-N (ej. 2-1).';
-
-  @override
   String get rivalRequiredError => 'El rival es obligatorio.';
 
   @override
@@ -1524,9 +1523,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get hourLabelHint => 'Hora (ej. 18:00)';
-
-  @override
-  String get resultLabelHint => 'Resultado (ej. 2-1)';
 
   @override
   String get save => 'Guardar';
@@ -1560,9 +1556,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get calendarNotCalledUpBadge => 'No convocado';
 
   @override
-  String get calendarPlaceLabel => 'Lugar';
-
-  @override
   String get matchResultLabel => 'Resultado';
 
   @override
@@ -1594,11 +1587,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get calendarJustifyAbsenceSuccess =>
       'Falta justificada correctamente.';
-
-  @override
-  String calendarJustifyAbsenceError(String error) {
-    return 'No se ha podido enviar la justificación: $error';
-  }
 
   @override
   String get calendarManagementTitle => 'Calendario';
@@ -1646,11 +1634,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get weeklyScheduleSavedSuccess => 'Horario guardado correctamente.';
 
   @override
-  String weeklyScheduleSaveError(String error) {
-    return 'No se ha podido guardar el horario: $error';
-  }
-
-  @override
   String get weeklyScheduleFormTitleNew => 'Nuevo horario';
 
   @override
@@ -1686,11 +1669,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sessionEditSavedSuccess => 'Sesión actualizada correctamente.';
-
-  @override
-  String sessionEditError(String error) {
-    return 'No se ha podido actualizar la sesión: $error';
-  }
 
   @override
   String get sessionCancelTooltip => 'Cancelar sesión';

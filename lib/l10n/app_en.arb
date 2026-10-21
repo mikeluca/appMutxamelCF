@@ -217,6 +217,24 @@
   "markAllReadTooltip": "Mark all as read",
   "notificationsLoadError": "The notifications could not be loaded.",
   "noNotifications": "You have no notifications.",
+  "notificationsSignedOutMessage": "Sign in to the Club Area to see your personal alerts (call-ups, messages…)",
+  "notificationsPublicHint": "News and results alerts are turned on in Club → Settings",
+  "notificationsOpenSettings": "Go to Settings",
+
+  "loginForgotPassword": "Forgot your password?",
+  "recoverTitle": "Recover password",
+  "recoverSubtitle": "We will email you a code so you can choose a new password.",
+  "recoverSendCode": "Send code",
+  "recoverCodeSent": "If the email has an account at the club, you will receive a code in a few minutes. Check your spam folder too.",
+  "recoverResetHeading": "Choose your new password",
+  "recoverChangePassword": "Change password",
+  "recoverResend": "Resend code",
+  "recoverResendIn": "Resend code ({time})",
+  "@recoverResendIn": {
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "recoverPasswordChanged": "Password changed",
+  "recoverCodeInvalid": "Wrong or expired code",
   "markAllReadError": "The notifications could not be marked as read.",
   "todayAt": "Today, {time}",
   "@todayAt": {
@@ -334,7 +352,6 @@
   "liveSubstitutesLabel": "Substitutes",
   "liveFillLineupError": "Fill in the starting line-up and the substitutes.",
   "liveLineupSentMessage": "Line-up sent.",
-  "liveGoalAuthorLabel": "Goal scorer",
   "liveEnterGoalAuthorError": "Enter the goal scorer.",
   "liveGoalSentMessage": "Goal sent.",
   "liveNoMatchesToday": "There is no First Team match today",
@@ -384,8 +401,6 @@
 
   "trainingsTitle": "Training sessions",
   "newMasculineButton": "New",
-  "noTrainingsYet": "There are no training sessions yet.",
-  "createFirstTrainingHint": "Create the first one using the New button.",
   "trainingsNextBadge": "NEXT TRAINING",
   "noUpcomingTrainings": "There are no trainings in the next two weeks.",
   "pastTrainingsButton": "Past trainings",
@@ -437,8 +452,6 @@
     "placeholders": { "count": { "type": "int" } }
   },
   "saveCallupButton": "Save call-up",
-  "enterRivalError": "Enter the opponent.",
-  "enterFieldError": "Enter the ground.",
   "enterCallupPlaceError": "Enter the call-up place.",
   "selectAtLeastOnePlayerError": "Select at least one player.",
   "callupUpdatedSuccess": "Call-up updated successfully.",
@@ -458,17 +471,9 @@
   "playersMenuLabel": "Players",
   "playersMenuDesc": "View the team's players",
 
-  "teamsPageTitle": "Teams",
-  "ourTeamsTitle": "Our teams",
-  "teamsSubtitle": "View the squads and information for each of the club's teams.",
 
   "noPlayersInTeam": "There are no players in this team.",
 
-  "squadTitle": "Squad",
-  "staffTitle": "Coaching staff",
-  "staffLoadError": "The coaching staff could not be loaded.",
-  "noStaffAvailableForTeam": "No coaching staff available for this team.",
-  "squadLoadError": "The squad could not be loaded.",
 
   "matchResultPending": "Result pending",
   "viewStandings": "View standings",
@@ -514,7 +519,6 @@
   "@standingsSummaryNoRound": {
     "placeholders": { "pos": { "type": "int" }, "pts": { "type": "int" } }
   },
-  "standingsTitle": "Standings",
   "standingsUpdated": "Matchday {round} · updated on {date}",
   "@standingsUpdated": {
     "placeholders": { "round": { "type": "int" }, "date": { "type": "String" } }
@@ -555,7 +559,6 @@
   "matchTypeAmistoso": "Friendly",
   "matchTypeCopa": "Cup",
   "matchTypeTorneo": "Tournament",
-  "resultFormatError": "The result must be in the format N-N (e.g. 2-1).",
   "rivalRequiredError": "The opponent is required.",
   "deleteMatchTitle": "Delete match",
   "deleteMatchConfirm": "Delete this match? This action cannot be undone.",
@@ -566,7 +569,6 @@
   "noDateSelected": "No date",
   "dateLabel": "Date",
   "hourLabelHint": "Time (e.g. 18:00)",
-  "resultLabelHint": "Result (e.g. 2-1)",
   "save": "Save",
 
   "calendarAllTeamsTitle": "Teams calendar",
@@ -578,7 +580,6 @@
   "calendarJustifiedBadge": "Justified",
   "calendarCalledUpBadge": "Called up",
   "calendarNotCalledUpBadge": "Not called up",
-  "calendarPlaceLabel": "Place",
   "matchResultLabel": "Result",
   "calendarJustifyAbsenceButton": "Justify absence",
   "calendarEditJustificationButton": "Edit justification",
@@ -589,10 +590,6 @@
   "calendarJustifyAbsenceReasonLabel": "Reason",
   "calendarJustifyAbsenceSubmit": "Send",
   "calendarJustifyAbsenceSuccess": "Absence justified successfully.",
-  "calendarJustifyAbsenceError": "The justification could not be sent: {error}",
-  "@calendarJustifyAbsenceError": {
-    "placeholders": { "error": { "type": "String" } }
-  },
 
   "calendarManagementTitle": "Calendar",
   "calendarManagementDesc": "Weekly schedule, sessions and matches for the team",
@@ -611,10 +608,6 @@
     "placeholders": { "error": { "type": "String" } }
   },
   "weeklyScheduleSavedSuccess": "Schedule saved successfully.",
-  "weeklyScheduleSaveError": "The schedule could not be saved: {error}",
-  "@weeklyScheduleSaveError": {
-    "placeholders": { "error": { "type": "String" } }
-  },
   "weeklyScheduleFormTitleNew": "New schedule",
   "weeklyScheduleFormTitleEdit": "Edit schedule",
   "weeklyScheduleDayLabel": "Day of the week",
@@ -629,10 +622,6 @@
   "sessionEditTooltip": "Edit session",
   "sessionEditFormTitle": "Edit training session",
   "sessionEditSavedSuccess": "Session updated successfully.",
-  "sessionEditError": "The session could not be updated: {error}",
-  "@sessionEditError": {
-    "placeholders": { "error": { "type": "String" } }
-  },
   "sessionCancelTooltip": "Cancel session",
   "sessionCancelConfirmTitle": "Cancel session",
   "sessionCancelConfirmMessage": "Players and family members will be notified. This action cannot be undone. Enter the reason for the cancellation:",

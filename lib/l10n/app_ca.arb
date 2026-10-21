@@ -217,6 +217,24 @@
   "markAllReadTooltip": "Marca-les totes com a llegides",
   "notificationsLoadError": "No s'han pogut carregar les notificacions.",
   "noNotifications": "No tens notificacions.",
+  "notificationsSignedOutMessage": "Inicia sessió a l'Àrea Club per a veure els teus avisos personals (convocatòries, missatges…)",
+  "notificationsPublicHint": "Els avisos de notícies i resultats s'activen a Club → Ajustos",
+  "notificationsOpenSettings": "Anar a Ajustos",
+
+  "loginForgotPassword": "Has oblidat la teua contrasenya?",
+  "recoverTitle": "Recuperar contrasenya",
+  "recoverSubtitle": "T'enviarem un codi per email perquè triïs una contrasenya nova.",
+  "recoverSendCode": "Enviar codi",
+  "recoverCodeSent": "Si l'email té un compte al club, rebràs un codi en uns minuts. Revisa també la carpeta de correu brossa.",
+  "recoverResetHeading": "Tria la teua nova contrasenya",
+  "recoverChangePassword": "Canviar contrasenya",
+  "recoverResend": "Reenviar codi",
+  "recoverResendIn": "Reenviar codi ({time})",
+  "@recoverResendIn": {
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "recoverPasswordChanged": "Contrasenya canviada",
+  "recoverCodeInvalid": "Codi incorrecte o caducat",
   "markAllReadError": "No s'han pogut marcar les notificacions com a llegides.",
   "todayAt": "Hui, {time}",
   "@todayAt": {
@@ -334,7 +352,6 @@
   "liveSubstitutesLabel": "Suplents",
   "liveFillLineupError": "Omple l'onze inicial i els suplents.",
   "liveLineupSentMessage": "Alineació enviada.",
-  "liveGoalAuthorLabel": "Autor del gol",
   "liveEnterGoalAuthorError": "Escriu l'autor del gol.",
   "liveGoalSentMessage": "Gol enviat.",
   "liveNoMatchesToday": "No hi ha cap partit del Primer Equip avui",
@@ -384,8 +401,6 @@
 
   "trainingsTitle": "Entrenaments",
   "newMasculineButton": "Nou",
-  "noTrainingsYet": "Encara no hi ha entrenaments.",
-  "createFirstTrainingHint": "Crea el primer prement el botó Nou.",
   "trainingsNextBadge": "PRÒXIM ENTRENAMENT",
   "noUpcomingTrainings": "No hi ha entrenaments en les pròximes dues setmanes.",
   "pastTrainingsButton": "Entrenaments passats",
@@ -437,8 +452,6 @@
     "placeholders": { "count": { "type": "int" } }
   },
   "saveCallupButton": "Guarda la convocatòria",
-  "enterRivalError": "Introdueix el rival.",
-  "enterFieldError": "Introdueix el camp.",
   "enterCallupPlaceError": "Introdueix el lloc de convocatòria.",
   "selectAtLeastOnePlayerError": "Selecciona almenys un jugador.",
   "callupUpdatedSuccess": "Convocatòria actualitzada correctament.",
@@ -458,17 +471,9 @@
   "playersMenuLabel": "Jugadors",
   "playersMenuDesc": "Consultar els jugadors de l'equip",
 
-  "teamsPageTitle": "Equips",
-  "ourTeamsTitle": "Els nostres equips",
-  "teamsSubtitle": "Consulta les plantilles i la informació de cada equip del club.",
 
   "noPlayersInTeam": "No hi ha jugadors en aquest equip.",
 
-  "squadTitle": "Plantilla",
-  "staffTitle": "Cos tècnic",
-  "staffLoadError": "No s'ha pogut carregar el cos tècnic.",
-  "noStaffAvailableForTeam": "No hi ha cos tècnic disponible per a aquest equip.",
-  "squadLoadError": "No s'ha pogut carregar la plantilla.",
 
   "matchResultPending": "Pendent de resultat",
   "viewStandings": "Veure classificació",
@@ -514,7 +519,6 @@
   "@standingsSummaryNoRound": {
     "placeholders": { "pos": { "type": "int" }, "pts": { "type": "int" } }
   },
-  "standingsTitle": "Classificació",
   "standingsUpdated": "Jornada {round} · actualitzat el {date}",
   "@standingsUpdated": {
     "placeholders": { "round": { "type": "int" }, "date": { "type": "String" } }
@@ -555,7 +559,6 @@
   "matchTypeAmistoso": "Amistós",
   "matchTypeCopa": "Copa",
   "matchTypeTorneo": "Torneig",
-  "resultFormatError": "El resultat ha de tindre el format N-N (ex. 2-1).",
   "rivalRequiredError": "El rival és obligatori.",
   "deleteMatchTitle": "Elimina el partit",
   "deleteMatchConfirm": "Vols eliminar este partit? Esta acció no es pot desfer.",
@@ -566,7 +569,6 @@
   "noDateSelected": "Sense data",
   "dateLabel": "Data",
   "hourLabelHint": "Hora (ex. 18:00)",
-  "resultLabelHint": "Resultat (ex. 2-1)",
   "save": "Guarda",
 
   "calendarAllTeamsTitle": "Calendari d'equips",
@@ -578,7 +580,6 @@
   "calendarJustifiedBadge": "Justificada",
   "calendarCalledUpBadge": "Convocat",
   "calendarNotCalledUpBadge": "No convocat",
-  "calendarPlaceLabel": "Lloc",
   "matchResultLabel": "Resultat",
   "calendarJustifyAbsenceButton": "Justifica la falta",
   "calendarEditJustificationButton": "Edita la justificació",
@@ -589,10 +590,6 @@
   "calendarJustifyAbsenceReasonLabel": "Motiu",
   "calendarJustifyAbsenceSubmit": "Envia",
   "calendarJustifyAbsenceSuccess": "Falta justificada correctament.",
-  "calendarJustifyAbsenceError": "No s'ha pogut enviar la justificació: {error}",
-  "@calendarJustifyAbsenceError": {
-    "placeholders": { "error": { "type": "String" } }
-  },
 
   "calendarManagementTitle": "Calendari",
   "calendarManagementDesc": "Horari setmanal, sessions i partits de l'equip",
@@ -611,10 +608,6 @@
     "placeholders": { "error": { "type": "String" } }
   },
   "weeklyScheduleSavedSuccess": "Horari guardat correctament.",
-  "weeklyScheduleSaveError": "No s'ha pogut guardar l'horari: {error}",
-  "@weeklyScheduleSaveError": {
-    "placeholders": { "error": { "type": "String" } }
-  },
   "weeklyScheduleFormTitleNew": "Nou horari",
   "weeklyScheduleFormTitleEdit": "Edita l'horari",
   "weeklyScheduleDayLabel": "Dia de la setmana",
@@ -629,10 +622,6 @@
   "sessionEditTooltip": "Edita la sessió",
   "sessionEditFormTitle": "Edita la sessió d'entrenament",
   "sessionEditSavedSuccess": "Sessió actualitzada correctament.",
-  "sessionEditError": "No s'ha pogut actualitzar la sessió: {error}",
-  "@sessionEditError": {
-    "placeholders": { "error": { "type": "String" } }
-  },
   "sessionCancelTooltip": "Cancel·la la sessió",
   "sessionCancelConfirmTitle": "Cancel·la la sessió",
   "sessionCancelConfirmMessage": "S'avisarà als jugadors i familiars. Esta acció no es pot desfer. Indica el motiu de la cancel·lació:",
