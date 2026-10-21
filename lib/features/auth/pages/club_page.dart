@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/config/app_config.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/nombre_rol.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../routing/app_routes.dart';
 import '../../admin/services/admin_service.dart';
+import '../models/club_menu.dart';
 import '../services/auth_manager.dart';
 import '../services/comunicacion_service.dart';
 
@@ -102,33 +103,8 @@ class _ClubPageState extends State<ClubPage> {
   @override
   Widget build(BuildContext context) {
     final usuario = AuthManager.usuarioActual;
-
-    final tieneJugadores = usuario?.tieneRol('FAMILIAR') == true;
-
-    final tieneEquipos =
-        usuario?.tieneRol('ENTRENADOR') == true ||
-        usuario?.tieneRol('COORDINADOR') == true ||
-        usuario?.tieneRol('ADMIN_APP') == true;
-
-    final esRetransmision = usuario?.tieneRol('RETRANSMISION') == true;
-
-    final esGestionGlobal =
-        usuario?.tieneRol('COORDINADOR') == true ||
-        usuario?.tieneRol('ADMIN_APP') == true;
-
-    final esAdmin = usuario?.tieneRol('ADMIN_APP') == true;
-
-    final esJugador = usuario?.tieneRol('JUGADOR') == true;
-
-    final soloJugador = esJugador && !tieneJugadores;
-
-    final veClasificaciones =
-        esGestionGlobal ||
-        usuario?.tieneRol('JUGADOR') == true ||
-        usuario?.tieneRol('FAMILIAR') == true ||
-        usuario?.tieneRol('ENTRENADOR') == true;
-
     final t = AppLocalizations.of(context);
+    final secciones = construirSeccionesClub(usuario);
 
     return Scaffold(
       appBar: AppBar(title: Text(t.homeAreaClub), centerTitle: false),
@@ -137,205 +113,189 @@ class _ClubPageState extends State<ClubPage> {
         children: [
           _construirCabecera(context, usuario),
 
-          const SizedBox(height: 28),
+          for (final seccion in secciones) ..._construirSeccion(context, seccion),
 
-          Text(
-            t.clubPageSectionClub,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
 
-          const SizedBox(height: 12),
+  String _tituloSeccion(AppLocalizations t, SeccionClubId id) {
+    switch (id) {
+      case SeccionClubId.club:
+        return t.clubPageSectionClub;
+      case SeccionClubId.jugador:
+        return t.clubSectionPlayer;
+      case SeccionClubId.familia:
+        return t.clubSectionFamily;
+      case SeccionClubId.entrenador:
+        return t.clubSectionCoach;
+      case SeccionClubId.coordinacion:
+        return t.clubSectionCoordination;
+      case SeccionClubId.administracion:
+        return t.clubSectionAdministration;
+      case SeccionClubId.retransmision:
+        return t.clubSectionBroadcast;
+      case SeccionClubId.cuenta:
+        return t.clubPageSectionAccount;
+    }
+  }
 
-          if (tieneJugadores)
-            _construirOpcion(
-              context,
-              icono: Icons.sports_soccer,
-              titulo: t.clubPageMyPlayers,
-              descripcion: t.clubPageMyPlayersDesc,
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.players);
-              },
-            ),
+  List<Widget> _construirSeccion(BuildContext context, SeccionClub seccion) {
+    final t = AppLocalizations.of(context);
 
-          if (tieneJugadores) const SizedBox(height: 12),
+    return [
+      const SizedBox(height: 30),
 
-          // Un JUGADOR sin rol de familiar tiene su propia ficha. Si es
-          // JUGADOR y FAMILIAR a la vez, "Mis jugadores" ya los incluye a todos.
-          if (soloJugador)
-            _construirOpcion(
-              context,
-              icono: Icons.badge_outlined,
-              titulo: t.clubPageMyCard,
-              descripcion: t.clubPageMyCardDesc,
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.myCard);
-              },
-            ),
+      Text(
+        _tituloSeccion(t, seccion.id),
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
 
-          if (soloJugador) const SizedBox(height: 12),
+      const SizedBox(height: 12),
 
-          if (tieneJugadores && AppConfig.cuotasDisponibles)
-            _construirOpcion(
-              context,
-              icono: Icons.payments_outlined,
-              titulo: t.clubPageFees,
-              descripcion: t.clubPageFeesComingSoonDesc,
-              onTap: () => _mostrarCuotasProximamente(context),
-            ),
+      for (var i = 0; i < seccion.opciones.length; i++) ...[
+        if (i > 0) const SizedBox(height: 12),
+        _construirOpcionClub(context, seccion.opciones[i]),
+      ],
+    ];
+  }
 
-          if (tieneJugadores && AppConfig.cuotasDisponibles)
-            const SizedBox(height: 12),
+  void _navegar(OpcionClub opcion) {
+    Navigator.pushNamed(context, rutaDeOpcionClub(opcion)!);
+  }
 
-          if (tieneEquipos)
-            _construirOpcion(
-              context,
-              icono: Icons.groups_outlined,
-              titulo: t.clubPageMyTeams,
-              descripcion: t.clubPageMyTeamsDesc,
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.myTeams);
-              },
-            ),
+  Widget _construirOpcionClub(BuildContext context, OpcionClub opcion) {
+    final t = AppLocalizations.of(context);
+    final usuario = AuthManager.usuarioActual;
+    final esGestionGlobal =
+        usuario?.tieneRol('COORDINADOR') == true ||
+        usuario?.tieneRol('ADMIN_APP') == true;
 
-          if (tieneEquipos) const SizedBox(height: 12),
-
-          if (esGestionGlobal)
-            _construirOpcion(
-              context,
-              icono: Icons.dashboard_outlined,
-              titulo: t.clubPageWeekend,
-              descripcion: t.clubPageWeekendDesc,
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.weekend);
-              },
-            ),
-
-          if (esGestionGlobal) const SizedBox(height: 12),
-
-          if (esGestionGlobal)
-            _construirOpcion(
-              context,
-              icono: Icons.report_problem_outlined,
-              titulo: t.clubPagePlayerTracking,
-              descripcion: t.clubPagePlayerTrackingDesc,
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.playerTracking);
-              },
-            ),
-
-          if (esGestionGlobal) const SizedBox(height: 12),
-
-          if (esAdmin)
-            _construirOpcion(
-              context,
-              icono: Icons.shield_outlined,
-              titulo: t.clubPageModeration,
-              descripcion: t.clubPageModerationDesc,
-              contador: _reportesPendientes,
-              onTap: _abrirModeracion,
-            ),
-
-          if (esAdmin) const SizedBox(height: 12),
-
-          if (esAdmin)
-            _construirOpcion(
-              context,
-              icono: Icons.mark_email_unread_outlined,
-              titulo: t.clubPagePendingAccounts,
-              descripcion: t.clubPagePendingAccountsDesc,
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.pendingAccounts);
-              },
-            ),
-
-          if (esAdmin) const SizedBox(height: 12),
-
-          _construirOpcion(
-            context,
-            icono: Icons.calendar_month_outlined,
-            titulo: t.clubPageMyMatches,
-            descripcion: t.clubPageMyMatchesDesc,
-            onTap: () {
-              Navigator.pushNamed(context, AppRoutes.myMatches);
-            },
-          ),
-
-          const SizedBox(height: 12),
-
-          if (veClasificaciones)
-            _construirOpcion(
-              context,
-              icono: Icons.leaderboard_outlined,
-              titulo: esGestionGlobal
-                  ? t.allStandingsTitle
-                  : t.clubPageMyStandings,
-              descripcion: esGestionGlobal
-                  ? t.clubPageAllStandingsDesc
-                  : t.clubPageMyStandingsDesc,
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.myStandings);
-              },
-            ),
-
-          if (veClasificaciones) const SizedBox(height: 12),
-
-          _construirOpcion(
-            context,
-            icono: Icons.event_note_outlined,
-            titulo: t.clubPageCalendar,
-            descripcion: t.clubPageCalendarDesc,
-            onTap: () {
-              Navigator.pushNamed(context, AppRoutes.calendar);
-            },
-          ),
-
-          const SizedBox(height: 12),
-
-          if (esRetransmision)
-            _construirOpcion(
-              context,
-              icono: Icons.campaign_outlined,
-              titulo: t.clubPageLiveMatch,
-              descripcion: t.clubPageLiveMatchDesc,
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.liveMatch);
-              },
-            ),
-
-          if (esRetransmision) const SizedBox(height: 12),
-
-          _construirOpcionComunicaciones(context),
-
-          const SizedBox(height: 30),
-
-          Text(
-            t.clubPageSectionAccount,
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          _construirOpcion(
-            context,
-            icono: Icons.person_outline,
-            titulo: t.clubPageMyProfile,
-            descripcion: t.clubPageMyProfileDesc,
-            onTap: () {
-              Navigator.pushNamed(context, AppRoutes.profile);
-            },
-          ),
-
-          const SizedBox(height: 30),
-
-          OutlinedButton.icon(
+    switch (opcion) {
+      case OpcionClub.comunicaciones:
+        return _construirOpcionComunicaciones(context);
+      case OpcionClub.calendario:
+        return _construirOpcion(
+          context,
+          icono: Icons.event_note_outlined,
+          titulo: t.clubPageCalendar,
+          descripcion: t.clubPageCalendarDesc,
+          onTap: () => _navegar(opcion),
+        );
+      case OpcionClub.partidos:
+        return _construirOpcion(
+          context,
+          icono: Icons.calendar_month_outlined,
+          titulo: esGestionGlobal ? t.allMatchesTitle : t.clubPageMyMatches,
+          descripcion: t.clubPageMyMatchesDesc,
+          onTap: () => _navegar(opcion),
+        );
+      case OpcionClub.clasificaciones:
+        return _construirOpcion(
+          context,
+          icono: Icons.leaderboard_outlined,
+          titulo: esGestionGlobal
+              ? t.allStandingsTitle
+              : t.clubPageMyStandings,
+          descripcion: esGestionGlobal
+              ? t.clubPageAllStandingsDesc
+              : t.clubPageMyStandingsDesc,
+          onTap: () => _navegar(opcion),
+        );
+      case OpcionClub.miFicha:
+        return _construirOpcion(
+          context,
+          icono: Icons.badge_outlined,
+          titulo: t.clubPageMyCard,
+          descripcion: t.clubPageMyCardDesc,
+          onTap: () => _navegar(opcion),
+        );
+      case OpcionClub.misJugadores:
+        return _construirOpcion(
+          context,
+          icono: Icons.sports_soccer,
+          titulo: t.clubPageMyPlayers,
+          descripcion: t.clubPageMyPlayersDesc,
+          onTap: () => _navegar(opcion),
+        );
+      case OpcionClub.cuotas:
+        return _construirOpcion(
+          context,
+          icono: Icons.payments_outlined,
+          titulo: t.clubPageFees,
+          descripcion: t.clubPageFeesComingSoonDesc,
+          onTap: () => _mostrarCuotasProximamente(context),
+        );
+      case OpcionClub.misEquipos:
+      case OpcionClub.todosLosEquipos:
+        return _construirOpcion(
+          context,
+          icono: Icons.groups_outlined,
+          titulo: opcion == OpcionClub.todosLosEquipos
+              ? t.allTeamsTitle
+              : t.clubPageMyTeams,
+          descripcion: t.clubPageMyTeamsDesc,
+          onTap: () => _navegar(opcion),
+        );
+      case OpcionClub.finDeSemana:
+        return _construirOpcion(
+          context,
+          icono: Icons.dashboard_outlined,
+          titulo: t.clubPageWeekend,
+          descripcion: t.clubPageWeekendDesc,
+          onTap: () => _navegar(opcion),
+        );
+      case OpcionClub.seguimientoJugadores:
+        return _construirOpcion(
+          context,
+          icono: Icons.report_problem_outlined,
+          titulo: t.clubPagePlayerTracking,
+          descripcion: t.clubPagePlayerTrackingDesc,
+          onTap: () => _navegar(opcion),
+        );
+      case OpcionClub.moderacion:
+        return _construirOpcion(
+          context,
+          icono: Icons.shield_outlined,
+          titulo: t.clubPageModeration,
+          descripcion: t.clubPageModerationDesc,
+          contador: _reportesPendientes,
+          onTap: _abrirModeracion,
+        );
+      case OpcionClub.cuentasPendientes:
+        return _construirOpcion(
+          context,
+          icono: Icons.mark_email_unread_outlined,
+          titulo: t.clubPagePendingAccounts,
+          descripcion: t.clubPagePendingAccountsDesc,
+          onTap: () => _navegar(opcion),
+        );
+      case OpcionClub.partidoEnDirecto:
+        return _construirOpcion(
+          context,
+          icono: Icons.campaign_outlined,
+          titulo: t.clubPageLiveMatch,
+          descripcion: t.clubPageLiveMatchDesc,
+          onTap: () => _navegar(opcion),
+        );
+      case OpcionClub.miPerfil:
+        return _construirOpcion(
+          context,
+          icono: Icons.person_outline,
+          titulo: t.clubPageMyProfile,
+          descripcion: t.clubPageMyProfileDesc,
+          onTap: () => _navegar(opcion),
+        );
+      case OpcionClub.cerrarSesion:
+        return Padding(
+          padding: const EdgeInsets.only(top: 18),
+          child: OutlinedButton.icon(
             onPressed: () async {
               await AuthManager.cerrarSesion();
 
@@ -350,11 +310,8 @@ class _ClubPageState extends State<ClubPage> {
             icon: const Icon(Icons.logout),
             label: Text(t.clubPageLogout),
           ),
-
-          const SizedBox(height: 20),
-        ],
-      ),
-    );
+        );
+    }
   }
 
   Widget _construirOpcionComunicaciones(BuildContext context) {
@@ -494,6 +451,36 @@ class _ClubPageState extends State<ClubPage> {
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
+
+                if (usuario != null && usuario.roles.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      for (final rol in usuario.roles)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.16),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            nombreDeRol(AppLocalizations.of(context), rol),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),

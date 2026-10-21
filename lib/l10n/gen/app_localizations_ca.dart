@@ -445,6 +445,24 @@ class AppLocalizationsCa extends AppLocalizations {
   String get clubPageSectionAccount => 'El meu compte';
 
   @override
+  String get clubSectionPlayer => 'Jugador';
+
+  @override
+  String get clubSectionFamily => 'Família';
+
+  @override
+  String get clubSectionCoach => 'Entrenador';
+
+  @override
+  String get clubSectionCoordination => 'Coordinació';
+
+  @override
+  String get clubSectionAdministration => 'Administració';
+
+  @override
+  String get clubSectionBroadcast => 'Retransmissió';
+
+  @override
   String get clubPageMyProfile => 'El meu perfil';
 
   @override

@@ -743,7 +743,7 @@ void main() {
     tearDown(AuthManager.olvidarUsuario);
 
     for (final rol in ['COORDINADOR', 'ADMIN_APP']) {
-      testWidgets('$rol ve las dos opciones, tras "Mis equipos"', (
+      testWidgets('$rol ve las dos opciones, tras "Todos los equipos"', (
         tester,
       ) async {
         await pintarClub(tester, [rol]);
@@ -753,7 +753,7 @@ void main() {
         expect(find.byIcon(Icons.dashboard_outlined), findsOneWidget);
         expect(find.byIcon(Icons.report_problem_outlined), findsOneWidget);
 
-        final equipos = tester.getTopLeft(find.text('Mis equipos')).dy;
+        final equipos = tester.getTopLeft(find.text('Todos los equipos')).dy;
         final fin = tester.getTopLeft(find.text('Fin de semana')).dy;
         final seguimiento = tester
             .getTopLeft(find.text('Seguimiento de jugadores'))

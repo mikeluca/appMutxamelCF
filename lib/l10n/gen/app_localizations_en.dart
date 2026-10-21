@@ -440,6 +440,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clubPageSectionAccount => 'My account';
 
   @override
+  String get clubSectionPlayer => 'Player';
+
+  @override
+  String get clubSectionFamily => 'Family';
+
+  @override
+  String get clubSectionCoach => 'Coach';
+
+  @override
+  String get clubSectionCoordination => 'Coordination';
+
+  @override
+  String get clubSectionAdministration => 'Administration';
+
+  @override
+  String get clubSectionBroadcast => 'Live broadcast';
+
+  @override
   String get clubPageMyProfile => 'My profile';
 
   @override

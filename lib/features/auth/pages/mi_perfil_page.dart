@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/utils/nombre_rol.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
@@ -375,27 +376,6 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
   }
 
   String _rolesTexto(List<String> roles) {
-    return roles
-        .map((rol) {
-          switch (rol) {
-            case 'FAMILIAR':
-              return _t.roleFamiliar;
-            case 'JUGADOR':
-              return _t.roleJugador;
-            case 'ENTRENADOR':
-              return _t.roleEntrenador;
-            case 'COORDINADOR':
-              return _t.roleCoordinador;
-            case 'RETRANSMISION':
-              return _t.roleRetransmision;
-            case 'SOCIO':
-              return _t.roleSocio;
-            case 'ADMIN_APP':
-              return _t.roleAdministrador;
-            default:
-              return rol;
-          }
-        })
-        .join(', ');
+    return roles.map((rol) => nombreDeRol(_t, rol)).join(', ');
   }
 }

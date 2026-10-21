@@ -922,6 +922,42 @@ abstract class AppLocalizations {
   /// **'Mi cuenta'**
   String get clubPageSectionAccount;
 
+  /// No description provided for @clubSectionPlayer.
+  ///
+  /// In es, this message translates to:
+  /// **'Jugador'**
+  String get clubSectionPlayer;
+
+  /// No description provided for @clubSectionFamily.
+  ///
+  /// In es, this message translates to:
+  /// **'Familia'**
+  String get clubSectionFamily;
+
+  /// No description provided for @clubSectionCoach.
+  ///
+  /// In es, this message translates to:
+  /// **'Entrenador'**
+  String get clubSectionCoach;
+
+  /// No description provided for @clubSectionCoordination.
+  ///
+  /// In es, this message translates to:
+  /// **'Coordinación'**
+  String get clubSectionCoordination;
+
+  /// No description provided for @clubSectionAdministration.
+  ///
+  /// In es, this message translates to:
+  /// **'Administración'**
+  String get clubSectionAdministration;
+
+  /// No description provided for @clubSectionBroadcast.
+  ///
+  /// In es, this message translates to:
+  /// **'Retransmisión'**
+  String get clubSectionBroadcast;
+
   /// No description provided for @clubPageMyProfile.
   ///
   /// In es, this message translates to:
