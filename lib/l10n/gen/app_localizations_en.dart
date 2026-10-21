@@ -632,6 +632,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recoverCodeInvalid => 'Wrong or expired code';
 
   @override
+  String get recoverTooManyAttempts =>
+      'Too many attempts. Wait a few minutes and try again.';
+
+  @override
+  String get recoverChangedLoginHint =>
+      'Your password has been changed. Sign in with the new password.';
+
+  @override
+  String get recoverNotActivated =>
+      'Have not activated your account yet? Use the code in';
+
+  @override
   String get markAllReadError =>
       'The notifications could not be marked as read.';
 

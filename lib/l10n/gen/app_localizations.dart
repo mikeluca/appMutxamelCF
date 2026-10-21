@@ -1264,6 +1264,24 @@ abstract class AppLocalizations {
   /// **'Código incorrecto o caducado'**
   String get recoverCodeInvalid;
 
+  /// No description provided for @recoverTooManyAttempts.
+  ///
+  /// In es, this message translates to:
+  /// **'Demasiados intentos. Espera unos minutos y vuelve a probar.'**
+  String get recoverTooManyAttempts;
+
+  /// No description provided for @recoverChangedLoginHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu contraseña se ha cambiado. Entra con la nueva contraseña.'**
+  String get recoverChangedLoginHint;
+
+  /// No description provided for @recoverNotActivated.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Aún no has activado tu cuenta? Usa el código en'**
+  String get recoverNotActivated;
+
   /// No description provided for @markAllReadError.
   ///
   /// In es, this message translates to:

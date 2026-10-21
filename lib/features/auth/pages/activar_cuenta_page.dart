@@ -8,7 +8,10 @@ import '../services/auth_manager.dart';
 import '../services/auth_service.dart';
 
 class ActivarCuentaPage extends StatefulWidget {
-  const ActivarCuentaPage({super.key});
+  /// Email con el que se rellena el campo al abrir la pantalla.
+  final String? emailInicial;
+
+  const ActivarCuentaPage({super.key, this.emailInicial});
 
   @override
   State<ActivarCuentaPage> createState() => _ActivarCuentaPageState();
@@ -17,7 +20,9 @@ class ActivarCuentaPage extends StatefulWidget {
 class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
   final _formKey = GlobalKey<FormState>();
 
-  final _emailController = TextEditingController();
+  late final _emailController = TextEditingController(
+    text: widget.emailInicial ?? '',
+  );
   final _codigoController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmarPasswordController = TextEditingController();
@@ -86,9 +91,7 @@ class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
     final t = AppLocalizations.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: ClubAppBarTitle(titulo: t.activateAccountButton),
-      ),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: t.activateAccountButton)),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

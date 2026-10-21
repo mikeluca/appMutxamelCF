@@ -10,6 +10,8 @@ import '../../../l10n/gen/app_localizations.dart';
 import '../../../routing/app_routes.dart';
 import '../services/auth_manager.dart';
 import '../services/auth_service.dart';
+import 'activar_cuenta_page.dart';
+import 'login_page.dart';
 
 /// Pantalla 2 de "¿Has olvidado tu contraseña?": código de 6 dígitos y
 /// contraseña nueva. Con éxito entra directamente en el Área Club.
@@ -98,13 +100,13 @@ class _RestablecerPasswordPageState extends State<RestablecerPasswordPage> {
 
       _iniciarCuentaAtras();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(t.recoverCodeSent)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.recoverCodeSent)));
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = mensajeDeAccion(t, e);
+          _error = mensajeDeRecuperacion(t, e);
         });
       }
     } finally {
@@ -139,7 +141,33 @@ class _RestablecerPasswordPageState extends State<RestablecerPasswordPage> {
         password: _passwordController.text,
       );
 
-      await AuthManager.completarAcceso(loginResponse);
+      try {
+        await AuthManager.completarAcceso(loginResponse);
+      } catch (_) {
+        // La contraseña YA se ha cambiado; solo ha fallado dejar la sesión
+        // lista (p. ej. sin red). No se enseña un error: se lleva al login
+        // con el email relleno para que entre con la contraseña nueva.
+        try {
+          await AuthManager.cerrarSesion(desregistrarDispositivo: false);
+        } catch (_) {
+          // Nada que limpiar.
+        }
+
+        mensajes.showSnackBar(
+          SnackBar(content: Text(t.recoverChangedLoginHint)),
+        );
+
+        if (!mounted) return;
+
+        navigator.pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (_) => LoginPage(emailInicial: widget.email),
+          ),
+          (route) => route.isFirst,
+        );
+
+        return;
+      }
 
       mensajes.showSnackBar(SnackBar(content: Text(t.recoverPasswordChanged)));
 
@@ -147,16 +175,13 @@ class _RestablecerPasswordPageState extends State<RestablecerPasswordPage> {
 
       // Entrada directa al Área Club: se limpia toda la pila (login +
       // recuperación) para no volver a una pantalla ya usada.
-      navigator.pushNamedAndRemoveUntil(
-        AppRoutes.club,
-        (route) => false,
-      );
+      navigator.pushNamedAndRemoveUntil(AppRoutes.club, (route) => false);
     } catch (e) {
       if (mounted) {
         setState(() {
           _error = e is ApiException && e.statusCode == 400
               ? t.recoverCodeInvalid
-              : mensajeDeAccion(t, e);
+              : mensajeDeRecuperacion(t, e);
         });
       }
     } finally {
@@ -365,6 +390,39 @@ class _RestablecerPasswordPageState extends State<RestablecerPasswordPage> {
                               )
                             : t.recoverResend,
                       ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          '${t.recoverNotActivated} ',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        InkWell(
+                          onTap: _cargando
+                              ? null
+                              : () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ActivarCuentaPage(
+                                      emailInicial: widget.email,
+                                    ),
+                                  ),
+                                ),
+                          child: Text(
+                            t.activateAccountButton,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  decoration: TextDecoration.underline,
+                                ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

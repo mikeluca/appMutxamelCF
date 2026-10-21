@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:app_mutxamel_cf/features/auth/pages/activar_cuenta_page.dart';
 import 'package:app_mutxamel_cf/features/auth/pages/login_page.dart';
 import 'package:app_mutxamel_cf/features/auth/pages/recuperar_password_page.dart';
 import 'package:app_mutxamel_cf/features/auth/services/auth_manager.dart';
@@ -55,6 +56,7 @@ class _Backend {
   final cuerpos = <Map<String, dynamic>>[];
   http.Response Function() restablecer;
   Object? errorRed;
+  bool meFalla = false;
 
   _Backend({http.Response Function()? restablecer})
     : restablecer =
@@ -83,6 +85,10 @@ class _Backend {
       case '/api/app/auth/restablecer':
         return restablecer();
       case '/api/app/auth/me':
+        if (meFalla) {
+          return http.Response('boom', 500);
+        }
+
         return _json({
           'usuarioId': 7,
           'email': 'ana@example.com',
@@ -133,7 +139,10 @@ void main() {
 
       expect(find.text('¿Has olvidado tu contraseña?'), findsOneWidget);
 
-      await tester.enterText(find.byType(TextFormField).first, 'ana@example.com');
+      await tester.enterText(
+        find.byType(TextFormField).first,
+        'ana@example.com',
+      );
       await tester.tap(find.text('¿Has olvidado tu contraseña?'));
       await tester.pumpAndSettle();
 
@@ -265,6 +274,97 @@ void main() {
       expect(find.text('Debe tener al menos 8 caracteres'), findsOneWidget);
       expect(find.text('Las contraseñas no coinciden'), findsOneWidget);
       expect(backend.veces('/restablecer'), 0);
+    });
+  });
+
+  group('demasiados intentos (429)', () {
+    final textoLimite =
+        'Demasiados intentos. Espera unos minutos y vuelve a probar.';
+
+    http.Response limite() => _json({
+      'codigo': 'DEMASIADOS_INTENTOS',
+      'mensaje':
+          'Demasiados intentos fallidos. Inténtalo de nuevo en unos minutos.',
+    }, 429);
+
+    testWidgets('en /restablecer se traduce a la clave l10n', (tester) async {
+      final backend = _Backend(restablecer: limite);
+
+      await conMockHttp(backend.responder, () async {
+        await _pintar(tester, const RecuperarPasswordPage());
+        await _rellenarYEnviarEmail(tester, 'ana@example.com');
+        await _rellenarPantalla2(tester);
+        await tester.tap(find.text('Cambiar contraseña'));
+        await tester.pumpAndSettle();
+      });
+
+      expect(find.text(textoLimite), findsOneWidget);
+      expect(find.textContaining('Inténtalo de nuevo'), findsNothing);
+    });
+
+    testWidgets('en /recuperar se traduce a la clave l10n', (tester) async {
+      await conMockHttp((request) async => limite(), () async {
+        await _pintar(tester, const RecuperarPasswordPage());
+        await _rellenarYEnviarEmail(tester, 'ana@example.com');
+      });
+
+      expect(find.text(textoLimite), findsOneWidget);
+      expect(find.text(_mensajeEnviado), findsNothing);
+    });
+  });
+
+  group('contraseña cambiada pero sin poder dejar la sesión lista', () {
+    testWidgets('lleva al login con el email relleno y el aviso', (
+      tester,
+    ) async {
+      final backend = _Backend();
+
+      await conMockHttp(backend.responder, () async {
+        await _pintar(tester, const RecuperarPasswordPage());
+        await _rellenarYEnviarEmail(tester, 'ana@example.com');
+        await _rellenarPantalla2(tester);
+
+        backend.meFalla = true;
+        await tester.tap(find.text('Cambiar contraseña'));
+        await tester.pumpAndSettle();
+      });
+
+      expect(find.byType(LoginPage), findsOneWidget);
+      expect(find.text('ana@example.com'), findsOneWidget);
+      expect(
+        find.text(
+          'Tu contraseña se ha cambiado. Entra con la nueva contraseña.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('AREA CLUB'), findsNothing);
+      // No se queda una sesión a medias.
+      expect(await AuthSession.estaAutenticado(), isFalse);
+      expect(AuthManager.estaAutenticado, isFalse);
+    });
+  });
+
+  group('cuenta sin activar', () {
+    testWidgets('la pantalla 2 enlaza a Activar cuenta con el email', (
+      tester,
+    ) async {
+      final backend = _Backend();
+
+      await conMockHttp(backend.responder, () async {
+        await _pintar(tester, const RecuperarPasswordPage());
+        await _rellenarYEnviarEmail(tester, 'nuevo@example.com');
+      });
+
+      expect(
+        find.textContaining('¿Aún no has activado tu cuenta?'),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text('Activar cuenta'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ActivarCuentaPage), findsOneWidget);
+      expect(find.text('nuevo@example.com'), findsOneWidget);
     });
   });
 

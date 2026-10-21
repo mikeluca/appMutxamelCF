@@ -235,6 +235,9 @@
   },
   "recoverPasswordChanged": "Password changed",
   "recoverCodeInvalid": "Wrong or expired code",
+  "recoverTooManyAttempts": "Too many attempts. Wait a few minutes and try again.",
+  "recoverChangedLoginHint": "Your password has been changed. Sign in with the new password.",
+  "recoverNotActivated": "Have not activated your account yet? Use the code in",
   "markAllReadError": "The notifications could not be marked as read.",
   "todayAt": "Today, {time}",
   "@todayAt": {

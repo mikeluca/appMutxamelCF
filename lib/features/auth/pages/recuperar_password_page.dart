@@ -64,7 +64,7 @@ class _RecuperarPasswordPageState extends State<RecuperarPasswordPage> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = mensajeDeAccion(t, e);
+          _error = mensajeDeRecuperacion(t, e);
         });
       }
     } finally {

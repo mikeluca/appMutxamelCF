@@ -235,6 +235,9 @@
   },
   "recoverPasswordChanged": "Contrasenya canviada",
   "recoverCodeInvalid": "Codi incorrecte o caducat",
+  "recoverTooManyAttempts": "Massa intents. Espera uns minuts i torna-ho a provar.",
+  "recoverChangedLoginHint": "La teua contrasenya s'ha canviat. Entra amb la contrasenya nova.",
+  "recoverNotActivated": "Encara no has activat el teu compte? Usa el codi a",
   "markAllReadError": "No s'han pogut marcar les notificacions com a llegides.",
   "todayAt": "Hui, {time}",
   "@todayAt": {

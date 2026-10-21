@@ -9,7 +9,10 @@ import 'activar_cuenta_page.dart';
 import 'recuperar_password_page.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  /// Email con el que se rellena el campo al abrir la pantalla.
+  final String? emailInicial;
+
+  const LoginPage({super.key, this.emailInicial});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -18,7 +21,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
 
-  final _emailController = TextEditingController();
+  late final _emailController = TextEditingController(
+    text: widget.emailInicial ?? '',
+  );
   final _passwordController = TextEditingController();
 
   bool _mostrarPassword = false;

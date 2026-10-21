@@ -638,6 +638,18 @@ class AppLocalizationsCa extends AppLocalizations {
   String get recoverCodeInvalid => 'Codi incorrecte o caducat';
 
   @override
+  String get recoverTooManyAttempts =>
+      'Massa intents. Espera uns minuts i torna-ho a provar.';
+
+  @override
+  String get recoverChangedLoginHint =>
+      'La teua contrasenya s\'ha canviat. Entra amb la contrasenya nova.';
+
+  @override
+  String get recoverNotActivated =>
+      'Encara no has activat el teu compte? Usa el codi a';
+
+  @override
   String get markAllReadError =>
       'No s\'han pogut marcar les notificacions com a llegides.';
 

@@ -31,3 +31,13 @@ String mensajeDeAccion(AppLocalizations t, Object? error) {
 
   return t.connectionError;
 }
+
+/// Como [mensajeDeAccion], pero un 429 (demasiados intentos al recuperar la
+/// contraseña) se traduce a una clave propia en vez del texto del servidor.
+String mensajeDeRecuperacion(AppLocalizations t, Object? error) {
+  if (error is ApiException && error.statusCode == 429) {
+    return t.recoverTooManyAttempts;
+  }
+
+  return mensajeDeAccion(t, error);
+}
