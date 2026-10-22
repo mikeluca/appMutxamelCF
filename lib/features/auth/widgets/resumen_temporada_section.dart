@@ -21,7 +21,8 @@ class ResumenTemporadaSection extends StatelessWidget {
     this.cargando = false,
   });
 
-  /// "Entrenamientos 18/20 · 3 goles" para la tarjeta de cada hijo; null si no
+  /// "Entrenamientos 18/20 · 3 goles" para la tarjeta de cada hijo (solo los
+  /// entrenamientos si su equipo no admite estadísticas); null si no
   /// hay datos que resumir.
   static String? resumenCorto(AppLocalizations t, ResumenTemporadaModel? r) {
     if (r == null || !r.hayDatos) {
@@ -34,7 +35,7 @@ class ResumenTemporadaSection extends StatelessWidget {
           r.entrenamientosAsistidos,
           r.entrenamientosTotal,
         ),
-      t.seasonShortGoals(r.goles),
+      if (r.admiteEstadisticas) t.seasonShortGoals(r.goles),
     ];
 
     return partes.join(' · ');
@@ -115,10 +116,12 @@ class ResumenTemporadaSection extends StatelessWidget {
     ResumenTemporadaModel r,
   ) {
     final datos = [
-      (t.seasonGoals, r.goles),
-      (t.seasonAssists, r.asistencias),
-      (t.seasonYellows, r.amarillas),
-      (t.seasonReds, r.rojas),
+      if (r.admiteEstadisticas) ...[
+        (t.seasonGoals, r.goles),
+        (t.seasonAssists, r.asistencias),
+        (t.seasonYellows, r.amarillas),
+        (t.seasonReds, r.rojas),
+      ],
       (t.seasonCallupsCard, r.convocado),
     ];
 

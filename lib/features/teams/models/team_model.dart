@@ -6,6 +6,9 @@ class TeamModel {
   final String nombre;
   final String deporte;
 
+  /// F11, F8 o F5; null si el equipo no tiene modalidad.
+  final String? modalidad;
+
   const TeamModel({
     required this.id,
     required this.categoria,
@@ -13,6 +16,7 @@ class TeamModel {
     required this.orden,
     required this.nombre,
     required this.deporte,
+    this.modalidad,
   });
 
   factory TeamModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +27,10 @@ class TeamModel {
       orden: json['orden'] ?? '',
       nombre: json['nombre'] ?? '',
       deporte: json['deporte'] ?? '',
+      modalidad: json['modalidad'] as String?,
     );
   }
+
+  /// Solo los equipos de fútbol 11 registran estadísticas individuales.
+  bool get admiteEstadisticas => modalidad == 'F11';
 }

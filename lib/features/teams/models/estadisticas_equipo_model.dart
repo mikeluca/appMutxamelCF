@@ -161,11 +161,16 @@ class EstadisticasEquipoModel {
   final EntrenamientosEquipoModel entrenamientos;
   final PartidosEquipoModel partidos;
 
+  /// false si el equipo (fútbol 8/5) no registra goleadores ni asistentes.
+  /// Sin el campo (backend antiguo) se asume que sí.
+  final bool admiteEstadisticas;
+
   const EstadisticasEquipoModel({
     required this.goleadores,
     required this.asistentes,
     required this.entrenamientos,
     required this.partidos,
+    this.admiteEstadisticas = true,
   });
 
   factory EstadisticasEquipoModel.fromJson(Map<String, dynamic> json) {
@@ -182,9 +187,40 @@ class EstadisticasEquipoModel {
       entrenamientos: EntrenamientosEquipoModel.fromJson(
         json['entrenamientos'] as Map<String, dynamic>? ?? const {},
       ),
+      admiteEstadisticas: json['admiteEstadisticas'] as bool? ?? true,
       partidos: PartidosEquipoModel.fromJson(
         json['partidos'] as Map<String, dynamic>? ?? const {},
       ),
+    );
+  }
+}
+
+/// Tarjetas de un equipo (GET /api/app/equipos/{id}/tarjetas). Si el equipo no
+/// admite estadísticas de jugador la lista va vacía y [admiteEstadisticas] es
+/// false. Acepta también la respuesta antigua, que era la lista a secas.
+class TarjetasEquipoModel {
+  final bool admiteEstadisticas;
+  final List<TarjetasJugadorModel> jugadores;
+
+  const TarjetasEquipoModel({
+    this.admiteEstadisticas = true,
+    this.jugadores = const [],
+  });
+
+  factory TarjetasEquipoModel.fromJson(dynamic json) {
+    List<TarjetasJugadorModel> lista(List<dynamic> datos) => datos
+        .map((e) => TarjetasJugadorModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+
+    if (json is List<dynamic>) {
+      return TarjetasEquipoModel(jugadores: lista(json));
+    }
+
+    final mapa = json as Map<String, dynamic>;
+
+    return TarjetasEquipoModel(
+      admiteEstadisticas: mapa['admiteEstadisticas'] as bool? ?? true,
+      jugadores: lista(mapa['jugadores'] as List<dynamic>? ?? const []),
     );
   }
 }

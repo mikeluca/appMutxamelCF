@@ -103,22 +103,24 @@ class EquipoGestionPage extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          _construirOpcion(
-            context,
-            icono: Icons.style_outlined,
-            titulo: t.teamCardsTitle,
-            descripcion: t.teamCardsDesc,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => TarjetasEquipoPage(equipo: equipo),
-                ),
-              );
-            },
-          ),
+          if (equipo.admiteEstadisticas) ...[
+            _construirOpcion(
+              context,
+              icono: Icons.style_outlined,
+              titulo: t.teamCardsTitle,
+              descripcion: t.teamCardsDesc,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => TarjetasEquipoPage(equipo: equipo),
+                  ),
+                );
+              },
+            ),
 
-          const SizedBox(height: 12),
+            const SizedBox(height: 12),
+          ],
 
           _construirOpcion(
             context,

@@ -661,6 +661,7 @@
   "matchResultGoalsForLabel": "Goles a favor",
   "matchResultGoalsAgainstLabel": "Goles en contra",
   "matchResultGoalsHelp": "Goles del Mutxamel – goles del rival",
+  "matchResultOnlyScoreNote": "En fútbol 8 solo se registra el resultado",
   "matchResultPlayersTitle": "Estadísticas por jugador",
   "matchResultGoalsShort": "Goles",
   "matchResultAssistsShort": "Asist.",

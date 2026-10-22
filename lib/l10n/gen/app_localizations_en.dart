@@ -1753,6 +1753,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get matchResultGoalsHelp => 'Mutxamel goals – opponent goals';
 
   @override
+  String get matchResultOnlyScoreNote =>
+      'In 8-a-side football only the result is recorded';
+
+  @override
   String get matchResultPlayersTitle => 'Player statistics';
 
   @override

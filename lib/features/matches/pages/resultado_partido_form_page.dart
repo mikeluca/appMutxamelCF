@@ -22,7 +22,17 @@ import '../services/match_service.dart';
 class ResultadoPartidoFormPage extends StatefulWidget {
   final MatchModel partido;
 
-  const ResultadoPartidoFormPage({super.key, required this.partido});
+  final TeamService? teamService;
+  final ConvocatoriaService? convocatoriaService;
+  final MatchService? matchService;
+
+  const ResultadoPartidoFormPage({
+    super.key,
+    required this.partido,
+    this.teamService,
+    this.convocatoriaService,
+    this.matchService,
+  });
 
   @override
   State<ResultadoPartidoFormPage> createState() =>
@@ -32,6 +42,9 @@ class ResultadoPartidoFormPage extends StatefulWidget {
 class _DatosResultadoPartido {
   final List<RosterJugadorModel> roster;
   final PartidoEstadisticasModel guardadas;
+
+  /// false en fútbol 8/5: solo se registra el marcador, sin lista de jugadores.
+  bool get admiteEstadisticas => guardadas.admiteEstadisticas;
 
   _DatosResultadoPartido(this.roster, this.guardadas);
 }
@@ -64,15 +77,15 @@ class _FilaEstadistica {
 }
 
 class _ResultadoPartidoFormPageState extends State<ResultadoPartidoFormPage> {
-  final TeamService _teamService = TeamService();
-  final ConvocatoriaService _convocatoriaService = ConvocatoriaService();
-  final MatchService _matchService = MatchService();
+  late final TeamService _teamService = widget.teamService ?? TeamService();
+  late final ConvocatoriaService _convocatoriaService =
+      widget.convocatoriaService ?? ConvocatoriaService();
+  late final MatchService _matchService = widget.matchService ?? MatchService();
 
   late final Future<_DatosResultadoPartido> _futureDatos;
 
   final TextEditingController _golesFavorController = TextEditingController();
-  final TextEditingController _golesContraController =
-      TextEditingController();
+  final TextEditingController _golesContraController = TextEditingController();
 
   final List<_FilaEstadistica> _filas = [];
   bool _filasInicializadas = false;
@@ -92,15 +105,14 @@ class _ResultadoPartidoFormPageState extends State<ResultadoPartidoFormPage> {
     final partidoId = widget.partido.id!;
     final equipoId = widget.partido.equipoId!;
 
-    final resultados = await Future.wait([
-      _obtenerRoster(equipoId, partidoId),
-      _matchService.obtenerEstadisticas(partidoId),
-    ]);
+    final guardadas = await _matchService.obtenerEstadisticas(partidoId);
 
-    return _DatosResultadoPartido(
-      resultados[0] as List<RosterJugadorModel>,
-      resultados[1] as PartidoEstadisticasModel,
-    );
+    // Sin estadísticas de jugador (fútbol 8/5) no se carga ni la convocatoria ni la plantilla.
+    final roster = guardadas.admiteEstadisticas
+        ? await _obtenerRoster(equipoId, partidoId)
+        : <RosterJugadorModel>[];
+
+    return _DatosResultadoPartido(roster, guardadas);
   }
 
   /// Si existe una convocatoria vinculada a este partido, sus jugadores
@@ -110,9 +122,7 @@ class _ResultadoPartidoFormPageState extends State<ResultadoPartidoFormPage> {
     int equipoId,
     int partidoId,
   ) async {
-    final convocatorias = await _convocatoriaService.obtenerPorEquipo(
-      equipoId,
-    );
+    final convocatorias = await _convocatoriaService.obtenerPorEquipo(equipoId);
 
     for (final convocatoria in convocatorias) {
       if (convocatoria.partidoId == partidoId) {
@@ -144,8 +154,9 @@ class _ResultadoPartidoFormPageState extends State<ResultadoPartidoFormPage> {
     _filasInicializadas = true;
 
     _golesFavorController.text = (datos.guardadas.golesFavor ?? 0).toString();
-    _golesContraController.text = (datos.guardadas.golesContra ?? 0)
-        .toString();
+    _golesContraController.text = (datos.guardadas.golesContra ?? 0).toString();
+
+    if (!datos.admiteEstadisticas) return;
 
     final combinadas = fusionarRosterConEstadisticas(
       roster: datos.roster,
@@ -248,9 +259,7 @@ class _ResultadoPartidoFormPageState extends State<ResultadoPartidoFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: ClubAppBarTitle(titulo: _t.matchResultFormTitle),
-      ),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: _t.matchResultFormTitle)),
       body: FutureBuilder<_DatosResultadoPartido>(
         future: _futureDatos,
         builder: (context, snapshot) {
@@ -271,14 +280,16 @@ class _ResultadoPartidoFormPageState extends State<ResultadoPartidoFormPage> {
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
                   children: [
-                    _construirCabecera(),
-                    const SizedBox(height: 24),
-                    _construirTituloJugadores(),
-                    const SizedBox(height: 12),
-                    if (_filas.isEmpty)
-                      _construirSinJugadores()
-                    else
-                      ..._filas.map(_construirFilaJugador),
+                    _construirCabecera(datos.admiteEstadisticas),
+                    if (datos.admiteEstadisticas) ...[
+                      const SizedBox(height: 24),
+                      _construirTituloJugadores(),
+                      const SizedBox(height: 12),
+                      if (_filas.isEmpty)
+                        _construirSinJugadores()
+                      else
+                        ..._filas.map(_construirFilaJugador),
+                    ],
                   ],
                 ),
               ),
@@ -290,7 +301,7 @@ class _ResultadoPartidoFormPageState extends State<ResultadoPartidoFormPage> {
     );
   }
 
-  Widget _construirCabecera() {
+  Widget _construirCabecera(bool admiteEstadisticas) {
     final partido = widget.partido;
 
     return Card(
@@ -344,6 +355,18 @@ class _ResultadoPartidoFormPageState extends State<ResultadoPartidoFormPage> {
               _t.matchResultGoalsHelp,
               style: TextStyle(fontSize: 12, color: _colors.onSurfaceVariant),
             ),
+            if (!admiteEstadisticas) ...[
+              const SizedBox(height: 6),
+              Text(
+                _t.matchResultOnlyScoreNote,
+                key: const ValueKey('nota-solo-resultado'),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: _colors.onSurfaceVariant,
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -437,9 +460,7 @@ class _ResultadoPartidoFormPageState extends State<ResultadoPartidoFormPage> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Expanded(
-                  child: _construirTarjetaRoja(fila),
-                ),
+                Expanded(child: _construirTarjetaRoja(fila)),
               ],
             ),
           ],
@@ -461,10 +482,7 @@ class _ResultadoPartidoFormPageState extends State<ResultadoPartidoFormPage> {
       decoration: InputDecoration(
         labelText: etiqueta,
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 8,
-          vertical: 10,
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         border: const OutlineInputBorder(),
       ),
     );

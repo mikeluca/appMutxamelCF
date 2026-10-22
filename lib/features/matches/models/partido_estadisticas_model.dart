@@ -56,12 +56,17 @@ class PartidoEstadisticasModel {
   final String? resultado;
   final List<EstadisticaJugadorModel> jugadores;
 
+  /// false si el equipo (fútbol 8/5) solo registra el resultado del partido.
+  /// Sin el campo (backend antiguo) se asume que sí.
+  final bool admiteEstadisticas;
+
   const PartidoEstadisticasModel({
     this.partidoId,
     this.golesFavor,
     this.golesContra,
     this.resultado,
     this.jugadores = const [],
+    this.admiteEstadisticas = true,
   });
 
   factory PartidoEstadisticasModel.fromJson(Map<String, dynamic> json) {
@@ -76,6 +81,7 @@ class PartidoEstadisticasModel {
                 EstadisticaJugadorModel.fromJson(item as Map<String, dynamic>),
           )
           .toList(),
+      admiteEstadisticas: json['admiteEstadisticas'] as bool? ?? true,
     );
   }
 }

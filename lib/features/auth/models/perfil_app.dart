@@ -147,12 +147,16 @@ class PerfilEquipo {
   final String? grupo;
   final String? deporte;
 
+  /// F11, F8 o F5; null si el equipo no tiene modalidad (o no se conoce).
+  final String? modalidad;
+
   PerfilEquipo({
     required this.id,
     required this.nombre,
     this.categoria,
     this.grupo,
     this.deporte,
+    this.modalidad,
   });
 
   factory PerfilEquipo.fromJson(Map<String, dynamic> json) {
@@ -162,6 +166,10 @@ class PerfilEquipo {
       categoria: json['categoria'] as String?,
       grupo: json['grupo'] as String?,
       deporte: json['deporte'] as String?,
+      modalidad: json['modalidad'] as String?,
     );
   }
+
+  /// Solo los equipos de fútbol 11 registran estadísticas individuales.
+  bool get admiteEstadisticas => modalidad == 'F11';
 }

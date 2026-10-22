@@ -51,6 +51,7 @@ class _MisEquiposPageState extends State<MisEquiposPage> {
                 categoria: equipo.categoria,
                 grupo: equipo.grupo,
                 deporte: equipo.deporte,
+                modalidad: equipo.modalidad,
               ),
             )
             .toList();

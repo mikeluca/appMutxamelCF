@@ -21,6 +21,10 @@ class ResumenTemporadaModel {
   /// Porcentaje de asistencia (0-100); null si todavía no hay entrenamientos.
   final int? porcentaje;
 
+  /// false si el equipo del jugador (fútbol 8/5) no registra goles, asistencias
+  /// ni tarjetas. Sin el campo (backend antiguo) se asume que sí.
+  final bool admiteEstadisticas;
+
   const ResumenTemporadaModel({
     this.temporada,
     this.convocado = 0,
@@ -34,6 +38,7 @@ class ResumenTemporadaModel {
     this.faltas = 0,
     this.justificadas = 0,
     this.porcentaje,
+    this.admiteEstadisticas = true,
   });
 
   factory ResumenTemporadaModel.fromJson(Map<String, dynamic> json) {
@@ -58,6 +63,7 @@ class ResumenTemporadaModel {
       faltas: entero(entrenamientos, 'faltas'),
       justificadas: entero(entrenamientos, 'justificadas'),
       porcentaje: (entrenamientos['porcentaje'] as num?)?.toInt(),
+      admiteEstadisticas: json['admiteEstadisticas'] as bool? ?? true,
     );
   }
 

@@ -3256,6 +3256,12 @@ abstract class AppLocalizations {
   /// **'Goles del Mutxamel – goles del rival'**
   String get matchResultGoalsHelp;
 
+  /// No description provided for @matchResultOnlyScoreNote.
+  ///
+  /// In es, this message translates to:
+  /// **'En fútbol 8 solo se registra el resultado'**
+  String get matchResultOnlyScoreNote;
+
   /// No description provided for @matchResultPlayersTitle.
   ///
   /// In es, this message translates to:

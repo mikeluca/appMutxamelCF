@@ -82,34 +82,36 @@ class _EstadisticasEquipoPageState extends State<EstadisticasEquipoPage> {
               children: [
                 _construirResumen(datos),
                 const SizedBox(height: 24),
-                _construirSeccion(
-                  _t.statsTopScorers,
-                  datos.goleadores.isEmpty
-                      ? [_construirVacio()]
-                      : datos.goleadores
-                            .map(
-                              (j) => _construirFilaJugador(
-                                j,
-                                _t.statsGoalsCount(j.goles),
-                              ),
-                            )
-                            .toList(),
-                ),
-                const SizedBox(height: 24),
-                _construirSeccion(
-                  _t.statsTopAssisters,
-                  datos.asistentes.isEmpty
-                      ? [_construirVacio()]
-                      : datos.asistentes
-                            .map(
-                              (j) => _construirFilaJugador(
-                                j,
-                                _t.statsAssistsCount(j.asistencias),
-                              ),
-                            )
-                            .toList(),
-                ),
-                const SizedBox(height: 24),
+                if (datos.admiteEstadisticas) ...[
+                  _construirSeccion(
+                    _t.statsTopScorers,
+                    datos.goleadores.isEmpty
+                        ? [_construirVacio()]
+                        : datos.goleadores
+                              .map(
+                                (j) => _construirFilaJugador(
+                                  j,
+                                  _t.statsGoalsCount(j.goles),
+                                ),
+                              )
+                              .toList(),
+                  ),
+                  const SizedBox(height: 24),
+                  _construirSeccion(
+                    _t.statsTopAssisters,
+                    datos.asistentes.isEmpty
+                        ? [_construirVacio()]
+                        : datos.asistentes
+                              .map(
+                                (j) => _construirFilaJugador(
+                                  j,
+                                  _t.statsAssistsCount(j.asistencias),
+                                ),
+                              )
+                              .toList(),
+                  ),
+                  const SizedBox(height: 24),
+                ],
                 _construirSeccion(
                   _t.statsTrainingAttendance,
                   datos.entrenamientos.porJugador.isEmpty

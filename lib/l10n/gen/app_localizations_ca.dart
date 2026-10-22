@@ -1762,6 +1762,10 @@ class AppLocalizationsCa extends AppLocalizations {
   String get matchResultGoalsHelp => 'Gols del Mutxamel – gols del rival';
 
   @override
+  String get matchResultOnlyScoreNote =>
+      'En futbol 8 només es registra el resultat';
+
+  @override
   String get matchResultPlayersTitle => 'Estadístiques per jugador';
 
   @override
