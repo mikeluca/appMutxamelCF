@@ -2426,4 +2426,51 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get callupDeleteError => 'No s\'ha pogut eliminar la convocatòria.';
+
+  @override
+  String get weekendRemind => 'Recorda';
+
+  @override
+  String get weekendReminded => 'Recordat';
+
+  @override
+  String weekendReminderSent(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Recordatori enviat a $count entrenadors',
+      one: 'Recordatori enviat a 1 entrenador',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get weekendReminderNoCoaches =>
+      'L\'equip no té entrenadors amb compte a l\'app.';
+
+  @override
+  String weekendReminderTooSoon(String time) {
+    return 'Aquest recordatori ja es va enviar a les $time. Podràs repetir-lo passades 2 hores.';
+  }
+
+  @override
+  String get weekendReminderError => 'No s\'ha pogut enviar el recordatori.';
+
+  @override
+  String get liveMinuteLabel => 'Minut';
+
+  @override
+  String get liveMinuteInvalid => 'El minut ha d\'estar entre 0 i 150.';
+
+  @override
+  String get liveGoalAgainstRow => 'Gol en contra';
+
+  @override
+  String get liveMinuteEditTitle => 'Corregir el minut';
+
+  @override
+  String get liveMinuteSave => 'Guarda';
+
+  @override
+  String get liveMinuteSaved => 'Minut corregit.';
 }

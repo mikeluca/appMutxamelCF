@@ -16,6 +16,24 @@ class CoordinacionService {
     return FinDeSemanaModel.fromJson(data as Map<String, dynamic>);
   }
 
+  /// Recuerda al entrenador del partido que publique la convocatoria
+  /// ([tipoRecordatorioConvocatoria]) o meta el resultado
+  /// ([tipoRecordatorioResultado]). Errores del servidor: 400 si no procede, 403
+  /// sin rol, 409 si el equipo no tiene entrenadores con cuenta y 429 si ya se
+  /// recordó hace menos de 2 horas (con la hora del último en `datos["ultimo"]`).
+  Future<RecordatorioEnviadoModel> recordar({
+    required int partidoId,
+    required String tipo,
+  }) async {
+    final data = await ApiClient.post(
+      '/app/coordinacion/recordatorios',
+      autenticado: true,
+      body: {'partidoId': partidoId, 'tipo': tipo},
+    );
+
+    return RecordatorioEnviadoModel.fromJson(data as Map<String, dynamic>);
+  }
+
   Future<SeguimientoModel> obtenerSeguimiento({
     String periodo = periodoSeguimiento30d,
   }) async {

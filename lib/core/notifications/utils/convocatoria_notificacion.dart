@@ -14,6 +14,15 @@ const String tipoPushConvocatoriaAnulada = 'CONVOCATORIA_ANULADA';
 /// ha justificado su ausencia: lleva a editar esa convocatoria.
 const String tipoPushConvocatoriaEditar = 'CONVOCATORIA_EDITAR';
 
+/// Valor de data["tipo"] del push con el que coordinación recuerda al entrenador publicar la
+/// convocatoria de un partido: lleva al formulario de convocatoria con ese partido
+/// preseleccionado ("partidoId", "equipoId" y "equipo" vienen en el aviso).
+const String tipoPushConvocatoriaPendiente = 'CONVOCATORIA_PENDIENTE';
+
+/// Valor de data["tipo"] del push con el que coordinación recuerda al entrenador meter el
+/// resultado de un partido: lleva al formulario de resultado de ese partido.
+const String tipoPushResultadoPendiente = 'RESULTADO_PENDIENTE';
+
 /// Valor de data["tipo"] del push que recuerda al entrenador pasar lista: lleva
 /// a la asistencia de ese entrenamiento ("entrenamientoId").
 const String tipoPushPasarLista = 'PASAR_LISTA';
@@ -36,6 +45,8 @@ const String tituloNuevaConvocatoria = 'Nueva convocatoria';
 bool esAvisoDeConvocatoria({String? tipo, String? titulo}) {
   return tipo == tipoPushConvocatoria ||
       tipo == tipoPushConvocatoriaAnulada ||
+      tipo == tipoPushConvocatoriaPendiente ||
+      tipo == tipoPushResultadoPendiente ||
       tipo == tipoPushConvocatoriaEditar ||
       tipo == tipoPushPasarLista ||
       tipo == tipoPushReporte ||
@@ -79,6 +90,67 @@ class AbrirDetalleConvocatoria extends DestinoConvocatoria {
 
   @override
   int get hashCode => Object.hash(partidoId, dia);
+}
+
+/// Entrenador: el formulario de convocatoria con el partido [partidoId] (del equipo
+/// [equipoId], de nombre [equipo]) preseleccionado.
+class AbrirFormularioConvocatoria extends DestinoConvocatoria {
+  final int partidoId;
+  final int equipoId;
+  final String equipo;
+
+  const AbrirFormularioConvocatoria({
+    required this.partidoId,
+    required this.equipoId,
+    required this.equipo,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      other is AbrirFormularioConvocatoria &&
+      other.partidoId == partidoId &&
+      other.equipoId == equipoId &&
+      other.equipo == equipo;
+
+  @override
+  int get hashCode => Object.hash(partidoId, equipoId, equipo);
+}
+
+/// Entrenador: el formulario de resultado del partido [partidoId], con los datos del
+/// partido que traía el aviso.
+class AbrirFormularioResultado extends DestinoConvocatoria {
+  final int partidoId;
+  final int equipoId;
+  final String equipo;
+  final String rival;
+  final DateTime? dia;
+  final String? hora;
+  final bool local;
+
+  const AbrirFormularioResultado({
+    required this.partidoId,
+    required this.equipoId,
+    required this.equipo,
+    required this.rival,
+    this.dia,
+    this.hora,
+    this.local = true,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      other is AbrirFormularioResultado &&
+      other.partidoId == partidoId &&
+      other.equipoId == equipoId &&
+      other.equipo == equipo &&
+      other.rival == rival &&
+      other.dia == dia &&
+      other.hora == hora &&
+      other.local == local;
+
+  @override
+  int get hashCode =>
+      Object.hash(partidoId, equipoId, equipo, rival, dia, hora, local);
 }
 
 /// Entrenador: la edición de esa convocatoria.
@@ -143,6 +215,41 @@ DestinoConvocatoria? destinoDeAvisoConvocatoria({
         : null;
   }
 
+  if (tipo == tipoPushConvocatoriaPendiente ||
+      tipo == tipoPushResultadoPendiente) {
+    final partidoId = int.tryParse(datos['partidoId']?.toString() ?? '');
+    final equipoId = int.tryParse(datos['equipoId']?.toString() ?? '');
+
+    // Sin el partido o su equipo no hay formulario que abrir: el aviso se abre como
+    // una comunicación más.
+    if (partidoId == null ||
+        partidoId <= 0 ||
+        equipoId == null ||
+        equipoId <= 0) {
+      return null;
+    }
+
+    final equipo = datos['equipo']?.toString() ?? '';
+
+    if (tipo == tipoPushConvocatoriaPendiente) {
+      return AbrirFormularioConvocatoria(
+        partidoId: partidoId,
+        equipoId: equipoId,
+        equipo: equipo,
+      );
+    }
+
+    return AbrirFormularioResultado(
+      partidoId: partidoId,
+      equipoId: equipoId,
+      equipo: equipo,
+      rival: datos['rival']?.toString() ?? '',
+      dia: diaDeFechaPartido(datos['fecha']?.toString()),
+      hora: datos['hora']?.toString(),
+      local: datos['local']?.toString() != 'false',
+    );
+  }
+
   if (tipo == tipoPushPasarLista) {
     final id = int.tryParse(datos['entrenamientoId']?.toString() ?? '');
 
@@ -205,12 +312,35 @@ String payloadDeDestino(DestinoConvocatoria destino) {
                 '${dia.day.toString().padLeft(2, '0')}',
     AbrirDetalleConvocatoria(:final partidoId, :final dia) =>
       'CONVOCATORIA_PARTIDO:$partidoId:${dia == null ? '' : _diaTexto(dia)}',
+    AbrirFormularioConvocatoria(
+      :final partidoId,
+      :final equipoId,
+      :final equipo,
+    ) =>
+      'CONVOCATORIA_PENDIENTE:${_campos([partidoId, equipoId, equipo])}',
+    AbrirFormularioResultado(
+      :final partidoId,
+      :final equipoId,
+      :final equipo,
+      :final rival,
+      :final dia,
+      :final hora,
+      :final local,
+    ) =>
+      'RESULTADO_PENDIENTE:${_campos([partidoId, equipoId, equipo, rival, dia == null ? '' : _diaTexto(dia), hora ?? '', local])}',
     EditarConvocatoria(:final convocatoriaId) =>
       'CONVOCATORIA_EDITAR:$convocatoriaId',
     PasarLista(:final entrenamientoId) => 'PASAR_LISTA:$entrenamientoId',
     AbrirModeracion() => 'REPORTE',
   };
 }
+
+/// Los campos de un payload, cada uno codificado y separados por "|".
+String _campos(List<Object> valores) =>
+    valores.map((v) => Uri.encodeComponent('$v')).join('|');
+
+List<String> _leerCampos(String texto) =>
+    texto.split('|').map(Uri.decodeComponent).toList();
 
 String _diaTexto(DateTime dia) {
   return '${dia.year.toString().padLeft(4, '0')}-'
@@ -221,6 +351,48 @@ String _diaTexto(DateTime dia) {
 /// Lo contrario de [payloadDeDestino]; null si el payload no es de una
 /// convocatoria.
 DestinoConvocatoria? destinoDePayload(String payload) {
+  if (payload.startsWith('CONVOCATORIA_PENDIENTE:')) {
+    final campos = _leerCampos(
+      payload.substring('CONVOCATORIA_PENDIENTE:'.length),
+    );
+    final partidoId = int.tryParse(campos.elementAtOrNull(0) ?? '');
+    final equipoId = int.tryParse(campos.elementAtOrNull(1) ?? '');
+
+    if (partidoId == null || partidoId <= 0 || equipoId == null) {
+      return null;
+    }
+
+    return AbrirFormularioConvocatoria(
+      partidoId: partidoId,
+      equipoId: equipoId,
+      equipo: campos.elementAtOrNull(2) ?? '',
+    );
+  }
+
+  if (payload.startsWith('RESULTADO_PENDIENTE:')) {
+    final campos = _leerCampos(
+      payload.substring('RESULTADO_PENDIENTE:'.length),
+    );
+    final partidoId = int.tryParse(campos.elementAtOrNull(0) ?? '');
+    final equipoId = int.tryParse(campos.elementAtOrNull(1) ?? '');
+
+    if (partidoId == null || partidoId <= 0 || equipoId == null) {
+      return null;
+    }
+
+    final hora = campos.elementAtOrNull(5) ?? '';
+
+    return AbrirFormularioResultado(
+      partidoId: partidoId,
+      equipoId: equipoId,
+      equipo: campos.elementAtOrNull(2) ?? '',
+      rival: campos.elementAtOrNull(3) ?? '',
+      dia: diaDeFechaPartido(campos.elementAtOrNull(4)),
+      hora: hora.isEmpty ? null : hora,
+      local: campos.elementAtOrNull(6) != 'false',
+    );
+  }
+
   if (payload.startsWith('CONVOCATORIA_PARTIDO:')) {
     final partes = payload.substring('CONVOCATORIA_PARTIDO:'.length).split(':');
     final partidoId = int.tryParse(partes.first);

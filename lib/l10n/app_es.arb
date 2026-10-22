@@ -921,5 +921,21 @@
   "callupDeleteConfirmTitle": "¿Eliminar la convocatoria?",
   "callupDeleteConfirmBody": "Se avisará a los convocados.",
   "callupDeletedSnack": "Convocatoria eliminada.",
-  "callupDeleteError": "No se ha podido eliminar la convocatoria."
+  "callupDeleteError": "No se ha podido eliminar la convocatoria.",
+
+  "weekendRemind": "Recordar",
+  "weekendReminded": "Recordado",
+  "weekendReminderSent": "{count, plural, =1{Recordatorio enviado a 1 entrenador} other{Recordatorio enviado a {count} entrenadores}}",
+  "@weekendReminderSent": { "placeholders": { "count": { "type": "int" } } },
+  "weekendReminderNoCoaches": "El equipo no tiene entrenadores con cuenta en la app.",
+  "weekendReminderTooSoon": "Ya se envió este recordatorio a las {time}. Podrás repetirlo pasadas 2 horas.",
+  "@weekendReminderTooSoon": { "placeholders": { "time": { "type": "String" } } },
+  "weekendReminderError": "No se ha podido enviar el recordatorio.",
+
+  "liveMinuteLabel": "Minuto",
+  "liveMinuteInvalid": "El minuto debe estar entre 0 y 150.",
+  "liveGoalAgainstRow": "Gol en contra",
+  "liveMinuteEditTitle": "Corregir el minuto",
+  "liveMinuteSave": "Guardar",
+  "liveMinuteSaved": "Minuto corregido."
 }

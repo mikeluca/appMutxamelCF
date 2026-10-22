@@ -921,5 +921,21 @@
   "callupDeleteConfirmTitle": "Delete the call-up?",
   "callupDeleteConfirmBody": "The called-up players will be notified.",
   "callupDeletedSnack": "Call-up deleted.",
-  "callupDeleteError": "The call-up could not be deleted."
+  "callupDeleteError": "The call-up could not be deleted.",
+
+  "weekendRemind": "Remind",
+  "weekendReminded": "Reminded",
+  "weekendReminderSent": "{count, plural, =1{Reminder sent to 1 coach} other{Reminder sent to {count} coaches}}",
+  "@weekendReminderSent": { "placeholders": { "count": { "type": "int" } } },
+  "weekendReminderNoCoaches": "The team has no coaches with an account in the app.",
+  "weekendReminderTooSoon": "This reminder was already sent at {time}. You can send it again after 2 hours.",
+  "@weekendReminderTooSoon": { "placeholders": { "time": { "type": "String" } } },
+  "weekendReminderError": "The reminder could not be sent.",
+
+  "liveMinuteLabel": "Minute",
+  "liveMinuteInvalid": "The minute must be between 0 and 150.",
+  "liveGoalAgainstRow": "Goal against",
+  "liveMinuteEditTitle": "Correct the minute",
+  "liveMinuteSave": "Save",
+  "liveMinuteSaved": "Minute corrected."
 }

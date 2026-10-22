@@ -15,6 +15,8 @@ import '../../features/convocatorias/services/convocatoria_service.dart';
 import '../../features/entrenamientos/model/entrenamiento_model.dart';
 import '../../features/entrenamientos/pages/entrenamiento_form_page.dart';
 import '../../features/entrenamientos/services/entrenamiento_service.dart';
+import '../../features/matches/models/match_model.dart';
+import '../../features/matches/pages/resultado_partido_form_page.dart';
 import '../../../features/auth/pages/chat_privado_page.dart';
 import '../../../features/auth/pages/comunicacion_detail_page.dart';
 
@@ -71,6 +73,10 @@ class AppNavigator {
         await abrirCalendario(dia);
       case AbrirDetalleConvocatoria(:final partidoId, :final dia):
         await abrirDetalleConvocatoria(partidoId, dia);
+      case AbrirFormularioConvocatoria(:final partidoId, :final equipoId, :final equipo):
+        await abrirFormularioConvocatoria(partidoId, equipoId, equipo);
+      case AbrirFormularioResultado():
+        await abrirFormularioResultado(destino);
       case EditarConvocatoria(:final convocatoriaId):
         await abrirEdicionConvocatoria(convocatoriaId);
       case PasarLista(:final entrenamientoId):
@@ -156,6 +162,71 @@ class AppNavigator {
               jugadorNombre: j.nombre,
               jugadorApellidos: j.apellidos,
             ))(partidoId, jugador),
+      ),
+    );
+  }
+
+  /// Solo para tests: sustituyen a los formularios reales.
+  @visibleForTesting
+  static Widget Function(int partidoId, PerfilEquipo equipo)?
+  constructorFormularioConvocatoria;
+
+  @visibleForTesting
+  static Widget Function(MatchModel partido)? constructorFormularioResultado;
+
+  /// Aviso "publica la convocatoria" de coordinación: el formulario de convocatoria con
+  /// ese partido preseleccionado.
+  static Future<void> abrirFormularioConvocatoria(
+    int partidoId,
+    int equipoId,
+    String equipo,
+  ) async {
+    final navigatorState = navigator;
+
+    if (navigatorState == null) {
+      return;
+    }
+
+    final perfilEquipo = PerfilEquipo(id: equipoId, nombre: equipo);
+
+    await navigatorState.push(
+      MaterialPageRoute(
+        builder: (_) =>
+            (constructorFormularioConvocatoria ??
+            (id, e) => ConvocatoriaFormPage(equipo: e, partidoIdInicial: id))(
+              partidoId,
+              perfilEquipo,
+            ),
+      ),
+    );
+  }
+
+  /// Aviso "falta el resultado" de coordinación: el formulario de resultado del partido.
+  static Future<void> abrirFormularioResultado(
+    AbrirFormularioResultado destino,
+  ) async {
+    final navigatorState = navigator;
+
+    if (navigatorState == null) {
+      return;
+    }
+
+    final partido = MatchModel(
+      id: destino.partidoId,
+      equipoId: destino.equipoId,
+      categoria: '',
+      equipo: destino.equipo,
+      rival: destino.rival,
+      dia: destino.dia,
+      hora: destino.hora,
+      local: destino.local,
+    );
+
+    await navigatorState.push(
+      MaterialPageRoute(
+        builder: (_) =>
+            (constructorFormularioResultado ??
+            (p) => ResultadoPartidoFormPage(partido: p))(partido),
       ),
     );
   }

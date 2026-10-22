@@ -4281,6 +4281,78 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No se ha podido eliminar la convocatoria.'**
   String get callupDeleteError;
+
+  /// No description provided for @weekendRemind.
+  ///
+  /// In es, this message translates to:
+  /// **'Recordar'**
+  String get weekendRemind;
+
+  /// No description provided for @weekendReminded.
+  ///
+  /// In es, this message translates to:
+  /// **'Recordado'**
+  String get weekendReminded;
+
+  /// No description provided for @weekendReminderSent.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{Recordatorio enviado a 1 entrenador} other{Recordatorio enviado a {count} entrenadores}}'**
+  String weekendReminderSent(int count);
+
+  /// No description provided for @weekendReminderNoCoaches.
+  ///
+  /// In es, this message translates to:
+  /// **'El equipo no tiene entrenadores con cuenta en la app.'**
+  String get weekendReminderNoCoaches;
+
+  /// No description provided for @weekendReminderTooSoon.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya se envió este recordatorio a las {time}. Podrás repetirlo pasadas 2 horas.'**
+  String weekendReminderTooSoon(String time);
+
+  /// No description provided for @weekendReminderError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido enviar el recordatorio.'**
+  String get weekendReminderError;
+
+  /// No description provided for @liveMinuteLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Minuto'**
+  String get liveMinuteLabel;
+
+  /// No description provided for @liveMinuteInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'El minuto debe estar entre 0 y 150.'**
+  String get liveMinuteInvalid;
+
+  /// No description provided for @liveGoalAgainstRow.
+  ///
+  /// In es, this message translates to:
+  /// **'Gol en contra'**
+  String get liveGoalAgainstRow;
+
+  /// No description provided for @liveMinuteEditTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Corregir el minuto'**
+  String get liveMinuteEditTitle;
+
+  /// No description provided for @liveMinuteSave.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get liveMinuteSave;
+
+  /// No description provided for @liveMinuteSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Minuto corregido.'**
+  String get liveMinuteSaved;
 }
 
 class _AppLocalizationsDelegate

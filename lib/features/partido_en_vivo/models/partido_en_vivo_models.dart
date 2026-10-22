@@ -78,12 +78,17 @@ class EventoEnVivo {
   final String? autor;
   final DateTime? fecha;
 
+  /// Minuto del partido en que se marcó el gol (0-150); null en el resto de eventos
+  /// y en goles de un backend antiguo.
+  final int? minuto;
+
   const EventoEnVivo({
     required this.id,
     required this.tipo,
     this.jugadorId,
     this.autor,
     this.fecha,
+    this.minuto,
   });
 
   factory EventoEnVivo.fromJson(Map<String, dynamic> json) {
@@ -93,6 +98,7 @@ class EventoEnVivo {
       jugadorId: (json['jugadorId'] as num?)?.toInt(),
       autor: json['autor'] as String?,
       fecha: DateTime.tryParse(json['fecha']?.toString() ?? ''),
+      minuto: (json['minuto'] as num?)?.toInt(),
     );
   }
 }
@@ -116,6 +122,10 @@ class EstadoPartidoEnVivo {
   final int? deshacibleId;
   final int? deshacibleSegundos;
 
+  /// El minuto del partido ahora mismo según el servidor; null antes del inicio, en el
+  /// descanso y tras el final.
+  final int? minutoActual;
+
   const EstadoPartidoEnVivo({
     required this.partidoId,
     this.rival = '',
@@ -127,6 +137,7 @@ class EstadoPartidoEnVivo {
     this.eventos = const [],
     this.deshacibleId,
     this.deshacibleSegundos,
+    this.minutoActual,
   });
 
   factory EstadoPartidoEnVivo.fromJson(Map<String, dynamic> json) {
@@ -146,6 +157,7 @@ class EstadoPartidoEnVivo {
       deshacibleId: (deshacible?['id'] as num?)?.toInt(),
       deshacibleSegundos: (deshacible?['segundosRestantesDeshacer'] as num?)
           ?.toInt(),
+      minutoActual: (json['minutoActual'] as num?)?.toInt(),
     );
   }
 

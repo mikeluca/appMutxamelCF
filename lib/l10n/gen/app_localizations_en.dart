@@ -2407,4 +2407,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get callupDeleteError => 'The call-up could not be deleted.';
+
+  @override
+  String get weekendRemind => 'Remind';
+
+  @override
+  String get weekendReminded => 'Reminded';
+
+  @override
+  String weekendReminderSent(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Reminder sent to $count coaches',
+      one: 'Reminder sent to 1 coach',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get weekendReminderNoCoaches =>
+      'The team has no coaches with an account in the app.';
+
+  @override
+  String weekendReminderTooSoon(String time) {
+    return 'This reminder was already sent at $time. You can send it again after 2 hours.';
+  }
+
+  @override
+  String get weekendReminderError => 'The reminder could not be sent.';
+
+  @override
+  String get liveMinuteLabel => 'Minute';
+
+  @override
+  String get liveMinuteInvalid => 'The minute must be between 0 and 150.';
+
+  @override
+  String get liveGoalAgainstRow => 'Goal against';
+
+  @override
+  String get liveMinuteEditTitle => 'Correct the minute';
+
+  @override
+  String get liveMinuteSave => 'Save';
+
+  @override
+  String get liveMinuteSaved => 'Minute corrected.';
 }

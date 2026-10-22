@@ -921,5 +921,21 @@
   "callupDeleteConfirmTitle": "Eliminar la convocatòria?",
   "callupDeleteConfirmBody": "S'avisarà els convocats.",
   "callupDeletedSnack": "Convocatòria eliminada.",
-  "callupDeleteError": "No s'ha pogut eliminar la convocatòria."
+  "callupDeleteError": "No s'ha pogut eliminar la convocatòria.",
+
+  "weekendRemind": "Recorda",
+  "weekendReminded": "Recordat",
+  "weekendReminderSent": "{count, plural, =1{Recordatori enviat a 1 entrenador} other{Recordatori enviat a {count} entrenadors}}",
+  "@weekendReminderSent": { "placeholders": { "count": { "type": "int" } } },
+  "weekendReminderNoCoaches": "L'equip no té entrenadors amb compte a l'app.",
+  "weekendReminderTooSoon": "Aquest recordatori ja es va enviar a les {time}. Podràs repetir-lo passades 2 hores.",
+  "@weekendReminderTooSoon": { "placeholders": { "time": { "type": "String" } } },
+  "weekendReminderError": "No s'ha pogut enviar el recordatori.",
+
+  "liveMinuteLabel": "Minut",
+  "liveMinuteInvalid": "El minut ha d'estar entre 0 i 150.",
+  "liveGoalAgainstRow": "Gol en contra",
+  "liveMinuteEditTitle": "Corregir el minut",
+  "liveMinuteSave": "Guarda",
+  "liveMinuteSaved": "Minut corregit."
 }

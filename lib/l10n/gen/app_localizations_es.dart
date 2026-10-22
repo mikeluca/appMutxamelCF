@@ -2435,4 +2435,51 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get callupDeleteError => 'No se ha podido eliminar la convocatoria.';
+
+  @override
+  String get weekendRemind => 'Recordar';
+
+  @override
+  String get weekendReminded => 'Recordado';
+
+  @override
+  String weekendReminderSent(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Recordatorio enviado a $count entrenadores',
+      one: 'Recordatorio enviado a 1 entrenador',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get weekendReminderNoCoaches =>
+      'El equipo no tiene entrenadores con cuenta en la app.';
+
+  @override
+  String weekendReminderTooSoon(String time) {
+    return 'Ya se envió este recordatorio a las $time. Podrás repetirlo pasadas 2 horas.';
+  }
+
+  @override
+  String get weekendReminderError => 'No se ha podido enviar el recordatorio.';
+
+  @override
+  String get liveMinuteLabel => 'Minuto';
+
+  @override
+  String get liveMinuteInvalid => 'El minuto debe estar entre 0 y 150.';
+
+  @override
+  String get liveGoalAgainstRow => 'Gol en contra';
+
+  @override
+  String get liveMinuteEditTitle => 'Corregir el minuto';
+
+  @override
+  String get liveMinuteSave => 'Guardar';
+
+  @override
+  String get liveMinuteSaved => 'Minuto corregido.';
 }

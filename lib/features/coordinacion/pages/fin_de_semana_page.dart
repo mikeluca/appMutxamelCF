@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/network/api_client.dart';
 import '../../../core/utils/mensaje_error.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
@@ -45,6 +46,11 @@ class _FinDeSemanaPageState extends State<FinDeSemanaPage> {
   /// Viernes del fin de semana que se está viendo; null hasta la primera carga
   /// (entonces manda el del servidor, que es el de hoy).
   DateTime? _viernes;
+
+  /// Recordatorios ya enviados en esta sesión ("tipo:partidoId"): su botón pasa a
+  /// "Recordado". Y los que están enviándose ahora.
+  final Set<String> _recordados = {};
+  final Set<String> _enviandoRecordatorio = {};
 
   /// Para ignorar la respuesta de una carga que ya se quedó antigua (flechas
   /// pulsadas seguidas).
@@ -225,6 +231,7 @@ class _FinDeSemanaPageState extends State<FinDeSemanaPage> {
                   p,
                   subtitulo: '${_fechaCorta(p.dia)} ${p.hora ?? ''}'.trim(),
                   onTap: () => _abrirConvocatoria(p),
+                  tipoRecordatorio: tipoRecordatorioConvocatoria,
                 ),
             ],
           ),
@@ -242,6 +249,7 @@ class _FinDeSemanaPageState extends State<FinDeSemanaPage> {
                               '${_t.weekendDelayDays(p.diasDeRetraso)}'
                           .trim(),
                   onTap: () => _abrirResultado(p),
+                  tipoRecordatorio: tipoRecordatorioResultado,
                 ),
             ],
           ),
@@ -368,13 +376,95 @@ class _FinDeSemanaPageState extends State<FinDeSemanaPage> {
     PartidoPanelModel partido, {
     required String subtitulo,
     required VoidCallback onTap,
+    required String tipoRecordatorio,
   }) {
     return ListTile(
       title: Text('${partido.equipo} - ${partido.rival}'),
       subtitle: Text(subtitulo),
-      trailing: const Icon(Icons.chevron_right),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _construirBotonRecordar(partido, tipoRecordatorio),
+          const Icon(Icons.chevron_right),
+        ],
+      ),
       onTap: onTap,
     );
+  }
+
+  /// "Recordar" al entrenador del equipo; tras enviarlo, "Recordado" (hasta salir de la
+  /// pantalla) para no repetirlo sin querer.
+  Widget _construirBotonRecordar(PartidoPanelModel partido, String tipo) {
+    final clave = '$tipo:${partido.partidoId}';
+    final recordado = _recordados.contains(clave);
+    final enviando = _enviandoRecordatorio.contains(clave);
+
+    return TextButton.icon(
+      key: ValueKey('recordar-$clave'),
+      onPressed: recordado || enviando ? null : () => _recordar(partido, tipo),
+      icon: Icon(
+        recordado
+            ? Icons.notifications_active
+            : Icons.notifications_active_outlined,
+        size: 18,
+      ),
+      label: Text(recordado ? _t.weekendReminded : _t.weekendRemind),
+    );
+  }
+
+  Future<void> _recordar(PartidoPanelModel partido, String tipo) async {
+    final clave = '$tipo:${partido.partidoId}';
+
+    setState(() => _enviandoRecordatorio.add(clave));
+
+    String mensaje;
+
+    try {
+      final enviado = await _servicio.recordar(
+        partidoId: partido.partidoId,
+        tipo: tipo,
+      );
+
+      _recordados.add(clave);
+      mensaje = _t.weekendReminderSent(enviado.destinatarios);
+    } on ApiException catch (e) {
+      if (e.statusCode == 409) {
+        mensaje = _t.weekendReminderNoCoaches;
+      } else if (e.statusCode == 429) {
+        // Ya se había enviado hace menos de 2 horas: se da por recordado.
+        _recordados.add(clave);
+
+        final datos = e.datos;
+        final ultimo = datos is Map
+            ? DateTime.tryParse(datos['ultimo']?.toString() ?? '')
+            : null;
+
+        mensaje = ultimo == null
+            ? _t.weekendReminderError
+            : _t.weekendReminderTooSoon(_horaCorta(ultimo));
+      } else if (e.statusCode == 403) {
+        mensaje = _t.noPermission;
+      } else {
+        mensaje = mensajeDeAccion(_t, e);
+      }
+    } catch (_) {
+      mensaje = _t.weekendReminderError;
+    }
+
+    if (!mounted) return;
+
+    setState(() => _enviandoRecordatorio.remove(clave));
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(mensaje)));
+  }
+
+  static String _horaCorta(DateTime fecha) {
+    final hora = fecha.hour.toString().padLeft(2, '0');
+    final minuto = fecha.minute.toString().padLeft(2, '0');
+
+    return '$hora:$minuto';
   }
 
   Widget _construirError(Object? error) {

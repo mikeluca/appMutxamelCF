@@ -14,13 +14,17 @@ class ApiException implements Exception {
   final String message;
   final int? statusCode;
 
-  const ApiException(this.message, {this.statusCode});
+  /// El cuerpo JSON de la respuesta de error si lo había (p. ej. el "codigo" y la hora
+  /// del último recordatorio de un 429); null en otro caso.
+  final dynamic datos;
+
+  const ApiException(this.message, {this.statusCode, this.datos});
 
   @override
   String toString() => message;
 }
 
-enum _HttpMethod { get, post, put, delete }
+enum _HttpMethod { get, post, put, patch, delete }
 
 /// Cliente HTTP centralizado: añade cabeceras (incluido el token de sesión),
 /// aplica un timeout, decodifica el JSON de la respuesta y traduce
@@ -57,6 +61,19 @@ class ApiClient {
     bool autenticado = false,
   }) {
     return _enviar(_HttpMethod.put, path, body: body, autenticado: autenticado);
+  }
+
+  static Future<dynamic> patch(
+    String path, {
+    Object? body,
+    bool autenticado = false,
+  }) {
+    return _enviar(
+      _HttpMethod.patch,
+      path,
+      body: body,
+      autenticado: autenticado,
+    );
   }
 
   static Future<dynamic> delete(
@@ -114,6 +131,11 @@ class ApiClient {
               .put(uri, headers: headers, body: bodyJson)
               .timeout(_timeout);
           break;
+        case _HttpMethod.patch:
+          response = await http
+              .patch(uri, headers: headers, body: bodyJson)
+              .timeout(_timeout);
+          break;
         case _HttpMethod.delete:
           response = await http
               .delete(uri, headers: headers, body: bodyJson)
@@ -163,7 +185,16 @@ class ApiClient {
       _extraerMensaje(response.body) ??
           'Error en la petición (${response.statusCode}).',
       statusCode: response.statusCode,
+      datos: _decodificar(response.body),
     );
+  }
+
+  static dynamic _decodificar(String body) {
+    try {
+      return jsonDecode(body);
+    } catch (_) {
+      return null;
+    }
   }
 
   static String? _extraerMensaje(String body) {

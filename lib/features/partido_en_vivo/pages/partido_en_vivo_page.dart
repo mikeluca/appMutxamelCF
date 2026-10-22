@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
@@ -28,9 +29,33 @@ class _AutorGol {
   final int? jugadorId;
   final String? texto;
 
-  const _AutorGol.jugador(int this.jugadorId) : texto = null;
+  /// El minuto escrito en el diálogo del gol; null si se dejó vacío (lo calcula el servidor).
+  final int? minuto;
 
-  const _AutorGol.texto(String this.texto) : jugadorId = null;
+  const _AutorGol.jugador(int this.jugadorId, {this.minuto}) : texto = null;
+
+  const _AutorGol.texto(String this.texto, {this.minuto}) : jugadorId = null;
+
+  _AutorGol conMinuto(int? minuto) => jugadorId != null
+      ? _AutorGol.jugador(jugadorId!, minuto: minuto)
+      : _AutorGol.texto(texto!, minuto: minuto);
+}
+
+/// Lee el campo "Minuto": vacío es válido (sin minuto); si no, un entero entre 0 y 150.
+({bool valido, int? minuto}) _leerMinuto(String texto) {
+  final limpio = texto.trim();
+
+  if (limpio.isEmpty) {
+    return (valido: true, minuto: null);
+  }
+
+  final minuto = int.tryParse(limpio);
+
+  if (minuto == null || minuto < 0 || minuto > 150) {
+    return (valido: false, minuto: null);
+  }
+
+  return (valido: true, minuto: minuto);
 }
 
 class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
@@ -374,12 +399,11 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
         onPressed: _abrirSelectorAutor,
       ),
       const SizedBox(height: 12),
-      _construirBotonConfirmacion(
+      _construirBoton(
         icono: Icons.sentiment_dissatisfied_outlined,
         titulo: _t.liveEventGoalAgainst,
-        mensajeConfirmacion: _t.liveConfirmGoalAgainst,
         habilitado: enCurso,
-        accion: (id) => _service.enviarGolContra(id),
+        onPressed: _confirmarGolContra,
       ),
       const SizedBox(height: 12),
       _construirBotonConfirmacion(
@@ -483,6 +507,16 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
   Widget _construirGoleadores() {
     final goleadores = _estado?.goleadores ?? const [];
 
+    // Goles (a favor y en contra) con su minuto delante, que se pueden pulsar para
+    // corregir el minuto. Si el estado no trae los eventos de los goles (backend
+    // antiguo), la lista de siempre.
+    final goles = (_estado?.eventos ?? const <EventoEnVivo>[])
+        .where((e) => e.tipo == 'GOL_FAVOR' || e.tipo == 'GOL_CONTRA')
+        .toList();
+
+    final golesFavor = goles.where((e) => e.tipo == 'GOL_FAVOR').length;
+    final usarEventos = goles.isNotEmpty && golesFavor == goleadores.length;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -495,11 +529,24 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
           ),
         ),
         const SizedBox(height: 6),
-        if (goleadores.isEmpty)
+        if (goleadores.isEmpty && goles.isEmpty)
           Text(
             _t.liveNoScorersYet,
             style: TextStyle(color: _colors.onSurfaceVariant),
           )
+        else if (usarEventos)
+          for (final gol in goles)
+            InkWell(
+              key: ValueKey('gol-${gol.id}'),
+              onTap: _enviando ? null : () => _corregirMinuto(gol),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Text(
+                  _textoGol(gol),
+                  style: TextStyle(color: _colors.onSurface, fontSize: 15),
+                ),
+              ),
+            )
         else
           for (final autor in goleadores)
             Padding(
@@ -511,6 +558,15 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
             ),
       ],
     );
+  }
+
+  /// "⚽ 23' Pérez" (a favor) o "🥅 31' Gol en contra"; sin minuto, sin esa parte.
+  String _textoGol(EventoEnVivo gol) {
+    final minuto = gol.minuto == null ? '' : "${gol.minuto}' ";
+
+    return gol.tipo == 'GOL_FAVOR'
+        ? '⚽ $minuto${_nombreAutor(gol.autor ?? '')}'.trimRight()
+        : '🥅 $minuto${_t.liveGoalAgainstRow}';
   }
 
   String _nombreAutor(String autor) =>
@@ -617,6 +673,51 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
     if (confirmado != true) return;
 
     await _ejecutarEvento(accion, _t.liveNotificationSentMessage(titulo));
+  }
+
+  /// Gol en contra: la confirmación de siempre con el campo "Minuto" prerrellenado con
+  /// el minuto actual del partido (editable; vacío = que lo calcule el servidor).
+  Future<void> _confirmarGolContra() async {
+    final titulo = _t.liveEventGoalAgainst;
+
+    final respuesta = await showDialog<({int? minuto})>(
+      context: context,
+      builder: (context) => _DialogoMinuto(
+        titulo: titulo,
+        mensaje: _t.liveConfirmGoalAgainst,
+        minutoInicial: _estado?.minutoActual,
+        textoConfirmar: _t.send,
+      ),
+    );
+
+    if (respuesta == null) return;
+
+    await _ejecutarEvento(
+      (id) => _service.enviarGolContra(id, minuto: respuesta.minuto),
+      _t.liveNotificationSentMessage(titulo),
+    );
+  }
+
+  /// Pulsar un gol de la lista: diálogo para corregir su minuto (sin nuevo aviso).
+  Future<void> _corregirMinuto(EventoEnVivo evento) async {
+    final respuesta = await showDialog<({int? minuto})>(
+      context: context,
+      builder: (context) => _DialogoMinuto(
+        titulo: _t.liveMinuteEditTitle,
+        minutoInicial: evento.minuto,
+        textoConfirmar: _t.liveMinuteSave,
+        obligatorio: true,
+      ),
+    );
+
+    final minuto = respuesta?.minuto;
+
+    if (minuto == null) return;
+
+    await _ejecutarEvento(
+      (id) => _service.corregirMinuto(id, evento.id, minuto),
+      _t.liveMinuteSaved,
+    );
   }
 
   Future<bool?> _mostrarConfirmacion(
@@ -728,6 +829,9 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
         propiaPuerta: _t.liveGoalOwnGoal,
         sinJugadores: _t.liveNoPlayersToPick,
         alElegirOtro: _pedirAutorLibre,
+        minutoInicial: _estado?.minutoActual,
+        etiquetaMinuto: _t.liveMinuteLabel,
+        errorMinuto: _t.liveMinuteInvalid,
       ),
     );
 
@@ -738,6 +842,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
         id,
         jugadorId: autor.jugadorId,
         autorTexto: autor.texto,
+        minuto: autor.minuto,
       ),
       _t.liveGoalSentMessage,
     );
@@ -869,14 +974,18 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
   }
 }
 
-/// Hoja inferior para elegir quién ha marcado.
-class _SelectorAutorGol extends StatelessWidget {
+/// Hoja inferior para elegir quién ha marcado, con el campo "Minuto" (prerrellenado con
+/// el minuto actual del partido; vacío = que lo calcule el servidor).
+class _SelectorAutorGol extends StatefulWidget {
   final List<ConvocadoEnVivo> convocados;
   final String titulo;
   final String otro;
   final String propiaPuerta;
   final String sinJugadores;
   final Future<_AutorGol?> Function() alElegirOtro;
+  final int? minutoInicial;
+  final String etiquetaMinuto;
+  final String errorMinuto;
 
   const _SelectorAutorGol({
     required this.convocados,
@@ -885,7 +994,44 @@ class _SelectorAutorGol extends StatelessWidget {
     required this.propiaPuerta,
     required this.sinJugadores,
     required this.alElegirOtro,
+    required this.minutoInicial,
+    required this.etiquetaMinuto,
+    required this.errorMinuto,
   });
+
+  @override
+  State<_SelectorAutorGol> createState() => _SelectorAutorGolState();
+}
+
+class _SelectorAutorGolState extends State<_SelectorAutorGol> {
+  late final TextEditingController _minuto = TextEditingController(
+    text: widget.minutoInicial?.toString() ?? '',
+  );
+
+  bool _minutoInvalido = false;
+
+  @override
+  void dispose() {
+    _minuto.dispose();
+    super.dispose();
+  }
+
+  /// El minuto escrito; si no es válido se marca el campo y se devuelve null.
+  ({int? minuto})? _minutoElegido() {
+    final lectura = _leerMinuto(_minuto.text);
+
+    setState(() => _minutoInvalido = !lectura.valido);
+
+    return lectura.valido ? (minuto: lectura.minuto) : null;
+  }
+
+  void _elegir(_AutorGol autor) {
+    final elegido = _minutoElegido();
+
+    if (elegido == null) return;
+
+    Navigator.pop(context, autor.conMinuto(elegido.minuto));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -903,7 +1049,7 @@ class _SelectorAutorGol extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
               child: Text(
-                titulo,
+                widget.titulo,
                 style: TextStyle(
                   color: colors.onSurface,
                   fontSize: 18,
@@ -911,15 +1057,32 @@ class _SelectorAutorGol extends StatelessWidget {
                 ),
               ),
             ),
-            if (convocados.isEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: TextField(
+                key: const ValueKey('campo-minuto'),
+                controller: _minuto,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                maxLength: 3,
+                decoration: InputDecoration(
+                  labelText: widget.etiquetaMinuto,
+                  errorText: _minutoInvalido ? widget.errorMinuto : null,
+                  counterText: '',
+                  isDense: true,
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ),
+            if (widget.convocados.isEmpty)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
                 child: Text(
-                  sinJugadores,
+                  widget.sinJugadores,
                   style: TextStyle(color: colors.onSurfaceVariant),
                 ),
               ),
-            for (final jugador in convocados)
+            for (final jugador in widget.convocados)
               ListTile(
                 leading: CircleAvatar(
                   backgroundColor: colors.primaryContainer,
@@ -932,34 +1095,118 @@ class _SelectorAutorGol extends StatelessWidget {
                   ),
                 ),
                 title: Text(jugador.nombre),
-                onTap: () => Navigator.pop(
-                  context,
-                  _AutorGol.jugador(jugador.jugadorId),
-                ),
+                onTap: () => _elegir(_AutorGol.jugador(jugador.jugadorId)),
               ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.edit_outlined),
-              title: Text(otro),
+              title: Text(widget.otro),
               onTap: () async {
-                final autor = await alElegirOtro();
+                if (_minutoElegido() == null) return;
 
-                if (autor != null && context.mounted) {
-                  Navigator.pop(context, autor);
+                final autor = await widget.alElegirOtro();
+
+                if (autor != null && mounted) {
+                  _elegir(autor);
                 }
               },
             ),
             ListTile(
               leading: const Icon(Icons.sports_soccer_outlined),
-              title: Text(propiaPuerta),
-              onTap: () => Navigator.pop(
-                context,
-                const _AutorGol.texto(EstadoPartidoEnVivo.propiaPuerta),
-              ),
+              title: Text(widget.propiaPuerta),
+              onTap: () =>
+                  _elegir(const _AutorGol.texto(EstadoPartidoEnVivo.propiaPuerta)),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Diálogo con el campo "Minuto": para confirmar un gol en contra (con [mensaje]) o
+/// para corregir el minuto de un gol ([obligatorio]). Devuelve `(minuto: n)`, con n
+/// null si se deja vacío (lo calcula el servidor), o null si se cancela.
+class _DialogoMinuto extends StatefulWidget {
+  final String titulo;
+  final String? mensaje;
+  final int? minutoInicial;
+  final String textoConfirmar;
+  final bool obligatorio;
+
+  const _DialogoMinuto({
+    required this.titulo,
+    this.mensaje,
+    required this.minutoInicial,
+    required this.textoConfirmar,
+    this.obligatorio = false,
+  });
+
+  @override
+  State<_DialogoMinuto> createState() => _DialogoMinutoState();
+}
+
+class _DialogoMinutoState extends State<_DialogoMinuto> {
+  late final TextEditingController _controlador = TextEditingController(
+    text: widget.minutoInicial?.toString() ?? '',
+  );
+
+  bool _invalido = false;
+
+  @override
+  void dispose() {
+    _controlador.dispose();
+    super.dispose();
+  }
+
+  void _confirmar() {
+    final lectura = _leerMinuto(_controlador.text);
+
+    if (!lectura.valido || (widget.obligatorio && lectura.minuto == null)) {
+      setState(() => _invalido = true);
+      return;
+    }
+
+    Navigator.pop(context, (minuto: lectura.minuto));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
+    return AlertDialog(
+      title: Text(widget.titulo),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (widget.mensaje != null) ...[
+            Text(widget.mensaje!),
+            const SizedBox(height: 14),
+          ],
+          TextField(
+            key: const ValueKey('campo-minuto'),
+            controller: _controlador,
+            autofocus: widget.mensaje == null,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            maxLength: 3,
+            decoration: InputDecoration(
+              labelText: t.liveMinuteLabel,
+              errorText: _invalido ? t.liveMinuteInvalid : null,
+              counterText: '',
+              border: const OutlineInputBorder(),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(t.cancel),
+        ),
+        FilledButton(onPressed: _confirmar, child: Text(widget.textoConfirmar)),
+      ],
     );
   }
 }

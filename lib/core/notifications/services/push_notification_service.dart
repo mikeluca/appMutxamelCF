@@ -44,6 +44,8 @@ class PushNotificationService {
       tipo == _tipoComunicacion ||
       tipo == tipoPushConvocatoria ||
       tipo == tipoPushConvocatoriaAnulada ||
+      tipo == tipoPushConvocatoriaPendiente ||
+      tipo == tipoPushResultadoPendiente ||
       tipo == tipoPushConvocatoriaEditar ||
       tipo == tipoPushPasarLista ||
       tipo == tipoPushReporte;

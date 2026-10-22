@@ -33,6 +33,9 @@ class _ServicioFalso extends PartidoEnVivoService {
   /// (el reloj del servidor no tiene por qué coincidir con el del móvil).
   int? segundosForzados;
 
+  /// El minuto actual que dice el servidor (null = antes del inicio / descanso).
+  int? minutoActual;
+
   /// Si no es null, obtenerConvocados espera a que se complete.
   Completer<List<ConvocadoEnVivo>>? convocadosPendientes;
 
@@ -61,6 +64,7 @@ class _ServicioFalso extends PartidoEnVivoService {
           if (e.tipo == 'GOL_FAVOR' && e.autor != null) e.autor!,
       ],
       eventos: List.of(eventos),
+      minutoActual: minutoActual,
       deshacibleId: deshacible ? ultimo.id : null,
       deshacibleSegundos: deshacible
           ? segundosForzados ??
@@ -78,6 +82,7 @@ class _ServicioFalso extends PartidoEnVivoService {
     FasePartido nuevaFase, {
     int? jugadorId,
     String? autor,
+    int? minuto,
   }) {
     llamadas.add('$tipo:$partidoId');
 
@@ -93,6 +98,7 @@ class _ServicioFalso extends PartidoEnVivoService {
         jugadorId: jugadorId,
         autor: autor,
         fecha: reloj.ahora,
+        minuto: minuto,
       ),
     );
     fase = nuevaFase;
@@ -135,13 +141,16 @@ class _ServicioFalso extends PartidoEnVivoService {
     int partidoId, {
     int? jugadorId,
     String? autorTexto,
+    int? minuto,
   }) async {
     llamadas.add('autor:$jugadorId/$autorTexto');
+    llamadas.add('minuto-gol:$minuto');
 
     return _registrar(
       partidoId,
       'GOL_FAVOR',
       fase,
+      minuto: minuto,
       jugadorId: jugadorId,
       autor: jugadorId == 10
           ? 'Pablo Garcia'
@@ -152,8 +161,34 @@ class _ServicioFalso extends PartidoEnVivoService {
   }
 
   @override
-  Future<EstadoPartidoEnVivo> enviarGolContra(int partidoId) async =>
-      _registrar(partidoId, 'GOL_CONTRA', fase);
+  Future<EstadoPartidoEnVivo> enviarGolContra(int partidoId, {int? minuto}) async {
+    llamadas.add('minuto-contra:$minuto');
+
+    return _registrar(partidoId, 'GOL_CONTRA', fase, minuto: minuto);
+  }
+
+  @override
+  Future<EstadoPartidoEnVivo> corregirMinuto(
+    int partidoId,
+    int eventoId,
+    int minuto,
+  ) async {
+    llamadas.add('corregir:$eventoId:$minuto');
+
+    final i = eventos.indexWhere((e) => e.id == eventoId);
+    final e = eventos[i];
+
+    eventos[i] = EventoEnVivo(
+      id: e.id,
+      tipo: e.tipo,
+      jugadorId: e.jugadorId,
+      autor: e.autor,
+      fecha: e.fecha,
+      minuto: minuto,
+    );
+
+    return _estado(partidoId);
+  }
 
   @override
   Future<EstadoPartidoEnVivo> enviarDescanso(int partidoId) async =>
@@ -430,7 +465,9 @@ void main() {
         expect(find.text('1'), findsOneWidget);
         expect(find.text('Otro…'), findsOneWidget);
         expect(find.text('Propia puerta (rival)'), findsOneWidget);
-        expect(find.byType(TextField), findsNothing);
+        // Lo único editable de la hoja es el minuto.
+        expect(find.byType(TextField), findsOneWidget);
+        expect(find.byKey(const ValueKey('campo-minuto')), findsOneWidget);
       },
     );
 
@@ -453,7 +490,11 @@ void main() {
         await tester.tap(find.text('Otro…'));
         await tester.pumpAndSettle();
 
-        final campo = tester.widget<TextField>(find.byType(TextField));
+        final campoOtro = find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.byType(TextField),
+        );
+        final campo = tester.widget<TextField>(campoOtro);
         expect(campo.maxLength, 60);
 
         await tester.tap(find.widgetWithText(FilledButton, 'Enviar'));
@@ -461,7 +502,7 @@ void main() {
         expect(find.text('Escribe el autor del gol.'), findsOneWidget);
         expect(servicio.llamadas.where((l) => l.startsWith('autor:')), isEmpty);
 
-        await tester.enterText(find.byType(TextField), 'Un amigo');
+        await tester.enterText(campoOtro, 'Un amigo');
         await tester.tap(find.widgetWithText(FilledButton, 'Enviar'));
         await tester.pumpAndSettle();
 
@@ -712,5 +753,189 @@ void main() {
         );
       },
     );
+  });
+
+  group('minuto del gol', () {
+    final campoMinuto = find.byKey(const ValueKey('campo-minuto'));
+
+    String? textoCampo(WidgetTester tester) =>
+        tester.widget<TextField>(campoMinuto).controller?.text;
+
+    Future<_ServicioFalso> empezar(WidgetTester tester, {int? minuto}) async {
+      final servicio = _ServicioFalso(reloj, _unPartido);
+      servicio.minutoActual = minuto;
+      await _pintar(tester, servicio, reloj);
+      await _pulsarYConfirmar(tester, 'Inicio de partido');
+      return servicio;
+    }
+
+    Future<void> abrirSelectorGol(WidgetTester tester) async {
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Gol a favor'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('el diálogo del gol a favor trae el minuto actual y se envía '
+        'con el autor', (tester) async {
+      final servicio = await empezar(tester, minuto: 23);
+
+      await abrirSelectorGol(tester);
+
+      expect(textoCampo(tester), '23');
+
+      await tester.tap(find.text('Pablo Garcia'));
+      await tester.pumpAndSettle();
+
+      expect(servicio.llamadas, contains('minuto-gol:23'));
+      expect(find.text("⚽ 23' Pablo Garcia"), findsOneWidget);
+    });
+
+    testWidgets('el minuto es editable y se envía el escrito', (tester) async {
+      final servicio = await empezar(tester);
+
+      await abrirSelectorGol(tester);
+      await tester.enterText(campoMinuto, '17');
+      await tester.tap(find.text('Luis Lopez'));
+      await tester.pumpAndSettle();
+
+      expect(servicio.llamadas, contains('minuto-gol:17'));
+      expect(find.text("⚽ 17' Luis Lopez"), findsOneWidget);
+    });
+
+    testWidgets('un minuto fuera de 0-150 no deja enviar el gol', (
+      tester,
+    ) async {
+      final servicio = await empezar(tester);
+
+      await abrirSelectorGol(tester);
+      await tester.enterText(campoMinuto, '151');
+      await tester.tap(find.text('Luis Lopez'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('El minuto debe estar entre 0 y 150.'), findsOneWidget);
+      expect(servicio.llamadas.where((l) => l.startsWith('minuto-gol')),
+          isEmpty);
+
+      // Con 150 sí.
+      await tester.enterText(campoMinuto, '150');
+      await tester.tap(find.text('Luis Lopez'));
+      await tester.pumpAndSettle();
+
+      expect(servicio.llamadas, contains('minuto-gol:150'));
+    });
+
+    testWidgets('el campo del minuto es numérico', (tester) async {
+      await empezar(tester);
+      await abrirSelectorGol(tester);
+
+      final campo = tester.widget<TextField>(campoMinuto);
+      expect(campo.keyboardType, TextInputType.number);
+
+      await tester.enterText(campoMinuto, 'ab1c2');
+      expect(textoCampo(tester), '12');
+    });
+
+    testWidgets('vacío, el servidor calcula el minuto', (tester) async {
+      final servicio = await empezar(tester);
+
+      await abrirSelectorGol(tester);
+      await tester.tap(find.text('Propia puerta (rival)'));
+      await tester.pumpAndSettle();
+
+      expect(servicio.llamadas, contains('minuto-gol:null'));
+    });
+
+    testWidgets('el gol en contra también pide el minuto', (tester) async {
+      final servicio = await empezar(tester);
+
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Gol en contra'));
+      await tester.pumpAndSettle();
+
+      expect(campoMinuto, findsOneWidget);
+
+      await tester.enterText(campoMinuto, '31');
+      await tester.tap(find.widgetWithText(FilledButton, 'Enviar'));
+      await tester.pumpAndSettle();
+
+      expect(servicio.llamadas, contains('minuto-contra:31'));
+      expect(find.text("🥅 31' Gol en contra"), findsOneWidget);
+    });
+
+    testWidgets('el gol en contra con un minuto no válido no se envía', (
+      tester,
+    ) async {
+      final servicio = await empezar(tester);
+
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Gol en contra'));
+      await tester.pumpAndSettle();
+      await tester.enterText(campoMinuto, '200');
+      await tester.tap(find.widgetWithText(FilledButton, 'Enviar'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('El minuto debe estar entre 0 y 150.'), findsOneWidget);
+      expect(servicio.llamadas.where((l) => l.startsWith('minuto-contra')),
+          isEmpty);
+    });
+
+    testWidgets('pulsar un gol de la lista permite corregir su minuto', (
+      tester,
+    ) async {
+      final servicio = await empezar(tester);
+
+      await abrirSelectorGol(tester);
+      await tester.enterText(campoMinuto, '12');
+      await tester.tap(find.text('Pablo Garcia'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text("⚽ 12' Pablo Garcia"));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Corregir el minuto'), findsOneWidget);
+      expect(textoCampo(tester), '12');
+
+      await tester.enterText(campoMinuto, '14');
+      await tester.tap(find.widgetWithText(FilledButton, 'Guardar'));
+      await tester.pumpAndSettle();
+
+      expect(servicio.llamadas, contains('corregir:2:14'));
+      expect(find.text("⚽ 14' Pablo Garcia"), findsOneWidget);
+      expect(find.text('Minuto corregido.'), findsOneWidget);
+    });
+
+    testWidgets('la corrección exige un minuto válido y se puede cancelar', (
+      tester,
+    ) async {
+      final servicio = await empezar(tester);
+
+      await abrirSelectorGol(tester);
+      await tester.enterText(campoMinuto, '12');
+      await tester.tap(find.text('Pablo Garcia'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text("⚽ 12' Pablo Garcia"));
+      await tester.pumpAndSettle();
+      await tester.enterText(campoMinuto, '');
+      await tester.tap(find.widgetWithText(FilledButton, 'Guardar'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('El minuto debe estar entre 0 y 150.'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(TextButton, 'Cancelar'));
+      await tester.pumpAndSettle();
+
+      expect(servicio.llamadas.where((l) => l.startsWith('corregir')),
+          isEmpty);
+    });
+
+    testWidgets('sin minuto en el evento se ve como antes', (tester) async {
+      final servicio = await empezar(tester);
+
+      await abrirSelectorGol(tester);
+      await tester.enterText(campoMinuto, '');
+      await tester.tap(find.text('Pablo Garcia'));
+      await tester.pumpAndSettle();
+
+      expect(servicio.llamadas, contains('minuto-gol:null'));
+      expect(find.text('⚽ Pablo Garcia'), findsOneWidget);
+    });
   });
 }

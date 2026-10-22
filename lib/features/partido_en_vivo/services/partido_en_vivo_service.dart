@@ -54,14 +54,20 @@ class PartidoEnVivoService {
     int partidoId, {
     int? jugadorId,
     String? autorTexto,
+    int? minuto,
   }) => _evento(
     partidoId,
     'gol-favor',
-    body: {'jugadorId': jugadorId, 'autorTexto': autorTexto},
+    body: {
+      'jugadorId': jugadorId,
+      'autorTexto': autorTexto,
+      'minuto': minuto,
+    },
   );
 
-  Future<EstadoPartidoEnVivo> enviarGolContra(int partidoId) =>
-      _evento(partidoId, 'gol-contra');
+  /// Sin [minuto] lo calcula el servidor.
+  Future<EstadoPartidoEnVivo> enviarGolContra(int partidoId, {int? minuto}) =>
+      _evento(partidoId, 'gol-contra', body: {'minuto': minuto});
 
   Future<EstadoPartidoEnVivo> enviarDescanso(int partidoId) =>
       _evento(partidoId, 'descanso');
@@ -71,6 +77,22 @@ class PartidoEnVivoService {
 
   Future<EstadoPartidoEnVivo> enviarFinalPartido(int partidoId) =>
       _evento(partidoId, 'final');
+
+  /// Corrige el minuto (0-150) de un gol no anulado del partido de hoy; el servidor no
+  /// reenvía ningún aviso.
+  Future<EstadoPartidoEnVivo> corregirMinuto(
+    int partidoId,
+    int eventoId,
+    int minuto,
+  ) async {
+    final data = await ApiClient.patch(
+      '$_base/$partidoId/eventos/$eventoId/minuto',
+      autenticado: true,
+      body: {'minuto': minuto},
+    );
+
+    return EstadoPartidoEnVivo.fromJson(data as Map<String, dynamic>);
+  }
 
   /// Anula el último evento (solo durante los 2 minutos siguientes).
   Future<EstadoPartidoEnVivo> deshacer(int partidoId, int eventoId) async {

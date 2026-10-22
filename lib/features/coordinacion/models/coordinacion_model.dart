@@ -6,6 +6,25 @@ DateTime? _fecha(Object? valor) {
 
 int _entero(Object? valor) => (valor as num?)?.toInt() ?? 0;
 
+/// Qué se recuerda al entrenador desde el panel (el "tipo" del POST).
+const String tipoRecordatorioConvocatoria = 'CONVOCATORIA';
+const String tipoRecordatorioResultado = 'RESULTADO';
+
+/// La respuesta de un recordatorio enviado: a cuántos entrenadores y cuándo.
+class RecordatorioEnviadoModel {
+  final int destinatarios;
+  final DateTime? fecha;
+
+  const RecordatorioEnviadoModel({required this.destinatarios, this.fecha});
+
+  factory RecordatorioEnviadoModel.fromJson(Map<String, dynamic> json) {
+    return RecordatorioEnviadoModel(
+      destinatarios: _entero(json['destinatarios']),
+      fecha: DateTime.tryParse(json['fecha']?.toString() ?? ''),
+    );
+  }
+}
+
 /// Un partido del panel del fin de semana (sin convocatoria o con el resultado
 /// pendiente).
 class PartidoPanelModel {
