@@ -4,6 +4,7 @@ import '../../../core/utils/mensaje_error.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/admin_model.dart';
+import 'invitar_usuario_page.dart';
 import '../services/admin_service.dart';
 
 /// Cuentas invitadas que todavía no se han activado (ADMIN_APP), con la opción
@@ -11,7 +12,14 @@ import '../services/admin_service.dart';
 class CuentasPendientesPage extends StatefulWidget {
   final AdminService? servicio;
 
-  const CuentasPendientesPage({super.key, this.servicio});
+  /// Solo para tests: sustituye al formulario de invitar.
+  final Widget Function()? constructorInvitar;
+
+  const CuentasPendientesPage({
+    super.key,
+    this.servicio,
+    this.constructorInvitar,
+  });
 
   @override
   State<CuentasPendientesPage> createState() => _CuentasPendientesPageState();
@@ -113,6 +121,31 @@ class _CuentasPendientesPageState extends State<CuentasPendientesPage> {
     }
   }
 
+  /// Abre el formulario de invitar; al volver con una invitación avisa y recarga la lista
+  /// para que la nueva cuenta aparezca.
+  Future<void> _invitar() async {
+    final invitacion = await Navigator.push<InvitacionEnviadaModel>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => widget.constructorInvitar?.call() ?? InvitarUsuarioPage(servicio: _servicio),
+      ),
+    );
+
+    if (invitacion == null || !mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          invitacion.emailEnviado
+              ? _t.inviteSent(invitacion.email)
+              : _t.inviteCreatedNoEmail(invitacion.email),
+        ),
+      ),
+    );
+
+    await _recargar();
+  }
+
   bool _coincide(UsuarioPendienteModel u) {
     final texto = _filtro.trim().toLowerCase();
 
@@ -128,6 +161,12 @@ class _CuentasPendientesPageState extends State<CuentasPendientesPage> {
     return Scaffold(
       appBar: AppBar(
         title: ClubAppBarTitle(titulo: _t.clubPagePendingAccounts),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        key: const ValueKey('invitar-usuario'),
+        onPressed: _invitar,
+        icon: const Icon(Icons.person_add_alt_1_outlined),
+        label: Text(_t.inviteButton),
       ),
       body: Column(
         children: [

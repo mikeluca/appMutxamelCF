@@ -2482,4 +2482,149 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get liveMinuteSaved => 'Minuto corregido.';
+
+  @override
+  String get inviteButton => 'Invitar';
+
+  @override
+  String get inviteTitle => 'Invitar usuario';
+
+  @override
+  String get inviteNameLabel => 'Nombre';
+
+  @override
+  String get inviteSurnameLabel => 'Apellidos';
+
+  @override
+  String get inviteEmailLabel => 'Email';
+
+  @override
+  String get inviteEmailFromFamily =>
+      'Con un familiar vinculado se usa el email de su ficha.';
+
+  @override
+  String get inviteLinksTitle => 'Vínculos';
+
+  @override
+  String get inviteLinkPlayer => 'Jugador';
+
+  @override
+  String get inviteLinkFamily => 'Familiar';
+
+  @override
+  String get inviteLinkStaff => 'Cuerpo técnico';
+
+  @override
+  String get inviteSearchHint => 'Buscar por nombre';
+
+  @override
+  String get inviteNoResults => 'No hay personas sin cuenta que coincidan.';
+
+  @override
+  String get inviteRolesTitle => 'Roles adicionales';
+
+  @override
+  String get inviteSummaryTitle => 'Roles resultantes';
+
+  @override
+  String get inviteSummaryEmpty => 'Elige al menos un vínculo o un rol.';
+
+  @override
+  String get inviteSubmit => 'Enviar invitación';
+
+  @override
+  String get inviteNameRequired => 'Escribe el nombre de la persona.';
+
+  @override
+  String get inviteEmailRequired => 'Escribe un email válido.';
+
+  @override
+  String inviteSent(String email) {
+    return 'Invitación enviada a $email';
+  }
+
+  @override
+  String inviteCreatedNoEmail(String email) {
+    return 'Cuenta creada para $email, pero no se ha podido enviar el email. Reenvíalo desde Cuentas pendientes.';
+  }
+
+  @override
+  String get inviteLoadError =>
+      'No se han podido cargar las personas del club.';
+
+  @override
+  String get clubPageAppStatus => 'Estado de la app';
+
+  @override
+  String get clubPageAppStatusDesc => 'Cuentas, dispositivos y versiones';
+
+  @override
+  String get appStatusActive => 'Cuentas activas';
+
+  @override
+  String get appStatusPending => 'Pendientes de activar';
+
+  @override
+  String get appStatusDeactivated => 'Desactivadas';
+
+  @override
+  String get appStatusNoDevice => 'Sin dispositivo (sin push)';
+
+  @override
+  String get appStatusNoNotifications => 'Notificaciones desactivadas';
+
+  @override
+  String get appStatusOldVersion => 'Dispositivos con versión antigua';
+
+  @override
+  String appStatusInactive(int days) {
+    return 'Sin entrar en $days días';
+  }
+
+  @override
+  String get appStatusVersionsTitle => 'Versiones por plataforma';
+
+  @override
+  String get appStatusPlatform => 'Plataforma';
+
+  @override
+  String get appStatusVersion => 'Versión';
+
+  @override
+  String get appStatusDevices => 'Dispositivos';
+
+  @override
+  String appStatusMinimum(String android, String ios) {
+    return 'Versión mínima: Android $android · iOS $ios';
+  }
+
+  @override
+  String get appStatusNoVersions => 'No hay dispositivos activos.';
+
+  @override
+  String get appStatusUsersEmpty => 'No hay cuentas en esta lista.';
+
+  @override
+  String get appStatusUsersMax => 'Se muestran como máximo 200 cuentas.';
+
+  @override
+  String appStatusLastAccess(String date) {
+    return 'Último acceso: $date';
+  }
+
+  @override
+  String get appStatusNeverAccessed => 'Sin accesos registrados';
+
+  @override
+  String get appStatusWriteTooltip => 'Escribirle por chat privado';
+
+  @override
+  String get moderationReactivate => 'Reactivar cuenta';
+
+  @override
+  String get moderationReactivateConfirm =>
+      '¿Reactivar la cuenta del autor? Podrá volver a entrar con su contraseña; sus dispositivos se registrarán al volver a entrar.';
+
+  @override
+  String get moderationReactivated => 'Cuenta reactivada';
 }

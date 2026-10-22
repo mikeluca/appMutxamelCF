@@ -77,4 +77,78 @@ class AdminService {
 
     return data['email']?.toString() ?? '';
   }
+
+  // ---- reactivar al autor de un reporte --------------------------------------------------------
+
+  /// Reactiva la cuenta del autor de un reporte AUTOR_DESACTIVADO. El reporte sigue en ese
+  /// estado, con una anotación de la reactivación.
+  Future<void> reactivarAutor(int reporteId, {String? nota}) =>
+      _accion('/app/moderacion/reportes/$reporteId/reactivar-autor', nota: nota);
+
+  // ---- invitar usuarios ------------------------------------------------------------------------
+
+  Future<VinculosDisponiblesModel> obtenerVinculosDisponibles() async {
+    final data = await ApiClient.get(
+      '/app/admin/vinculos-disponibles',
+      autenticado: true,
+    );
+
+    return VinculosDisponiblesModel.fromJson(data as Map<String, dynamic>);
+  }
+
+  /// Invita a una persona. Errores del servidor: 400 (datos no válidos, o el rol ADMIN_APP),
+  /// 403 (no es administrador) y 409 (el email ya está registrado).
+  Future<InvitacionEnviadaModel> invitar({
+    required String email,
+    String? nombre,
+    String? apellidos,
+    required List<PersonaDisponibleModel> vinculos,
+    List<String> roles = const [],
+  }) async {
+    final data = await ApiClient.post(
+      '/app/admin/invitaciones',
+      autenticado: true,
+      body: {
+        'email': email.trim(),
+        'nombre': ?_limpio(nombre),
+        'apellidos': ?_limpio(apellidos),
+        'vinculos': [
+          for (final v in vinculos) {'tipo': v.tipo.codigo, 'personaId': v.id},
+        ],
+        'roles': roles,
+      },
+    );
+
+    return InvitacionEnviadaModel.fromJson(data as Map<String, dynamic>);
+  }
+
+  static String? _limpio(String? texto) {
+    final limpio = texto?.trim() ?? '';
+
+    return limpio.isEmpty ? null : limpio;
+  }
+
+  // ---- estado de la app ------------------------------------------------------------------------
+
+  Future<EstadoAppModel> obtenerEstado() async {
+    final data = await ApiClient.get('/app/admin/estado', autenticado: true);
+
+    return EstadoAppModel.fromJson(data as Map<String, dynamic>);
+  }
+
+  /// Las cuentas de un filtro del estado (como mucho 200).
+  Future<List<UsuarioEstadoModel>> obtenerUsuariosEstado(
+    FiltroEstado filtro,
+  ) async {
+    final data =
+        await ApiClient.get(
+              '/app/admin/estado/usuarios?filtro=${filtro.codigo}',
+              autenticado: true,
+            )
+            as List<dynamic>;
+
+    return data
+        .map((e) => UsuarioEstadoModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
 }

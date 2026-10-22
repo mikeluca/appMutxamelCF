@@ -4353,6 +4353,270 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Minuto corregido.'**
   String get liveMinuteSaved;
+
+  /// No description provided for @inviteButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitar'**
+  String get inviteButton;
+
+  /// No description provided for @inviteTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitar usuario'**
+  String get inviteTitle;
+
+  /// No description provided for @inviteNameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre'**
+  String get inviteNameLabel;
+
+  /// No description provided for @inviteSurnameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Apellidos'**
+  String get inviteSurnameLabel;
+
+  /// No description provided for @inviteEmailLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Email'**
+  String get inviteEmailLabel;
+
+  /// No description provided for @inviteEmailFromFamily.
+  ///
+  /// In es, this message translates to:
+  /// **'Con un familiar vinculado se usa el email de su ficha.'**
+  String get inviteEmailFromFamily;
+
+  /// No description provided for @inviteLinksTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Vínculos'**
+  String get inviteLinksTitle;
+
+  /// No description provided for @inviteLinkPlayer.
+  ///
+  /// In es, this message translates to:
+  /// **'Jugador'**
+  String get inviteLinkPlayer;
+
+  /// No description provided for @inviteLinkFamily.
+  ///
+  /// In es, this message translates to:
+  /// **'Familiar'**
+  String get inviteLinkFamily;
+
+  /// No description provided for @inviteLinkStaff.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuerpo técnico'**
+  String get inviteLinkStaff;
+
+  /// No description provided for @inviteSearchHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar por nombre'**
+  String get inviteSearchHint;
+
+  /// No description provided for @inviteNoResults.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay personas sin cuenta que coincidan.'**
+  String get inviteNoResults;
+
+  /// No description provided for @inviteRolesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Roles adicionales'**
+  String get inviteRolesTitle;
+
+  /// No description provided for @inviteSummaryTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Roles resultantes'**
+  String get inviteSummaryTitle;
+
+  /// No description provided for @inviteSummaryEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige al menos un vínculo o un rol.'**
+  String get inviteSummaryEmpty;
+
+  /// No description provided for @inviteSubmit.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar invitación'**
+  String get inviteSubmit;
+
+  /// No description provided for @inviteNameRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe el nombre de la persona.'**
+  String get inviteNameRequired;
+
+  /// No description provided for @inviteEmailRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe un email válido.'**
+  String get inviteEmailRequired;
+
+  /// No description provided for @inviteSent.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitación enviada a {email}'**
+  String inviteSent(String email);
+
+  /// No description provided for @inviteCreatedNoEmail.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta creada para {email}, pero no se ha podido enviar el email. Reenvíalo desde Cuentas pendientes.'**
+  String inviteCreatedNoEmail(String email);
+
+  /// No description provided for @inviteLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se han podido cargar las personas del club.'**
+  String get inviteLoadError;
+
+  /// No description provided for @clubPageAppStatus.
+  ///
+  /// In es, this message translates to:
+  /// **'Estado de la app'**
+  String get clubPageAppStatus;
+
+  /// No description provided for @clubPageAppStatusDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuentas, dispositivos y versiones'**
+  String get clubPageAppStatusDesc;
+
+  /// No description provided for @appStatusActive.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuentas activas'**
+  String get appStatusActive;
+
+  /// No description provided for @appStatusPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendientes de activar'**
+  String get appStatusPending;
+
+  /// No description provided for @appStatusDeactivated.
+  ///
+  /// In es, this message translates to:
+  /// **'Desactivadas'**
+  String get appStatusDeactivated;
+
+  /// No description provided for @appStatusNoDevice.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin dispositivo (sin push)'**
+  String get appStatusNoDevice;
+
+  /// No description provided for @appStatusNoNotifications.
+  ///
+  /// In es, this message translates to:
+  /// **'Notificaciones desactivadas'**
+  String get appStatusNoNotifications;
+
+  /// No description provided for @appStatusOldVersion.
+  ///
+  /// In es, this message translates to:
+  /// **'Dispositivos con versión antigua'**
+  String get appStatusOldVersion;
+
+  /// No description provided for @appStatusInactive.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin entrar en {days} días'**
+  String appStatusInactive(int days);
+
+  /// No description provided for @appStatusVersionsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Versiones por plataforma'**
+  String get appStatusVersionsTitle;
+
+  /// No description provided for @appStatusPlatform.
+  ///
+  /// In es, this message translates to:
+  /// **'Plataforma'**
+  String get appStatusPlatform;
+
+  /// No description provided for @appStatusVersion.
+  ///
+  /// In es, this message translates to:
+  /// **'Versión'**
+  String get appStatusVersion;
+
+  /// No description provided for @appStatusDevices.
+  ///
+  /// In es, this message translates to:
+  /// **'Dispositivos'**
+  String get appStatusDevices;
+
+  /// No description provided for @appStatusMinimum.
+  ///
+  /// In es, this message translates to:
+  /// **'Versión mínima: Android {android} · iOS {ios}'**
+  String appStatusMinimum(String android, String ios);
+
+  /// No description provided for @appStatusNoVersions.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay dispositivos activos.'**
+  String get appStatusNoVersions;
+
+  /// No description provided for @appStatusUsersEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay cuentas en esta lista.'**
+  String get appStatusUsersEmpty;
+
+  /// No description provided for @appStatusUsersMax.
+  ///
+  /// In es, this message translates to:
+  /// **'Se muestran como máximo 200 cuentas.'**
+  String get appStatusUsersMax;
+
+  /// No description provided for @appStatusLastAccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Último acceso: {date}'**
+  String appStatusLastAccess(String date);
+
+  /// No description provided for @appStatusNeverAccessed.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin accesos registrados'**
+  String get appStatusNeverAccessed;
+
+  /// No description provided for @appStatusWriteTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribirle por chat privado'**
+  String get appStatusWriteTooltip;
+
+  /// No description provided for @moderationReactivate.
+  ///
+  /// In es, this message translates to:
+  /// **'Reactivar cuenta'**
+  String get moderationReactivate;
+
+  /// No description provided for @moderationReactivateConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Reactivar la cuenta del autor? Podrá volver a entrar con su contraseña; sus dispositivos se registrarán al volver a entrar.'**
+  String get moderationReactivateConfirm;
+
+  /// No description provided for @moderationReactivated.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta reactivada'**
+  String get moderationReactivated;
 }
 
 class _AppLocalizationsDelegate

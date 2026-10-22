@@ -2454,4 +2454,148 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get liveMinuteSaved => 'Minute corrected.';
+
+  @override
+  String get inviteButton => 'Invite';
+
+  @override
+  String get inviteTitle => 'Invite user';
+
+  @override
+  String get inviteNameLabel => 'First name';
+
+  @override
+  String get inviteSurnameLabel => 'Last name';
+
+  @override
+  String get inviteEmailLabel => 'Email';
+
+  @override
+  String get inviteEmailFromFamily =>
+      'With a linked family member, the email on their record is used.';
+
+  @override
+  String get inviteLinksTitle => 'Links';
+
+  @override
+  String get inviteLinkPlayer => 'Player';
+
+  @override
+  String get inviteLinkFamily => 'Family member';
+
+  @override
+  String get inviteLinkStaff => 'Coaching staff';
+
+  @override
+  String get inviteSearchHint => 'Search by name';
+
+  @override
+  String get inviteNoResults => 'No matching people without an account.';
+
+  @override
+  String get inviteRolesTitle => 'Additional roles';
+
+  @override
+  String get inviteSummaryTitle => 'Resulting roles';
+
+  @override
+  String get inviteSummaryEmpty => 'Choose at least one link or role.';
+
+  @override
+  String get inviteSubmit => 'Send invitation';
+
+  @override
+  String get inviteNameRequired => 'Enter the person\'s name.';
+
+  @override
+  String get inviteEmailRequired => 'Enter a valid email.';
+
+  @override
+  String inviteSent(String email) {
+    return 'Invitation sent to $email';
+  }
+
+  @override
+  String inviteCreatedNoEmail(String email) {
+    return 'Account created for $email, but the email could not be sent. Resend it from Pending accounts.';
+  }
+
+  @override
+  String get inviteLoadError => 'The club\'s people could not be loaded.';
+
+  @override
+  String get clubPageAppStatus => 'App status';
+
+  @override
+  String get clubPageAppStatusDesc => 'Accounts, devices and versions';
+
+  @override
+  String get appStatusActive => 'Active accounts';
+
+  @override
+  String get appStatusPending => 'Pending activation';
+
+  @override
+  String get appStatusDeactivated => 'Deactivated';
+
+  @override
+  String get appStatusNoDevice => 'No device (no push)';
+
+  @override
+  String get appStatusNoNotifications => 'Notifications turned off';
+
+  @override
+  String get appStatusOldVersion => 'Devices on an old version';
+
+  @override
+  String appStatusInactive(int days) {
+    return 'Not logged in for $days days';
+  }
+
+  @override
+  String get appStatusVersionsTitle => 'Versions by platform';
+
+  @override
+  String get appStatusPlatform => 'Platform';
+
+  @override
+  String get appStatusVersion => 'Version';
+
+  @override
+  String get appStatusDevices => 'Devices';
+
+  @override
+  String appStatusMinimum(String android, String ios) {
+    return 'Minimum version: Android $android · iOS $ios';
+  }
+
+  @override
+  String get appStatusNoVersions => 'There are no active devices.';
+
+  @override
+  String get appStatusUsersEmpty => 'There are no accounts in this list.';
+
+  @override
+  String get appStatusUsersMax => 'At most 200 accounts are shown.';
+
+  @override
+  String appStatusLastAccess(String date) {
+    return 'Last access: $date';
+  }
+
+  @override
+  String get appStatusNeverAccessed => 'No recorded access';
+
+  @override
+  String get appStatusWriteTooltip => 'Message them in a private chat';
+
+  @override
+  String get moderationReactivate => 'Reactivate account';
+
+  @override
+  String get moderationReactivateConfirm =>
+      'Reactivate the author\'s account? They will be able to log in again with their password; their devices will be registered when they log in.';
+
+  @override
+  String get moderationReactivated => 'Account reactivated';
 }

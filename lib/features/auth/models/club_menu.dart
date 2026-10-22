@@ -29,6 +29,7 @@ enum OpcionClub {
   seguimientoJugadores,
   moderacion,
   cuentasPendientes,
+  estadoApp,
   partidoEnDirecto,
   miPerfil,
   cerrarSesion,
@@ -68,6 +69,8 @@ String? rutaDeOpcionClub(OpcionClub opcion) {
       return AppRoutes.moderation;
     case OpcionClub.cuentasPendientes:
       return AppRoutes.pendingAccounts;
+    case OpcionClub.estadoApp:
+      return AppRoutes.appStatus;
     case OpcionClub.partidoEnDirecto:
       return AppRoutes.liveMatch;
     case OpcionClub.miPerfil:
@@ -127,6 +130,7 @@ List<SeccionClub> construirSeccionesClub(
     SeccionClub(SeccionClubId.administracion, [
       if (esAdmin) OpcionClub.moderacion,
       if (esAdmin) OpcionClub.cuentasPendientes,
+      if (esAdmin) OpcionClub.estadoApp,
     ]),
     SeccionClub(SeccionClubId.retransmision, [
       if (esRetransmision) OpcionClub.partidoEnDirecto,

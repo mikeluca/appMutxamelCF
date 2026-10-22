@@ -2473,4 +2473,150 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get liveMinuteSaved => 'Minut corregit.';
+
+  @override
+  String get inviteButton => 'Convida';
+
+  @override
+  String get inviteTitle => 'Convidar usuari';
+
+  @override
+  String get inviteNameLabel => 'Nom';
+
+  @override
+  String get inviteSurnameLabel => 'Cognoms';
+
+  @override
+  String get inviteEmailLabel => 'Correu electrònic';
+
+  @override
+  String get inviteEmailFromFamily =>
+      'Amb un familiar vinculat s\'usa el correu de la seua fitxa.';
+
+  @override
+  String get inviteLinksTitle => 'Vincles';
+
+  @override
+  String get inviteLinkPlayer => 'Jugador';
+
+  @override
+  String get inviteLinkFamily => 'Familiar';
+
+  @override
+  String get inviteLinkStaff => 'Cos tècnic';
+
+  @override
+  String get inviteSearchHint => 'Cerca per nom';
+
+  @override
+  String get inviteNoResults =>
+      'No hi ha persones sense compte que coincidisquen.';
+
+  @override
+  String get inviteRolesTitle => 'Rols addicionals';
+
+  @override
+  String get inviteSummaryTitle => 'Rols resultants';
+
+  @override
+  String get inviteSummaryEmpty => 'Tria almenys un vincle o un rol.';
+
+  @override
+  String get inviteSubmit => 'Envia la invitació';
+
+  @override
+  String get inviteNameRequired => 'Escriu el nom de la persona.';
+
+  @override
+  String get inviteEmailRequired => 'Escriu un correu electrònic vàlid.';
+
+  @override
+  String inviteSent(String email) {
+    return 'Invitació enviada a $email';
+  }
+
+  @override
+  String inviteCreatedNoEmail(String email) {
+    return 'Compte creat per a $email, però no s\'ha pogut enviar el correu. Reenvia\'l des de Comptes pendents.';
+  }
+
+  @override
+  String get inviteLoadError =>
+      'No s\'han pogut carregar les persones del club.';
+
+  @override
+  String get clubPageAppStatus => 'Estat de l\'app';
+
+  @override
+  String get clubPageAppStatusDesc => 'Comptes, dispositius i versions';
+
+  @override
+  String get appStatusActive => 'Comptes actius';
+
+  @override
+  String get appStatusPending => 'Pendents d\'activar';
+
+  @override
+  String get appStatusDeactivated => 'Desactivats';
+
+  @override
+  String get appStatusNoDevice => 'Sense dispositiu (sense push)';
+
+  @override
+  String get appStatusNoNotifications => 'Notificacions desactivades';
+
+  @override
+  String get appStatusOldVersion => 'Dispositius amb versió antiga';
+
+  @override
+  String appStatusInactive(int days) {
+    return 'Sense entrar en $days dies';
+  }
+
+  @override
+  String get appStatusVersionsTitle => 'Versions per plataforma';
+
+  @override
+  String get appStatusPlatform => 'Plataforma';
+
+  @override
+  String get appStatusVersion => 'Versió';
+
+  @override
+  String get appStatusDevices => 'Dispositius';
+
+  @override
+  String appStatusMinimum(String android, String ios) {
+    return 'Versió mínima: Android $android · iOS $ios';
+  }
+
+  @override
+  String get appStatusNoVersions => 'No hi ha dispositius actius.';
+
+  @override
+  String get appStatusUsersEmpty => 'No hi ha comptes en aquesta llista.';
+
+  @override
+  String get appStatusUsersMax => 'Es mostren com a màxim 200 comptes.';
+
+  @override
+  String appStatusLastAccess(String date) {
+    return 'Últim accés: $date';
+  }
+
+  @override
+  String get appStatusNeverAccessed => 'Sense accessos registrats';
+
+  @override
+  String get appStatusWriteTooltip => 'Escriu-li per xat privat';
+
+  @override
+  String get moderationReactivate => 'Reactiva el compte';
+
+  @override
+  String get moderationReactivateConfirm =>
+      'Vols reactivar el compte de l\'autor? Podrà tornar a entrar amb la seua contrasenya; els seus dispositius es registraran en tornar a entrar.';
+
+  @override
+  String get moderationReactivated => 'Compte reactivat';
 }

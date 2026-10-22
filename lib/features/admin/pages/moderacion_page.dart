@@ -71,6 +71,7 @@ class _ModeracionPageState extends State<ModeracionPage> {
     required String mensaje,
     required Future<void> Function(String? nota, bool borrarMensaje) accion,
     bool conBorrarMensaje = false,
+    String? mensajeExito,
   }) async {
     final controlador = TextEditingController();
     var borrarMensaje = true;
@@ -137,7 +138,9 @@ class _ModeracionPageState extends State<ModeracionPage> {
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(_t.moderationResolvedDone)));
+      ).showSnackBar(
+        SnackBar(content: Text(mensajeExito ?? _t.moderationResolvedDone)),
+      );
     } catch (e) {
       if (!mounted) return;
 
@@ -385,6 +388,25 @@ class _ModeracionPageState extends State<ModeracionPage> {
             style: TextStyle(fontSize: 12, color: _colors.onSurfaceVariant),
           ),
         if (r.nota != null && r.nota!.isNotEmpty) Text(r.nota!),
+        // Desactivada desde aquí y todavía desactivada: se puede reactivar (la nota de
+        // resolución recoge quién y cuándo).
+        if (r.estado == estadoReporteAutorDesactivado && !r.autorActivo)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              key: ValueKey('reactivar-${r.id}'),
+              onPressed: _ejecutando
+                  ? null
+                  : () => _confirmarYEjecutar(
+                      mensaje: _t.moderationReactivateConfirm,
+                      mensajeExito: _t.moderationReactivated,
+                      accion: (nota, _) =>
+                          _servicio.reactivarAutor(r.id, nota: nota),
+                    ),
+              icon: const Icon(Icons.lock_open_outlined),
+              label: Text(_t.moderationReactivate),
+            ),
+          ),
       ],
     );
   }

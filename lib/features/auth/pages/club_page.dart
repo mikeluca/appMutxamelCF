@@ -276,6 +276,14 @@ class _ClubPageState extends State<ClubPage> {
           descripcion: t.clubPagePendingAccountsDesc,
           onTap: () => _navegar(opcion),
         );
+      case OpcionClub.estadoApp:
+        return _construirOpcion(
+          context,
+          icono: Icons.insights_outlined,
+          titulo: t.clubPageAppStatus,
+          descripcion: t.clubPageAppStatusDesc,
+          onTap: () => _navegar(opcion),
+        );
       case OpcionClub.partidoEnDirecto:
         return _construirOpcion(
           context,

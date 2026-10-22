@@ -134,6 +134,7 @@ void main() {
       expect(_opciones(s, SeccionClubId.administracion), [
         OpcionClub.moderacion,
         OpcionClub.cuentasPendientes,
+        OpcionClub.estadoApp,
       ]);
     });
 
@@ -246,6 +247,7 @@ void main() {
       rutaDeOpcionClub(OpcionClub.cuentasPendientes),
       '/admin/pending-accounts',
     );
+    expect(rutaDeOpcionClub(OpcionClub.estadoApp), '/admin/app-status');
     expect(rutaDeOpcionClub(OpcionClub.partidoEnDirecto), '/live-match');
     expect(rutaDeOpcionClub(OpcionClub.miPerfil), '/profile');
     expect(rutaDeOpcionClub(OpcionClub.cuotas), isNull);
