@@ -2328,4 +2328,83 @@ class AppLocalizationsEn extends AppLocalizations {
   String pendingAccountsResent(String email) {
     return 'Invitation resent to $email';
   }
+
+  @override
+  String get versionUpdateRequiredBody =>
+      'There is a new version of the app. Update it to keep using it';
+
+  @override
+  String get versionUpdateButton => 'Update';
+
+  @override
+  String get versionUpdateAvailableTitle => 'New version available';
+
+  @override
+  String get versionUpdateAvailableBody =>
+      'There is a newer version of the app. Do you want to update it now?';
+
+  @override
+  String get versionUpdateLater => 'Later';
+
+  @override
+  String get directionsButton => 'Get directions';
+
+  @override
+  String get directionsOpenError => 'The map could not be opened.';
+
+  @override
+  String get calendarWithdrawJustificationTitle =>
+      'Withdraw the justification?';
+
+  @override
+  String get calendarWithdrawJustificationBody =>
+      'The coaching staff will know the player will attend the training.';
+
+  @override
+  String get calendarJustificationWithdrawnSnack => 'Justification withdrawn.';
+
+  @override
+  String get calendarJustificationWithdrawError =>
+      'The justification could not be withdrawn.';
+
+  @override
+  String get callupFamilyMeetingTitle => 'Meeting point';
+
+  @override
+  String callupFamilyMeetingTime(String time) {
+    return 'Meeting time: $time';
+  }
+
+  @override
+  String callupFamilyMeetingPlace(String place) {
+    return 'Place: $place';
+  }
+
+  @override
+  String get callupFamilyHome => 'Home';
+
+  @override
+  String get callupFamilyAway => 'Away';
+
+  @override
+  String get callupFamilyYourPlayer => 'Your player';
+
+  @override
+  String get callupFamilyLoadError => 'The call-up could not be loaded.';
+
+  @override
+  String get callupDeleteButton => 'Delete call-up';
+
+  @override
+  String get callupDeleteConfirmTitle => 'Delete the call-up?';
+
+  @override
+  String get callupDeleteConfirmBody =>
+      'The called-up players will be notified.';
+
+  @override
+  String get callupDeletedSnack => 'Call-up deleted.';
+
+  @override
+  String get callupDeleteError => 'The call-up could not be deleted.';
 }

@@ -2348,4 +2348,82 @@ class AppLocalizationsCa extends AppLocalizations {
   String pendingAccountsResent(String email) {
     return 'Invitació reenviada a $email';
   }
+
+  @override
+  String get versionUpdateRequiredBody =>
+      'Hi ha una nova versió de l\'app. Actualitza-la per continuar usant-la';
+
+  @override
+  String get versionUpdateButton => 'Actualitza';
+
+  @override
+  String get versionUpdateAvailableTitle => 'Nova versió disponible';
+
+  @override
+  String get versionUpdateAvailableBody =>
+      'Hi ha una versió més recent de l\'app. Vols actualitzar-la ara?';
+
+  @override
+  String get versionUpdateLater => 'Més tard';
+
+  @override
+  String get directionsButton => 'Com arribar';
+
+  @override
+  String get directionsOpenError => 'No s\'ha pogut obrir el mapa.';
+
+  @override
+  String get calendarWithdrawJustificationTitle => 'Retirar la justificació?';
+
+  @override
+  String get calendarWithdrawJustificationBody =>
+      'El cos tècnic sabrà que el jugador assistirà a l\'entrenament.';
+
+  @override
+  String get calendarJustificationWithdrawnSnack => 'Justificació retirada.';
+
+  @override
+  String get calendarJustificationWithdrawError =>
+      'No s\'ha pogut retirar la justificació.';
+
+  @override
+  String get callupFamilyMeetingTitle => 'Citació';
+
+  @override
+  String callupFamilyMeetingTime(String time) {
+    return 'Hora de citació: $time';
+  }
+
+  @override
+  String callupFamilyMeetingPlace(String place) {
+    return 'Lloc: $place';
+  }
+
+  @override
+  String get callupFamilyHome => 'Local';
+
+  @override
+  String get callupFamilyAway => 'Visitant';
+
+  @override
+  String get callupFamilyYourPlayer => 'El teu jugador';
+
+  @override
+  String get callupFamilyLoadError =>
+      'No s\'ha pogut carregar la convocatòria.';
+
+  @override
+  String get callupDeleteButton => 'Elimina la convocatòria';
+
+  @override
+  String get callupDeleteConfirmTitle => 'Eliminar la convocatòria?';
+
+  @override
+  String get callupDeleteConfirmBody => 'S\'avisarà els convocats.';
+
+  @override
+  String get callupDeletedSnack => 'Convocatòria eliminada.';
+
+  @override
+  String get callupDeleteError => 'No s\'ha pogut eliminar la convocatòria.';
 }

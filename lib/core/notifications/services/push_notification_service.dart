@@ -43,6 +43,7 @@ class PushNotificationService {
   static bool _esTipoDeComunicacion(Object? tipo) =>
       tipo == _tipoComunicacion ||
       tipo == tipoPushConvocatoria ||
+      tipo == tipoPushConvocatoriaAnulada ||
       tipo == tipoPushConvocatoriaEditar ||
       tipo == tipoPushPasarLista ||
       tipo == tipoPushReporte;

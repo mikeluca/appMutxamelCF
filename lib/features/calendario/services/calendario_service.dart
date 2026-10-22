@@ -212,6 +212,18 @@ class CalendarioService {
     return JustificacionFaltaModel.fromJson(data as Map<String, dynamic>);
   }
 
+  /// Retira la justificación de falta del jugador (hasta la hora de inicio de
+  /// la sesión; el backend lo comprueba).
+  Future<void> retirarJustificacion({
+    required int sesionId,
+    required int jugadorId,
+  }) async {
+    await ApiClient.delete(
+      '/app/sesiones-entrenamiento/$sesionId/justificaciones/$jugadorId',
+      autenticado: true,
+    );
+  }
+
   /// Vista del entrenador: quién ha justificado su falta a una sesión.
   /// El backend devuelve 403 si quien llama no puede gestionar el equipo.
   Future<List<JustificacionFaltaModel>> obtenerJustificaciones(

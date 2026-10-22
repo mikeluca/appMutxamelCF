@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/network/api_client.dart';
 import '../../../core/utils/backend_date.dart';
+import '../../../core/utils/como_llegar.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
@@ -68,6 +70,61 @@ class _ConvocatoriaDetallePageState extends State<ConvocatoriaDetallePage> {
     }
   }
 
+  bool _eliminando = false;
+
+  /// Elimina la convocatoria (con confirmación: se avisa a los convocados) y
+  /// vuelve a la lista, que se recarga al volver.
+  Future<void> _eliminar() async {
+    final confirmado = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(_t.callupDeleteConfirmTitle),
+        content: Text(_t.callupDeleteConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(_t.cancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(_t.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmado != true || !mounted) return;
+
+    setState(() => _eliminando = true);
+
+    try {
+      await _service.eliminar(_convocatoria.id);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_t.callupDeletedSnack)));
+
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() => _eliminando = false);
+
+      // El 400 trae el motivo ("el partido ya tiene resultado"...); el resto de
+      // fallos, un mensaje genérico.
+      final motivo = e is ApiException && e.statusCode == 400
+          ? e.message
+          : _t.callupDeleteError;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(motivo)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ausentes = _convocatoria.ausentes;
@@ -107,6 +164,17 @@ class _ConvocatoriaDetallePageState extends State<ConvocatoriaDetallePage> {
           ),
           const SizedBox(height: 12),
           ..._convocatoria.jugadores.map(_construirJugador),
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            key: const ValueKey('eliminar-convocatoria'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.redAccent,
+              side: const BorderSide(color: Colors.redAccent),
+            ),
+            onPressed: _eliminando ? null : _eliminar,
+            icon: const Icon(Icons.delete_outline),
+            label: Text(_t.callupDeleteButton),
+          ),
         ],
       ),
     );
@@ -184,17 +252,30 @@ class _ConvocatoriaDetallePageState extends State<ConvocatoriaDetallePage> {
               style: TextStyle(color: _colors.onSurfaceVariant),
             ),
             const SizedBox(height: 3),
-            Text(
-              '${_convocatoria.horaPartido} · ${_convocatoria.campo}',
-              style: TextStyle(color: _colors.onSurfaceVariant),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '${_convocatoria.horaPartido} · ${_convocatoria.campo}',
+                    style: TextStyle(color: _colors.onSurfaceVariant),
+                  ),
+                ),
+                BotonComoLlegar(lugar: _convocatoria.campo),
+              ],
             ),
-            const SizedBox(height: 3),
-            Text(
-              _t.callupMeetingLine(
-                _convocatoria.horaConvocatoria,
-                _convocatoria.lugarConvocatoria,
-              ),
-              style: TextStyle(color: _colors.onSurfaceVariant),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _t.callupMeetingLine(
+                      _convocatoria.horaConvocatoria,
+                      _convocatoria.lugarConvocatoria,
+                    ),
+                    style: TextStyle(color: _colors.onSurfaceVariant),
+                  ),
+                ),
+                BotonComoLlegar(lugar: _convocatoria.lugarConvocatoria),
+              ],
             ),
           ],
         ),

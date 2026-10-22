@@ -891,6 +891,35 @@
   "pendingAccountsResent": "Invitation resent to {email}",
   "@pendingAccountsResent": {
     "placeholders": { "email": { "type": "String" } }
-  }
+  },
 
+  "versionUpdateRequiredBody": "There is a new version of the app. Update it to keep using it",
+  "versionUpdateButton": "Update",
+  "versionUpdateAvailableTitle": "New version available",
+  "versionUpdateAvailableBody": "There is a newer version of the app. Do you want to update it now?",
+  "versionUpdateLater": "Later",
+
+  "directionsButton": "Get directions",
+  "directionsOpenError": "The map could not be opened.",
+
+  "calendarWithdrawJustificationTitle": "Withdraw the justification?",
+  "calendarWithdrawJustificationBody": "The coaching staff will know the player will attend the training.",
+  "calendarJustificationWithdrawnSnack": "Justification withdrawn.",
+  "calendarJustificationWithdrawError": "The justification could not be withdrawn.",
+
+  "callupFamilyMeetingTitle": "Meeting point",
+  "callupFamilyMeetingTime": "Meeting time: {time}",
+  "@callupFamilyMeetingTime": { "placeholders": { "time": { "type": "String" } } },
+  "callupFamilyMeetingPlace": "Place: {place}",
+  "@callupFamilyMeetingPlace": { "placeholders": { "place": { "type": "String" } } },
+  "callupFamilyHome": "Home",
+  "callupFamilyAway": "Away",
+  "callupFamilyYourPlayer": "Your player",
+  "callupFamilyLoadError": "The call-up could not be loaded.",
+
+  "callupDeleteButton": "Delete call-up",
+  "callupDeleteConfirmTitle": "Delete the call-up?",
+  "callupDeleteConfirmBody": "The called-up players will be notified.",
+  "callupDeletedSnack": "Call-up deleted.",
+  "callupDeleteError": "The call-up could not be deleted."
 }

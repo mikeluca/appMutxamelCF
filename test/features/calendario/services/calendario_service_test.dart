@@ -116,6 +116,36 @@ void main() {
     });
   });
 
+  group('CalendarioService.retirarJustificacion', () {
+    test('hace DELETE /app/sesiones-entrenamiento/{id}/justificaciones/{jugadorId}',
+        () async {
+      await conMockHttp(
+        (request) async {
+          expect(request.method, 'DELETE');
+          expect(
+            request.url.path,
+            endsWith('/app/sesiones-entrenamiento/7/justificaciones/100'),
+          );
+          expect(request.headers['Authorization'], 'Bearer tok');
+
+          return http.Response('', 204);
+        },
+        () => service.retirarJustificacion(sesionId: 7, jugadorId: 100),
+      );
+    });
+
+    test('si el backend la rechaza (fuera de plazo, 400) lanza la excepcion',
+        () async {
+      expect(
+        () => conMockHttp(
+          (request) async => http.Response('El plazo terminó', 400),
+          () => service.retirarJustificacion(sesionId: 7, jugadorId: 100),
+        ),
+        throwsA(isA<Exception>()),
+      );
+    });
+  });
+
   group('CalendarioService.cancelarSesion', () {
     test('envia el motivo al endpoint de cancelacion', () async {
       await conMockHttp(

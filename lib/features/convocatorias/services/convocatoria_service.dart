@@ -71,4 +71,14 @@ class ConvocatoriaService {
 
     return ConvocatoriaModel.fromJson(data as Map<String, dynamic>);
   }
+
+  /// Elimina la convocatoria y avisa a los convocados. Solo se puede si el
+  /// partido no tiene resultado y su fecha es hoy o posterior (si no, el backend
+  /// responde 400 con el motivo). Las justificaciones de ausencia no se borran.
+  Future<void> eliminar(int convocatoriaId) async {
+    await ApiClient.delete(
+      '/app/convocatorias/$convocatoriaId',
+      autenticado: true,
+    );
+  }
 }

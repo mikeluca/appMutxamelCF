@@ -7,7 +7,10 @@ import '../../features/auth/models/perfil_app.dart';
 import '../../features/admin/pages/moderacion_page.dart';
 import '../../features/calendario/pages/calendario_page.dart';
 import '../../features/convocatorias/model/convocatoria_model.dart';
+import '../../features/auth/services/perfil_service.dart';
+import '../../features/convocatorias/pages/convocatoria_familia_page.dart';
 import '../../features/convocatorias/pages/convocatoria_form_page.dart';
+import '../../features/convocatorias/services/convocatoria_partido_service.dart';
 import '../../features/convocatorias/services/convocatoria_service.dart';
 import '../../features/entrenamientos/model/entrenamiento_model.dart';
 import '../../features/entrenamientos/pages/entrenamiento_form_page.dart';
@@ -66,6 +69,8 @@ class AppNavigator {
     switch (destino) {
       case AbrirCalendario(:final dia):
         await abrirCalendario(dia);
+      case AbrirDetalleConvocatoria(:final partidoId, :final dia):
+        await abrirDetalleConvocatoria(partidoId, dia);
       case EditarConvocatoria(:final convocatoriaId):
         await abrirEdicionConvocatoria(convocatoriaId);
       case PasarLista(:final entrenamientoId):
@@ -73,6 +78,86 @@ class AppNavigator {
       case AbrirModeracion():
         await abrirModeracion();
     }
+  }
+
+  /// Solo para tests: sustituyen al servicio, al perfil y a la pantalla reales.
+  @visibleForTesting
+  static ConvocatoriaPartidoService Function()? fabricaConvocatoriaPartidoService;
+
+  @visibleForTesting
+  static Future<PerfilApp> Function()? cargarPerfilParaAviso;
+
+  @visibleForTesting
+  static Widget Function(int partidoId, PerfilJugador jugador)?
+  constructorConvocatoriaFamilia;
+
+  /// El aviso de una convocatoria de un partido para JUGADOR/FAMILIAR: si el
+  /// usuario tiene un solo jugador en esa convocatoria se abre la pantalla
+  /// "Convocatoria" de ese jugador; con varios (o ninguno, o si algo falla), el
+  /// calendario en el día del partido, como siempre.
+  static Future<void> abrirDetalleConvocatoria(
+    int partidoId, [
+    DateTime? dia,
+  ]) async {
+    final navigatorState = navigator;
+
+    if (navigatorState == null) {
+      return;
+    }
+
+    PerfilJugador? unico;
+
+    try {
+      final perfil =
+          await (cargarPerfilParaAviso ?? PerfilService.obtenerPerfil)();
+
+      final servicio =
+          fabricaConvocatoriaPartidoService?.call() ??
+          ConvocatoriaPartidoService();
+
+      final convocados = <PerfilJugador>[];
+
+      for (final jugador in perfil.jugadores) {
+        try {
+          final convocatoria = await servicio.obtener(
+            partidoId: partidoId,
+            jugadorId: jugador.id,
+          );
+
+          if (convocatoria.convocado) {
+            convocados.add(jugador);
+          }
+        } catch (_) {
+          // Un jugador de otro equipo (403) o sin convocatoria (404) no cuenta.
+        }
+      }
+
+      if (convocados.length == 1) {
+        unico = convocados.first;
+      }
+    } catch (e) {
+      debugPrint('No se pudo resolver la convocatoria del partido $partidoId: $e');
+    }
+
+    if (unico == null || !navigatorState.mounted) {
+      await abrirCalendario(dia);
+      return;
+    }
+
+    final jugador = unico;
+
+    await navigatorState.push(
+      MaterialPageRoute(
+        builder: (_) =>
+            (constructorConvocatoriaFamilia ??
+            (id, j) => ConvocatoriaFamiliaPage(
+              partidoId: id,
+              jugadorId: j.id,
+              jugadorNombre: j.nombre,
+              jugadorApellidos: j.apellidos,
+            ))(partidoId, jugador),
+      ),
+    );
   }
 
   /// La cola de moderación (ADMIN_APP).

@@ -34,6 +34,10 @@ class SesionEntrenamientoModel {
   /// la sesión, no antes).
   final String? asistencia;
 
+  /// Solo en la vista de un jugador: la sesión está justificada y todavía se
+  /// puede retirar la justificación (hasta la hora de inicio de la sesión).
+  final bool puedeRetirarJustificacion;
+
   const SesionEntrenamientoModel({
     required this.id,
     required this.equipoId,
@@ -47,6 +51,7 @@ class SesionEntrenamientoModel {
     this.motivoJustificacion,
     this.motivoCancelacion,
     this.asistencia,
+    this.puedeRetirarJustificacion = false,
   });
 
   factory SesionEntrenamientoModel.fromJson(Map<String, dynamic> json) {
@@ -63,6 +68,8 @@ class SesionEntrenamientoModel {
       motivoJustificacion: json['motivoJustificacion'] as String?,
       motivoCancelacion: json['motivoCancelacion'] as String?,
       asistencia: json['asistencia'] as String?,
+      puedeRetirarJustificacion:
+          json['puedeRetirarJustificacion'] as bool? ?? false,
     );
   }
 

@@ -61,5 +61,24 @@ void main() {
         expect(sesion.asistencia, isNull);
       });
     });
+
+    group('puedeRetirarJustificacion', () {
+      test('viene del backend', () {
+        final sesion = SesionEntrenamientoModel.fromJson({
+          ...jsonBase(),
+          'justificado': true,
+          'puedeRetirarJustificacion': true,
+        });
+
+        expect(sesion.puedeRetirarJustificacion, isTrue);
+      });
+
+      test('si falta (backend antiguo) es false', () {
+        expect(
+          SesionEntrenamientoModel.fromJson(jsonBase()).puedeRetirarJustificacion,
+          isFalse,
+        );
+      });
+    });
   });
 }

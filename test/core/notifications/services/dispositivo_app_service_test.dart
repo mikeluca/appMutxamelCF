@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/test/test_flutter_secure_storage_platform
 import 'package:flutter_secure_storage_platform_interface/flutter_secure_storage_platform_interface.dart';
 
 import 'package:app_mutxamel_cf/core/notifications/services/dispositivo_app_service.dart';
+import 'package:app_mutxamel_cf/core/version/control_version.dart';
 import 'package:app_mutxamel_cf/features/auth/models/login_response.dart';
 import 'package:app_mutxamel_cf/features/auth/services/auth_session.dart';
 
@@ -41,6 +42,53 @@ void main() {
           expect(request.method, 'POST');
           expect(request.url.path, contains('/app/dispositivos'));
           expect(request.headers['Authorization'], 'Bearer tok-sesion');
+          expect(jsonDecode(request.body), {
+            'tokenFcm': 'fcm-token',
+            'plataforma': 'ANDROID',
+          });
+
+          return http.Response('', 200);
+        },
+        () => DispositivoAppService.registrar(
+          tokenFcm: 'fcm-token',
+          plataforma: 'ANDROID',
+        ),
+      );
+    });
+  });
+
+  group('DispositivoAppService.registrar con la versión de la app', () {
+    tearDown(() {
+      ControlVersion.obtenerInstalada = () async => throw Exception('sin plugin');
+    });
+
+    test('envía versionApp con la versión instalada', () async {
+      await iniciarSesion();
+      ControlVersion.obtenerInstalada = () async => '1.0.10';
+
+      await conMockHttp(
+        (request) async {
+          expect(jsonDecode(request.body), {
+            'tokenFcm': 'fcm-token',
+            'plataforma': 'IOS',
+            'versionApp': '1.0.10',
+          });
+
+          return http.Response('', 200);
+        },
+        () => DispositivoAppService.registrar(
+          tokenFcm: 'fcm-token',
+          plataforma: 'IOS',
+        ),
+      );
+    });
+
+    test('si no se puede leer la versión, no la envía y registra igual', () async {
+      await iniciarSesion();
+      ControlVersion.obtenerInstalada = () async => throw Exception('plugin');
+
+      await conMockHttp(
+        (request) async {
           expect(jsonDecode(request.body), {
             'tokenFcm': 'fcm-token',
             'plataforma': 'ANDROID',

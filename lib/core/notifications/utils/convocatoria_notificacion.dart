@@ -5,6 +5,11 @@ import '../../../features/auth/services/auth_manager.dart';
 /// según este tipo, no según el título.
 const String tipoPushConvocatoria = 'CONVOCATORIA';
 
+/// Valor de data["tipo"] del push que avisa de que el entrenador ha anulado una
+/// convocatoria (ya no existe, así que no lleva convocatoriaId): lleva al
+/// calendario, en el día del partido.
+const String tipoPushConvocatoriaAnulada = 'CONVOCATORIA_ANULADA';
+
 /// Valor de data["tipo"] del push que avisa al entrenador de que un convocado
 /// ha justificado su ausencia: lleva a editar esa convocatoria.
 const String tipoPushConvocatoriaEditar = 'CONVOCATORIA_EDITAR';
@@ -30,6 +35,7 @@ const String tituloNuevaConvocatoria = 'Nueva convocatoria';
 /// de convocatoria, por el título.
 bool esAvisoDeConvocatoria({String? tipo, String? titulo}) {
   return tipo == tipoPushConvocatoria ||
+      tipo == tipoPushConvocatoriaAnulada ||
       tipo == tipoPushConvocatoriaEditar ||
       tipo == tipoPushPasarLista ||
       tipo == tipoPushReporte ||
@@ -54,6 +60,25 @@ class AbrirCalendario extends DestinoConvocatoria {
 
   @override
   int get hashCode => dia.hashCode;
+}
+
+/// JUGADOR/FAMILIAR: la pantalla "Convocatoria" del partido [partidoId] cuando el
+/// usuario tiene un solo jugador en esa convocatoria; con varios (o ninguno),
+/// el calendario en [dia]. Quien lo abre decide cuál de los dos según el perfil.
+class AbrirDetalleConvocatoria extends DestinoConvocatoria {
+  final int partidoId;
+  final DateTime? dia;
+
+  const AbrirDetalleConvocatoria(this.partidoId, [this.dia]);
+
+  @override
+  bool operator ==(Object other) =>
+      other is AbrirDetalleConvocatoria &&
+      other.partidoId == partidoId &&
+      other.dia == dia;
+
+  @override
+  int get hashCode => Object.hash(partidoId, dia);
 }
 
 /// Entrenador: la edición de esa convocatoria.
@@ -131,7 +156,9 @@ DestinoConvocatoria? destinoDeAvisoConvocatoria({
   }
 
   final esConvocatoria =
-      tipo == tipoPushConvocatoria || titulo?.trim() == tituloNuevaConvocatoria;
+      tipo == tipoPushConvocatoria ||
+      tipo == tipoPushConvocatoriaAnulada ||
+      titulo?.trim() == tituloNuevaConvocatoria;
 
   if (!esConvocatoria) {
     return null;
@@ -143,9 +170,21 @@ DestinoConvocatoria? destinoDeAvisoConvocatoria({
       usuario?.tieneRol('JUGADOR') == true ||
       usuario?.tieneRol('FAMILIAR') == true;
 
-  return veSuCalendario
-      ? AbrirCalendario(diaDeFechaPartido(datos['fechaPartido']?.toString()))
-      : null;
+  if (!veSuCalendario) {
+    return null;
+  }
+
+  final dia = diaDeFechaPartido(datos['fechaPartido']?.toString());
+
+  // Con el partido en el aviso se intenta abrir la pantalla "Convocatoria" (una
+  // convocatoria anulada ya no tiene detalle: solo el calendario).
+  final partidoId = int.tryParse(datos['partidoId']?.toString() ?? '');
+
+  if (tipo == tipoPushConvocatoria && partidoId != null && partidoId > 0) {
+    return AbrirDetalleConvocatoria(partidoId, dia);
+  }
+
+  return AbrirCalendario(dia);
 }
 
 /// "2026-10-24" (o con hora) -> ese día a las 00:00; null si no se puede leer.
@@ -164,6 +203,8 @@ String payloadDeDestino(DestinoConvocatoria destino) {
           : 'CALENDARIO:${dia.year.toString().padLeft(4, '0')}-'
                 '${dia.month.toString().padLeft(2, '0')}-'
                 '${dia.day.toString().padLeft(2, '0')}',
+    AbrirDetalleConvocatoria(:final partidoId, :final dia) =>
+      'CONVOCATORIA_PARTIDO:$partidoId:${dia == null ? '' : _diaTexto(dia)}',
     EditarConvocatoria(:final convocatoriaId) =>
       'CONVOCATORIA_EDITAR:$convocatoriaId',
     PasarLista(:final entrenamientoId) => 'PASAR_LISTA:$entrenamientoId',
@@ -171,9 +212,29 @@ String payloadDeDestino(DestinoConvocatoria destino) {
   };
 }
 
+String _diaTexto(DateTime dia) {
+  return '${dia.year.toString().padLeft(4, '0')}-'
+      '${dia.month.toString().padLeft(2, '0')}-'
+      '${dia.day.toString().padLeft(2, '0')}';
+}
+
 /// Lo contrario de [payloadDeDestino]; null si el payload no es de una
 /// convocatoria.
 DestinoConvocatoria? destinoDePayload(String payload) {
+  if (payload.startsWith('CONVOCATORIA_PARTIDO:')) {
+    final partes = payload.substring('CONVOCATORIA_PARTIDO:'.length).split(':');
+    final partidoId = int.tryParse(partes.first);
+
+    if (partidoId == null || partidoId <= 0) {
+      return null;
+    }
+
+    return AbrirDetalleConvocatoria(
+      partidoId,
+      partes.length > 1 ? diaDeFechaPartido(partes[1]) : null,
+    );
+  }
+
   if (payload == 'CALENDARIO') {
     return const AbrirCalendario();
   }

@@ -891,6 +891,35 @@
   "pendingAccountsResent": "Invitación reenviada a {email}",
   "@pendingAccountsResent": {
     "placeholders": { "email": { "type": "String" } }
-  }
+  },
 
+  "versionUpdateRequiredBody": "Hay una nueva versión de la app. Actualízala para seguir usándola",
+  "versionUpdateButton": "Actualizar",
+  "versionUpdateAvailableTitle": "Nueva versión disponible",
+  "versionUpdateAvailableBody": "Hay una versión más reciente de la app. ¿Quieres actualizarla ahora?",
+  "versionUpdateLater": "Más tarde",
+
+  "directionsButton": "Cómo llegar",
+  "directionsOpenError": "No se ha podido abrir el mapa.",
+
+  "calendarWithdrawJustificationTitle": "¿Retirar la justificación?",
+  "calendarWithdrawJustificationBody": "El cuerpo técnico sabrá que el jugador asistirá al entrenamiento.",
+  "calendarJustificationWithdrawnSnack": "Justificación retirada.",
+  "calendarJustificationWithdrawError": "No se ha podido retirar la justificación.",
+
+  "callupFamilyMeetingTitle": "Citación",
+  "callupFamilyMeetingTime": "Hora de citación: {time}",
+  "@callupFamilyMeetingTime": { "placeholders": { "time": { "type": "String" } } },
+  "callupFamilyMeetingPlace": "Lugar: {place}",
+  "@callupFamilyMeetingPlace": { "placeholders": { "place": { "type": "String" } } },
+  "callupFamilyHome": "Local",
+  "callupFamilyAway": "Visitante",
+  "callupFamilyYourPlayer": "Tu jugador",
+  "callupFamilyLoadError": "No se ha podido cargar la convocatoria.",
+
+  "callupDeleteButton": "Eliminar convocatoria",
+  "callupDeleteConfirmTitle": "¿Eliminar la convocatoria?",
+  "callupDeleteConfirmBody": "Se avisará a los convocados.",
+  "callupDeletedSnack": "Convocatoria eliminada.",
+  "callupDeleteError": "No se ha podido eliminar la convocatoria."
 }

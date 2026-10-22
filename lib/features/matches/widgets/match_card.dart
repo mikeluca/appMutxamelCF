@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/como_llegar.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/match_model.dart';
@@ -459,12 +460,22 @@ class MatchCard extends StatelessWidget {
           _buildInfoRow(context, Icons.schedule_outlined, match.hora!),
 
         if (match.campo?.isNotEmpty == true)
-          _buildInfoRow(context, Icons.location_on_outlined, match.campo!),
+          _buildInfoRow(
+            context,
+            Icons.location_on_outlined,
+            match.campo!,
+            trailing: BotonComoLlegar(lugar: match.campo),
+          ),
       ],
     );
   }
 
-  Widget _buildInfoRow(BuildContext context, IconData icon, String text) {
+  Widget _buildInfoRow(
+    BuildContext context,
+    IconData icon,
+    String text, {
+    Widget? trailing,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
@@ -484,6 +495,8 @@ class MatchCard extends StatelessWidget {
               ),
             ),
           ),
+
+          ?trailing,
         ],
       ),
     );

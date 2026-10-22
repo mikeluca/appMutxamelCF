@@ -4143,6 +4143,144 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Invitación reenviada a {email}'**
   String pendingAccountsResent(String email);
+
+  /// No description provided for @versionUpdateRequiredBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Hay una nueva versión de la app. Actualízala para seguir usándola'**
+  String get versionUpdateRequiredBody;
+
+  /// No description provided for @versionUpdateButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Actualizar'**
+  String get versionUpdateButton;
+
+  /// No description provided for @versionUpdateAvailableTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva versión disponible'**
+  String get versionUpdateAvailableTitle;
+
+  /// No description provided for @versionUpdateAvailableBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Hay una versión más reciente de la app. ¿Quieres actualizarla ahora?'**
+  String get versionUpdateAvailableBody;
+
+  /// No description provided for @versionUpdateLater.
+  ///
+  /// In es, this message translates to:
+  /// **'Más tarde'**
+  String get versionUpdateLater;
+
+  /// No description provided for @directionsButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Cómo llegar'**
+  String get directionsButton;
+
+  /// No description provided for @directionsOpenError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido abrir el mapa.'**
+  String get directionsOpenError;
+
+  /// No description provided for @calendarWithdrawJustificationTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Retirar la justificación?'**
+  String get calendarWithdrawJustificationTitle;
+
+  /// No description provided for @calendarWithdrawJustificationBody.
+  ///
+  /// In es, this message translates to:
+  /// **'El cuerpo técnico sabrá que el jugador asistirá al entrenamiento.'**
+  String get calendarWithdrawJustificationBody;
+
+  /// No description provided for @calendarJustificationWithdrawnSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Justificación retirada.'**
+  String get calendarJustificationWithdrawnSnack;
+
+  /// No description provided for @calendarJustificationWithdrawError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido retirar la justificación.'**
+  String get calendarJustificationWithdrawError;
+
+  /// No description provided for @callupFamilyMeetingTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Citación'**
+  String get callupFamilyMeetingTitle;
+
+  /// No description provided for @callupFamilyMeetingTime.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora de citación: {time}'**
+  String callupFamilyMeetingTime(String time);
+
+  /// No description provided for @callupFamilyMeetingPlace.
+  ///
+  /// In es, this message translates to:
+  /// **'Lugar: {place}'**
+  String callupFamilyMeetingPlace(String place);
+
+  /// No description provided for @callupFamilyHome.
+  ///
+  /// In es, this message translates to:
+  /// **'Local'**
+  String get callupFamilyHome;
+
+  /// No description provided for @callupFamilyAway.
+  ///
+  /// In es, this message translates to:
+  /// **'Visitante'**
+  String get callupFamilyAway;
+
+  /// No description provided for @callupFamilyYourPlayer.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu jugador'**
+  String get callupFamilyYourPlayer;
+
+  /// No description provided for @callupFamilyLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido cargar la convocatoria.'**
+  String get callupFamilyLoadError;
+
+  /// No description provided for @callupDeleteButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar convocatoria'**
+  String get callupDeleteButton;
+
+  /// No description provided for @callupDeleteConfirmTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Eliminar la convocatoria?'**
+  String get callupDeleteConfirmTitle;
+
+  /// No description provided for @callupDeleteConfirmBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Se avisará a los convocados.'**
+  String get callupDeleteConfirmBody;
+
+  /// No description provided for @callupDeletedSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Convocatoria eliminada.'**
+  String get callupDeletedSnack;
+
+  /// No description provided for @callupDeleteError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido eliminar la convocatoria.'**
+  String get callupDeleteError;
 }
 
 class _AppLocalizationsDelegate

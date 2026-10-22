@@ -1,4 +1,5 @@
 import '../../network/api_client.dart';
+import '../../version/control_version.dart';
 import '../../../features/auth/services/auth_session.dart';
 import '../models/dispositivo_app_request.dart';
 
@@ -16,9 +17,12 @@ class DispositivoAppService {
       return;
     }
 
+    // El backend guarda la versión instalada con cada registro o renovación
+    // del token.
     final request = DispositivoAppRequest(
       tokenFcm: tokenFcm,
       plataforma: plataforma,
+      versionApp: await ControlVersion.versionInstalada(),
     );
 
     await ApiClient.post(

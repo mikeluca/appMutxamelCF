@@ -13,6 +13,8 @@ class AppPreferences {
   static const String _claveNotifNoticias = 'notif_anonima_noticias';
   static const String _claveNotifResultados = 'notif_anonima_resultados';
 
+  static const String _claveUltimoAvisoVersion = 'ultimo_aviso_version';
+
   static Future<String> obtenerTema() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -74,5 +76,19 @@ class AppPreferences {
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.setBool(_claveNotifResultados, activo);
+  }
+
+  /// Día (yyyy-MM-dd) en que se avisó por última vez de que hay una versión
+  /// recomendada de la app: el aviso no bloqueante sale una vez al día.
+  static Future<String?> obtenerUltimoAvisoVersion() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString(_claveUltimoAvisoVersion);
+  }
+
+  static Future<void> guardarUltimoAvisoVersion(String dia) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString(_claveUltimoAvisoVersion, dia);
   }
 }

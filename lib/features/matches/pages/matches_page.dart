@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/como_llegar.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
@@ -284,6 +285,7 @@ class PartidoListaCard extends StatelessWidget {
                 context,
                 Icons.location_on_outlined,
                 partido.campo!,
+                trailing: BotonComoLlegar(lugar: partido.campo),
               ),
 
             ..._botonClasificacion(context),
@@ -574,7 +576,12 @@ class PartidoListaCard extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(BuildContext context, IconData icono, String texto) {
+  Widget _buildInfoRow(
+    BuildContext context,
+    IconData icono,
+    String texto, {
+    Widget? trailing,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Row(
@@ -584,6 +591,8 @@ class PartidoListaCard extends StatelessWidget {
           const SizedBox(width: 8),
 
           Expanded(child: Text(texto)),
+
+          ?trailing,
         ],
       ),
     );

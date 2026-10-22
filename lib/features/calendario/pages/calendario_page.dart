@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/como_llegar.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
 import '../../auth/services/perfil_service.dart';
+import '../../convocatorias/pages/convocatoria_familia_page.dart';
 import '../../entrenamientos/utils/estado_asistencia_utils.dart';
 import '../../matches/models/match_model.dart';
 import '../../matches/services/justificacion_partido_service.dart';
@@ -368,6 +370,84 @@ class _CalendarioPageState extends State<CalendarioPage> {
     }
   }
 
+  /// Retira la justificación de un entrenamiento (con confirmación), mientras el
+  /// backend lo permite (hasta la hora de inicio de la sesión).
+  Future<void> _retirarJustificacionEntrenamiento(_EventoUsuario evento) async {
+    final sesion = evento.item.sesion;
+    final jugadorId = evento.jugadorId;
+
+    if (sesion == null || jugadorId == null) return;
+
+    final confirmado = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(_t.calendarWithdrawJustificationTitle),
+        content: Text(_t.calendarWithdrawJustificationBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(_t.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(_t.matchAbsenceWithdrawConfirm),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmado != true || !mounted) return;
+
+    try {
+      await _calendarioService.retirarJustificacion(
+        sesionId: sesion.id,
+        jugadorId: jugadorId,
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_t.calendarJustificationWithdrawnSnack)),
+      );
+
+      _cargarDatos(enSegundoPlano: true);
+    } catch (_) {
+      if (!mounted) return;
+
+      // Sin el detalle técnico del error: el usuario solo necesita saber que
+      // no se retiró (p. ej. porque el entrenamiento ya ha empezado).
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_t.calendarJustificationWithdrawError)),
+      );
+
+      _cargarDatos(enSegundoPlano: true);
+    }
+  }
+
+  /// Un partido con convocatoria abre su detalle (citación, convocados...) para
+  /// el jugador del evento.
+  void _abrirConvocatoria(_EventoUsuario evento) {
+    final partidoId = evento.item.partido?.id;
+    final jugadorId = evento.jugadorId;
+
+    if (partidoId == null || jugadorId == null) return;
+
+    final jugador = _perfil?.jugadores
+        .where((j) => j.id == jugadorId)
+        .firstOrNull;
+
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ConvocatoriaFamiliaPage(
+          partidoId: partidoId,
+          jugadorId: jugadorId,
+          jugadorNombre: jugador?.nombre ?? evento.jugadorNombre ?? '',
+          jugadorApellidos: jugador?.apellidos ?? '',
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final esGestionGlobal =
@@ -508,9 +588,20 @@ class _CalendarioPageState extends State<CalendarioPage> {
         ? _colors.onSurfaceVariant
         : (item.esEntrenamiento ? AppColors.azul : AppColors.dorado);
 
+    // Un partido con convocatoria (y el calendario de un jugador) abre su detalle.
+    final convocatoriaAbrible =
+        !item.esEntrenamiento &&
+        evento.jugadorId != null &&
+        item.partido?.id != null &&
+        convocado != null;
+
     final subtitulo = item.esEntrenamiento
         ? (item.sesion?.lugar ?? '')
         : (item.partido?.rival ?? '');
+
+    final campoPartido = item.esEntrenamiento
+        ? ''
+        : (item.partido?.campo?.trim() ?? '');
 
     final equipo = _equipoDe(item);
     final tieneJugador =
@@ -530,7 +621,9 @@ class _CalendarioPageState extends State<CalendarioPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
-        onTap: puedeJustificar ? () => _justificarFalta(evento) : null,
+        onTap: puedeJustificar
+            ? () => _justificarFalta(evento)
+            : (convocatoriaAbrible ? () => _abrirConvocatoria(evento) : null),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
@@ -617,6 +710,49 @@ class _CalendarioPageState extends State<CalendarioPage> {
                         ),
                       ),
                     ],
+                    if (campoPartido.isNotEmpty)
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            size: 16,
+                            color: _colors.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              campoPartido,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: _colors.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                          BotonComoLlegar(lugar: campoPartido),
+                        ],
+                      ),
+                    if (convocatoriaAbrible) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        key: const ValueKey('ver-convocatoria'),
+                        children: [
+                          Icon(
+                            Icons.groups_outlined,
+                            size: 16,
+                            color: _colors.primary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            _t.callupDetailTitle,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: _colors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                     if (tieneResultado) ...[
                       const SizedBox(height: 2),
                       Text(
@@ -666,6 +802,19 @@ class _CalendarioPageState extends State<CalendarioPage> {
                         ],
                       ),
                     ],
+                    if (puedeJustificar &&
+                        yaJustificado &&
+                        item.sesion?.puedeRetirarJustificacion == true)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton.icon(
+                          key: const ValueKey('retirar-justificacion-sesion'),
+                          onPressed: () =>
+                              _retirarJustificacionEntrenamiento(evento),
+                          icon: const Icon(Icons.undo, size: 16),
+                          label: Text(_t.matchAbsenceWithdrawButton),
+                        ),
+                      ),
                   ],
                 ),
               ),

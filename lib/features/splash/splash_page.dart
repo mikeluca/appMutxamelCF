@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../routing/app_routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/version/control_version.dart';
 import '../../core/notifications/services/local_notification_service.dart';
 import '../../core/notifications/services/push_notification_service.dart';
 import '../../l10n/gen/app_localizations.dart';
@@ -15,10 +16,15 @@ class SplashPage extends StatefulWidget {
   /// (Firebase, permisos, plugin local).
   final Future<void> Function()? inicializarNotificaciones;
 
+  /// Solo para tests: sustituye a la consulta de la versión mínima (red y plugin
+  /// de la versión instalada).
+  final Future<EstadoVersion?> Function()? comprobarVersion;
+
   const SplashPage({
     super.key,
     this.duracion = const Duration(seconds: 3),
     this.inicializarNotificaciones,
+    this.comprobarVersion,
   });
 
   @override
@@ -40,16 +46,34 @@ class _SplashPageState extends State<SplashPage> {
       },
     );
 
+    // La versión mínima se consulta en paralelo, sin retrasar el splash: si la
+    // app está obsoleta, la pantalla de actualización sustituye a todo lo demás
+    // aunque la respuesta llegue después de pasar a home. Sin red, la app sigue.
+    (widget.comprobarVersion ?? ControlVersion.comprobar)().then<void>(
+      (_) {},
+      onError: (Object e) {
+        debugPrint('ERROR AL COMPROBAR LA VERSIÓN DE LA APP: $e');
+      },
+    );
+
     Timer(widget.duracion, () async {
       if (!mounted) return;
 
+      // Ya bloqueada por una versión obsoleta: no se pasa a home.
+      if (ControlVersion.bloqueada) return;
+
       Navigator.pushReplacementNamed(context, AppRoutes.public);
+
+      ControlVersion.splashTerminado();
 
       // El aviso de convocatoria con el que se arrancó la app se abre ahora,
       // ya sobre home: antes, el pushReplacement de arriba lo habría tapado.
       await notificacionesListas;
 
       await PushNotificationService.procesarAvisoPendiente();
+
+      // Hay una versión recomendada (no obligatoria): se avisa una vez al día.
+      await ControlVersion.avisarSiProcede();
     });
   }
 

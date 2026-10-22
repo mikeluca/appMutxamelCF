@@ -3,6 +3,7 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import 'core/config/app_preferences.dart';
 import 'core/theme/app_theme.dart';
+import 'core/version/control_version.dart';
 import 'l10n/gen/app_localizations.dart';
 
 import 'features/public/public_shell_page.dart';
@@ -88,7 +89,8 @@ class MutxamelCfApp extends StatefulWidget {
   State<MutxamelCfApp> createState() => _MutxamelCfAppState();
 }
 
-class _MutxamelCfAppState extends State<MutxamelCfApp> {
+class _MutxamelCfAppState extends State<MutxamelCfApp>
+    with WidgetsBindingObserver {
   late String _temaActual;
   late String _idiomaActual;
 
@@ -98,6 +100,23 @@ class _MutxamelCfAppState extends State<MutxamelCfApp> {
 
     _temaActual = widget.temaInicial;
     _idiomaActual = widget.idiomaInicial;
+
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+
+    super.dispose();
+  }
+
+  // Al volver de segundo plano se vuelve a consultar la versión mínima.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ControlVersion.alReanudar();
+    }
   }
 
   ThemeMode get _themeMode {
