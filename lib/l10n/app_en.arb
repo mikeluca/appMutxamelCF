@@ -661,7 +661,7 @@
   "matchResultGoalsForLabel": "Goals for",
   "matchResultGoalsAgainstLabel": "Goals against",
   "matchResultGoalsHelp": "Mutxamel goals – opponent goals",
-  "matchResultOnlyScoreNote": "In 8-a-side football only the result is recorded",
+  "matchResultOnlyScoreNote": "Only the match result is recorded for this team",
   "matchResultPlayersTitle": "Player statistics",
   "matchResultGoalsShort": "Goals",
   "matchResultAssistsShort": "Assists",

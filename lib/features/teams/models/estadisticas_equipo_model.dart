@@ -1,3 +1,5 @@
+import '../../../core/utils/modalidad.dart';
+
 /// Estados de la tarjeta de un jugador (los calcula el backend).
 const String estadoTarjetaOk = 'OK';
 const String estadoTarjetaAUna = 'A_UNA';
@@ -187,7 +189,7 @@ class EstadisticasEquipoModel {
       entrenamientos: EntrenamientosEquipoModel.fromJson(
         json['entrenamientos'] as Map<String, dynamic>? ?? const {},
       ),
-      admiteEstadisticas: json['admiteEstadisticas'] as bool? ?? true,
+      admiteEstadisticas: leerAdmiteEstadisticas(json),
       partidos: PartidosEquipoModel.fromJson(
         json['partidos'] as Map<String, dynamic>? ?? const {},
       ),
@@ -219,7 +221,7 @@ class TarjetasEquipoModel {
     final mapa = json as Map<String, dynamic>;
 
     return TarjetasEquipoModel(
-      admiteEstadisticas: mapa['admiteEstadisticas'] as bool? ?? true,
+      admiteEstadisticas: leerAdmiteEstadisticas(mapa),
       jugadores: lista(mapa['jugadores'] as List<dynamic>? ?? const []),
     );
   }

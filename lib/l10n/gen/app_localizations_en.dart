@@ -1754,7 +1754,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get matchResultOnlyScoreNote =>
-      'In 8-a-side football only the result is recorded';
+      'Only the match result is recorded for this team';
 
   @override
   String get matchResultPlayersTitle => 'Player statistics';

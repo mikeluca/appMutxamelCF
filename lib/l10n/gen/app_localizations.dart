@@ -3259,7 +3259,7 @@ abstract class AppLocalizations {
   /// No description provided for @matchResultOnlyScoreNote.
   ///
   /// In es, this message translates to:
-  /// **'En fútbol 8 solo se registra el resultado'**
+  /// **'En este equipo solo se registra el resultado del partido'**
   String get matchResultOnlyScoreNote;
 
   /// No description provided for @matchResultPlayersTitle.

@@ -1,3 +1,5 @@
+import '../../../core/utils/modalidad.dart';
+
 class PerfilApp {
   final int usuarioId;
   final String email;
@@ -157,7 +159,8 @@ class PerfilEquipo {
     this.grupo,
     this.deporte,
     this.modalidad,
-  });
+    bool? admiteEstadisticas,
+  }) : admiteEstadisticas = admiteEstadisticas ?? modalidad == 'F11';
 
   factory PerfilEquipo.fromJson(Map<String, dynamic> json) {
     return PerfilEquipo(
@@ -167,9 +170,12 @@ class PerfilEquipo {
       grupo: json['grupo'] as String?,
       deporte: json['deporte'] as String?,
       modalidad: json['modalidad'] as String?,
+
+      admiteEstadisticas: leerAdmiteEstadisticas(json),
     );
   }
 
-  /// Solo los equipos de fútbol 11 registran estadísticas individuales.
-  bool get admiteEstadisticas => modalidad == 'F11';
+  /// Solo los equipos de fútbol 11 registran estadísticas individuales; sin la
+  /// clave "modalidad" en el JSON (backend antiguo) se asume que sí.
+  final bool admiteEstadisticas;
 }

@@ -1,3 +1,5 @@
+import '../../../core/utils/modalidad.dart';
+
 class TeamModel {
   final int id;
   final String categoria;
@@ -17,7 +19,8 @@ class TeamModel {
     required this.nombre,
     required this.deporte,
     this.modalidad,
-  });
+    bool? admiteEstadisticas,
+  }) : admiteEstadisticas = admiteEstadisticas ?? modalidad == 'F11';
 
   factory TeamModel.fromJson(Map<String, dynamic> json) {
     return TeamModel(
@@ -28,9 +31,12 @@ class TeamModel {
       nombre: json['nombre'] ?? '',
       deporte: json['deporte'] ?? '',
       modalidad: json['modalidad'] as String?,
+
+      admiteEstadisticas: leerAdmiteEstadisticas(json),
     );
   }
 
-  /// Solo los equipos de fútbol 11 registran estadísticas individuales.
-  bool get admiteEstadisticas => modalidad == 'F11';
+  /// Solo los equipos de fútbol 11 registran estadísticas individuales; sin la
+  /// clave "modalidad" en el JSON (backend antiguo) se asume que sí.
+  final bool admiteEstadisticas;
 }

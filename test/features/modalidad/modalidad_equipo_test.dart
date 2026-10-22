@@ -157,7 +157,7 @@ void main() {
       expect(find.text('Goles a favor'), findsOneWidget);
       expect(find.text('Goles en contra'), findsOneWidget);
       expect(
-        find.text('En fútbol 8 solo se registra el resultado'),
+        find.text('En este equipo solo se registra el resultado del partido'),
         findsOneWidget,
       );
       expect(find.text('Estadísticas por jugador'), findsNothing);
@@ -193,7 +193,7 @@ void main() {
       expect(find.text('Estadísticas por jugador'), findsOneWidget);
       expect(find.text('Pablo Garcia'), findsOneWidget);
       expect(
-        find.text('En fútbol 8 solo se registra el resultado'),
+        find.text('En este equipo solo se registra el resultado del partido'),
         findsNothing,
       );
       expect(equipos.llamadas, 1);
@@ -337,12 +337,47 @@ void main() {
     test('TeamModel lee modalidad', () {
       final f11 = TeamModel.fromJson({'id': 1, 'modalidad': 'F11'});
       final f8 = TeamModel.fromJson({'id': 2, 'modalidad': 'F8'});
-      final sin = TeamModel.fromJson({'id': 3});
+      final nula = TeamModel.fromJson({'id': 3, 'modalidad': null});
+      final vacia = TeamModel.fromJson({'id': 4, 'modalidad': ''});
+      final antiguo = TeamModel.fromJson({'id': 5});
 
       expect(f11.admiteEstadisticas, isTrue);
       expect(f8.admiteEstadisticas, isFalse);
-      expect(sin.modalidad, isNull);
-      expect(sin.admiteEstadisticas, isFalse);
+      expect(nula.admiteEstadisticas, isFalse);
+      expect(vacia.admiteEstadisticas, isFalse);
+      // Backend antiguo: sin la clave se asume que sí.
+      expect(antiguo.modalidad, isNull);
+      expect(antiguo.admiteEstadisticas, isTrue);
+    });
+
+    test('PerfilEquipo: con y sin la clave modalidad', () {
+      PerfilEquipo equipo(Map<String, dynamic> extra) =>
+          PerfilEquipo.fromJson({'id': 1, 'nombre': 'A', ...extra});
+
+      expect(equipo({'modalidad': 'F11'}).admiteEstadisticas, isTrue);
+      expect(equipo({'modalidad': 'F5'}).admiteEstadisticas, isFalse);
+      expect(equipo({'modalidad': null}).admiteEstadisticas, isFalse);
+      expect(equipo({'modalidad': ''}).admiteEstadisticas, isFalse);
+      expect(equipo({}).admiteEstadisticas, isTrue);
+    });
+
+    test('el resto de modelos: sin clave true, con modalidad F11 o no', () {
+      for (final admite in [
+        (Map<String, dynamic> j) =>
+            PartidoEstadisticasModel.fromJson(j).admiteEstadisticas,
+        (Map<String, dynamic> j) =>
+            EstadisticasEquipoModel.fromJson(j).admiteEstadisticas,
+        (Map<String, dynamic> j) =>
+            ResumenTemporadaModel.fromJson(j).admiteEstadisticas,
+        (Map<String, dynamic> j) =>
+            TarjetasEquipoModel.fromJson(j).admiteEstadisticas,
+      ]) {
+        expect(admite({}), isTrue);
+        expect(admite({'modalidad': 'F11'}), isTrue);
+        expect(admite({'modalidad': 'F8'}), isFalse);
+        expect(admite({'modalidad': null}), isFalse);
+        expect(admite({'admiteEstadisticas': false}), isFalse);
+      }
     });
 
     test('estadísticas, tarjetas y resumen leen admiteEstadisticas', () {

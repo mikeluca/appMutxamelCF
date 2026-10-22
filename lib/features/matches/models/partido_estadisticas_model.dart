@@ -1,3 +1,5 @@
+import '../../../core/utils/modalidad.dart';
+
 /// Estadística de un jugador en un partido. Se reutiliza el mismo modelo
 /// tanto para lo que devuelve el backend (GET .../estadisticas, donde
 /// viene informado `jugador` con el nombre) como para las filas editables
@@ -81,7 +83,7 @@ class PartidoEstadisticasModel {
                 EstadisticaJugadorModel.fromJson(item as Map<String, dynamic>),
           )
           .toList(),
-      admiteEstadisticas: json['admiteEstadisticas'] as bool? ?? true,
+      admiteEstadisticas: leerAdmiteEstadisticas(json),
     );
   }
 }

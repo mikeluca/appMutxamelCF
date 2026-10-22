@@ -1763,7 +1763,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get matchResultOnlyScoreNote =>
-      'En futbol 8 només es registra el resultat';
+      'En aquest equip només es registra el resultat del partit';
 
   @override
   String get matchResultPlayersTitle => 'Estadístiques per jugador';

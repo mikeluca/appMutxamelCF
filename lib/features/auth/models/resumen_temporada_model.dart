@@ -1,3 +1,5 @@
+import '../../../core/utils/modalidad.dart';
+
 /// Resumen de la temporada activa de un jugador
 /// (GET /api/app/jugadores/{id}/resumen-temporada).
 class ResumenTemporadaModel {
@@ -63,7 +65,7 @@ class ResumenTemporadaModel {
       faltas: entero(entrenamientos, 'faltas'),
       justificadas: entero(entrenamientos, 'justificadas'),
       porcentaje: (entrenamientos['porcentaje'] as num?)?.toInt(),
-      admiteEstadisticas: json['admiteEstadisticas'] as bool? ?? true,
+      admiteEstadisticas: leerAdmiteEstadisticas(json),
     );
   }
 
