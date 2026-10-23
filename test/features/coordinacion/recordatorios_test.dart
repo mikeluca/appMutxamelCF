@@ -167,6 +167,7 @@ void main() {
         ..fallo = const ApiException(
           'El equipo no tiene entrenadores con cuenta en la app',
           statusCode: 409,
+          datos: {'codigo': 'SIN_ENTRENADORES', 'mensaje': 'x'},
         );
 
       await _pintar(tester, servicio);
@@ -184,6 +185,35 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(servicio.enviados, hasLength(1));
+    });
+
+    testWidgets('409 UNICO_ENTRENADOR: eres el único entrenador del equipo', (
+      tester,
+    ) async {
+      final servicio = _Servicio()
+        ..fallo = const ApiException(
+          'Eres el único entrenador con cuenta de este equipo',
+          statusCode: 409,
+          datos: {
+            'codigo': 'UNICO_ENTRENADOR',
+            'mensaje': 'Eres el único entrenador con cuenta de este equipo',
+          },
+        );
+
+      await _pintar(tester, servicio);
+
+      await tester.tap(recordarConvocatoria);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Eres el único entrenador con cuenta de este equipo'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('El equipo no tiene entrenadores con cuenta en la app.'),
+        findsNothing,
+      );
+      expect(find.text('Recordado'), findsNothing);
     });
 
     testWidgets('429: ya se recordó hace poco, con la hora del último', (

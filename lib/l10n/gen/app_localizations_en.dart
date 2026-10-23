@@ -2430,6 +2430,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'The team has no coaches with an account in the app.';
 
   @override
+  String get weekendReminderOnlyYou =>
+      'You are the only coach with an account for this team';
+
+  @override
   String weekendReminderTooSoon(String time) {
     return 'This reminder was already sent at $time. You can send it again after 2 hours.';
   }

@@ -928,6 +928,7 @@
   "weekendReminderSent": "{count, plural, =1{Reminder sent to 1 coach} other{Reminder sent to {count} coaches}}",
   "@weekendReminderSent": { "placeholders": { "count": { "type": "int" } } },
   "weekendReminderNoCoaches": "The team has no coaches with an account in the app.",
+  "weekendReminderOnlyYou": "You are the only coach with an account for this team",
   "weekendReminderTooSoon": "This reminder was already sent at {time}. You can send it again after 2 hours.",
   "@weekendReminderTooSoon": { "placeholders": { "time": { "type": "String" } } },
   "weekendReminderError": "The reminder could not be sent.",

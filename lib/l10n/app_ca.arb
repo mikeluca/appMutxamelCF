@@ -928,6 +928,7 @@
   "weekendReminderSent": "{count, plural, =1{Recordatori enviat a 1 entrenador} other{Recordatori enviat a {count} entrenadors}}",
   "@weekendReminderSent": { "placeholders": { "count": { "type": "int" } } },
   "weekendReminderNoCoaches": "L'equip no té entrenadors amb compte a l'app.",
+  "weekendReminderOnlyYou": "Eres l'únic entrenador amb compte d'aquest equip",
   "weekendReminderTooSoon": "Aquest recordatori ja es va enviar a les {time}. Podràs repetir-lo passades 2 hores.",
   "@weekendReminderTooSoon": { "placeholders": { "time": { "type": "String" } } },
   "weekendReminderError": "No s'ha pogut enviar el recordatori.",

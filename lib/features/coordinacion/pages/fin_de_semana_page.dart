@@ -429,7 +429,12 @@ class _FinDeSemanaPageState extends State<FinDeSemanaPage> {
       mensaje = _t.weekendReminderSent(enviado.destinatarios);
     } on ApiException catch (e) {
       if (e.statusCode == 409) {
-        mensaje = _t.weekendReminderNoCoaches;
+        final datos = e.datos;
+        final codigo = datos is Map ? datos['codigo']?.toString() : null;
+
+        mensaje = codigo == 'UNICO_ENTRENADOR'
+            ? _t.weekendReminderOnlyYou
+            : _t.weekendReminderNoCoaches;
       } else if (e.statusCode == 429) {
         // Ya se había enviado hace menos de 2 horas: se da por recordado.
         _recordados.add(clave);

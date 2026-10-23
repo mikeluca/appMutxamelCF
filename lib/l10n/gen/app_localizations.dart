@@ -4306,6 +4306,12 @@ abstract class AppLocalizations {
   /// **'El equipo no tiene entrenadores con cuenta en la app.'**
   String get weekendReminderNoCoaches;
 
+  /// No description provided for @weekendReminderOnlyYou.
+  ///
+  /// In es, this message translates to:
+  /// **'Eres el único entrenador con cuenta de este equipo'**
+  String get weekendReminderOnlyYou;
+
   /// No description provided for @weekendReminderTooSoon.
   ///
   /// In es, this message translates to:
