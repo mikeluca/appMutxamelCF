@@ -29,6 +29,9 @@ class _ServicioFalso extends PartidoEnVivoService {
   final List<String> llamadas = [];
   bool rechazarElSiguiente = false;
 
+  /// Si es true, obtenerEstado falla (sin red).
+  bool fallarEstado = false;
+
   /// Si no es null, el servidor dice que quedan estos segundos para deshacer
   /// (el reloj del servidor no tiene por qué coincidir con el del móvil).
   int? segundosForzados;
@@ -113,6 +116,8 @@ class _ServicioFalso extends PartidoEnVivoService {
   @override
   Future<EstadoPartidoEnVivo> obtenerEstado(int partidoId) async {
     llamadas.add('estado:$partidoId');
+    if (fallarEstado) throw Exception('sin red');
+
     return _estado(partidoId);
   }
 
@@ -787,6 +792,66 @@ void main() {
 
       expect(servicio.llamadas, contains('minuto-gol:23'));
       expect(find.text("⚽ 23' Pablo Garcia"), findsOneWidget);
+    });
+
+    testWidgets('al abrir el diálogo del gol recarga el estado y usa su minuto', (
+      tester,
+    ) async {
+      final servicio = await empezar(tester, minuto: 23);
+      servicio.llamadas.clear();
+
+      // El partido ha avanzado en el servidor desde la última vez que se leyó.
+      servicio.minutoActual = 40;
+
+      await abrirSelectorGol(tester);
+
+      expect(servicio.llamadas, contains('estado:30'));
+      expect(textoCampo(tester), '40');
+
+      // Sigue siendo un valor editable.
+      await tester.enterText(campoMinuto, '41');
+      await tester.tap(find.text('Pablo Garcia'));
+      await tester.pumpAndSettle();
+
+      expect(servicio.llamadas, contains('minuto-gol:41'));
+    });
+
+    testWidgets('si la recarga falla suma los minutos transcurridos', (
+      tester,
+    ) async {
+      final servicio = await empezar(tester, minuto: 23);
+
+      servicio.fallarEstado = true;
+      reloj.avanzar(const Duration(minutes: 5, seconds: 30));
+
+      await abrirSelectorGol(tester);
+
+      expect(textoCampo(tester), '28');
+    });
+
+    testWidgets('el gol en contra también recarga el minuto, con respaldo', (
+      tester,
+    ) async {
+      final servicio = await empezar(tester, minuto: 23);
+
+      servicio.minutoActual = 52;
+
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Gol en contra'));
+      await tester.pumpAndSettle();
+
+      expect(textoCampo(tester), '52');
+
+      await tester.tap(find.widgetWithText(TextButton, 'Cancelar'));
+      await tester.pumpAndSettle();
+
+      servicio.fallarEstado = true;
+      reloj.avanzar(const Duration(minutes: 3));
+
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Gol en contra'));
+      await tester.pumpAndSettle();
+
+      // El último estado recibido ya traía el 52.
+      expect(textoCampo(tester), '55');
     });
 
     testWidgets('el minuto es editable y se envía el escrito', (tester) async {

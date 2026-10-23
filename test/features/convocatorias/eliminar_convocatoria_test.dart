@@ -39,11 +39,29 @@ final _convocatoria = ConvocatoriaModel(
   jugadores: [ConvocatoriaJugadorModel(jugadorId: 100, jugador: 'Pablo Garcia')],
 );
 
+final _conResultado = ConvocatoriaModel(
+  id: 20,
+  equipoId: 5,
+  equipo: 'Cadete A',
+  partidoId: 30,
+  rival: 'Pego C.F.',
+  campo: 'Campo Municipal',
+  fechaPartido: '2026-10-24',
+  horaPartido: '11:00',
+  horaConvocatoria: '09:30',
+  lugarConvocatoria: 'Vestuarios',
+  usuarioEntrenadorId: 1,
+  jugadores: [ConvocatoriaJugadorModel(jugadorId: 100, jugador: 'Pablo Garcia')],
+  partidoConResultado: true,
+);
+
 /// Una pantalla de atrás que abre el detalle, para ver qué devuelve al cerrarse.
 Future<bool?> Function() _abrir(
   WidgetTester tester,
-  _FakeConvocatoriaService servicio,
-) {
+  _FakeConvocatoriaService servicio, {
+  ConvocatoriaModel? convocatoria,
+  DateTime? hoy,
+}) {
   bool? resultado;
   var cerrado = false;
 
@@ -74,8 +92,9 @@ Future<bool?> Function() _abrir(
                       MaterialPageRoute(
                         builder: (_) => ConvocatoriaDetallePage(
                           equipo: PerfilEquipo(id: 5, nombre: 'Cadete A'),
-                          convocatoria: _convocatoria,
+                          convocatoria: convocatoria ?? _convocatoria,
                           service: servicio,
+                          ahora: () => hoy ?? DateTime(2026, 10, 21),
                         ),
                       ),
                     );
@@ -112,6 +131,39 @@ void main() {
     final estilo = tester.widget<OutlinedButton>(boton).style!;
 
     expect(estilo.foregroundColor!.resolve({}), Colors.redAccent);
+  });
+
+  testWidgets('se oculta si el partido tiene resultado', (tester) async {
+    await _abrir(
+      tester,
+      _FakeConvocatoriaService(),
+      convocatoria: _conResultado,
+    )();
+
+    expect(boton, findsNothing);
+    expect(find.text('Pablo Garcia'), findsOneWidget);
+  });
+
+  testWidgets('se oculta si la fecha del partido es anterior a hoy', (
+    tester,
+  ) async {
+    await _abrir(
+      tester,
+      _FakeConvocatoriaService(),
+      hoy: DateTime(2026, 10, 25),
+    )();
+
+    expect(boton, findsNothing);
+  });
+
+  testWidgets('el día del partido todavía se puede eliminar', (tester) async {
+    await _abrir(
+      tester,
+      _FakeConvocatoriaService(),
+      hoy: DateTime(2026, 10, 24, 23, 30),
+    )();
+
+    expect(boton, findsOneWidget);
   });
 
   testWidgets('pide confirmación avisando de que se avisará a los convocados', (

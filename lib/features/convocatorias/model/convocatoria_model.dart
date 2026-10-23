@@ -17,6 +17,9 @@ class ConvocatoriaModel {
   final int usuarioEntrenadorId;
   final List<ConvocatoriaJugadorModel> jugadores;
 
+  /// El partido ya tiene resultado: la convocatoria ya no se puede eliminar.
+  final bool partidoConResultado;
+
   /// Convocados que han justificado su ausencia a este partido (siguen en la
   /// convocatoria hasta que el entrenador los sustituya).
   List<ConvocatoriaJugadorModel> get ausentes =>
@@ -35,6 +38,7 @@ class ConvocatoriaModel {
     required this.lugarConvocatoria,
     required this.usuarioEntrenadorId,
     required this.jugadores,
+    this.partidoConResultado = false,
   });
 
   factory ConvocatoriaModel.fromJson(Map<String, dynamic> json) {
@@ -56,6 +60,7 @@ class ConvocatoriaModel {
                 ConvocatoriaJugadorModel.fromJson(item as Map<String, dynamic>),
           )
           .toList(),
+      partidoConResultado: json['partidoConResultado'] == true,
     );
   }
 }

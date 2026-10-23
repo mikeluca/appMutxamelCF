@@ -83,6 +83,10 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
   /// dice el servidor. No depende de que los dos relojes coincidan.
   DateTime? _finDeshacer;
 
+  /// Cuándo (reloj del móvil) se recibió el último estado: si no se puede recargar al abrir
+  /// el diálogo de un gol, el minuto se calcula sumando lo transcurrido desde entonces.
+  DateTime? _estadoRecibido;
+
   ColorScheme get _colors => Theme.of(context).colorScheme;
   AppLocalizations get _t => AppLocalizations.of(context);
 
@@ -180,6 +184,8 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
   }
 
   void _aplicarEstado(EstadoPartidoEnVivo estado) {
+    _estadoRecibido = _ahora();
+
     setState(() => _estado = estado);
 
     _reiniciarCuentaAtras();
@@ -402,7 +408,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
       _construirBoton(
         icono: Icons.sentiment_dissatisfied_outlined,
         titulo: _t.liveEventGoalAgainst,
-        habilitado: enCurso,
+        habilitado: enCurso && !_cargandoConvocados,
         onPressed: _confirmarGolContra,
       ),
       const SizedBox(height: 12),
@@ -659,6 +665,36 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
     };
   }
 
+  /// El minuto con el que se abre el diálogo de un gol: recarga el estado del directo y usa
+  /// su minutoActual; si la recarga falla, el último minuto conocido más los minutos
+  /// transcurridos desde que se recibió. Null si no hay forma de saberlo (lo calcula el servidor).
+  Future<int?> _minutoParaGol() async {
+    final partido = _partido;
+
+    if (partido == null) return null;
+
+    try {
+      final estado = await _service.obtenerEstado(partido.id);
+
+      if (!mounted || _partido?.id != partido.id) return null;
+
+      _aplicarEstado(estado);
+
+      return estado.minutoActual;
+    } catch (e) {
+      debugPrint('No se pudo recargar el minuto del directo: $e');
+    }
+
+    final minuto = _estado?.minutoActual;
+    final recibido = _estadoRecibido;
+
+    if (minuto == null || recibido == null) return minuto;
+
+    final transcurridos = _ahora().difference(recibido).inMinutes;
+
+    return (minuto + (transcurridos > 0 ? transcurridos : 0)).clamp(0, 150);
+  }
+
   // ------------------------------------------------------------------
   // Acciones
   // ------------------------------------------------------------------
@@ -680,12 +716,22 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
   Future<void> _confirmarGolContra() async {
     final titulo = _t.liveEventGoalAgainst;
 
+    if (_cargandoConvocados) return;
+
+    setState(() => _cargandoConvocados = true);
+
+    final minutoInicial = await _minutoParaGol();
+
+    if (!mounted) return;
+
+    setState(() => _cargandoConvocados = false);
+
     final respuesta = await showDialog<({int? minuto})>(
       context: context,
       builder: (context) => _DialogoMinuto(
         titulo: titulo,
         mensaje: _t.liveConfirmGoalAgainst,
-        minutoInicial: _estado?.minutoActual,
+        minutoInicial: minutoInicial,
         textoConfirmar: _t.send,
       ),
     );
@@ -804,6 +850,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
     setState(() => _cargandoConvocados = true);
 
     List<ConvocadoEnVivo> convocados = const [];
+    int? minutoInicial;
 
     try {
       convocados = await _service.obtenerConvocados(partido.id);
@@ -813,6 +860,8 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
       // Se puede seguir con "Otro" o "Propia puerta".
       _mostrarMensaje(_t.liveSendError(e.toString()));
     }
+
+    minutoInicial = await _minutoParaGol();
 
     if (!mounted) return;
 
@@ -829,7 +878,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
         propiaPuerta: _t.liveGoalOwnGoal,
         sinJugadores: _t.liveNoPlayersToPick,
         alElegirOtro: _pedirAutorLibre,
-        minutoInicial: _estado?.minutoActual,
+        minutoInicial: minutoInicial,
         etiquetaMinuto: _t.liveMinuteLabel,
         errorMinuto: _t.liveMinuteInvalid,
       ),

@@ -21,6 +21,7 @@ class ConvocatoriaDetallePage extends StatefulWidget {
   /// Solo para tests: sustituyen al servicio real y al formulario de edición.
   final ConvocatoriaService? service;
   final Widget Function(ConvocatoriaModel convocatoria)? formularioBuilder;
+  final DateTime Function()? ahora;
 
   const ConvocatoriaDetallePage({
     super.key,
@@ -28,6 +29,7 @@ class ConvocatoriaDetallePage extends StatefulWidget {
     required this.convocatoria,
     this.service,
     this.formularioBuilder,
+    this.ahora,
   });
 
   @override
@@ -71,6 +73,21 @@ class _ConvocatoriaDetallePageState extends State<ConvocatoriaDetallePage> {
   }
 
   bool _eliminando = false;
+
+  /// Solo se puede eliminar si el partido no tiene resultado y no es anterior a hoy.
+  bool get _eliminable {
+    if (_convocatoria.partidoConResultado) return false;
+
+    final fecha = parseFechaTextoBackend(_convocatoria.fechaPartido);
+
+    if (fecha == null) return true;
+
+    final ahora = (widget.ahora ?? DateTime.now)();
+
+    return !DateTime(fecha.year, fecha.month, fecha.day).isBefore(
+      DateTime(ahora.year, ahora.month, ahora.day),
+    );
+  }
 
   /// Elimina la convocatoria (con confirmación: se avisa a los convocados) y
   /// vuelve a la lista, que se recarga al volver.
@@ -164,6 +181,7 @@ class _ConvocatoriaDetallePageState extends State<ConvocatoriaDetallePage> {
           ),
           const SizedBox(height: 12),
           ..._convocatoria.jugadores.map(_construirJugador),
+          if (_eliminable) ...[
           const SizedBox(height: 16),
           OutlinedButton.icon(
             key: const ValueKey('eliminar-convocatoria'),
@@ -175,6 +193,7 @@ class _ConvocatoriaDetallePageState extends State<ConvocatoriaDetallePage> {
             icon: const Icon(Icons.delete_outline),
             label: Text(_t.callupDeleteButton),
           ),
+          ],
         ],
       ),
     );

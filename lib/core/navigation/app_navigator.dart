@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../l10n/gen/app_localizations.dart';
 import '../network/api_client.dart';
+import '../version/control_version.dart';
 import '../notifications/utils/convocatoria_notificacion.dart';
 import '../../features/auth/models/perfil_app.dart';
 import '../../features/admin/pages/moderacion_page.dart';
@@ -52,7 +55,7 @@ class AppNavigator {
   static Future<void> abrirComunicacion(int comunicacionId) async {
     final navigatorState = navigator;
 
-    if (navigatorState == null) {
+    if (navigatorState == null || ControlVersion.bloqueada) {
       return;
     }
 
@@ -68,6 +71,10 @@ class AppNavigator {
   static Future<void> abrirDestinoConvocatoria(
     DestinoConvocatoria destino,
   ) async {
+    if (ControlVersion.bloqueada) {
+      return;
+    }
+
     switch (destino) {
       case AbrirCalendario(:final dia):
         await abrirCalendario(dia);
@@ -107,11 +114,23 @@ class AppNavigator {
   ]) async {
     final navigatorState = navigator;
 
-    if (navigatorState == null) {
+    if (navigatorState == null || ControlVersion.bloqueada) {
       return;
     }
 
     PerfilJugador? unico;
+
+    // Mientras se piden el perfil y las convocatorias, un indicador de carga encima.
+    final carga = PageRouteBuilder<void>(
+      opaque: false,
+      barrierColor: Colors.black26,
+      pageBuilder: (_, _, _) => const PopScope(
+        canPop: false,
+        child: Center(child: CircularProgressIndicator()),
+      ),
+    );
+
+    unawaited(navigatorState.push(carga));
 
     try {
       final perfil =
@@ -143,6 +162,14 @@ class AppNavigator {
       }
     } catch (e) {
       debugPrint('No se pudo resolver la convocatoria del partido $partidoId: $e');
+    } finally {
+      if (carga.isActive && navigatorState.mounted) {
+        navigatorState.removeRoute(carga);
+      }
+    }
+
+    if (ControlVersion.bloqueada) {
+      return;
     }
 
     if (unico == null || !navigatorState.mounted) {
@@ -183,7 +210,7 @@ class AppNavigator {
   ) async {
     final navigatorState = navigator;
 
-    if (navigatorState == null) {
+    if (navigatorState == null || ControlVersion.bloqueada) {
       return;
     }
 
@@ -207,7 +234,7 @@ class AppNavigator {
   ) async {
     final navigatorState = navigator;
 
-    if (navigatorState == null) {
+    if (navigatorState == null || ControlVersion.bloqueada) {
       return;
     }
 
@@ -235,7 +262,7 @@ class AppNavigator {
   static Future<void> abrirModeracion() async {
     final navigatorState = navigator;
 
-    if (navigatorState == null) {
+    if (navigatorState == null || ControlVersion.bloqueada) {
       return;
     }
 
@@ -255,7 +282,7 @@ class AppNavigator {
   }) async {
     final navigatorState = navigator;
 
-    if (navigatorState == null) {
+    if (navigatorState == null || ControlVersion.bloqueada) {
       return;
     }
 
@@ -266,7 +293,7 @@ class AppNavigator {
                   EntrenamientoService())
               .obtenerPorId(entrenamientoId);
 
-      if (!navigatorState.mounted) {
+      if (!navigatorState.mounted || ControlVersion.bloqueada) {
         return;
       }
 
@@ -306,7 +333,7 @@ class AppNavigator {
   static Future<void> abrirCalendario([DateTime? dia]) async {
     final navigatorState = navigator;
 
-    if (navigatorState == null) {
+    if (navigatorState == null || ControlVersion.bloqueada) {
       return;
     }
 
@@ -328,7 +355,7 @@ class AppNavigator {
   }) async {
     final navigatorState = navigator;
 
-    if (navigatorState == null) {
+    if (navigatorState == null || ControlVersion.bloqueada) {
       return;
     }
 
@@ -339,7 +366,7 @@ class AppNavigator {
                   ConvocatoriaService())
               .obtenerPorId(convocatoriaId);
 
-      if (!navigatorState.mounted) {
+      if (!navigatorState.mounted || ControlVersion.bloqueada) {
         return;
       }
 
@@ -381,7 +408,7 @@ class AppNavigator {
   static Future<void> abrirChatPrivado(int contraparteId) async {
     final navigatorState = navigator;
 
-    if (navigatorState == null) {
+    if (navigatorState == null || ControlVersion.bloqueada) {
       return;
     }
 

@@ -10,6 +10,7 @@ import 'local_notification_service.dart';
 import '../../../core/navigation/app_navigator.dart';
 import '../../../features/auth/services/auth_manager.dart';
 import '../utils/convocatoria_notificacion.dart';
+import '../../version/control_version.dart';
 
 class PushNotificationService {
   // FL-04: se registraba 'ANDROID' también en iOS.
@@ -339,6 +340,11 @@ class PushNotificationService {
     }
 
     _avisoPendiente = null;
+
+    // Con la versión obsoleta no se navega: la pantalla de actualización no se tapa.
+    if (ControlVersion.bloqueada) {
+      return;
+    }
 
     // Espera a que home se haya pintado: el destino se abre encima de ella.
     await WidgetsBinding.instance.endOfFrame;
