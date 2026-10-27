@@ -209,6 +209,7 @@
     "placeholders": { "count": { "type": "int" } }
   },
   "fieldTeam": "Equipo",
+  "playerNoTeamThisSeason": "Sin equipo esta temporada",
   "fieldSport": "Deporte",
   "sportFootball": "Fútbol",
   "fieldDorsal": "Dorsal",

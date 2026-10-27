@@ -295,7 +295,10 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
                 _construirDato(
                   icono: Icons.groups_outlined,
                   titulo: _t.fieldTeam,
-                  valor: jugador.equipo,
+                  // Un jugador sin equipo o dado de baja llega con equipo a null.
+                  valor: (jugador.equipo ?? '').trim().isEmpty
+                      ? _t.playerNoTeamThisSeason
+                      : jugador.equipo,
                 ),
 
                 _construirDato(

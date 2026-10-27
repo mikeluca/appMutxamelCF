@@ -1144,6 +1144,12 @@ abstract class AppLocalizations {
   /// **'Equipo'**
   String get fieldTeam;
 
+  /// No description provided for @playerNoTeamThisSeason.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin equipo esta temporada'**
+  String get playerNoTeamThisSeason;
+
   /// No description provided for @fieldSport.
   ///
   /// In es, this message translates to:

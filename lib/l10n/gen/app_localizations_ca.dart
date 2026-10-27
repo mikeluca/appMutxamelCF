@@ -571,6 +571,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get fieldTeam => 'Equip';
 
   @override
+  String get playerNoTeamThisSeason => 'Sense equip esta temporada';
+
+  @override
   String get fieldSport => 'Esport';
 
   @override

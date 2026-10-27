@@ -565,6 +565,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldTeam => 'Team';
 
   @override
+  String get playerNoTeamThisSeason => 'No team this season';
+
+  @override
   String get fieldSport => 'Sport';
 
   @override

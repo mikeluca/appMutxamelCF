@@ -209,6 +209,7 @@
     "placeholders": { "count": { "type": "int" } }
   },
   "fieldTeam": "Equip",
+  "playerNoTeamThisSeason": "Sense equip esta temporada",
   "fieldSport": "Esport",
   "sportFootball": "Futbol",
   "fieldDorsal": "Dorsal",
