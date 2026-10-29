@@ -259,6 +259,22 @@ class _ClubPageState extends State<ClubPage> {
           descripcion: t.clubPagePlayerTrackingDesc,
           onTap: () => _navegar(opcion),
         );
+      case OpcionClub.repartoEquipos:
+        return _construirOpcion(
+          context,
+          icono: Icons.swap_horiz_outlined,
+          titulo: t.clubPageRoster,
+          descripcion: t.clubPageRosterDesc,
+          onTap: () => _navegar(opcion),
+        );
+      case OpcionClub.altaPrueba:
+        return _construirOpcion(
+          context,
+          icono: Icons.person_add_alt_outlined,
+          titulo: t.clubPageTrial,
+          descripcion: t.clubPageTrialDesc,
+          onTap: () => _navegar(opcion),
+        );
       case OpcionClub.moderacion:
         return _construirOpcion(
           context,

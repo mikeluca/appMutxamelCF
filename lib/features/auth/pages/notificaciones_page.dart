@@ -104,7 +104,11 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
 
     // La fila de la lista no guarda el data del push: aquí solo se reconoce el
     // aviso de convocatoria por su título (abre el calendario en hoy).
-    final destino = destinoDeAvisoConvocatoria(titulo: notificacion.titulo);
+    // Las de continuidad sí guardan su tipo: la pregunta a la familia abre su pantalla; la respuesta a
+    // coordinación ya está en esta bandeja y se revisa en el panel web.
+    final destino = notificacion.tipo == tipoPushContinuidad
+        ? const AbrirContinuidad()
+        : destinoDeAvisoConvocatoria(titulo: notificacion.titulo);
 
     if (destino != null) {
       await AppNavigator.abrirDestinoConvocatoria(destino);
@@ -182,6 +186,9 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
     switch (tipo) {
       case 'COMUNICACION':
         return Icons.campaign_outlined;
+      case tipoPushContinuidad:
+      case tipoPushContinuidadRespuesta:
+        return Icons.event_available_outlined;
       default:
         return Icons.notifications_outlined;
     }

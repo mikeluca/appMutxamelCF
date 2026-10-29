@@ -38,6 +38,10 @@ class PushNotificationService {
   static const String _tipoComunicacion = 'COMUNICACION';
   static const String _tipoResultado = 'RESULTADO';
 
+  // El aviso de cambio de temporada (y las noticias) llegan como NOTICIA: sin pantalla propia, la
+  // notificación de sistema abre la app en el inicio. No es un tipo desconocido.
+  static const String _tipoNoticia = 'NOTICIA';
+
   // Los tipos de push que nacen de una comunicación: la normal y las de una
   // convocatoria (CONVOCATORIA abre el calendario; CONVOCATORIA_EDITAR, la
   // edición de esa convocatoria).
@@ -49,7 +53,9 @@ class PushNotificationService {
       tipo == tipoPushResultadoPendiente ||
       tipo == tipoPushConvocatoriaEditar ||
       tipo == tipoPushPasarLista ||
-      tipo == tipoPushReporte;
+      tipo == tipoPushReporte ||
+      tipo == tipoPushContinuidad ||
+      tipo == tipoPushContinuidadRespuesta;
 
   /// Solo para tests: sustituyen a las llamadas a la red, a las notificaciones
   /// locales y a la restauración de la sesión.
@@ -217,7 +223,7 @@ class PushNotificationService {
     final referenciaIdString = message.data['referenciaId'];
 
     if (!_esTipoDeComunicacion(tipo)) {
-      if (tipo != _tipoResultado) {
+      if (tipo != _tipoResultado && tipo != _tipoNoticia) {
         debugPrint('Push con tipo no reconocido en foreground: $tipo');
       }
       return;
@@ -256,7 +262,7 @@ class PushNotificationService {
     final tipo = message.data['tipo'];
 
     if (!_esTipoDeComunicacion(tipo)) {
-      if (tipo != _tipoResultado) {
+      if (tipo != _tipoResultado && tipo != _tipoNoticia) {
         debugPrint('Push con tipo no reconocido al abrir: $tipo');
       }
       return;

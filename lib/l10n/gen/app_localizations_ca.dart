@@ -2626,4 +2626,213 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get moderationReactivated => 'Compte reactivat';
+
+  @override
+  String get continuityTitle => 'Continuïtat';
+
+  @override
+  String continuityQuestion(String nombre, String temporada) {
+    return 'Continuarà $nombre la temporada $temporada?';
+  }
+
+  @override
+  String get continuityYes => 'Sí';
+
+  @override
+  String get continuityNo => 'No';
+
+  @override
+  String get continuityMaybe => 'Encara no ho sé';
+
+  @override
+  String get continuityNotAnswered => 'Encara sense contestar';
+
+  @override
+  String continuityAnswered(String respuesta) {
+    return 'La teva resposta: $respuesta';
+  }
+
+  @override
+  String continuityAnsweredOn(String respuesta, String fecha) {
+    return 'La teva resposta: $respuesta · $fecha';
+  }
+
+  @override
+  String get continuityChangeHint =>
+      'Pots canviar-la fins al tancament de la temporada.';
+
+  @override
+  String get continuitySaved => 'Resposta guardada';
+
+  @override
+  String get continuityNothingToConfirm => 'No tens res per confirmar ara.';
+
+  @override
+  String get rosterTitle => 'Repartiment d\'equips';
+
+  @override
+  String get rosterNoSeason =>
+      'Encara no hi ha una temporada disponible per a aquesta acció. Crea-la abans al panell.';
+
+  @override
+  String get rosterConfirm => 'Continuar';
+
+  @override
+  String get rosterSelectPlayers => 'Selecciona almenys un jugador.';
+
+  @override
+  String get rosterChooseTeam => 'Tria un equip';
+
+  @override
+  String get rosterDorsalInvalid => 'El dorsal ha d\'estar entre 0 i 99.';
+
+  @override
+  String rosterAssigned(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jugadors assignats',
+      one: '$count jugador assignat',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get rosterWarningsTitle => 'Avisos';
+
+  @override
+  String get rosterTrialDialogTitle => 'Jugadors de prova';
+
+  @override
+  String rosterTrialDialogBody(String nombres) {
+    return '$nombres passaran a CONFIRMAT. Continuar?';
+  }
+
+  @override
+  String get rosterReturnTooltip => 'Tornar a la pretemporada';
+
+  @override
+  String rosterReturnConfirm(String nombre) {
+    return '$nombre torna a la pretemporada de la seva categoria, sense dorsal. Continuar?';
+  }
+
+  @override
+  String rosterReturned(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jugadors tornats a la pretemporada',
+      one: '$count jugador tornat a la pretemporada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get rosterNewTeam => 'Nou equip';
+
+  @override
+  String rosterNewTeamConfirm(String categoria) {
+    return 'Es crearà un equip nou de $categoria amb la següent lletra lliure. Continuar?';
+  }
+
+  @override
+  String rosterTeamCreated(String nombre) {
+    return 'Equip $nombre creat. S\'activarà en assignar-li el primer jugador.';
+  }
+
+  @override
+  String get rosterNoCategories =>
+      'No hi ha categories amb equips a la temporada activa.';
+
+  @override
+  String get rosterCategory => 'Categoria';
+
+  @override
+  String rosterToAssign(int count) {
+    return 'Per assignar ($count)';
+  }
+
+  @override
+  String rosterPreseasonTeam(String nombre) {
+    return 'Equip de pretemporada: $nombre';
+  }
+
+  @override
+  String get rosterNothingToAssign =>
+      'No queda cap jugador per assignar en aquesta categoria.';
+
+  @override
+  String get rosterTargetTeam => 'Equip destí';
+
+  @override
+  String rosterAssignButton(int count) {
+    return 'Assignar seleccionats ($count)';
+  }
+
+  @override
+  String get rosterTrialBadge => 'Prova';
+
+  @override
+  String get rosterDorsalRepeated => 'Dorsal repetit';
+
+  @override
+  String get rosterTeamsTitle => 'Equips';
+
+  @override
+  String get rosterNoTeams =>
+      'Aquesta categoria no té equips definitius: crea el primer.';
+
+  @override
+  String get rosterActive => 'Actiu';
+
+  @override
+  String get rosterInactive => 'Inactiu';
+
+  @override
+  String get rosterTeamEmpty => 'Encara sense jugadors';
+
+  @override
+  String get trialTitle => 'Alta de prova';
+
+  @override
+  String get trialIntro =>
+      'Dona d\'alta un jugador de prova a la temporada següent. Quedarà a la categoria que li toqui per edat, sense equip, fins que l\'assignes al repartiment.';
+
+  @override
+  String get trialName => 'Nom';
+
+  @override
+  String get trialSurname => 'Cognoms';
+
+  @override
+  String get trialBirthYear => 'Any de naixement';
+
+  @override
+  String get trialRequired => 'Camp obligatori';
+
+  @override
+  String get trialYearInvalid => 'Escriu un any vàlid (per exemple, 2016)';
+
+  @override
+  String trialCreated(String categoria) {
+    return 'Jugador de prova creat a la categoria $categoria';
+  }
+
+  @override
+  String get clubPageRoster => 'Repartiment d\'equips';
+
+  @override
+  String get clubPageRosterDesc => 'Assigna jugadors al seu equip definitiu';
+
+  @override
+  String get clubPageTrial => 'Alta de prova';
+
+  @override
+  String get clubPageTrialDesc =>
+      'Jugadors de prova per a la temporada següent';
+
+  @override
+  String playerPreseason(String categoria) {
+    return '$categoria · Pretemporada';
+  }
 }

@@ -26,6 +26,9 @@ import 'features/admin/pages/estado_app_page.dart';
 import 'features/admin/pages/moderacion_page.dart';
 import 'features/coordinacion/pages/fin_de_semana_page.dart';
 import 'features/coordinacion/pages/seguimiento_jugadores_page.dart';
+import 'features/coordinacion/pages/reparto_page.dart';
+import 'features/coordinacion/pages/alta_prueba_page.dart';
+import 'features/continuidad/pages/continuidad_page.dart';
 import 'features/auth/pages/ajustes_page.dart';
 import 'features/auth/pages/comunicaciones_page.dart';
 import 'features/partido_en_vivo/pages/partido_en_vivo_page.dart';
@@ -192,6 +195,9 @@ class _MutxamelCfAppState extends State<MutxamelCfApp>
         AppRoutes.appStatus: (context) => const EstadoAppPage(),
         AppRoutes.weekend: (context) => const FinDeSemanaPage(),
         AppRoutes.playerTracking: (context) => const SeguimientoJugadoresPage(),
+        AppRoutes.rosterAllocation: (context) => const RepartoPage(),
+        AppRoutes.trialPlayer: (context) => const AltaPruebaPage(),
+        AppRoutes.continuity: (context) => const ContinuidadPage(),
         AppRoutes.settings: (context) => AjustesPage(
           temaActual: _temaActual,
           onTemaChanged: _cambiarTema,

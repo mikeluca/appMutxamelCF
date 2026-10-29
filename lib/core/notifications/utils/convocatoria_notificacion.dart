@@ -32,6 +32,15 @@ const String tipoPushPasarLista = 'PASAR_LISTA';
 /// reporte, no de una comunicación).
 const String tipoPushReporte = 'REPORTE';
 
+/// Valor de data["tipo"] del push a las familias que pregunta si un jugador seguirá la temporada
+/// siguiente (data["pantalla"] == "CONTINUIDAD"): lleva a la pantalla de continuidad.
+const String tipoPushContinuidad = 'CONTINUIDAD';
+
+/// Valor de data["tipo"] del push a los coordinadores cuando una familia responde NO_SIGUE o DUDA
+/// (data["pantalla"] == "CONTINUIDAD_COORDINADOR"). La revisión se hace en el panel web, así que la app
+/// solo abre la bandeja de notificaciones.
+const String tipoPushContinuidadRespuesta = 'CONTINUIDAD_RESPUESTA';
+
 /// Título que pone el backend a la comunicación privada de una convocatoria
 /// nueva o modificada. Solo sirve de reserva para los pushes y avisos enviados
 /// antes de que existiera el tipo (y para la lista de notificaciones, cuyas
@@ -50,6 +59,8 @@ bool esAvisoDeConvocatoria({String? tipo, String? titulo}) {
       tipo == tipoPushConvocatoriaEditar ||
       tipo == tipoPushPasarLista ||
       tipo == tipoPushReporte ||
+      tipo == tipoPushContinuidad ||
+      tipo == tipoPushContinuidadRespuesta ||
       titulo?.trim() == tituloNuevaConvocatoria;
 }
 
@@ -192,6 +203,29 @@ class AbrirModeracion extends DestinoConvocatoria {
   int get hashCode => 'AbrirModeracion'.hashCode;
 }
 
+/// FAMILIA: la pantalla de continuidad ("¿Seguirá X en la temporada Y?").
+class AbrirContinuidad extends DestinoConvocatoria {
+  const AbrirContinuidad();
+
+  @override
+  bool operator ==(Object other) => other is AbrirContinuidad;
+
+  @override
+  int get hashCode => 'AbrirContinuidad'.hashCode;
+}
+
+/// COORDINADOR: la bandeja de notificaciones (no hay pantalla propia: la revisión de continuidad
+/// se hace en el panel web).
+class AbrirBandeja extends DestinoConvocatoria {
+  const AbrirBandeja();
+
+  @override
+  bool operator ==(Object other) => other is AbrirBandeja;
+
+  @override
+  int get hashCode => 'AbrirBandeja'.hashCode;
+}
+
 /// El destino del aviso de una convocatoria o de pasar lista, o null si no lo
 /// es (se mantiene el comportamiento de siempre).
 ///
@@ -208,6 +242,14 @@ DestinoConvocatoria? destinoDeAvisoConvocatoria({
   String? titulo,
   Map<String, dynamic> datos = const {},
 }) {
+  if (tipo == tipoPushContinuidad) {
+    return const AbrirContinuidad();
+  }
+
+  if (tipo == tipoPushContinuidadRespuesta) {
+    return const AbrirBandeja();
+  }
+
   if (tipo == tipoPushReporte) {
     // Solo un administrador puede abrir la cola de moderación.
     return AuthManager.usuarioActual?.tieneRol('ADMIN_APP') == true
@@ -332,6 +374,8 @@ String payloadDeDestino(DestinoConvocatoria destino) {
       'CONVOCATORIA_EDITAR:$convocatoriaId',
     PasarLista(:final entrenamientoId) => 'PASAR_LISTA:$entrenamientoId',
     AbrirModeracion() => 'REPORTE',
+    AbrirContinuidad() => 'CONTINUIDAD',
+    AbrirBandeja() => 'CONTINUIDAD_RESPUESTA',
   };
 }
 
@@ -419,6 +463,14 @@ DestinoConvocatoria? destinoDePayload(String payload) {
 
   if (payload == 'REPORTE') {
     return const AbrirModeracion();
+  }
+
+  if (payload == 'CONTINUIDAD') {
+    return const AbrirContinuidad();
+  }
+
+  if (payload == 'CONTINUIDAD_RESPUESTA') {
+    return const AbrirBandeja();
   }
 
   if (payload.startsWith('PASAR_LISTA:')) {

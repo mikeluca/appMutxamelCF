@@ -8,6 +8,8 @@ import '../version/control_version.dart';
 import '../notifications/utils/convocatoria_notificacion.dart';
 import '../../features/auth/models/perfil_app.dart';
 import '../../features/admin/pages/moderacion_page.dart';
+import '../../features/auth/pages/notificaciones_page.dart';
+import '../../features/continuidad/pages/continuidad_page.dart';
 import '../../features/calendario/pages/calendario_page.dart';
 import '../../features/convocatorias/model/convocatoria_model.dart';
 import '../../features/auth/services/perfil_service.dart';
@@ -90,6 +92,10 @@ class AppNavigator {
         await abrirAsistenciaEntrenamiento(entrenamientoId);
       case AbrirModeracion():
         await abrirModeracion();
+      case AbrirContinuidad():
+        await abrirContinuidad();
+      case AbrirBandeja():
+        await abrirBandeja();
     }
   }
 
@@ -254,6 +260,45 @@ class AppNavigator {
         builder: (_) =>
             (constructorFormularioResultado ??
             (p) => ResultadoPartidoFormPage(partido: p))(partido),
+      ),
+    );
+  }
+
+  /// Solo para tests: sustituyen a las pantallas reales (que piden datos a la red al abrirse).
+  @visibleForTesting
+  static Widget Function()? constructorContinuidad;
+
+  @visibleForTesting
+  static Widget Function()? constructorBandeja;
+
+  /// La pantalla de continuidad de la familia (push CONTINUIDAD).
+  static Future<void> abrirContinuidad() async {
+    final navigatorState = navigator;
+
+    if (navigatorState == null || ControlVersion.bloqueada) {
+      return;
+    }
+
+    await navigatorState.push(
+      MaterialPageRoute(
+        builder: (_) =>
+            (constructorContinuidad ?? () => const ContinuidadPage())(),
+      ),
+    );
+  }
+
+  /// La bandeja de notificaciones (push CONTINUIDAD_RESPUESTA: sin pantalla propia).
+  static Future<void> abrirBandeja() async {
+    final navigatorState = navigator;
+
+    if (navigatorState == null || ControlVersion.bloqueada) {
+      return;
+    }
+
+    await navigatorState.push(
+      MaterialPageRoute(
+        builder: (_) =>
+            (constructorBandeja ?? () => const NotificacionesPage())(),
       ),
     );
   }

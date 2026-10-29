@@ -140,6 +140,37 @@ class PerfilJugador {
   String get nombreCompleto {
     return '$nombre $apellidos'.trim();
   }
+
+  /// true si el jugador está en un equipo de pretemporada (de julio a septiembre, hasta que el
+  /// coordinador le asigna su equipo definitivo): el backend le da un nombre que acaba en
+  /// "(Pretemporada)".
+  bool get enPretemporada => esNombreDePretemporada(equipo);
+
+  /// La categoría que se muestra en pretemporada: la del jugador o, si no viene, el nombre del
+  /// equipo sin el sufijo "(Pretemporada)".
+  String get categoriaDePretemporada {
+    final propia = (categoria ?? '').trim();
+
+    if (propia.isNotEmpty) {
+      return propia;
+    }
+
+    final nombreEquipo = (equipo ?? '').trim();
+
+    return enPretemporada
+        ? nombreEquipo
+              .substring(0, nombreEquipo.length - sufijoPretemporada.length)
+              .trim()
+        : nombreEquipo;
+  }
+}
+
+/// Final del nombre de un equipo de pretemporada ("Alevín (Pretemporada)").
+const String sufijoPretemporada = '(pretemporada)';
+
+/// true si [nombre] es el de un equipo de pretemporada.
+bool esNombreDePretemporada(String? nombre) {
+  return (nombre ?? '').trim().toLowerCase().endsWith(sufijoPretemporada);
 }
 
 class PerfilEquipo {

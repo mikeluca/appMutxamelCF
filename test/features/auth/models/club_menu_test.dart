@@ -118,6 +118,8 @@ void main() {
         OpcionClub.todosLosEquipos,
         OpcionClub.finDeSemana,
         OpcionClub.seguimientoJugadores,
+        OpcionClub.repartoEquipos,
+        OpcionClub.altaPrueba,
       ]);
     });
 
@@ -241,6 +243,14 @@ void main() {
     expect(
       rutaDeOpcionClub(OpcionClub.seguimientoJugadores),
       '/coordination/player-tracking',
+    );
+    expect(
+      rutaDeOpcionClub(OpcionClub.repartoEquipos),
+      '/coordination/roster',
+    );
+    expect(
+      rutaDeOpcionClub(OpcionClub.altaPrueba),
+      '/coordination/trial-player',
     );
     expect(rutaDeOpcionClub(OpcionClub.moderacion), '/admin/moderation');
     expect(

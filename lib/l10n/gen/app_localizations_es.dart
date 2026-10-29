@@ -2634,4 +2634,214 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get moderationReactivated => 'Cuenta reactivada';
+
+  @override
+  String get continuityTitle => 'Continuidad';
+
+  @override
+  String continuityQuestion(String nombre, String temporada) {
+    return '¿Seguirá $nombre en la temporada $temporada?';
+  }
+
+  @override
+  String get continuityYes => 'Sí';
+
+  @override
+  String get continuityNo => 'No';
+
+  @override
+  String get continuityMaybe => 'Aún no lo sé';
+
+  @override
+  String get continuityNotAnswered => 'Sin contestar todavía';
+
+  @override
+  String continuityAnswered(String respuesta) {
+    return 'Tu respuesta: $respuesta';
+  }
+
+  @override
+  String continuityAnsweredOn(String respuesta, String fecha) {
+    return 'Tu respuesta: $respuesta · $fecha';
+  }
+
+  @override
+  String get continuityChangeHint =>
+      'Puedes cambiarla hasta el cierre de la temporada.';
+
+  @override
+  String get continuitySaved => 'Respuesta guardada';
+
+  @override
+  String get continuityNothingToConfirm =>
+      'No tienes nada que confirmar ahora.';
+
+  @override
+  String get rosterTitle => 'Reparto de equipos';
+
+  @override
+  String get rosterNoSeason =>
+      'Todavía no hay una temporada disponible para esta acción. Créala antes en el panel.';
+
+  @override
+  String get rosterConfirm => 'Continuar';
+
+  @override
+  String get rosterSelectPlayers => 'Selecciona al menos un jugador.';
+
+  @override
+  String get rosterChooseTeam => 'Elige un equipo';
+
+  @override
+  String get rosterDorsalInvalid => 'El dorsal tiene que estar entre 0 y 99.';
+
+  @override
+  String rosterAssigned(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jugadores asignados',
+      one: '$count jugador asignado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get rosterWarningsTitle => 'Avisos';
+
+  @override
+  String get rosterTrialDialogTitle => 'Jugadores de prueba';
+
+  @override
+  String rosterTrialDialogBody(String nombres) {
+    return '$nombres pasarán a CONFIRMADO. ¿Continuar?';
+  }
+
+  @override
+  String get rosterReturnTooltip => 'Devolver a la pretemporada';
+
+  @override
+  String rosterReturnConfirm(String nombre) {
+    return '$nombre vuelve a la pretemporada de su categoría, sin dorsal. ¿Continuar?';
+  }
+
+  @override
+  String rosterReturned(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jugadores devueltos a la pretemporada',
+      one: '$count jugador devuelto a la pretemporada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get rosterNewTeam => 'Nuevo equipo';
+
+  @override
+  String rosterNewTeamConfirm(String categoria) {
+    return 'Se creará un equipo nuevo de $categoria con la siguiente letra libre. ¿Continuar?';
+  }
+
+  @override
+  String rosterTeamCreated(String nombre) {
+    return 'Equipo $nombre creado. Se activará al asignarle el primer jugador.';
+  }
+
+  @override
+  String get rosterNoCategories =>
+      'No hay categorías con equipos en la temporada activa.';
+
+  @override
+  String get rosterCategory => 'Categoría';
+
+  @override
+  String rosterToAssign(int count) {
+    return 'Por asignar ($count)';
+  }
+
+  @override
+  String rosterPreseasonTeam(String nombre) {
+    return 'Equipo de pretemporada: $nombre';
+  }
+
+  @override
+  String get rosterNothingToAssign =>
+      'No queda ningún jugador por asignar en esta categoría.';
+
+  @override
+  String get rosterTargetTeam => 'Equipo destino';
+
+  @override
+  String rosterAssignButton(int count) {
+    return 'Asignar seleccionados ($count)';
+  }
+
+  @override
+  String get rosterTrialBadge => 'Prueba';
+
+  @override
+  String get rosterDorsalRepeated => 'Dorsal repetido';
+
+  @override
+  String get rosterTeamsTitle => 'Equipos';
+
+  @override
+  String get rosterNoTeams =>
+      'Esta categoría no tiene equipos definitivos: crea el primero.';
+
+  @override
+  String get rosterActive => 'Activo';
+
+  @override
+  String get rosterInactive => 'Inactivo';
+
+  @override
+  String get rosterTeamEmpty => 'Sin jugadores todavía';
+
+  @override
+  String get trialTitle => 'Alta de prueba';
+
+  @override
+  String get trialIntro =>
+      'Da de alta a un jugador de prueba en la temporada siguiente. Quedará en la categoría que le toque por edad, sin equipo, hasta que lo asignes en el reparto.';
+
+  @override
+  String get trialName => 'Nombre';
+
+  @override
+  String get trialSurname => 'Apellidos';
+
+  @override
+  String get trialBirthYear => 'Año de nacimiento';
+
+  @override
+  String get trialRequired => 'Campo obligatorio';
+
+  @override
+  String get trialYearInvalid => 'Escribe un año válido (por ejemplo, 2016)';
+
+  @override
+  String trialCreated(String categoria) {
+    return 'Jugador de prueba creado en la categoría $categoria';
+  }
+
+  @override
+  String get clubPageRoster => 'Reparto de equipos';
+
+  @override
+  String get clubPageRosterDesc => 'Asigna jugadores a su equipo definitivo';
+
+  @override
+  String get clubPageTrial => 'Alta de prueba';
+
+  @override
+  String get clubPageTrialDesc =>
+      'Jugadores de prueba para la temporada siguiente';
+
+  @override
+  String playerPreseason(String categoria) {
+    return '$categoria · Pretemporada';
+  }
 }

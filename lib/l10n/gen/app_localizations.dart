@@ -4629,6 +4629,330 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Cuenta reactivada'**
   String get moderationReactivated;
+
+  /// No description provided for @continuityTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Continuidad'**
+  String get continuityTitle;
+
+  /// No description provided for @continuityQuestion.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Seguirá {nombre} en la temporada {temporada}?'**
+  String continuityQuestion(String nombre, String temporada);
+
+  /// No description provided for @continuityYes.
+  ///
+  /// In es, this message translates to:
+  /// **'Sí'**
+  String get continuityYes;
+
+  /// No description provided for @continuityNo.
+  ///
+  /// In es, this message translates to:
+  /// **'No'**
+  String get continuityNo;
+
+  /// No description provided for @continuityMaybe.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no lo sé'**
+  String get continuityMaybe;
+
+  /// No description provided for @continuityNotAnswered.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin contestar todavía'**
+  String get continuityNotAnswered;
+
+  /// No description provided for @continuityAnswered.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu respuesta: {respuesta}'**
+  String continuityAnswered(String respuesta);
+
+  /// No description provided for @continuityAnsweredOn.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu respuesta: {respuesta} · {fecha}'**
+  String continuityAnsweredOn(String respuesta, String fecha);
+
+  /// No description provided for @continuityChangeHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Puedes cambiarla hasta el cierre de la temporada.'**
+  String get continuityChangeHint;
+
+  /// No description provided for @continuitySaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Respuesta guardada'**
+  String get continuitySaved;
+
+  /// No description provided for @continuityNothingToConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes nada que confirmar ahora.'**
+  String get continuityNothingToConfirm;
+
+  /// No description provided for @rosterTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Reparto de equipos'**
+  String get rosterTitle;
+
+  /// No description provided for @rosterNoSeason.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay una temporada disponible para esta acción. Créala antes en el panel.'**
+  String get rosterNoSeason;
+
+  /// No description provided for @rosterConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Continuar'**
+  String get rosterConfirm;
+
+  /// No description provided for @rosterSelectPlayers.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona al menos un jugador.'**
+  String get rosterSelectPlayers;
+
+  /// No description provided for @rosterChooseTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige un equipo'**
+  String get rosterChooseTeam;
+
+  /// No description provided for @rosterDorsalInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'El dorsal tiene que estar entre 0 y 99.'**
+  String get rosterDorsalInvalid;
+
+  /// No description provided for @rosterAssigned.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, one{{count} jugador asignado} other{{count} jugadores asignados}}'**
+  String rosterAssigned(int count);
+
+  /// No description provided for @rosterWarningsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Avisos'**
+  String get rosterWarningsTitle;
+
+  /// No description provided for @rosterTrialDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Jugadores de prueba'**
+  String get rosterTrialDialogTitle;
+
+  /// No description provided for @rosterTrialDialogBody.
+  ///
+  /// In es, this message translates to:
+  /// **'{nombres} pasarán a CONFIRMADO. ¿Continuar?'**
+  String rosterTrialDialogBody(String nombres);
+
+  /// No description provided for @rosterReturnTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Devolver a la pretemporada'**
+  String get rosterReturnTooltip;
+
+  /// No description provided for @rosterReturnConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'{nombre} vuelve a la pretemporada de su categoría, sin dorsal. ¿Continuar?'**
+  String rosterReturnConfirm(String nombre);
+
+  /// No description provided for @rosterReturned.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, one{{count} jugador devuelto a la pretemporada} other{{count} jugadores devueltos a la pretemporada}}'**
+  String rosterReturned(int count);
+
+  /// No description provided for @rosterNewTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo equipo'**
+  String get rosterNewTeam;
+
+  /// No description provided for @rosterNewTeamConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Se creará un equipo nuevo de {categoria} con la siguiente letra libre. ¿Continuar?'**
+  String rosterNewTeamConfirm(String categoria);
+
+  /// No description provided for @rosterTeamCreated.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipo {nombre} creado. Se activará al asignarle el primer jugador.'**
+  String rosterTeamCreated(String nombre);
+
+  /// No description provided for @rosterNoCategories.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay categorías con equipos en la temporada activa.'**
+  String get rosterNoCategories;
+
+  /// No description provided for @rosterCategory.
+  ///
+  /// In es, this message translates to:
+  /// **'Categoría'**
+  String get rosterCategory;
+
+  /// No description provided for @rosterToAssign.
+  ///
+  /// In es, this message translates to:
+  /// **'Por asignar ({count})'**
+  String rosterToAssign(int count);
+
+  /// No description provided for @rosterPreseasonTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipo de pretemporada: {nombre}'**
+  String rosterPreseasonTeam(String nombre);
+
+  /// No description provided for @rosterNothingToAssign.
+  ///
+  /// In es, this message translates to:
+  /// **'No queda ningún jugador por asignar en esta categoría.'**
+  String get rosterNothingToAssign;
+
+  /// No description provided for @rosterTargetTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipo destino'**
+  String get rosterTargetTeam;
+
+  /// No description provided for @rosterAssignButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Asignar seleccionados ({count})'**
+  String rosterAssignButton(int count);
+
+  /// No description provided for @rosterTrialBadge.
+  ///
+  /// In es, this message translates to:
+  /// **'Prueba'**
+  String get rosterTrialBadge;
+
+  /// No description provided for @rosterDorsalRepeated.
+  ///
+  /// In es, this message translates to:
+  /// **'Dorsal repetido'**
+  String get rosterDorsalRepeated;
+
+  /// No description provided for @rosterTeamsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipos'**
+  String get rosterTeamsTitle;
+
+  /// No description provided for @rosterNoTeams.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta categoría no tiene equipos definitivos: crea el primero.'**
+  String get rosterNoTeams;
+
+  /// No description provided for @rosterActive.
+  ///
+  /// In es, this message translates to:
+  /// **'Activo'**
+  String get rosterActive;
+
+  /// No description provided for @rosterInactive.
+  ///
+  /// In es, this message translates to:
+  /// **'Inactivo'**
+  String get rosterInactive;
+
+  /// No description provided for @rosterTeamEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin jugadores todavía'**
+  String get rosterTeamEmpty;
+
+  /// No description provided for @trialTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Alta de prueba'**
+  String get trialTitle;
+
+  /// No description provided for @trialIntro.
+  ///
+  /// In es, this message translates to:
+  /// **'Da de alta a un jugador de prueba en la temporada siguiente. Quedará en la categoría que le toque por edad, sin equipo, hasta que lo asignes en el reparto.'**
+  String get trialIntro;
+
+  /// No description provided for @trialName.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre'**
+  String get trialName;
+
+  /// No description provided for @trialSurname.
+  ///
+  /// In es, this message translates to:
+  /// **'Apellidos'**
+  String get trialSurname;
+
+  /// No description provided for @trialBirthYear.
+  ///
+  /// In es, this message translates to:
+  /// **'Año de nacimiento'**
+  String get trialBirthYear;
+
+  /// No description provided for @trialRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Campo obligatorio'**
+  String get trialRequired;
+
+  /// No description provided for @trialYearInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe un año válido (por ejemplo, 2016)'**
+  String get trialYearInvalid;
+
+  /// No description provided for @trialCreated.
+  ///
+  /// In es, this message translates to:
+  /// **'Jugador de prueba creado en la categoría {categoria}'**
+  String trialCreated(String categoria);
+
+  /// No description provided for @clubPageRoster.
+  ///
+  /// In es, this message translates to:
+  /// **'Reparto de equipos'**
+  String get clubPageRoster;
+
+  /// No description provided for @clubPageRosterDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Asigna jugadores a su equipo definitivo'**
+  String get clubPageRosterDesc;
+
+  /// No description provided for @clubPageTrial.
+  ///
+  /// In es, this message translates to:
+  /// **'Alta de prueba'**
+  String get clubPageTrial;
+
+  /// No description provided for @clubPageTrialDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Jugadores de prueba para la temporada siguiente'**
+  String get clubPageTrialDesc;
+
+  /// No description provided for @playerPreseason.
+  ///
+  /// In es, this message translates to:
+  /// **'{categoria} · Pretemporada'**
+  String playerPreseason(String categoria);
 }
 
 class _AppLocalizationsDelegate

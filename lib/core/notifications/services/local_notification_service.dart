@@ -150,6 +150,7 @@ class LocalNotificationService {
   /// comunicación con el mismo número.
   static const int _baseReporte = 1000000000;
   static const int _basePasarLista = 1100000000;
+  static const int _baseContinuidad = 1200000000;
   static const int _tamanoEspacio = 100000000;
 
   @visibleForTesting
@@ -157,6 +158,8 @@ class LocalNotificationService {
     return switch (datos['tipo']?.toString()) {
       tipoPushReporte => _baseReporte + referenciaId % _tamanoEspacio,
       tipoPushPasarLista => _basePasarLista + referenciaId % _tamanoEspacio,
+      tipoPushContinuidad ||
+      tipoPushContinuidadRespuesta => _baseContinuidad + referenciaId % _tamanoEspacio,
       _ => referenciaId,
     };
   }

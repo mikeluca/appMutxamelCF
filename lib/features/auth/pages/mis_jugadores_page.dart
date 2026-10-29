@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,8 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
+import '../../continuidad/services/continuidad_service.dart';
+import '../../continuidad/widgets/continuidad_lista.dart';
 import '../../teams/models/player_model.dart';
 import '../../teams/models/team_model.dart';
 import '../../teams/services/team_services.dart';
@@ -23,6 +26,7 @@ class MisJugadoresPage extends StatefulWidget {
   final Future<PerfilApp> Function()? cargarPerfil;
   final TeamService? teamService;
   final ResumenTemporadaService? resumenService;
+  final ContinuidadService? continuidadService;
 
   const MisJugadoresPage({
     super.key,
@@ -30,6 +34,7 @@ class MisJugadoresPage extends StatefulWidget {
     this.cargarPerfil,
     this.teamService,
     this.resumenService,
+    this.continuidadService,
   });
 
   @override
@@ -40,6 +45,8 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
   late final TeamService _teamService = widget.teamService ?? TeamService();
   late final ResumenTemporadaService _resumenService =
       widget.resumenService ?? ResumenTemporadaService();
+
+  final GlobalKey<ContinuidadListaState> _continuidad = GlobalKey();
 
   PerfilApp? _perfil;
   Map<int, PlayerModel> _jugadoresConFoto = {};
@@ -69,6 +76,9 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
   /// no espera a ninguno de ellos y, si fallan, sigue sin ellos.
   Future<void> _cargarJugadores() async {
     final carga = ++_carga;
+
+    // Al refrescar también se vuelve a preguntar por la continuidad.
+    unawaited(_continuidad.currentState?.recargar() ?? Future<void>.value());
 
     try {
       final perfil =
@@ -232,6 +242,9 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
             const SizedBox(height: 20),
           ],
 
+          // "¿Seguirá X en la temporada Y?": solo aparece si hay algo que confirmar.
+          ContinuidadLista(key: _continuidad, servicio: widget.continuidadService),
+
           ...jugadores.map(
             (jugador) => Padding(
               padding: const EdgeInsets.only(bottom: 22),
@@ -295,9 +308,12 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
                 _construirDato(
                   icono: Icons.groups_outlined,
                   titulo: _t.fieldTeam,
-                  // Un jugador sin equipo o dado de baja llega con equipo a null.
+                  // Un jugador sin equipo o dado de baja llega con equipo a null; en pretemporada
+                  // (julio a septiembre) se muestra su categoría, no el equipo técnico.
                   valor: (jugador.equipo ?? '').trim().isEmpty
                       ? _t.playerNoTeamThisSeason
+                      : jugador.enPretemporada
+                      ? _t.playerPreseason(jugador.categoriaDePretemporada)
                       : jugador.equipo,
                 ),
 
