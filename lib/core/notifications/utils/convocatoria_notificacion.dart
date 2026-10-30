@@ -41,6 +41,42 @@ const String tipoPushContinuidad = 'CONTINUIDAD';
 /// solo abre la bandeja de notificaciones.
 const String tipoPushContinuidadRespuesta = 'CONTINUIDAD_RESPUESTA';
 
+/// Tipos de push de los jugadores de otros equipos invitados a una convocatoria
+/// (docs/api-app-convocatoria-invitados.md del backend, §8). Todos empiezan por
+/// INVITACION_ y llevan en data["invitacionId"], ["convocatoriaId"], ["partidoId"],
+/// ["jugadorId"] y ["fechaPartido"] lo que corresponda a cada uno.
+const String tipoPushInvitacionPendiente = 'INVITACION_PENDIENTE';
+const String tipoPushInvitacionRechazada = 'INVITACION_RECHAZADA';
+const String tipoPushInvitacionLiberar = 'INVITACION_LIBERAR';
+const String tipoPushInvitacionInformativa = 'INVITACION_INFORMATIVA';
+const String tipoPushInvitacionAutorizada = 'INVITACION_AUTORIZADA';
+const String tipoPushInvitacionPlazo = 'INVITACION_PLAZO';
+const String tipoPushInvitacionLiberadaCoordinacion =
+    'INVITACION_LIBERADA_COORDINACION';
+const String tipoPushInvitacionDesestimada = 'INVITACION_DESESTIMADA';
+const String tipoPushInvitacionAnulada = 'INVITACION_ANULADA';
+
+/// Los que el backend añade cuando cambia la fecha de un partido con invitados.
+const String tipoPushInvitacionFechaCambiada = 'INVITACION_FECHA_CAMBIADA';
+const String tipoPushInvitacionSolapamiento = 'INVITACION_SOLAPAMIENTO';
+
+const Set<String> tiposPushInvitacion = {
+  tipoPushInvitacionPendiente,
+  tipoPushInvitacionRechazada,
+  tipoPushInvitacionLiberar,
+  tipoPushInvitacionInformativa,
+  tipoPushInvitacionAutorizada,
+  tipoPushInvitacionPlazo,
+  tipoPushInvitacionLiberadaCoordinacion,
+  tipoPushInvitacionDesestimada,
+  tipoPushInvitacionAnulada,
+  tipoPushInvitacionFechaCambiada,
+  tipoPushInvitacionSolapamiento,
+};
+
+/// true si [tipo] es uno de los avisos de jugadores invitados.
+bool esTipoPushInvitacion(Object? tipo) => tiposPushInvitacion.contains(tipo);
+
 /// Título que pone el backend a la comunicación privada de una convocatoria
 /// nueva o modificada. Solo sirve de reserva para los pushes y avisos enviados
 /// antes de que existiera el tipo (y para la lista de notificaciones, cuyas
@@ -61,6 +97,7 @@ bool esAvisoDeConvocatoria({String? tipo, String? titulo}) {
       tipo == tipoPushReporte ||
       tipo == tipoPushContinuidad ||
       tipo == tipoPushContinuidadRespuesta ||
+      esTipoPushInvitacion(tipo) ||
       titulo?.trim() == tituloNuevaConvocatoria;
 }
 
@@ -192,6 +229,42 @@ class PasarLista extends DestinoConvocatoria {
   int get hashCode => entrenamientoId.hashCode;
 }
 
+/// COORDINADOR / ADMIN_APP: la lista de invitaciones de jugadores de otros equipos.
+class AbrirInvitaciones extends DestinoConvocatoria {
+  const AbrirInvitaciones();
+
+  @override
+  bool operator ==(Object other) => other is AbrirInvitaciones;
+
+  @override
+  int get hashCode => 'AbrirInvitaciones'.hashCode;
+}
+
+/// Entrenador del equipo de origen: su convocatoria [convocatoriaId] de ese partido, con
+/// el aviso del solapamiento y el botón para liberar al jugador [jugadorId] de la
+/// invitación [invitacionId].
+class AbrirLiberarInvitacion extends DestinoConvocatoria {
+  final int convocatoriaId;
+  final int invitacionId;
+  final int? jugadorId;
+
+  const AbrirLiberarInvitacion({
+    required this.convocatoriaId,
+    required this.invitacionId,
+    this.jugadorId,
+  });
+
+  @override
+  bool operator ==(Object other) =>
+      other is AbrirLiberarInvitacion &&
+      other.convocatoriaId == convocatoriaId &&
+      other.invitacionId == invitacionId &&
+      other.jugadorId == jugadorId;
+
+  @override
+  int get hashCode => Object.hash(convocatoriaId, invitacionId, jugadorId);
+}
+
 /// ADMIN_APP: la pantalla de Moderación.
 class AbrirModeracion extends DestinoConvocatoria {
   const AbrirModeracion();
@@ -255,6 +328,10 @@ DestinoConvocatoria? destinoDeAvisoConvocatoria({
     return AuthManager.usuarioActual?.tieneRol('ADMIN_APP') == true
         ? const AbrirModeracion()
         : null;
+  }
+
+  if (esTipoPushInvitacion(tipo)) {
+    return _destinoDeInvitacion(tipo!, datos);
   }
 
   if (tipo == tipoPushConvocatoriaPendiente ||
@@ -336,6 +413,73 @@ DestinoConvocatoria? destinoDeAvisoConvocatoria({
   return AbrirCalendario(dia);
 }
 
+bool get _esGestionGlobal =>
+    AuthManager.usuarioActual?.tieneRol('COORDINADOR') == true ||
+    AuthManager.usuarioActual?.tieneRol('ADMIN_APP') == true;
+
+/// A dónde lleva un aviso de jugadores invitados:
+/// - pendiente de aprobar o plazo de 12 horas: la lista de invitaciones (solo coordinación);
+/// - rechazada, desestimada por la familia o partido que cambia de fecha: editar esa
+///   convocatoria, para elegir a otro;
+/// - liberar: la convocatoria del equipo de origen (convocatoriaOrigenId) con el botón;
+///   sin ella (coordinación recibe el aviso en lugar de un equipo sin entrenador), la
+///   lista de invitaciones;
+/// - el resto (autorizada, informativa, liberada por coordinación, anulada,
+///   solapamiento): el calendario en el día del partido.
+DestinoConvocatoria? _destinoDeInvitacion(
+  String tipo,
+  Map<String, dynamic> datos,
+) {
+  int? entero(String clave) {
+    final id = int.tryParse(datos[clave]?.toString() ?? '');
+
+    return id != null && id > 0 ? id : null;
+  }
+
+  switch (tipo) {
+    case tipoPushInvitacionPendiente:
+    case tipoPushInvitacionPlazo:
+      return _esGestionGlobal ? const AbrirInvitaciones() : null;
+
+    case tipoPushInvitacionRechazada:
+    case tipoPushInvitacionDesestimada:
+    case tipoPushInvitacionFechaCambiada:
+      final convocatoriaId = entero('convocatoriaId');
+
+      return convocatoriaId == null ? null : EditarConvocatoria(convocatoriaId);
+
+    case tipoPushInvitacionLiberar:
+      final convocatoriaOrigenId = entero('convocatoriaOrigenId');
+      final invitacionId = entero('invitacionId');
+
+      if (convocatoriaOrigenId != null && invitacionId != null) {
+        return AbrirLiberarInvitacion(
+          convocatoriaId: convocatoriaOrigenId,
+          invitacionId: invitacionId,
+          jugadorId: entero('jugadorId'),
+        );
+      }
+
+      return _esGestionGlobal ? const AbrirInvitaciones() : null;
+
+    default:
+      return AbrirCalendario(diaDeFechaPartido(datos['fechaPartido']?.toString()));
+  }
+}
+
+/// El destino de un aviso de la bandeja de notificaciones que solo guarda su tipo (sin
+/// el data del push): los de coordinación abren la lista de invitaciones; el resto, null
+/// (se abre la comunicación, que ya explica qué pasa).
+DestinoConvocatoria? destinoDeTipoDeInvitacion(String? tipo) {
+  if ((tipo == tipoPushInvitacionPendiente ||
+          tipo == tipoPushInvitacionPlazo) &&
+      _esGestionGlobal) {
+    return const AbrirInvitaciones();
+  }
+
+  return null;
+}
+
 /// "2026-10-24" (o con hora) -> ese día a las 00:00; null si no se puede leer.
 DateTime? diaDeFechaPartido(String? texto) {
   final fecha = DateTime.tryParse(texto ?? '');
@@ -374,6 +518,13 @@ String payloadDeDestino(DestinoConvocatoria destino) {
       'CONVOCATORIA_EDITAR:$convocatoriaId',
     PasarLista(:final entrenamientoId) => 'PASAR_LISTA:$entrenamientoId',
     AbrirModeracion() => 'REPORTE',
+    AbrirInvitaciones() => 'INVITACIONES',
+    AbrirLiberarInvitacion(
+      :final convocatoriaId,
+      :final invitacionId,
+      :final jugadorId,
+    ) =>
+      'LIBERAR_INVITACION:${_campos([convocatoriaId, invitacionId, jugadorId ?? ''])}',
     AbrirContinuidad() => 'CONTINUIDAD',
     AbrirBandeja() => 'CONTINUIDAD_RESPUESTA',
   };
@@ -463,6 +614,31 @@ DestinoConvocatoria? destinoDePayload(String payload) {
 
   if (payload == 'REPORTE') {
     return const AbrirModeracion();
+  }
+
+  if (payload == 'INVITACIONES') {
+    return const AbrirInvitaciones();
+  }
+
+  if (payload.startsWith('LIBERAR_INVITACION:')) {
+    final campos = _leerCampos(
+      payload.substring('LIBERAR_INVITACION:'.length),
+    );
+    final convocatoriaId = int.tryParse(campos.elementAtOrNull(0) ?? '');
+    final invitacionId = int.tryParse(campos.elementAtOrNull(1) ?? '');
+
+    if (convocatoriaId == null ||
+        convocatoriaId <= 0 ||
+        invitacionId == null ||
+        invitacionId <= 0) {
+      return null;
+    }
+
+    return AbrirLiberarInvitacion(
+      convocatoriaId: convocatoriaId,
+      invitacionId: invitacionId,
+      jugadorId: int.tryParse(campos.elementAtOrNull(2) ?? ''),
+    );
   }
 
   if (payload == 'CONTINUIDAD') {

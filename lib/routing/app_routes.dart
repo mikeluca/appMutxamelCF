@@ -19,6 +19,7 @@ class AppRoutes {
   static const String playerTracking = '/coordination/player-tracking';
   static const String rosterAllocation = '/coordination/roster';
   static const String trialPlayer = '/coordination/trial-player';
+  static const String invitations = '/coordination/invitations';
   static const String continuity = '/continuity';
   static const String settings = '/settings';
   static const String communication = '/communication';

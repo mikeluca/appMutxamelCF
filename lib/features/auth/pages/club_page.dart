@@ -275,6 +275,14 @@ class _ClubPageState extends State<ClubPage> {
           descripcion: t.clubPageTrialDesc,
           onTap: () => _navegar(opcion),
         );
+      case OpcionClub.invitaciones:
+        return _construirOpcion(
+          context,
+          icono: Icons.group_add_outlined,
+          titulo: t.clubPageInvitations,
+          descripcion: t.clubPageInvitationsDesc,
+          onTap: () => _navegar(opcion),
+        );
       case OpcionClub.moderacion:
         return _construirOpcion(
           context,

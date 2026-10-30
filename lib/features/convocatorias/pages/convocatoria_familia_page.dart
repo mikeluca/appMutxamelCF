@@ -6,6 +6,10 @@ import '../../../core/utils/como_llegar.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
+import '../../invitados/services/invitados_service.dart';
+import '../../invitados/widgets/invitado_widgets.dart';
+import '../../matches/services/justificacion_partido_service.dart';
+import '../../matches/widgets/justificar_ausencia_partido_dialog.dart';
 import '../model/convocatoria_partido_model.dart';
 import '../services/convocatoria_partido_service.dart';
 
@@ -20,8 +24,20 @@ class ConvocatoriaFamiliaPage extends StatefulWidget {
   final String jugadorNombre;
   final String jugadorApellidos;
 
-  /// Solo para tests: sustituye al servicio real.
+  /// El equipo con el que el jugador juega este partido como invitado (null si es de
+  /// su propio equipo). Con él se pinta "Invitado con ..." y el botón "No puede ir".
+  final String? invitadoCon;
+
+  /// Todavía se puede avisar de que no puede ir (hasta la hora de convocatoria), y si
+  /// ya lo ha hecho (con su motivo).
+  final bool puedeDesestimar;
+  final bool ausenciaDesestimada;
+  final String? motivoDesestimacion;
+
+  /// Solo para tests: sustituyen a los servicios reales.
   final ConvocatoriaPartidoService? service;
+  final InvitadosService? invitadosService;
+  final JustificacionPartidoService? justificacionService;
 
   const ConvocatoriaFamiliaPage({
     super.key,
@@ -29,7 +45,13 @@ class ConvocatoriaFamiliaPage extends StatefulWidget {
     required this.jugadorId,
     required this.jugadorNombre,
     required this.jugadorApellidos,
+    this.invitadoCon,
+    this.puedeDesestimar = false,
+    this.ausenciaDesestimada = false,
+    this.motivoDesestimacion,
     this.service,
+    this.invitadosService,
+    this.justificacionService,
   });
 
   @override
@@ -43,6 +65,11 @@ class _ConvocatoriaFamiliaPageState extends State<ConvocatoriaFamiliaPage> {
 
   ConvocatoriaPartidoModel? _convocatoria;
   bool _cargando = true;
+
+  /// El jugador ha avisado, desde esta pantalla, de que no puede ir.
+  late bool _desestimado = widget.ausenciaDesestimada;
+  late final String? _motivo = widget.motivoDesestimacion;
+  late final bool _puedeDesestimar = widget.puedeDesestimar;
 
   /// true si el error es que la convocatoria ya no existe (404).
   bool _noDisponible = false;
@@ -151,6 +178,10 @@ class _ConvocatoriaFamiliaPageState extends State<ConvocatoriaFamiliaPage> {
           _construirCitacion(convocatoria),
           const SizedBox(height: 14),
           _construirEstado(convocatoria),
+          if (widget.invitadoCon != null) ...[
+            const SizedBox(height: 10),
+            _construirInvitado(),
+          ],
           const SizedBox(height: 24),
           Text(
             _t.callupPlayersTitle,
@@ -311,6 +342,66 @@ class _ConvocatoriaFamiliaPageState extends State<ConvocatoriaFamiliaPage> {
         ),
       ],
     );
+  }
+
+  /// "Invitado con X" y, mientras hay plazo, el botón "No puede ir" (o, si ya avisó, su
+  /// motivo).
+  Widget _construirInvitado() {
+    return Column(
+      key: const ValueKey('convocatoria-invitado'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        EtiquetaInvitado(texto: _t.invGuestWith(widget.invitadoCon!)),
+        if (_desestimado) ...[
+          const SizedBox(height: 8),
+          Text(
+            _t.matchAbsenceBadge,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.green,
+            ),
+          ),
+          if (_motivo?.trim().isNotEmpty == true)
+            Text(
+              _t.callupReasonShown(_motivo!),
+              style: TextStyle(color: _colors.onSurfaceVariant),
+            ),
+        ],
+        if (_puedeDesestimar) ...[
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            key: const ValueKey('boton-no-puede-ir'),
+            onPressed: _noPuedeIr,
+            icon: const Icon(Icons.event_busy_outlined, size: 18),
+            label: Text(_t.invCannotGo),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Future<void> _noPuedeIr() async {
+    final resultado = await showDialog<bool>(
+      context: context,
+      builder: (_) => JustificarAusenciaPartidoDialog(
+        servicio: widget.justificacionService ?? JustificacionPartidoService(),
+        invitadosService: widget.invitadosService,
+        partidoId: widget.partidoId,
+        jugadorId: widget.jugadorId,
+        invitado: true,
+        motivoActual: _desestimado ? _motivo : null,
+      ),
+    );
+
+    if (resultado != true || !mounted) return;
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(_t.invCannotGoSnack)));
+
+    setState(() => _desestimado = true);
+
+    await _cargar();
   }
 
   Widget _etiqueta(String texto, Color color) {

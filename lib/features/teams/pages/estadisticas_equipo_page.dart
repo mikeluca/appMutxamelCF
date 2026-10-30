@@ -4,6 +4,7 @@ import '../../../core/utils/mensaje_error.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
+import '../../invitados/widgets/invitado_widgets.dart';
 import '../models/estadisticas_equipo_model.dart';
 import '../services/estadisticas_equipo_service.dart';
 
@@ -235,6 +236,8 @@ class _EstadisticasEquipoPageState extends State<EstadisticasEquipoPage> {
       dorsal: jugador.dorsal?.toString() ?? '-',
       nombre: jugador.nombre,
       detalle: detalle,
+      invitado: jugador.invitado,
+      clave: ValueKey('destacado-${jugador.jugadorId}'),
     );
   }
 
@@ -256,8 +259,11 @@ class _EstadisticasEquipoPageState extends State<EstadisticasEquipoPage> {
     required String detalle,
     String? valor,
     Color? colorValor,
+    bool invitado = false,
+    Key? clave,
   }) {
     return Card(
+      key: clave,
       margin: const EdgeInsets.only(bottom: 8),
       elevation: 1,
       color: _colors.surface,
@@ -280,12 +286,21 @@ class _EstadisticasEquipoPageState extends State<EstadisticasEquipoPage> {
               ),
             if (dorsal != null) const SizedBox(width: 8),
             Expanded(
-              child: Text(
-                nombre,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: _colors.onSurface,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    nombre,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: _colors.onSurface,
+                    ),
+                  ),
+                  if (invitado) ...[
+                    const SizedBox(height: 3),
+                    const EtiquetaInvitado(),
+                  ],
+                ],
               ),
             ),
             Text(detalle, style: TextStyle(color: _colors.onSurfaceVariant)),

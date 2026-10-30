@@ -108,7 +108,8 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
     // coordinación ya está en esta bandeja y se revisa en el panel web.
     final destino = notificacion.tipo == tipoPushContinuidad
         ? const AbrirContinuidad()
-        : destinoDeAvisoConvocatoria(titulo: notificacion.titulo);
+        : (destinoDeTipoDeInvitacion(notificacion.tipo) ??
+              destinoDeAvisoConvocatoria(titulo: notificacion.titulo));
 
     if (destino != null) {
       await AppNavigator.abrirDestinoConvocatoria(destino);

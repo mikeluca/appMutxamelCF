@@ -4,6 +4,7 @@ import '../../../core/utils/mensaje_error.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
+import '../../invitados/widgets/invitado_widgets.dart';
 import '../models/estadisticas_equipo_model.dart';
 import '../services/estadisticas_equipo_service.dart';
 
@@ -140,6 +141,12 @@ class _TarjetasEquipoPageState extends State<TarjetasEquipoPage> {
                       color: _colors.onSurface,
                     ),
                   ),
+                  if (jugador.invitado) ...[
+                    const SizedBox(height: 4),
+                    EtiquetaInvitado(
+                      key: ValueKey('invitado-tarjetas-${jugador.jugadorId}'),
+                    ),
+                  ],
                   if (_etiquetaDeEstado(jugador.estado) != null) ...[
                     const SizedBox(height: 6),
                     _construirChip(jugador.estado),

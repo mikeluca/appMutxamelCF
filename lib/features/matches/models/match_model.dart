@@ -48,6 +48,10 @@ class MatchModel {
   final bool puedeJustificar;
   final DateTime? limiteJustificacion;
 
+  /// Solo en el calendario de un jugador: el partido es de otro equipo y el jugador
+  /// juega en él como invitado autorizado ("Invitado con equipo").
+  final bool invitado;
+
   const MatchModel({
     this.id,
     this.equipoId,
@@ -72,6 +76,7 @@ class MatchModel {
     this.motivoAusencia,
     this.puedeJustificar = false,
     this.limiteJustificacion,
+    this.invitado = false,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -103,6 +108,7 @@ class MatchModel {
       limiteJustificacion: DateTime.tryParse(
         json['limiteJustificacion']?.toString() ?? '',
       ),
+      invitado: json['invitado'] as bool? ?? false,
     );
   }
 

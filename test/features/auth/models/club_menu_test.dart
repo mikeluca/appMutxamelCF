@@ -120,6 +120,7 @@ void main() {
         OpcionClub.seguimientoJugadores,
         OpcionClub.repartoEquipos,
         OpcionClub.altaPrueba,
+        OpcionClub.invitaciones,
       ]);
     });
 
@@ -251,6 +252,10 @@ void main() {
     expect(
       rutaDeOpcionClub(OpcionClub.altaPrueba),
       '/coordination/trial-player',
+    );
+    expect(
+      rutaDeOpcionClub(OpcionClub.invitaciones),
+      '/coordination/invitations',
     );
     expect(rutaDeOpcionClub(OpcionClub.moderacion), '/admin/moderation');
     expect(

@@ -29,6 +29,7 @@ enum OpcionClub {
   seguimientoJugadores,
   repartoEquipos,
   altaPrueba,
+  invitaciones,
   moderacion,
   cuentasPendientes,
   estadoApp,
@@ -71,6 +72,8 @@ String? rutaDeOpcionClub(OpcionClub opcion) {
       return AppRoutes.rosterAllocation;
     case OpcionClub.altaPrueba:
       return AppRoutes.trialPlayer;
+    case OpcionClub.invitaciones:
+      return AppRoutes.invitations;
     case OpcionClub.moderacion:
       return AppRoutes.moderation;
     case OpcionClub.cuentasPendientes:
@@ -134,6 +137,7 @@ List<SeccionClub> construirSeccionesClub(
       if (esGestionGlobal) OpcionClub.seguimientoJugadores,
       if (esGestionGlobal) OpcionClub.repartoEquipos,
       if (esGestionGlobal) OpcionClub.altaPrueba,
+      if (esGestionGlobal) OpcionClub.invitaciones,
     ]),
     SeccionClub(SeccionClubId.administracion, [
       if (esAdmin) OpcionClub.moderacion,

@@ -37,11 +37,13 @@ class _FakeConvocatoriaService extends ConvocatoriaService {
       String hora,
       String lugar,
       List<int>? jugadores,
+      List<int>? invitados,
     })
   >
   actualizadas = [];
 
   final List<List<int>> creadas = [];
+  final List<List<int>?> creadasInvitados = [];
 
   _FakeConvocatoriaService({this.delEquipo = const [], this.porId});
 
@@ -63,8 +65,10 @@ class _FakeConvocatoriaService extends ConvocatoriaService {
     required String horaConvocatoria,
     required String lugarConvocatoria,
     required List<int> jugadoresIds,
+    List<int>? invitadosIds,
   }) async {
     creadas.add(jugadoresIds);
+    creadasInvitados.add(invitadosIds);
     return _convocatoria();
   }
 
@@ -75,6 +79,7 @@ class _FakeConvocatoriaService extends ConvocatoriaService {
     required String horaConvocatoria,
     required String lugarConvocatoria,
     List<int>? jugadoresIds,
+    List<int>? invitadosIds,
   }) async {
     actualizadas.add((
       convocatoria: convocatoriaId,
@@ -82,6 +87,7 @@ class _FakeConvocatoriaService extends ConvocatoriaService {
       hora: horaConvocatoria,
       lugar: lugarConvocatoria,
       jugadores: jugadoresIds,
+      invitados: invitadosIds,
     ));
     return _convocatoria();
   }

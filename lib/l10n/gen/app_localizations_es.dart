@@ -2844,4 +2844,220 @@ class AppLocalizationsEs extends AppLocalizations {
   String playerPreseason(String categoria) {
     return '$categoria · Pretemporada';
   }
+
+  @override
+  String get invGuestsTitle => 'Jugadores de otros equipos';
+
+  @override
+  String invGuestsCounter(int count, int max) {
+    return 'Invitados: $count de $max';
+  }
+
+  @override
+  String get invGuestsHint =>
+      'Coordinación tiene que aprobar a cada jugador invitado antes de que pueda jugar.';
+
+  @override
+  String get invAddButton => 'Añadir jugadores de otro equipo';
+
+  @override
+  String get invAddNeedsMatch =>
+      'Elige primero el partido para poder invitar a jugadores de otros equipos.';
+
+  @override
+  String invMaxReached(int max) {
+    return 'Máximo $max invitados por convocatoria';
+  }
+
+  @override
+  String get invPickTeamPrompt => 'Elige un equipo';
+
+  @override
+  String get invNoTeams =>
+      'Este equipo no puede invitar a jugadores de otros equipos.';
+
+  @override
+  String get invNoPlayers => 'No hay jugadores disponibles en este equipo.';
+
+  @override
+  String get invConfirmSelection => 'Listo';
+
+  @override
+  String get invBlockedDefault => 'Ya está invitado con otro equipo ese día';
+
+  @override
+  String get invRemoveGuest => 'Quitar';
+
+  @override
+  String invGuestTag(String team) {
+    return 'Invitado · $team';
+  }
+
+  @override
+  String get invGuestBadge => 'Invitado';
+
+  @override
+  String invGuestWith(String team) {
+    return 'Invitado con $team';
+  }
+
+  @override
+  String get invStateToSend => 'Se enviará a coordinación al guardar';
+
+  @override
+  String get invStatePendingCoordination => 'Pendiente de coordinación';
+
+  @override
+  String get invStatePendingCoach =>
+      'Pendiente de que su entrenador lo autorice';
+
+  @override
+  String get invStateRejected => 'Rechazado por coordinación';
+
+  @override
+  String invRejectedBanner(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count invitados rechazados por coordinación',
+      one: '1 invitado rechazado por coordinación',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get invGuestAbsentHint =>
+      'La familia no puede ir. Quítalo y convoca a otro jugador.';
+
+  @override
+  String get invRemovedSnack => 'Jugador invitado quitado';
+
+  @override
+  String get invRemoveError => 'No se ha podido quitar al jugador.';
+
+  @override
+  String get invConflictTitle => 'No se puede continuar';
+
+  @override
+  String invConflictOwnPlayer(String player, String team) {
+    return '$player ya va invitado con $team ese día, así que no puedes convocarlo con tu equipo.';
+  }
+
+  @override
+  String invConflictAlreadyGuest(String player, String team) {
+    return '$player ya está autorizado como invitado con $team ese día. Elige a otro jugador.';
+  }
+
+  @override
+  String get invConflictOk => 'Entendido';
+
+  @override
+  String get clubPageInvitations => 'Invitaciones';
+
+  @override
+  String get clubPageInvitationsDesc =>
+      'Jugadores de otros equipos pendientes de aprobar';
+
+  @override
+  String get invPageEmpty => 'No hay invitaciones pendientes';
+
+  @override
+  String invFromTo(String origin, String destination) {
+    return '$origin → $destination';
+  }
+
+  @override
+  String invMatchLine(String date, String time, String rival) {
+    return '$date · $time · contra $rival';
+  }
+
+  @override
+  String invConvokedBy(String who) {
+    return 'Convoca: $who';
+  }
+
+  @override
+  String get invOverlapNone => 'Su equipo no juega ese día';
+
+  @override
+  String invOverlapYes(String matches) {
+    return 'Su equipo juega ese día: $matches';
+  }
+
+  @override
+  String get invOverlapConvoked => 'Su entrenador lo tiene convocado';
+
+  @override
+  String invOtherInvitation(String team) {
+    return 'Tiene otra invitación ese día: $team';
+  }
+
+  @override
+  String get invDeadlineExpired => 'Más de 12 h esperando a su entrenador';
+
+  @override
+  String get invApprove => 'Aprobar';
+
+  @override
+  String get invReject => 'Rechazar';
+
+  @override
+  String get invRelease => 'Liberar';
+
+  @override
+  String get invRejectTitle => 'Rechazar invitación';
+
+  @override
+  String get invRejectReasonLabel => 'Motivo (opcional)';
+
+  @override
+  String get invApprovedSnack => 'Invitación aprobada';
+
+  @override
+  String get invApprovedWaitingSnack =>
+      'Aprobada: queda pendiente de su entrenador';
+
+  @override
+  String get invRejectedSnack => 'Invitación rechazada';
+
+  @override
+  String get invReleasedSnack => 'Jugador liberado';
+
+  @override
+  String get invActionError => 'No se ha podido completar la acción.';
+
+  @override
+  String invReleaseConfirmTitle(String player) {
+    return '¿Liberar a $player?';
+  }
+
+  @override
+  String invReleaseConfirmBody(String team) {
+    return 'Se quitará de la convocatoria de $team ese día y se avisará a su entrenador.';
+  }
+
+  @override
+  String invReleaseBanner(String player) {
+    return '$player ha sido invitado por otro equipo el mismo día que juega el tuyo. Si puede jugar con ellos, libéralo de tu convocatoria.';
+  }
+
+  @override
+  String invReleaseButton(String player) {
+    return 'Liberar a $player';
+  }
+
+  @override
+  String invReleasedOriginSnack(String player) {
+    return '$player liberado';
+  }
+
+  @override
+  String get invCannotGo => 'No puede ir';
+
+  @override
+  String get invCannotGoHint =>
+      'El entrenador que lo convocó recibirá un aviso para convocar a otro jugador. El motivo solo lo verá él.';
+
+  @override
+  String get invCannotGoSnack => 'Aviso enviado al entrenador';
 }

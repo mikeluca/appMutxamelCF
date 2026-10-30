@@ -4953,6 +4953,342 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'{categoria} · Pretemporada'**
   String playerPreseason(String categoria);
+
+  /// No description provided for @invGuestsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Jugadores de otros equipos'**
+  String get invGuestsTitle;
+
+  /// No description provided for @invGuestsCounter.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitados: {count} de {max}'**
+  String invGuestsCounter(int count, int max);
+
+  /// No description provided for @invGuestsHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Coordinación tiene que aprobar a cada jugador invitado antes de que pueda jugar.'**
+  String get invGuestsHint;
+
+  /// No description provided for @invAddButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir jugadores de otro equipo'**
+  String get invAddButton;
+
+  /// No description provided for @invAddNeedsMatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige primero el partido para poder invitar a jugadores de otros equipos.'**
+  String get invAddNeedsMatch;
+
+  /// No description provided for @invMaxReached.
+  ///
+  /// In es, this message translates to:
+  /// **'Máximo {max} invitados por convocatoria'**
+  String invMaxReached(int max);
+
+  /// No description provided for @invPickTeamPrompt.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige un equipo'**
+  String get invPickTeamPrompt;
+
+  /// No description provided for @invNoTeams.
+  ///
+  /// In es, this message translates to:
+  /// **'Este equipo no puede invitar a jugadores de otros equipos.'**
+  String get invNoTeams;
+
+  /// No description provided for @invNoPlayers.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay jugadores disponibles en este equipo.'**
+  String get invNoPlayers;
+
+  /// No description provided for @invConfirmSelection.
+  ///
+  /// In es, this message translates to:
+  /// **'Listo'**
+  String get invConfirmSelection;
+
+  /// No description provided for @invBlockedDefault.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya está invitado con otro equipo ese día'**
+  String get invBlockedDefault;
+
+  /// No description provided for @invRemoveGuest.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitar'**
+  String get invRemoveGuest;
+
+  /// No description provided for @invGuestTag.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitado · {team}'**
+  String invGuestTag(String team);
+
+  /// No description provided for @invGuestBadge.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitado'**
+  String get invGuestBadge;
+
+  /// No description provided for @invGuestWith.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitado con {team}'**
+  String invGuestWith(String team);
+
+  /// No description provided for @invStateToSend.
+  ///
+  /// In es, this message translates to:
+  /// **'Se enviará a coordinación al guardar'**
+  String get invStateToSend;
+
+  /// No description provided for @invStatePendingCoordination.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendiente de coordinación'**
+  String get invStatePendingCoordination;
+
+  /// No description provided for @invStatePendingCoach.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendiente de que su entrenador lo autorice'**
+  String get invStatePendingCoach;
+
+  /// No description provided for @invStateRejected.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazado por coordinación'**
+  String get invStateRejected;
+
+  /// No description provided for @invRejectedBanner.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{1 invitado rechazado por coordinación} other{{count} invitados rechazados por coordinación}}'**
+  String invRejectedBanner(int count);
+
+  /// No description provided for @invGuestAbsentHint.
+  ///
+  /// In es, this message translates to:
+  /// **'La familia no puede ir. Quítalo y convoca a otro jugador.'**
+  String get invGuestAbsentHint;
+
+  /// No description provided for @invRemovedSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Jugador invitado quitado'**
+  String get invRemovedSnack;
+
+  /// No description provided for @invRemoveError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido quitar al jugador.'**
+  String get invRemoveError;
+
+  /// No description provided for @invConflictTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'No se puede continuar'**
+  String get invConflictTitle;
+
+  /// No description provided for @invConflictOwnPlayer.
+  ///
+  /// In es, this message translates to:
+  /// **'{player} ya va invitado con {team} ese día, así que no puedes convocarlo con tu equipo.'**
+  String invConflictOwnPlayer(String player, String team);
+
+  /// No description provided for @invConflictAlreadyGuest.
+  ///
+  /// In es, this message translates to:
+  /// **'{player} ya está autorizado como invitado con {team} ese día. Elige a otro jugador.'**
+  String invConflictAlreadyGuest(String player, String team);
+
+  /// No description provided for @invConflictOk.
+  ///
+  /// In es, this message translates to:
+  /// **'Entendido'**
+  String get invConflictOk;
+
+  /// No description provided for @clubPageInvitations.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitaciones'**
+  String get clubPageInvitations;
+
+  /// No description provided for @clubPageInvitationsDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Jugadores de otros equipos pendientes de aprobar'**
+  String get clubPageInvitationsDesc;
+
+  /// No description provided for @invPageEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay invitaciones pendientes'**
+  String get invPageEmpty;
+
+  /// No description provided for @invFromTo.
+  ///
+  /// In es, this message translates to:
+  /// **'{origin} → {destination}'**
+  String invFromTo(String origin, String destination);
+
+  /// No description provided for @invMatchLine.
+  ///
+  /// In es, this message translates to:
+  /// **'{date} · {time} · contra {rival}'**
+  String invMatchLine(String date, String time, String rival);
+
+  /// No description provided for @invConvokedBy.
+  ///
+  /// In es, this message translates to:
+  /// **'Convoca: {who}'**
+  String invConvokedBy(String who);
+
+  /// No description provided for @invOverlapNone.
+  ///
+  /// In es, this message translates to:
+  /// **'Su equipo no juega ese día'**
+  String get invOverlapNone;
+
+  /// No description provided for @invOverlapYes.
+  ///
+  /// In es, this message translates to:
+  /// **'Su equipo juega ese día: {matches}'**
+  String invOverlapYes(String matches);
+
+  /// No description provided for @invOverlapConvoked.
+  ///
+  /// In es, this message translates to:
+  /// **'Su entrenador lo tiene convocado'**
+  String get invOverlapConvoked;
+
+  /// No description provided for @invOtherInvitation.
+  ///
+  /// In es, this message translates to:
+  /// **'Tiene otra invitación ese día: {team}'**
+  String invOtherInvitation(String team);
+
+  /// No description provided for @invDeadlineExpired.
+  ///
+  /// In es, this message translates to:
+  /// **'Más de 12 h esperando a su entrenador'**
+  String get invDeadlineExpired;
+
+  /// No description provided for @invApprove.
+  ///
+  /// In es, this message translates to:
+  /// **'Aprobar'**
+  String get invApprove;
+
+  /// No description provided for @invReject.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazar'**
+  String get invReject;
+
+  /// No description provided for @invRelease.
+  ///
+  /// In es, this message translates to:
+  /// **'Liberar'**
+  String get invRelease;
+
+  /// No description provided for @invRejectTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazar invitación'**
+  String get invRejectTitle;
+
+  /// No description provided for @invRejectReasonLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo (opcional)'**
+  String get invRejectReasonLabel;
+
+  /// No description provided for @invApprovedSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitación aprobada'**
+  String get invApprovedSnack;
+
+  /// No description provided for @invApprovedWaitingSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Aprobada: queda pendiente de su entrenador'**
+  String get invApprovedWaitingSnack;
+
+  /// No description provided for @invRejectedSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitación rechazada'**
+  String get invRejectedSnack;
+
+  /// No description provided for @invReleasedSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Jugador liberado'**
+  String get invReleasedSnack;
+
+  /// No description provided for @invActionError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido completar la acción.'**
+  String get invActionError;
+
+  /// No description provided for @invReleaseConfirmTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Liberar a {player}?'**
+  String invReleaseConfirmTitle(String player);
+
+  /// No description provided for @invReleaseConfirmBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Se quitará de la convocatoria de {team} ese día y se avisará a su entrenador.'**
+  String invReleaseConfirmBody(String team);
+
+  /// No description provided for @invReleaseBanner.
+  ///
+  /// In es, this message translates to:
+  /// **'{player} ha sido invitado por otro equipo el mismo día que juega el tuyo. Si puede jugar con ellos, libéralo de tu convocatoria.'**
+  String invReleaseBanner(String player);
+
+  /// No description provided for @invReleaseButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Liberar a {player}'**
+  String invReleaseButton(String player);
+
+  /// No description provided for @invReleasedOriginSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'{player} liberado'**
+  String invReleasedOriginSnack(String player);
+
+  /// No description provided for @invCannotGo.
+  ///
+  /// In es, this message translates to:
+  /// **'No puede ir'**
+  String get invCannotGo;
+
+  /// No description provided for @invCannotGoHint.
+  ///
+  /// In es, this message translates to:
+  /// **'El entrenador que lo convocó recibirá un aviso para convocar a otro jugador. El motivo solo lo verá él.'**
+  String get invCannotGoHint;
+
+  /// No description provided for @invCannotGoSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Aviso enviado al entrenador'**
+  String get invCannotGoSnack;
 }
 
 class _AppLocalizationsDelegate

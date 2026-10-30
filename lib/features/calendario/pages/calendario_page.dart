@@ -10,7 +10,10 @@ import '../../auth/services/perfil_service.dart';
 import '../../convocatorias/pages/convocatoria_familia_page.dart';
 import '../../entrenamientos/utils/estado_asistencia_utils.dart';
 import '../../matches/models/match_model.dart';
+import '../../invitados/services/invitados_service.dart';
+import '../../invitados/widgets/invitado_widgets.dart';
 import '../../matches/services/justificacion_partido_service.dart';
+import '../../matches/widgets/justificar_ausencia_partido_dialog.dart';
 import '../../teams/models/team_model.dart';
 import '../../teams/services/team_services.dart';
 import '../model/calendario_model.dart';
@@ -29,6 +32,7 @@ class CalendarioPage extends StatefulWidget {
   final Future<PerfilApp> Function()? cargarPerfil;
 
   final JustificacionPartidoService? justificacionPartidoService;
+  final InvitadosService? invitadosService;
 
   /// Solo para tests: el "hoy" con el que se decide si un evento es futuro.
   final DateTime Function()? ahora;
@@ -43,6 +47,7 @@ class CalendarioPage extends StatefulWidget {
     this.teamService,
     this.cargarPerfil,
     this.justificacionPartidoService,
+    this.invitadosService,
     this.ahora,
     this.diaInicial,
   });
@@ -86,6 +91,8 @@ class _CalendarioPageState extends State<CalendarioPage> {
       widget.calendarioService ?? CalendarioService();
   late final JustificacionPartidoService _justificacionPartidoService =
       widget.justificacionPartidoService ?? JustificacionPartidoService();
+  late final InvitadosService _invitadosService =
+      widget.invitadosService ?? InvitadosService();
 
   PerfilApp? _perfil;
   List<_EquipoCalendarioEntrada> _equipos = [];
@@ -443,6 +450,12 @@ class _CalendarioPageState extends State<CalendarioPage> {
           jugadorId: jugadorId,
           jugadorNombre: jugador?.nombre ?? evento.jugadorNombre ?? '',
           jugadorApellidos: jugador?.apellidos ?? '',
+          invitadoCon: evento.item.partido?.invitado == true
+              ? evento.item.partido!.equipo
+              : null,
+          puedeDesestimar: evento.item.partido?.puedeJustificar == true,
+          ausenciaDesestimada: evento.item.partido?.ausenciaJustificada == true,
+          motivoDesestimacion: evento.item.partido?.motivoAusencia,
         ),
       ),
     );
@@ -677,6 +690,19 @@ class _CalendarioPageState extends State<CalendarioPage> {
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: _colors.primary,
+                        ),
+                      ),
+                    ],
+                    if (item.partido?.invitado == true) ...[
+                      const SizedBox(height: 4),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: KeyedSubtree(
+                          key: const ValueKey('partido-invitado'),
+                          child: EtiquetaInvitado(
+                            equipoOrigen: '',
+                            texto: _t.invGuestWith(item.partido!.equipo),
+                          ),
                         ),
                       ),
                     ],
@@ -917,7 +943,11 @@ class _CalendarioPageState extends State<CalendarioPage> {
         child: OutlinedButton.icon(
           onPressed: () => _justificarAusencia(evento, partido),
           icon: const Icon(Icons.event_busy_outlined, size: 18),
-          label: Text(_t.matchAbsenceJustifyButton),
+          label: Text(
+            partido.invitado
+                ? _t.invCannotGo
+                : _t.matchAbsenceJustifyButton,
+          ),
         ),
       );
     }
@@ -978,10 +1008,12 @@ class _CalendarioPageState extends State<CalendarioPage> {
 
     final resultado = await showDialog<bool>(
       context: context,
-      builder: (_) => _JustificarAusenciaPartidoDialog(
+      builder: (_) => JustificarAusenciaPartidoDialog(
         servicio: _justificacionPartidoService,
+        invitadosService: _invitadosService,
         partidoId: partido.id!,
         jugadorId: jugadorId,
+        invitado: partido.invitado,
         motivoActual: partido.ausenciaJustificada
             ? partido.motivoAusencia
             : null,
@@ -991,7 +1023,15 @@ class _CalendarioPageState extends State<CalendarioPage> {
     if (resultado == true && mounted) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(_t.matchAbsenceJustifiedSnack)));
+      ).showSnackBar(
+        SnackBar(
+          content: Text(
+            partido.invitado
+                ? _t.invCannotGoSnack
+                : _t.matchAbsenceJustifiedSnack,
+          ),
+        ),
+      );
 
       _cargarDatos(enSegundoPlano: true);
     }
@@ -1091,134 +1131,6 @@ class _CalendarioPageState extends State<CalendarioPage> {
 
   String _formatearFecha(DateTime fecha) =>
       formatearFechaConDiaSemana(fecha, _t);
-}
-
-// ============================================================
-// DIÁLOGO DE JUSTIFICACIÓN DE AUSENCIA A UN PARTIDO
-// ============================================================
-
-class _JustificarAusenciaPartidoDialog extends StatefulWidget {
-  final JustificacionPartidoService servicio;
-  final int partidoId;
-  final int jugadorId;
-
-  /// El motivo ya guardado si se está editando; null si es una justificación nueva.
-  final String? motivoActual;
-
-  const _JustificarAusenciaPartidoDialog({
-    required this.servicio,
-    required this.partidoId,
-    required this.jugadorId,
-    this.motivoActual,
-  });
-
-  @override
-  State<_JustificarAusenciaPartidoDialog> createState() =>
-      _JustificarAusenciaPartidoDialogState();
-}
-
-class _JustificarAusenciaPartidoDialogState
-    extends State<_JustificarAusenciaPartidoDialog> {
-  late final TextEditingController _motivoController = TextEditingController(
-    text: widget.motivoActual ?? '',
-  );
-
-  bool _enviando = false;
-  String? _error;
-
-  bool get _editando => widget.motivoActual != null;
-
-  AppLocalizations get _t => AppLocalizations.of(context);
-
-  @override
-  void dispose() {
-    _motivoController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _enviar() async {
-    final motivo = _motivoController.text.trim();
-
-    // El backend exige de 3 a 500 caracteres; se avisa antes de enviar.
-    if (motivo.length < 3) {
-      setState(() => _error = _t.matchAbsenceReasonRequired);
-      return;
-    }
-
-    setState(() {
-      _enviando = true;
-      _error = null;
-    });
-
-    try {
-      await widget.servicio.justificar(
-        partidoId: widget.partidoId,
-        jugadorId: widget.jugadorId,
-        motivo: motivo,
-      );
-
-      if (!mounted) return;
-
-      Navigator.pop(context, true);
-    } catch (_) {
-      if (!mounted) return;
-
-      // Sin e.toString(): un mensaje genérico, no la excepción en pantalla.
-      setState(() {
-        _error = _t.matchAbsenceError;
-        _enviando = false;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-        _editando ? _t.matchAbsenceEditTitle : _t.matchAbsenceJustifyTitle,
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(_t.matchAbsenceHint),
-            const SizedBox(height: 14),
-            TextField(
-              controller: _motivoController,
-              enabled: !_enviando,
-              maxLines: 3,
-              maxLength: 500,
-              decoration: InputDecoration(
-                labelText: _t.matchAbsenceReasonLabel,
-                border: const OutlineInputBorder(),
-              ),
-            ),
-            if (_error != null) ...[
-              const SizedBox(height: 12),
-              Text(_error!, style: const TextStyle(color: Colors.redAccent)),
-            ],
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: _enviando ? null : () => Navigator.pop(context),
-          child: Text(_t.cancel),
-        ),
-        FilledButton(
-          onPressed: _enviando ? null : _enviar,
-          child: _enviando
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Text(_t.calendarJustifyAbsenceSubmit),
-        ),
-      ],
-    );
-  }
 }
 
 // ============================================================

@@ -14,6 +14,10 @@ class TarjetasJugadorModel {
   final int rojas;
   final String estado;
 
+  /// Es de otro equipo y juega aquí como invitado: sus tarjetas cuentan aparte en cada
+  /// competición.
+  final bool invitado;
+
   const TarjetasJugadorModel({
     required this.jugadorId,
     required this.nombre,
@@ -21,6 +25,7 @@ class TarjetasJugadorModel {
     required this.amarillas,
     required this.rojas,
     required this.estado,
+    this.invitado = false,
   });
 
   factory TarjetasJugadorModel.fromJson(Map<String, dynamic> json) {
@@ -31,6 +36,7 @@ class TarjetasJugadorModel {
       amarillas: (json['amarillas'] as num?)?.toInt() ?? 0,
       rojas: (json['rojas'] as num?)?.toInt() ?? 0,
       estado: json['estado']?.toString() ?? estadoTarjetaOk,
+      invitado: json['invitado'] as bool? ?? false,
     );
   }
 }
@@ -44,6 +50,9 @@ class JugadorDestacadoModel {
   final int asistencias;
   final int partidos;
 
+  /// Es de otro equipo y ha jugado con este como invitado.
+  final bool invitado;
+
   const JugadorDestacadoModel({
     required this.jugadorId,
     required this.nombre,
@@ -51,6 +60,7 @@ class JugadorDestacadoModel {
     required this.goles,
     required this.asistencias,
     required this.partidos,
+    this.invitado = false,
   });
 
   factory JugadorDestacadoModel.fromJson(Map<String, dynamic> json) {
@@ -61,6 +71,7 @@ class JugadorDestacadoModel {
       goles: (json['goles'] as num?)?.toInt() ?? 0,
       asistencias: (json['asistencias'] as num?)?.toInt() ?? 0,
       partidos: (json['partidos'] as num?)?.toInt() ?? 0,
+      invitado: json['invitado'] as bool? ?? false,
     );
   }
 }

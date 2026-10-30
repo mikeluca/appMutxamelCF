@@ -5,6 +5,11 @@ import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
+import '../../invitados/models/invitacion_model.dart';
+import '../../invitados/pages/elegir_invitados_page.dart';
+import '../../invitados/services/invitados_service.dart';
+import '../../invitados/widgets/invitado_widgets.dart';
+import '../../invitados/widgets/invitados_seccion.dart';
 import '../../matches/models/match_model.dart';
 import '../../matches/services/justificacion_partido_service.dart';
 import '../../matches/services/match_service.dart';
@@ -26,6 +31,7 @@ class ConvocatoriaFormPage extends StatefulWidget {
   final MatchService? matchService;
   final ConvocatoriaService? convocatoriaService;
   final JustificacionPartidoService? justificacionService;
+  final InvitadosService? invitadosService;
 
   const ConvocatoriaFormPage({
     super.key,
@@ -36,6 +42,7 @@ class ConvocatoriaFormPage extends StatefulWidget {
     this.matchService,
     this.convocatoriaService,
     this.justificacionService,
+    this.invitadosService,
   });
 
   @override
@@ -76,6 +83,14 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
   TimeOfDay _horaConvocatoria = const TimeOfDay(hour: 17, minute: 0);
 
   final Set<int> _jugadoresSeleccionados = {};
+
+  /// Jugadores de otros equipos de la convocatoria, incluidos los que coordinación ha
+  /// rechazado (se muestran con su estado; al guardar no se envían, así que quedan
+  /// quitados).
+  List<InvitadoElegido> _invitados = [];
+
+  /// Nombre de cada jugador del equipo, para nombrarlo en el diálogo de un 409.
+  final Map<int, String> _nombresJugadores = {};
 
   /// Jugadores que han justificado su ausencia al partido elegido (id -> motivo).
   /// No se pueden añadir a la convocatoria; uno que ya estaba convocado sí se
@@ -135,10 +150,14 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       ),
     ]);
 
-    return _DatosFormulario(
-      resultados[0] as List<PlayerModel>,
-      resultados[1] as List<MatchModel>,
-    );
+    final jugadores = resultados[0] as List<PlayerModel>;
+
+    for (final jugador in jugadores) {
+      _nombresJugadores[jugador.id] = '${jugador.nombre} ${jugador.apellidos}'
+          .trim();
+    }
+
+    return _DatosFormulario(jugadores, resultados[1] as List<MatchModel>);
   }
 
   void _cargarConvocatoria(List<MatchModel> partidos) {
@@ -148,9 +167,12 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
 
     _horaConvocatoria = _parsearHora(convocatoria.horaConvocatoria);
 
+    // Solo los del propio equipo: los invitados de otros equipos van aparte.
     _jugadoresSeleccionados.addAll(
-      convocatoria.jugadores.map((jugador) => jugador.jugadorId),
+      convocatoria.propios.map((jugador) => jugador.jugadorId),
     );
+
+    _invitados = convocatoria.invitadosParaFormulario;
 
     MatchModel? partido;
 
@@ -293,6 +315,56 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
     });
   }
 
+  /// Los invitados que se envían al guardar: todos menos los rechazados.
+  List<int> get _invitadosIds =>
+      _invitados.where((i) => !i.rechazado).map((i) => i.jugadorId).toList();
+
+  Future<void> _anadirInvitados() async {
+    final partidoId = _partidoSeleccionado?.id;
+
+    if (partidoId == null) return;
+
+    final elegidos = await Navigator.push<List<InvitadoElegido>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ElegirInvitadosPage(
+          partidoId: partidoId,
+          seleccion: _invitados.where((i) => !i.rechazado).toList(),
+          service: widget.invitadosService,
+        ),
+      ),
+    );
+
+    if (elegidos == null || !mounted) return;
+
+    final idsElegidos = elegidos.map((i) => i.jugadorId).toSet();
+
+    setState(() {
+      // Los rechazados que no se han vuelto a elegir se quedan a la vista.
+      _invitados = [
+        ..._invitados.where(
+          (i) => i.rechazado && !idsElegidos.contains(i.jugadorId),
+        ),
+        ...elegidos,
+      ];
+    });
+  }
+
+  void _quitarInvitado(InvitadoElegido invitado) {
+    setState(
+      () => _invitados.removeWhere((i) => i.jugadorId == invitado.jugadorId),
+    );
+  }
+
+  /// El nombre del jugador del 409, de los jugadores del equipo o de los invitados.
+  String _nombreDeJugador(int? jugadorId) {
+    if (jugadorId == null) return '';
+
+    return _nombresJugadores[jugadorId] ??
+        _invitados.where((i) => i.jugadorId == jugadorId).firstOrNull?.nombre ??
+        '';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -338,6 +410,13 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
                       _construirSinJugadores()
                     else
                       ...jugadores.map(_construirJugador),
+                    const SizedBox(height: 24),
+                    InvitadosSeccion(
+                      invitados: _invitados,
+                      hayPartido: _partidoSeleccionado?.id != null,
+                      onAnadir: _anadirInvitados,
+                      onQuitar: _quitarInvitado,
+                    ),
                   ],
                 ),
               ),
@@ -703,6 +782,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
           horaConvocatoria: horaConvocatoria,
           lugarConvocatoria: _lugarController.text.trim(),
           jugadoresIds: _jugadoresSeleccionados.toList(),
+          invitadosIds: _invitadosIds,
         );
       } else {
         await _convocatoriaService.crear(
@@ -710,6 +790,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
           horaConvocatoria: horaConvocatoria,
           lugarConvocatoria: _lugarController.text.trim(),
           jugadoresIds: _jugadoresSeleccionados.toList(),
+          invitadosIds: _invitadosIds,
         );
       }
 
@@ -726,6 +807,19 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
+
+      // Un jugador que ese día ya va invitado con otro equipo: se explica con su nombre
+      // y el equipo, sin depender del texto del servidor.
+      final conflicto = ConflictoInvitacion.desde(e);
+
+      if (conflicto != null) {
+        await mostrarConflictoInvitacion(
+          context,
+          conflicto,
+          jugador: _nombreDeJugador(conflicto.jugadorId),
+        );
+        return;
+      }
 
       _mostrarMensaje(
         _esEdicion

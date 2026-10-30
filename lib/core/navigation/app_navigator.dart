@@ -13,11 +13,14 @@ import '../../features/continuidad/pages/continuidad_page.dart';
 import '../../features/calendario/pages/calendario_page.dart';
 import '../../features/convocatorias/model/convocatoria_model.dart';
 import '../../features/auth/services/perfil_service.dart';
+import '../../features/convocatorias/pages/convocatoria_detalle_page.dart';
 import '../../features/convocatorias/pages/convocatoria_familia_page.dart';
 import '../../features/convocatorias/pages/convocatoria_form_page.dart';
 import '../../features/convocatorias/services/convocatoria_partido_service.dart';
 import '../../features/convocatorias/services/convocatoria_service.dart';
 import '../../features/entrenamientos/model/entrenamiento_model.dart';
+import '../../features/invitados/models/invitacion_model.dart';
+import '../../features/invitados/pages/invitaciones_page.dart';
 import '../../features/entrenamientos/pages/entrenamiento_form_page.dart';
 import '../../features/entrenamientos/services/entrenamiento_service.dart';
 import '../../features/matches/models/match_model.dart';
@@ -96,6 +99,106 @@ class AppNavigator {
         await abrirContinuidad();
       case AbrirBandeja():
         await abrirBandeja();
+      case AbrirInvitaciones():
+        await abrirInvitaciones();
+      case AbrirLiberarInvitacion(
+        :final convocatoriaId,
+        :final invitacionId,
+        :final jugadorId,
+      ):
+        await abrirLiberarInvitacion(
+          convocatoriaId,
+          invitacionId: invitacionId,
+          jugadorId: jugadorId,
+        );
+    }
+  }
+
+  @visibleForTesting
+  static Widget Function()? constructorInvitaciones;
+
+  /// Solo para tests: sustituye a la convocatoria de origen con su aviso de liberar.
+  @visibleForTesting
+  static Widget Function(ConvocatoriaModel convocatoria, LiberarInvitacion liberar)?
+  constructorLiberarInvitacion;
+
+  /// La lista de invitaciones de jugadores de otros equipos (coordinación).
+  static Future<void> abrirInvitaciones() async {
+    final navigatorState = navigator;
+
+    if (navigatorState == null || ControlVersion.bloqueada) {
+      return;
+    }
+
+    await navigatorState.push(
+      MaterialPageRoute(
+        builder: (_) =>
+            (constructorInvitaciones ?? () => const InvitacionesPage())(),
+      ),
+    );
+  }
+
+  /// La convocatoria [convocatoriaId] del equipo de origen, con el aviso de que uno de
+  /// sus jugadores ha sido invitado por otro equipo el mismo día y el botón para
+  /// liberarlo. Sin permiso (403) o con la convocatoria borrada (404), un aviso.
+  static Future<void> abrirLiberarInvitacion(
+    int convocatoriaId, {
+    required int invitacionId,
+    int? jugadorId,
+    ConvocatoriaService? servicio,
+  }) async {
+    final navigatorState = navigator;
+
+    if (navigatorState == null || ControlVersion.bloqueada) {
+      return;
+    }
+
+    try {
+      final convocatoria =
+          await (servicio ??
+                  fabricaConvocatoriaService?.call() ??
+                  ConvocatoriaService())
+              .obtenerPorId(convocatoriaId);
+
+      if (!navigatorState.mounted || ControlVersion.bloqueada) {
+        return;
+      }
+
+      final liberar = LiberarInvitacion(
+        invitacionId: invitacionId,
+        jugadorId: jugadorId,
+      );
+
+      await navigatorState.push(
+        MaterialPageRoute(
+          builder: (_) =>
+              (constructorLiberarInvitacion ??
+              (c, l) => ConvocatoriaDetallePage(
+                equipo: PerfilEquipo(id: c.equipoId, nombre: c.equipo),
+                convocatoria: c,
+                liberar: l,
+              ))(convocatoria, liberar),
+        ),
+      );
+    } catch (e) {
+      debugPrint('No se pudo abrir la convocatoria $convocatoriaId: $e');
+
+      final contexto = navigatorState.context;
+
+      if (!contexto.mounted) {
+        return;
+      }
+
+      final t = AppLocalizations.of(contexto);
+
+      final noDisponible =
+          e is ApiException && (e.statusCode == 403 || e.statusCode == 404);
+
+      ScaffoldMessenger.maybeOf(contexto)?.showSnackBar(
+        SnackBar(
+          content: Text(noDisponible ? t.callupUnavailable : t.connectionError),
+        ),
+      );
     }
   }
 
