@@ -16,7 +16,10 @@ import '../../matches/services/match_service.dart';
 import '../../teams/models/player_model.dart';
 import '../../teams/services/team_services.dart';
 import '../model/convocatoria_model.dart';
+import '../model/equipacion_model.dart';
 import '../services/convocatoria_service.dart';
+import '../services/equipacion_service.dart';
+import '../widgets/equipaje_widgets.dart';
 
 class ConvocatoriaFormPage extends StatefulWidget {
   final PerfilEquipo equipo;
@@ -32,6 +35,7 @@ class ConvocatoriaFormPage extends StatefulWidget {
   final ConvocatoriaService? convocatoriaService;
   final JustificacionPartidoService? justificacionService;
   final InvitadosService? invitadosService;
+  final EquipacionService? equipacionService;
 
   const ConvocatoriaFormPage({
     super.key,
@@ -43,6 +47,7 @@ class ConvocatoriaFormPage extends StatefulWidget {
     this.convocatoriaService,
     this.justificacionService,
     this.invitadosService,
+    this.equipacionService,
   });
 
   @override
@@ -66,6 +71,8 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       widget.convocatoriaService ?? ConvocatoriaService();
   late final JustificacionPartidoService _justificacionService =
       widget.justificacionService ?? JustificacionPartidoService();
+  late final EquipacionService _equipacionService =
+      widget.equipacionService ?? EquipacionService();
 
   final TextEditingController _lugarController = TextEditingController();
 
@@ -88,6 +95,18 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
   /// rechazado (se muestran con su estado; al guardar no se envían, así que quedan
   /// quitados).
   List<InvitadoElegido> _invitados = [];
+
+  /// Los equipajes activos del club. Vacío si el club no ha dado de alta ninguno (o si no
+  /// se han podido cargar: el formulario sigue funcionando y conserva el equipaje que
+  /// tuviera la convocatoria).
+  List<EquipacionModel> _equipajes = [];
+
+  /// Equipaje elegido, con el que van vestidos al partido; null = sin indicar.
+  int? _equipacionId;
+
+  /// "Llevar también en la mochila" y el equipaje elegido para ella.
+  bool _usarMochila = false;
+  int? _mochilaId;
 
   /// Nombre de cada jugador del equipo, para nombrarlo en el diálogo de un 409.
   final Map<int, String> _nombresJugadores = {};
@@ -140,6 +159,17 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
     });
   }
 
+  /// Los equipajes del club. Si no se pueden cargar el formulario sigue sin la sección
+  /// de equipaje (y conserva el que tuviera la convocatoria): no es un motivo para
+  /// impedir convocar.
+  Future<List<EquipacionModel>> _cargarEquipajes() async {
+    try {
+      return await _equipacionService.obtenerActivas();
+    } catch (_) {
+      return [];
+    }
+  }
+
   Future<_DatosFormulario> _cargarDatos() async {
     final resultados = await Future.wait([
       _teamService.obtenerJugadores(widget.equipo.id),
@@ -148,7 +178,10 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
         incluirPartidoId:
             widget.convocatoria?.partidoId ?? widget.partidoIdInicial,
       ),
+      _cargarEquipajes(),
     ]);
+
+    _equipajes = resultados[2] as List<EquipacionModel>;
 
     final jugadores = resultados[0] as List<PlayerModel>;
 
@@ -173,6 +206,10 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
     );
 
     _invitados = convocatoria.invitadosParaFormulario;
+
+    _equipacionId = convocatoria.equipacion?.id;
+    _mochilaId = convocatoria.equipacionMochila?.id;
+    _usarMochila = _equipacionId != null && _mochilaId != null;
 
     MatchModel? partido;
 
@@ -471,9 +508,156 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
                 prefixIcon: const Icon(Icons.location_on_outlined),
               ),
             ),
+            const SizedBox(height: 18),
+            _construirEquipaje(),
           ],
         ),
       ),
+    );
+  }
+
+  /// Los equipajes que se pueden elegir: los activos del club y, al editar, los que la
+  /// convocatoria ya tiene aunque se hayan desactivado después (el servidor los admite).
+  List<EquipacionModel> get _opcionesEquipaje {
+    final opciones = [..._equipajes];
+
+    for (final actual in [
+      widget.convocatoria?.equipacion,
+      widget.convocatoria?.equipacionMochila,
+    ]) {
+      if (actual != null && !opciones.any((o) => o.id == actual.id)) {
+        opciones.add(actual);
+      }
+    }
+
+    return opciones;
+  }
+
+  EquipacionModel? _equipajePorId(int? id) =>
+      _opcionesEquipaje.where((e) => e.id == id).firstOrNull;
+
+  void _elegirEquipaje(int? id) {
+    setState(() {
+      _equipacionId = id;
+
+      // La mochila exige equipaje principal y distinto de él.
+      if (id == null) {
+        _usarMochila = false;
+        _mochilaId = null;
+      } else if (_mochilaId == id) {
+        _mochilaId = null;
+      }
+    });
+  }
+
+  Widget _construirEquipaje() {
+    if (_equipajes.isEmpty) {
+      return Text(
+        _t.callupKitEmpty,
+        key: const ValueKey('equipaje-vacio'),
+        style: TextStyle(fontSize: 12, color: _colors.onSurfaceVariant),
+      );
+    }
+
+    final opciones = _opcionesEquipaje;
+    final principal = _equipajePorId(_equipacionId);
+    final detalle = principal == null
+        ? null
+        : detalleEquipacion(_t, principal);
+    final hayPrincipal = principal != null;
+    final mochila = _equipajePorId(_mochilaId);
+    final detalleMochila = mochila == null
+        ? null
+        : detalleEquipacion(_t, mochila);
+
+    return Column(
+      key: const ValueKey('equipaje-seccion'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _t.callupKitSection,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: _colors.onSurface,
+          ),
+        ),
+        const SizedBox(height: 10),
+        DropdownButtonFormField<int?>(
+          key: ValueKey('equipaje-selector-$_equipacionId'),
+          initialValue: principal?.id,
+          decoration: InputDecoration(
+            labelText: _t.callupKitSelectorLabel,
+            border: const OutlineInputBorder(),
+            prefixIcon: const Icon(Icons.checkroom_outlined),
+          ),
+          isExpanded: true,
+          items: [
+            DropdownMenuItem<int?>(value: null, child: Text(_t.callupKitNone)),
+            ...opciones.map(
+              (e) => DropdownMenuItem<int?>(
+                value: e.id,
+                child: OpcionEquipaje(equipacion: e),
+              ),
+            ),
+          ],
+          onChanged: _elegirEquipaje,
+        ),
+        if (detalle != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 4),
+            child: Text(
+              detalle,
+              key: const ValueKey('equipaje-detalle'),
+              style: TextStyle(fontSize: 13, color: _colors.onSurfaceVariant),
+            ),
+          ),
+        CheckboxListTile(
+          key: const ValueKey('equipaje-mochila-casilla'),
+          contentPadding: EdgeInsets.zero,
+          controlAffinity: ListTileControlAffinity.leading,
+          title: Text(_t.callupKitBackpackCheck),
+          value: hayPrincipal && _usarMochila,
+          onChanged: hayPrincipal
+              ? (marcada) => setState(() {
+                  _usarMochila = marcada ?? false;
+
+                  if (!_usarMochila) _mochilaId = null;
+                })
+              : null,
+        ),
+        if (hayPrincipal && _usarMochila) ...[
+          DropdownButtonFormField<int>(
+            key: ValueKey('equipaje-mochila-selector-$_mochilaId-$_equipacionId'),
+            initialValue: mochila?.id,
+            decoration: InputDecoration(
+              labelText: _t.callupKitBackpackLabel,
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.backpack_outlined),
+            ),
+            isExpanded: true,
+            items: opciones
+                .where((e) => e.id != _equipacionId)
+                .map(
+                  (e) => DropdownMenuItem<int>(
+                    value: e.id,
+                    child: OpcionEquipaje(equipacion: e),
+                  ),
+                )
+                .toList(),
+            onChanged: (id) => setState(() => _mochilaId = id),
+          ),
+          if (detalleMochila != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6, left: 4),
+              child: Text(
+                detalleMochila,
+                key: const ValueKey('equipaje-mochila-detalle'),
+                style: TextStyle(fontSize: 13, color: _colors.onSurfaceVariant),
+              ),
+            ),
+        ],
+      ],
     );
   }
 
@@ -770,6 +954,15 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       return;
     }
 
+    // Con la casilla de la mochila marcada hay que elegir su equipaje.
+    if (_equipacionId != null && _usarMochila && _mochilaId == null) {
+      _mostrarMensaje(_t.callupKitBackpackMissing);
+      return;
+    }
+
+    final equipacionId = _equipacionId;
+    final mochilaId = equipacionId != null && _usarMochila ? _mochilaId : null;
+
     try {
       final horaConvocatoria =
           '${_horaConvocatoria.hour.toString().padLeft(2, '0')}:'
@@ -783,6 +976,9 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
           lugarConvocatoria: _lugarController.text.trim(),
           jugadoresIds: _jugadoresSeleccionados.toList(),
           invitadosIds: _invitadosIds,
+          equipacionId: equipacionId,
+          equipacionMochilaId: mochilaId,
+          indicarEquipaje: true,
         );
       } else {
         await _convocatoriaService.crear(
@@ -791,6 +987,8 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
           lugarConvocatoria: _lugarController.text.trim(),
           jugadoresIds: _jugadoresSeleccionados.toList(),
           invitadosIds: _invitadosIds,
+          equipacionId: equipacionId,
+          equipacionMochilaId: mochilaId,
         );
       }
 

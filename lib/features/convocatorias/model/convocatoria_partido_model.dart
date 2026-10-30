@@ -1,4 +1,5 @@
 import '../../../core/utils/backend_date.dart';
+import 'equipacion_model.dart';
 
 /// Un convocado tal como lo ve la familia: sin datos de contacto.
 class ConvocadoPartidoModel {
@@ -51,6 +52,10 @@ class ConvocatoriaPartidoModel {
   /// Los convocados, ordenados por dorsal.
   final List<ConvocadoPartidoModel> convocados;
 
+  /// Equipaje con el que van vestidos al partido y el de la mochila (null si no se ha indicado).
+  final EquipacionModel? equipacion;
+  final EquipacionModel? equipacionMochila;
+
   const ConvocatoriaPartidoModel({
     required this.convocatoriaId,
     required this.rival,
@@ -62,6 +67,8 @@ class ConvocatoriaPartidoModel {
     this.lugarCitacion,
     required this.convocado,
     this.convocados = const [],
+    this.equipacion,
+    this.equipacionMochila,
   });
 
   factory ConvocatoriaPartidoModel.fromJson(Map<String, dynamic> json) {
@@ -81,6 +88,8 @@ class ConvocatoriaPartidoModel {
                 ConvocadoPartidoModel.fromJson(item as Map<String, dynamic>),
           )
           .toList(),
+      equipacion: EquipacionModel.fromJsonOrNull(json['equipacion']),
+      equipacionMochila: EquipacionModel.fromJsonOrNull(json['equipacionMochila']),
     );
   }
 }

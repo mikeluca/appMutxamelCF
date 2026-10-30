@@ -521,6 +521,9 @@ void main() {
               'lugarConvocatoria': 'Vestuarios',
               'jugadoresIds': [6],
               'invitadosIds': [1, 3],
+              'equipacionId': null,
+              'equipacionMochilaId': null,
+              'equipajeIndicado': true,
             });
             return http.Response(jsonEncode(_convocatoriaJson()), 201);
           },

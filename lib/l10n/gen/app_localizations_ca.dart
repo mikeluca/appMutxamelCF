@@ -3052,4 +3052,55 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get invCannotGoSnack => 'Avís enviat a l\'entrenador';
+
+  @override
+  String get callupKitSection => 'Equipament';
+
+  @override
+  String get callupKitSelectorLabel => 'Equipament';
+
+  @override
+  String get callupKitNone => 'Sense indicar';
+
+  @override
+  String get callupKitBackpackCheck => 'Portar també a la motxilla';
+
+  @override
+  String get callupKitBackpackLabel => 'Equipament de la motxilla';
+
+  @override
+  String get callupKitBackpackMissing =>
+      'Tria l\'equipament de la motxilla o desmarca la casella.';
+
+  @override
+  String get callupKitEmpty =>
+      'El club encara no ha donat d\'alta els equipaments';
+
+  @override
+  String callupKitLine(String name) {
+    return 'Equipament: $name';
+  }
+
+  @override
+  String callupKitBackpackLine(String name) {
+    return 'A la motxilla: $name';
+  }
+
+  @override
+  String callupKitShirt(String color) {
+    return 'Samarreta $color';
+  }
+
+  @override
+  String callupKitShorts(String color) {
+    return 'Pantaló $color';
+  }
+
+  @override
+  String callupKitSocks(String color) {
+    return 'Mitjons $color';
+  }
+
+  @override
+  String get callupShowerReminder => '🚿 Dutxa recomanable després del partit';
 }

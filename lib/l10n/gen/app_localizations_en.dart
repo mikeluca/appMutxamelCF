@@ -3028,4 +3028,54 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invCannotGoSnack => 'Coach notified';
+
+  @override
+  String get callupKitSection => 'Kit';
+
+  @override
+  String get callupKitSelectorLabel => 'Kit';
+
+  @override
+  String get callupKitNone => 'Not specified';
+
+  @override
+  String get callupKitBackpackCheck => 'Also bring in the bag';
+
+  @override
+  String get callupKitBackpackLabel => 'Bag kit';
+
+  @override
+  String get callupKitBackpackMissing =>
+      'Choose the bag kit or untick the box.';
+
+  @override
+  String get callupKitEmpty => 'The club has not added its kits yet';
+
+  @override
+  String callupKitLine(String name) {
+    return 'Kit: $name';
+  }
+
+  @override
+  String callupKitBackpackLine(String name) {
+    return 'In the bag: $name';
+  }
+
+  @override
+  String callupKitShirt(String color) {
+    return '$color shirt';
+  }
+
+  @override
+  String callupKitShorts(String color) {
+    return '$color shorts';
+  }
+
+  @override
+  String callupKitSocks(String color) {
+    return '$color socks';
+  }
+
+  @override
+  String get callupShowerReminder => '🚿 Shower recommended after the match';
 }

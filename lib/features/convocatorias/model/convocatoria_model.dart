@@ -1,4 +1,5 @@
 import '../../invitados/models/invitacion_model.dart';
+import 'equipacion_model.dart';
 
 class ConvocatoriaModel {
   final int id;
@@ -21,6 +22,10 @@ class ConvocatoriaModel {
 
   /// El partido ya tiene resultado: la convocatoria ya no se puede eliminar.
   final bool partidoConResultado;
+
+  /// Equipaje con el que van vestidos al partido y el de la mochila (null si no se ha indicado).
+  final EquipacionModel? equipacion;
+  final EquipacionModel? equipacionMochila;
 
   /// Convocados que han justificado su ausencia a este partido (siguen en la
   /// convocatoria hasta que el entrenador los sustituya).
@@ -74,6 +79,8 @@ class ConvocatoriaModel {
     required this.usuarioEntrenadorId,
     required this.jugadores,
     this.partidoConResultado = false,
+    this.equipacion,
+    this.equipacionMochila,
   });
 
   factory ConvocatoriaModel.fromJson(Map<String, dynamic> json) {
@@ -96,6 +103,10 @@ class ConvocatoriaModel {
           )
           .toList(),
       partidoConResultado: json['partidoConResultado'] == true,
+      equipacion: EquipacionModel.fromJsonOrNull(json['equipacion']),
+      equipacionMochila: EquipacionModel.fromJsonOrNull(
+        json['equipacionMochila'],
+      ),
     );
   }
 }

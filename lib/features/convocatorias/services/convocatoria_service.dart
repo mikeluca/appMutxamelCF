@@ -30,12 +30,18 @@ class ConvocatoriaService {
   ///
   /// [invitadosIds] son los jugadores de otros equipos (máximo 3); quedan
   /// pendientes de coordinación. Es una lista: sin invitados, la lista vacía.
+  ///
+  /// [equipacionId] es el equipaje con el que van vestidos al partido y
+  /// [equipacionMochilaId] el de la mochila (solo con equipaje principal y distinto
+  /// de él); null = sin indicar. Siempre se envían, con "equipajeIndicado": true.
   Future<ConvocatoriaModel> crear({
     required int partidoId,
     required String horaConvocatoria,
     required String lugarConvocatoria,
     required List<int> jugadoresIds,
     List<int>? invitadosIds,
+    int? equipacionId,
+    int? equipacionMochilaId,
   }) async {
     final data = await ApiClient.post(
       '/app/convocatorias',
@@ -46,6 +52,9 @@ class ConvocatoriaService {
         'lugarConvocatoria': lugarConvocatoria,
         'jugadoresIds': jugadoresIds,
         'invitadosIds': ?invitadosIds,
+        'equipacionId': equipacionId,
+        'equipacionMochilaId': equipacionMochilaId,
+        'equipajeIndicado': true,
       },
     );
 
@@ -60,6 +69,12 @@ class ConvocatoriaService {
   /// [invitadosIds]: con null el servidor NO toca los invitados; con una lista, la
   /// convocatoria queda con exactamente esos (los que faltan se quitan, [] quita a
   /// todos). Una pantalla que gestiona los invitados la envía siempre.
+  ///
+  /// [indicarEquipaje]: con true se envía "equipajeIndicado": true con [equipacionId] y
+  /// [equipacionMochilaId] (null = sin indicar, y quita el que hubiera); con false el
+  /// servidor conserva el equipaje que tenía la convocatoria. Solo el formulario de la
+  /// convocatoria lo indica; el resto de ediciones (p. ej. quitar a un invitado) no lo
+  /// tocan.
   Future<ConvocatoriaModel> actualizar({
     required int convocatoriaId,
     required int partidoId,
@@ -67,6 +82,9 @@ class ConvocatoriaService {
     required String lugarConvocatoria,
     List<int>? jugadoresIds,
     List<int>? invitadosIds,
+    bool indicarEquipaje = false,
+    int? equipacionId,
+    int? equipacionMochilaId,
   }) async {
     final data = await ApiClient.put(
       '/app/convocatorias/$convocatoriaId',
@@ -77,6 +95,11 @@ class ConvocatoriaService {
         'lugarConvocatoria': lugarConvocatoria,
         'jugadoresIds': ?jugadoresIds,
         'invitadosIds': ?invitadosIds,
+        if (indicarEquipaje) ...{
+          'equipacionId': equipacionId,
+          'equipacionMochilaId': equipacionMochilaId,
+          'equipajeIndicado': true,
+        },
       },
     );
 

@@ -18,6 +18,7 @@ import 'package:app_mutxamel_cf/features/matches/services/match_service.dart';
 import 'package:app_mutxamel_cf/features/teams/models/player_model.dart';
 import 'package:app_mutxamel_cf/features/teams/services/team_services.dart';
 import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
+import '../../support/equipacion_fakes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -66,6 +67,8 @@ class _FakeConvocatoriaService extends ConvocatoriaService {
     required String lugarConvocatoria,
     required List<int> jugadoresIds,
     List<int>? invitadosIds,
+    int? equipacionId,
+    int? equipacionMochilaId,
   }) async {
     creadas.add(jugadoresIds);
     creadasInvitados.add(invitadosIds);
@@ -80,6 +83,9 @@ class _FakeConvocatoriaService extends ConvocatoriaService {
     required String lugarConvocatoria,
     List<int>? jugadoresIds,
     List<int>? invitadosIds,
+    int? equipacionId,
+    int? equipacionMochilaId,
+    bool indicarEquipaje = false,
   }) async {
     actualizadas.add((
       convocatoria: convocatoriaId,
@@ -223,6 +229,7 @@ Widget _formulario({
   _FakeConvocatoriaService? convocatorias,
   _FakeJustificacionPartidoService? justificaciones,
 }) => ConvocatoriaFormPage(
+  equipacionService: FakeEquipacionesVacias(),
   equipo: _equipo,
   convocatoria: convocatoria,
   teamService: _FakeTeamService(_jugadores),

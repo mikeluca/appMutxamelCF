@@ -15,6 +15,7 @@ import 'package:app_mutxamel_cf/features/matches/services/match_service.dart';
 import 'package:app_mutxamel_cf/features/teams/models/player_model.dart';
 import 'package:app_mutxamel_cf/features/teams/services/team_services.dart';
 import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
+import '../../support/equipacion_fakes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -383,6 +384,7 @@ void main() {
       await tester.pumpWidget(
         _app(
           ConvocatoriaFormPage(
+            equipacionService: FakeEquipacionesVacias(),
             equipo: PerfilEquipo(id: 5, nombre: 'Cadete A'),
             partidoIdInicial: 31,
             teamService: _FakeTeam(),
@@ -595,6 +597,7 @@ void main() {
       await tester.pumpWidget(
         _app(
           ConvocatoriaFormPage(
+            equipacionService: FakeEquipacionesVacias(),
             equipo: PerfilEquipo(id: 5, nombre: 'Cadete A'),
             partidoIdInicial: 31,
             teamService: _FakeTeam(),
@@ -645,6 +648,7 @@ void main() {
         await tester.pumpWidget(
           _app(
             ConvocatoriaFormPage(
+              equipacionService: FakeEquipacionesVacias(),
               equipo: PerfilEquipo(id: 5, nombre: 'Cadete A'),
               partidoIdInicial: caso.value.id,
               teamService: _FakeTeam(),
@@ -675,6 +679,7 @@ void main() {
       await tester.pumpWidget(
         _app(
           ConvocatoriaFormPage(
+            equipacionService: FakeEquipacionesVacias(),
             equipo: PerfilEquipo(id: 5, nombre: 'Cadete A'),
             partidoIdInicial: 31,
             teamService: _FakeTeam(),
@@ -711,6 +716,7 @@ void main() {
       await tester.pumpWidget(
         _app(
           ConvocatoriaFormPage(
+            equipacionService: FakeEquipacionesVacias(),
             equipo: PerfilEquipo(id: 5, nombre: 'Cadete A'),
             partidoIdInicial: 999,
             teamService: _FakeTeam(),

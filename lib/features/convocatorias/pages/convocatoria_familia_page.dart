@@ -12,6 +12,7 @@ import '../../matches/services/justificacion_partido_service.dart';
 import '../../matches/widgets/justificar_ausencia_partido_dialog.dart';
 import '../model/convocatoria_partido_model.dart';
 import '../services/convocatoria_partido_service.dart';
+import '../widgets/equipaje_widgets.dart';
 
 /// La convocatoria de un partido vista por un jugador o un familiar: rival, fecha
 /// y hora, local o visitante, la citación (con "Cómo llegar"), si el jugador está
@@ -198,6 +199,8 @@ class _ConvocatoriaFamiliaPageState extends State<ConvocatoriaFamiliaPage> {
           ),
           const SizedBox(height: 12),
           ...convocatoria.convocados.map(_construirConvocado),
+          const SizedBox(height: 24),
+          const DuchaRecomendable(),
         ],
       ),
     );
@@ -311,6 +314,10 @@ class _ConvocatoriaFamiliaPageState extends State<ConvocatoriaFamiliaPage> {
                 BotonComoLlegar(lugar: lugar),
               ],
             ),
+          BloqueEquipaje(
+            equipacion: convocatoria.equipacion,
+            mochila: convocatoria.equipacionMochila,
+          ),
         ],
       ),
     );

@@ -5289,6 +5289,84 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Aviso enviado al entrenador'**
   String get invCannotGoSnack;
+
+  /// No description provided for @callupKitSection.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipaje'**
+  String get callupKitSection;
+
+  /// No description provided for @callupKitSelectorLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipaje'**
+  String get callupKitSelectorLabel;
+
+  /// No description provided for @callupKitNone.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin indicar'**
+  String get callupKitNone;
+
+  /// No description provided for @callupKitBackpackCheck.
+  ///
+  /// In es, this message translates to:
+  /// **'Llevar también en la mochila'**
+  String get callupKitBackpackCheck;
+
+  /// No description provided for @callupKitBackpackLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipaje de la mochila'**
+  String get callupKitBackpackLabel;
+
+  /// No description provided for @callupKitBackpackMissing.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige el equipaje de la mochila o desmarca la casilla.'**
+  String get callupKitBackpackMissing;
+
+  /// No description provided for @callupKitEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'El club aún no ha dado de alta los equipajes'**
+  String get callupKitEmpty;
+
+  /// No description provided for @callupKitLine.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipaje: {name}'**
+  String callupKitLine(String name);
+
+  /// No description provided for @callupKitBackpackLine.
+  ///
+  /// In es, this message translates to:
+  /// **'En la mochila: {name}'**
+  String callupKitBackpackLine(String name);
+
+  /// No description provided for @callupKitShirt.
+  ///
+  /// In es, this message translates to:
+  /// **'Camiseta {color}'**
+  String callupKitShirt(String color);
+
+  /// No description provided for @callupKitShorts.
+  ///
+  /// In es, this message translates to:
+  /// **'Pantalón {color}'**
+  String callupKitShorts(String color);
+
+  /// No description provided for @callupKitSocks.
+  ///
+  /// In es, this message translates to:
+  /// **'Medias {color}'**
+  String callupKitSocks(String color);
+
+  /// No description provided for @callupShowerReminder.
+  ///
+  /// In es, this message translates to:
+  /// **'🚿 Ducha recomendable después del partido'**
+  String get callupShowerReminder;
 }
 
 class _AppLocalizationsDelegate

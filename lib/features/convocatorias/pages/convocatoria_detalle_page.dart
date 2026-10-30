@@ -13,6 +13,7 @@ import '../../invitados/services/invitados_service.dart';
 import '../../invitados/widgets/invitado_widgets.dart';
 import '../model/convocatoria_model.dart';
 import '../services/convocatoria_service.dart';
+import '../widgets/equipaje_widgets.dart';
 import 'convocatoria_form_page.dart';
 
 /// Detalle de una convocatoria para el entrenador: partido, hora y lugar, los
@@ -520,6 +521,10 @@ class _ConvocatoriaDetallePageState extends State<ConvocatoriaDetallePage> {
                 ),
                 BotonComoLlegar(lugar: _convocatoria.lugarConvocatoria),
               ],
+            ),
+            BloqueEquipaje(
+              equipacion: _convocatoria.equipacion,
+              mochila: _convocatoria.equipacionMochila,
             ),
           ],
         ),
