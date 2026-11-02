@@ -1,3 +1,4 @@
+import '../../config/app_preferences.dart';
 import '../../network/api_client.dart';
 import '../../version/control_version.dart';
 import '../../../features/auth/services/auth_session.dart';
@@ -19,10 +20,15 @@ class DispositivoAppService {
 
     // El backend guarda la versión instalada con cada registro o renovación
     // del token.
+    // El idioma que la app está mostrando ahora: el backend escribe los avisos
+    // en él.
+    final idioma = await AppPreferences.obtenerIdioma();
+
     final request = DispositivoAppRequest(
       tokenFcm: tokenFcm,
       plataforma: plataforma,
       versionApp: await ControlVersion.versionInstalada(),
+      idioma: idioma,
     );
 
     await ApiClient.post(
@@ -30,6 +36,8 @@ class DispositivoAppService {
       autenticado: true,
       body: request.toJson(),
     );
+
+    await AppPreferences.guardarUltimoIdiomaEnviado(idioma);
   }
 
   /// SEC-07: desregistra el token FCM de este dispositivo. Debe llamarse

@@ -5,10 +5,14 @@ class DispositivoAppRequest {
   /// Versión instalada de la app ("1.0.10"); null si no se pudo leer.
   final String? versionApp;
 
+  /// Idioma que muestra la app ("es", "ca" o "en"); null si no se informa.
+  final String? idioma;
+
   const DispositivoAppRequest({
     required this.tokenFcm,
     required this.plataforma,
     this.versionApp,
+    this.idioma,
   });
 
   Map<String, dynamic> toJson() {
@@ -16,6 +20,7 @@ class DispositivoAppRequest {
       'tokenFcm': tokenFcm,
       'plataforma': plataforma,
       'versionApp': ?versionApp,
+      'idioma': ?idioma,
     };
   }
 }

@@ -73,15 +73,7 @@ class _AjustesPageState extends State<AjustesPage> {
   Future<void> _cambiarNotifNoticiasAnonimo(bool valor) async {
     setState(() => _notifNoticiasAnonimo = valor);
 
-    if (valor) {
-      await PushNotificationService.suscribirATopic(
-        PushNotificationService.topicNoticias,
-      );
-    } else {
-      await PushNotificationService.desuscribirDeTopic(
-        PushNotificationService.topicNoticias,
-      );
-    }
+    await PushNotificationService.activarNoticiasAnonimas(valor);
 
     await AppPreferences.guardarNotifNoticias(valor);
   }
@@ -89,15 +81,7 @@ class _AjustesPageState extends State<AjustesPage> {
   Future<void> _cambiarNotifResultadosAnonimo(bool valor) async {
     setState(() => _notifResultadosAnonimo = valor);
 
-    if (valor) {
-      await PushNotificationService.suscribirATopic(
-        PushNotificationService.topicResultados,
-      );
-    } else {
-      await PushNotificationService.desuscribirDeTopic(
-        PushNotificationService.topicResultados,
-      );
-    }
+    await PushNotificationService.activarResultadosAnonimos(valor);
 
     await AppPreferences.guardarNotifResultados(valor);
   }

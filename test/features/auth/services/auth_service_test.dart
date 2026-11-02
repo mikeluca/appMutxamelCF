@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:app_mutxamel_cf/core/config/app_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/test/test_flutter_secure_storage_platform.dart';
 import 'package:flutter_secure_storage_platform_interface/flutter_secure_storage_platform_interface.dart';
@@ -15,6 +17,8 @@ void main() {
   setUp(() {
     FlutterSecureStoragePlatform.instance =
         TestFlutterSecureStoragePlatform(<String, String>{});
+    // El idioma que la app muestra viaja en las peticiones de acceso.
+    SharedPreferences.setMockInitialValues({'idioma_aplicacion': 'ca'});
   });
 
   group('AuthService.login', () {
@@ -25,6 +29,7 @@ void main() {
           expect(jsonDecode(request.body), {
             'email': 'usuario@mutxamelcf.es',
             'password': 'clave123',
+            'idioma': 'ca',
           });
 
           return http.Response(
@@ -45,6 +50,20 @@ void main() {
 
       expect(resultado.token, 'jwt-abc');
       expect(resultado.usuarioId, 5);
+      // El backend ya conoce ese idioma: al arrancar no hace falta repetirlo.
+      expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), 'ca');
+    });
+
+    test('con credenciales incorrectas no anota el idioma como enviado', () async {
+      await conMockHttp(
+        (request) async => http.Response('', 401),
+        () => expectLater(
+          AuthService.login(email: 'a@a.com', password: 'mala'),
+          throwsA(isA<Exception>()),
+        ),
+      );
+
+      expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), isNull);
     });
 
     test('normaliza el email a minusculas y sin espacios', () async {
@@ -131,6 +150,49 @@ void main() {
     });
   });
 
+  group('AuthService.recuperarPassword y restablecerPassword', () {
+    test('recuperar manda el idioma, pero no lo anota como enviado', () async {
+      await conMockHttp(
+        (request) async {
+          expect(request.url.path, contains('/app/auth/recuperar'));
+          expect(jsonDecode(request.body), {
+            'email': 'ana@mutxamelcf.es',
+            'idioma': 'ca',
+          });
+
+          return http.Response('', 204);
+        },
+        () => AuthService.recuperarPassword(email: ' Ana@MutxamelCF.es '),
+      );
+
+      // Es una petición sin sesión: el backend no guarda ese idioma.
+      expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), isNull);
+    });
+
+    test('restablecer manda el idioma y, al iniciar sesión, lo anota como enviado', () async {
+      await AppPreferences.guardarIdioma('en');
+
+      await conMockHttp(
+        (request) async {
+          expect(request.url.path, contains('/app/auth/restablecer'));
+          expect(jsonDecode(request.body)['idioma'], 'en');
+
+          return http.Response(
+            jsonEncode({'token': 't', 'usuarioId': 3, 'email': 'a@a.com', 'roles': []}),
+            200,
+          );
+        },
+        () => AuthService.restablecerPassword(
+          email: 'a@a.com',
+          codigo: '123456',
+          password: 'nueva-clave-1',
+        ),
+      );
+
+      expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), 'en');
+    });
+  });
+
   group('AuthService.activarCuenta', () {
     test('activa la cuenta y devuelve la sesion iniciada', () async {
       final resultado = await conMockHttp(
@@ -139,6 +201,7 @@ void main() {
           final body = jsonDecode(request.body);
           expect(body['email'], 'nuevo@mutxamelcf.es');
           expect(body['codigo'], '123456');
+          expect(body['idioma'], 'ca');
 
           return http.Response(
             jsonEncode({'token': 't', 'usuarioId': 3, 'email': 'nuevo@mutxamelcf.es', 'roles': []}),

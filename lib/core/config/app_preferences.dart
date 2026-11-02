@@ -15,6 +15,12 @@ class AppPreferences {
 
   static const String _claveUltimoAvisoVersion = 'ultimo_aviso_version';
 
+  // Último idioma que el backend ya conoce para la cuenta de este dispositivo
+  // (se guarda tras cada llamada que lo envía con éxito) y el idioma para el que
+  // se han ajustado por última vez los topics anónimos de FCM.
+  static const String _claveUltimoIdiomaEnviado = 'ultimo_idioma_enviado';
+  static const String _claveIdiomaTopics = 'idioma_topics_anonimos';
+
   static Future<String> obtenerTema() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -52,6 +58,34 @@ class AppPreferences {
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.setString(_claveIdioma, idioma);
+  }
+
+  /// El idioma que se envió al backend con éxito la última vez, o null si
+  /// nunca se ha enviado.
+  static Future<String?> obtenerUltimoIdiomaEnviado() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString(_claveUltimoIdiomaEnviado);
+  }
+
+  static Future<void> guardarUltimoIdiomaEnviado(String idioma) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString(_claveUltimoIdiomaEnviado, idioma);
+  }
+
+  /// El idioma para el que están ajustados los topics anónimos, o null si
+  /// nunca se han ajustado por idioma (instalaciones anteriores a 1.0.7).
+  static Future<String?> obtenerIdiomaTopics() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString(_claveIdiomaTopics);
+  }
+
+  static Future<void> guardarIdiomaTopics(String idioma) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString(_claveIdiomaTopics, idioma);
   }
 
   static Future<bool> obtenerNotifNoticias() async {

@@ -83,6 +83,19 @@ bool esTipoPushInvitacion(Object? tipo) => tiposPushInvitacion.contains(tipo);
 /// filas no guardan el data del push).
 const String tituloNuevaConvocatoria = 'Nueva convocatoria';
 
+/// Ese mismo título en cada idioma en que el backend genera los avisos (es, ca
+/// y en): el aviso se escribe en el idioma de la cuenta.
+const Set<String> titulosNuevaConvocatoria = {
+  tituloNuevaConvocatoria,
+  'Nova convocatòria',
+  'New call-up',
+};
+
+/// true si [titulo] es el de una convocatoria nueva en cualquiera de los
+/// idiomas.
+bool esTituloNuevaConvocatoria(String? titulo) =>
+    titulo != null && titulosNuevaConvocatoria.contains(titulo.trim());
+
 /// true si el aviso tiene un destino propio (una convocatoria de cualquier
 /// tipo o pasar lista) y por tanto, al abrir la app en frío, espera a que haya
 /// sesión y home: por su data["tipo"] o, como reserva para los pushes antiguos
@@ -98,7 +111,7 @@ bool esAvisoDeConvocatoria({String? tipo, String? titulo}) {
       tipo == tipoPushContinuidad ||
       tipo == tipoPushContinuidadRespuesta ||
       esTipoPushInvitacion(tipo) ||
-      titulo?.trim() == tituloNuevaConvocatoria;
+      esTituloNuevaConvocatoria(titulo);
 }
 
 /// A dónde lleva tocar el aviso de una convocatoria.
@@ -384,7 +397,7 @@ DestinoConvocatoria? destinoDeAvisoConvocatoria({
   final esConvocatoria =
       tipo == tipoPushConvocatoria ||
       tipo == tipoPushConvocatoriaAnulada ||
-      titulo?.trim() == tituloNuevaConvocatoria;
+      esTituloNuevaConvocatoria(titulo);
 
   if (!esConvocatoria) {
     return null;

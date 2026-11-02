@@ -3,6 +3,9 @@ import 'dart:io' show Platform;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
 import '../../../features/auth/services/notificacion_service.dart';
+import '../../../features/auth/services/auth_session.dart';
+import '../../config/app_preferences.dart';
+import 'topics_anonimos.dart';
 
 import 'dispositivo_app_service.dart';
 import 'local_notification_service.dart';
@@ -24,9 +27,10 @@ class PushNotificationService {
   // Topics de FCM para notificaciones "anónimas" (sin sesión
   // iniciada, sin cuenta): la suscripción es 100% cliente, vía el
   // propio SDK de Firebase, sin llamar a la API. Los nombres deben
-  // coincidir exactamente con lo que publica el backend.
-  static const String topicNoticias = 'noticias';
-  static const String topicResultados = 'resultados';
+  // coincidir exactamente con lo que publica el backend: un topic por idioma
+  // (noticias_es|ca|en, resultados_es|ca|en); ver TopicsAnonimos.
+  static const String topicNoticias = TopicsAnonimos.baseNoticias;
+  static const String topicResultados = TopicsAnonimos.baseResultados;
 
   // FL-05: tipos de "tipo" que puede enviar el backend en el canal
   // personal (ver FcmPushServiceImpl/PartidoEnVivoServiceImpl). Solo
@@ -87,6 +91,86 @@ class PushNotificationService {
   static Future<void> desuscribirDeTopic(String topic) =>
       _messaging.unsubscribeFromTopic(topic);
 
+  /// Solo para tests: sustituye a las altas y bajas reales de Firebase.
+  @visibleForTesting
+  static TopicsAnonimos topicsAnonimos = TopicsAnonimos(
+    suscribir: suscribirATopic,
+    desuscribir: desuscribirDeTopic,
+  );
+
+  /// Interruptor "Noticias" de quien no tiene sesión: alta en el topic de su
+  /// idioma (y baja de los antiguos y de los otros idiomas) o baja de todos.
+  static Future<void> activarNoticiasAnonimas(bool activo) async {
+    if (activo) {
+      await topicsAnonimos.activar(
+        TopicsAnonimos.baseNoticias,
+        await AppPreferences.obtenerIdioma(),
+      );
+    } else {
+      await topicsAnonimos.desactivar(TopicsAnonimos.baseNoticias);
+    }
+  }
+
+  /// Interruptor "Resultados" de quien no tiene sesión (ver
+  /// [activarNoticiasAnonimas]).
+  static Future<void> activarResultadosAnonimos(bool activo) async {
+    if (activo) {
+      await topicsAnonimos.activar(
+        TopicsAnonimos.baseResultados,
+        await AppPreferences.obtenerIdioma(),
+      );
+    } else {
+      await topicsAnonimos.desactivar(TopicsAnonimos.baseResultados);
+    }
+  }
+
+  /// Al cambiar el idioma en Ajustes: de los topics anónimos que tenga
+  /// activos, baja del idioma anterior y alta en el nuevo. Nunca lanza.
+  static Future<void> alCambiarIdioma(String anterior, String nuevo) async {
+    try {
+      await topicsAnonimos.cambiarIdioma(
+        anterior: anterior,
+        nuevo: nuevo,
+        noticias: await AppPreferences.obtenerNotifNoticias(),
+        resultados: await AppPreferences.obtenerNotifResultados(),
+      );
+
+      await AppPreferences.guardarIdiomaTopics(nuevo);
+    } catch (e) {
+      debugPrint('ERROR AL CAMBIAR LOS TOPICS DE IDIOMA: $e');
+    }
+  }
+
+  /// Al arrancar: si los topics anónimos no están ajustados al idioma de la
+  /// app (instalación anterior a los topics por idioma, o idioma cambiado por
+  /// otra vía), los deja en el topic de su idioma y sin los antiguos. Con
+  /// sesión iniciada no hace nada: ya se dio de baja de todos al entrar. No
+  /// repite el trabajo en cada arranque y nunca lanza.
+  static Future<void> sincronizarTopicsAnonimos() async {
+    try {
+      final idioma = await AppPreferences.obtenerIdioma();
+
+      if (await AppPreferences.obtenerIdiomaTopics() == idioma) {
+        return;
+      }
+
+      final token = await AuthSession.obtenerToken();
+
+      if (token == null || token.isEmpty) {
+        await topicsAnonimos.sincronizar(
+          idioma: idioma,
+          noticias: await AppPreferences.obtenerNotifNoticias(),
+          resultados: await AppPreferences.obtenerNotifResultados(),
+        );
+      }
+
+      await AppPreferences.guardarIdiomaTopics(idioma);
+    } catch (e) {
+      // Se reintenta en el siguiente arranque.
+      debugPrint('ERROR AL SINCRONIZAR LOS TOPICS ANÓNIMOS: $e');
+    }
+  }
+
   /// Se llama al iniciar sesión: quien tiene cuenta recibe los
   /// avisos de resultados por el canal personal existente (ver
   /// PartidoEnVivoServiceImpl.difundirATodos en el backend), así que
@@ -94,8 +178,7 @@ class PushNotificationService {
   /// lleguen duplicados.
   static Future<void> desuscribirDeTopicsAnonimos() async {
     try {
-      await desuscribirDeTopic(topicNoticias);
-      await desuscribirDeTopic(topicResultados);
+      await topicsAnonimos.desuscribirDeTodos();
     } catch (e) {
       debugPrint('ERROR AL DESUSCRIBIR DE TOPICS ANÓNIMOS: $e');
     }

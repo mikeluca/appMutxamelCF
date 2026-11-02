@@ -172,7 +172,10 @@ void main() {
         // Pantalla 2: siempre el mismo mensaje, email fijo y sin editar.
         expect(find.text(_mensajeEnviado), findsOneWidget);
         expect(find.text('ana@example.com'), findsOneWidget);
-        expect(backend.cuerpos.first, {'email': 'ana@example.com'});
+        expect(backend.cuerpos.first, {
+          'email': 'ana@example.com',
+          'idioma': 'es',
+        });
 
         await _rellenarPantalla2(tester);
         await tester.tap(find.text('Cambiar contraseña'));
@@ -182,6 +185,7 @@ void main() {
           'email': 'ana@example.com',
           'codigo': '123456',
           'password': 'nueva-clave-1',
+          'idioma': 'es',
         });
       });
 

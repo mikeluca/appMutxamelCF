@@ -565,6 +565,7 @@ void main() {
           },
           home: SplashPage(
             duracion: const Duration(milliseconds: 200),
+            sincronizarIdioma: () async {},
             inicializarNotificaciones: () async {
               eventos.add('notificaciones');
               await PushNotificationService.procesarNotificacionInicial();
@@ -629,6 +630,7 @@ void main() {
           routes: {AppRoutes.public: (_) => const Scaffold(body: Text('HOME'))},
           home: SplashPage(
             duracion: const Duration(milliseconds: 100),
+            sincronizarIdioma: () async {},
             inicializarNotificaciones: () async => throw Exception('sin FCM'),
           ),
         ),

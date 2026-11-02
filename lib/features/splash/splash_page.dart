@@ -7,6 +7,7 @@ import '../../core/version/control_version.dart';
 import '../../core/notifications/services/local_notification_service.dart';
 import '../../core/notifications/services/push_notification_service.dart';
 import '../../l10n/gen/app_localizations.dart';
+import '../auth/services/idioma_service.dart';
 
 class SplashPage extends StatefulWidget {
   /// Lo que dura el splash antes de pasar a home.
@@ -20,11 +21,16 @@ class SplashPage extends StatefulWidget {
   /// de la versión instalada).
   final Future<EstadoVersion?> Function()? comprobarVersion;
 
+  /// Solo para tests: sustituye a la sincronización del idioma con el backend y
+  /// de los topics anónimos.
+  final Future<void> Function()? sincronizarIdioma;
+
   const SplashPage({
     super.key,
     this.duracion = const Duration(seconds: 3),
     this.inicializarNotificaciones,
     this.comprobarVersion,
+    this.sincronizarIdioma,
   });
 
   @override
@@ -70,11 +76,22 @@ class _SplashPageState extends State<SplashPage> {
       // ya sobre home: antes, el pushReplacement de arriba lo habría tapado.
       await notificacionesListas;
 
+      // El idioma de la app llega al backend (si cambió desde el último envío)
+      // y los topics anónimos se ajustan a él. No bloquea: un fallo se
+      // reintenta en el siguiente arranque.
+      await (widget.sincronizarIdioma ?? _sincronizarIdioma)();
+
       await PushNotificationService.procesarAvisoPendiente();
 
       // Hay una versión recomendada (no obligatoria): se avisa una vez al día.
       await ControlVersion.avisarSiProcede();
     });
+  }
+
+  Future<void> _sincronizarIdioma() async {
+    await IdiomaService.sincronizarAlArrancar();
+
+    await PushNotificationService.sincronizarTopicsAnonimos();
   }
 
   Future<void> _inicializarNotificaciones() async {

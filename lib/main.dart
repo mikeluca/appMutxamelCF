@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -35,6 +37,8 @@ import 'features/auth/pages/comunicaciones_page.dart';
 import 'features/partido_en_vivo/pages/partido_en_vivo_page.dart';
 import 'features/cuotas/pages/cuotas_page.dart';
 import 'core/navigation/app_navigator.dart';
+import 'core/notifications/services/push_notification_service.dart';
+import 'features/auth/services/idioma_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -149,6 +153,8 @@ class _MutxamelCfAppState extends State<MutxamelCfApp>
   }
 
   Future<void> _cambiarIdioma(String idioma) async {
+    final anterior = _idiomaActual;
+
     await AppPreferences.guardarIdioma(idioma);
 
     if (!mounted) return;
@@ -156,6 +162,12 @@ class _MutxamelCfAppState extends State<MutxamelCfApp>
     setState(() {
       _idiomaActual = idioma;
     });
+
+    // Sin esperar y sin bloquear: el backend escribe los avisos en este idioma
+    // y quien no tiene cuenta cambia de topic. Si el envío falla, se reintenta
+    // en el siguiente arranque.
+    unawaited(IdiomaService.alCambiarIdioma(idioma));
+    unawaited(PushNotificationService.alCambiarIdioma(anterior, idioma));
   }
 
   @override

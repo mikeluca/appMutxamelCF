@@ -14,5 +14,19 @@ void main() {
         'password': 'secreto123',
       });
     });
+
+    test('incluye el idioma cuando se informa y no lo envía cuando no', () {
+      final con = LoginRequest(
+        email: 'jugador@mutxamelcf.es',
+        password: 'secreto123',
+        idioma: 'ca',
+      );
+
+      expect(con.toJson()['idioma'], 'ca');
+      expect(
+        LoginRequest(email: 'a@a.es', password: 'x').toJson(),
+        isNot(contains('idioma')),
+      );
+    });
   });
 }

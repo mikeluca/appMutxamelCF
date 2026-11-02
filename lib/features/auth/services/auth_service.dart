@@ -1,3 +1,4 @@
+import '../../../core/config/app_preferences.dart';
 import '../../../core/network/api_client.dart';
 import '../models/login_request.dart';
 import '../models/login_response.dart';
@@ -11,9 +12,14 @@ class AuthService {
     required String email,
     required String password,
   }) async {
+    // El idioma que la app está mostrando: el backend lo guarda al iniciar
+    // sesión y escribe los avisos en él.
+    final idioma = await AppPreferences.obtenerIdioma();
+
     final request = LoginRequest(
       email: email.trim().toLowerCase(),
       password: password,
+      idioma: idioma,
     );
 
     try {
@@ -21,6 +27,8 @@ class AuthService {
         '/app/auth/login',
         body: request.toJson(),
       );
+
+      await AppPreferences.guardarUltimoIdiomaEnviado(idioma);
 
       return LoginResponse.fromJson(data as Map<String, dynamic>);
     } on ApiException catch (e) {
@@ -58,9 +66,13 @@ class AuthService {
   /// Pide el código para cambiar la contraseña. El backend responde 204 exista
   /// o no la cuenta, así que el llamador no debe deducir nada de la respuesta.
   static Future<void> recuperarPassword({required String email}) async {
+    // Solo decide el idioma del email con el código: el backend no lo guarda.
     await ApiClient.post(
       '/app/auth/recuperar',
-      body: {'email': email.trim().toLowerCase()},
+      body: {
+        'email': email.trim().toLowerCase(),
+        'idioma': await AppPreferences.obtenerIdioma(),
+      },
     );
   }
 
@@ -73,14 +85,19 @@ class AuthService {
     required String codigo,
     required String password,
   }) async {
+    final idioma = await AppPreferences.obtenerIdioma();
+
     final data = await ApiClient.post(
       '/app/auth/restablecer',
       body: {
         'email': email.trim().toLowerCase(),
         'codigo': codigo.trim(),
         'password': password,
+        'idioma': idioma,
       },
     );
+
+    await AppPreferences.guardarUltimoIdiomaEnviado(idioma);
 
     return LoginResponse.fromJson(data as Map<String, dynamic>);
   }
@@ -94,6 +111,8 @@ class AuthService {
     required String codigo,
     required String password,
   }) async {
+    final idioma = await AppPreferences.obtenerIdioma();
+
     try {
       final data = await ApiClient.post(
         '/app/auth/activar',
@@ -101,8 +120,11 @@ class AuthService {
           'email': email.trim().toLowerCase(),
           'codigo': codigo.trim(),
           'password': password,
+          'idioma': idioma,
         },
       );
+
+      await AppPreferences.guardarUltimoIdiomaEnviado(idioma);
 
       return LoginResponse.fromJson(data as Map<String, dynamic>);
     } on ApiException catch (e) {
