@@ -96,11 +96,26 @@ const Set<String> titulosNuevaConvocatoria = {
 bool esTituloNuevaConvocatoria(String? titulo) =>
     titulo != null && titulosNuevaConvocatoria.contains(titulo.trim());
 
+/// Valores de "accion" en el data de los push de convocatoria (ver
+/// docs/api-app-idioma.md del backend).
+const String accionConvocatoriaNueva = 'NUEVA';
+
+/// true si el aviso es el de una convocatoria nueva. Lo dice el campo "accion"
+/// del data; solo si el aviso no lo trae (avisos antiguos, y las filas de la
+/// bandeja, que no guardan el data) se mira el título, en cualquier idioma.
+bool esConvocatoriaNueva({String? accion, String? titulo}) {
+  if (accion != null && accion.isNotEmpty) {
+    return accion == accionConvocatoriaNueva;
+  }
+
+  return esTituloNuevaConvocatoria(titulo);
+}
+
 /// true si el aviso tiene un destino propio (una convocatoria de cualquier
 /// tipo o pasar lista) y por tanto, al abrir la app en frío, espera a que haya
 /// sesión y home: por su data["tipo"] o, como reserva para los pushes antiguos
 /// de convocatoria, por el título.
-bool esAvisoDeConvocatoria({String? tipo, String? titulo}) {
+bool esAvisoDeConvocatoria({String? tipo, String? titulo, String? accion}) {
   return tipo == tipoPushConvocatoria ||
       tipo == tipoPushConvocatoriaAnulada ||
       tipo == tipoPushConvocatoriaPendiente ||
@@ -111,7 +126,7 @@ bool esAvisoDeConvocatoria({String? tipo, String? titulo}) {
       tipo == tipoPushContinuidad ||
       tipo == tipoPushContinuidadRespuesta ||
       esTipoPushInvitacion(tipo) ||
-      esTituloNuevaConvocatoria(titulo);
+      esConvocatoriaNueva(accion: accion, titulo: titulo);
 }
 
 /// A dónde lleva tocar el aviso de una convocatoria.
@@ -397,7 +412,7 @@ DestinoConvocatoria? destinoDeAvisoConvocatoria({
   final esConvocatoria =
       tipo == tipoPushConvocatoria ||
       tipo == tipoPushConvocatoriaAnulada ||
-      esTituloNuevaConvocatoria(titulo);
+      esConvocatoriaNueva(accion: datos['accion']?.toString(), titulo: titulo);
 
   if (!esConvocatoria) {
     return null;

@@ -27,6 +27,50 @@ void main() {
     });
   });
 
+  group('la acción del data reconoce la convocatoria nueva', () {
+    test('NUEVA lo es sea cual sea el título', () {
+      for (final titulo in ['Nueva convocatoria', 'Canvi', 'Whatever', null]) {
+        expect(
+          esConvocatoriaNueva(accion: 'NUEVA', titulo: titulo),
+          isTrue,
+          reason: '$titulo',
+        );
+      }
+    });
+
+    test('con otra acción no lo es, aunque el título sea el de una nueva', () {
+      for (final accion in ['CAMBIO', 'QUITADO', 'ANULADA']) {
+        expect(
+          esConvocatoriaNueva(accion: accion, titulo: 'New call-up'),
+          isFalse,
+          reason: accion,
+        );
+      }
+    });
+
+    test('sin acción (avisos antiguos y bandeja) se mira el título', () {
+      expect(esConvocatoriaNueva(titulo: 'Nova convocatòria'), isTrue);
+      expect(esConvocatoriaNueva(accion: '', titulo: 'New call-up'), isTrue);
+      expect(esConvocatoriaNueva(titulo: 'Call-up updated'), isFalse);
+      expect(esConvocatoriaNueva(), isFalse);
+    });
+
+    test('un aviso antiguo de tipo COMUNICACION con acción NUEVA es de convocatoria', () {
+      expect(
+        esAvisoDeConvocatoria(tipo: 'COMUNICACION', titulo: 'Anything', accion: 'NUEVA'),
+        isTrue,
+      );
+      expect(
+        esAvisoDeConvocatoria(tipo: 'COMUNICACION', titulo: 'Anything'),
+        isFalse,
+      );
+      expect(
+        esAvisoDeConvocatoria(tipo: 'COMUNICACION', titulo: 'New call-up', accion: 'CAMBIO'),
+        isFalse,
+      );
+    });
+  });
+
   group('el tipo decide el destino, no el idioma del texto', () {
     test('los tipos de convocatoria siguen siendo avisos de convocatoria con cualquier título', () {
       for (final titulo in ['Cambio en la convocatoria', 'Canvi en la convocatòria', 'Call-up updated']) {

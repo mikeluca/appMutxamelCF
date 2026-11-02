@@ -411,6 +411,7 @@ class PushNotificationService {
     if (esAvisoDeConvocatoria(
       tipo: message.data['tipo']?.toString(),
       titulo: message.notification?.title,
+      accion: message.data['accion']?.toString(),
     )) {
       _avisoPendiente = message;
       return;
