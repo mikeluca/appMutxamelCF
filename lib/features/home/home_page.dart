@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -15,30 +18,66 @@ import '../../../routing/app_routes.dart';
 import '../auth/services/auth_manager.dart';
 import '../matches/widgets/match_card.dart';
 import '../auth/services/notificacion_service.dart';
+import '../../core/notifications/services/push_notification_service.dart';
 import '../auth/pages/notificaciones_page.dart';
 import 'models/patrocinador.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  /// Cada cuánto se vuelve a pedir la tarjeta del Primer Equipo mientras el partido está en juego.
+  static const Duration intervaloEnDirecto = Duration(seconds: 30);
+
+  /// Solo para tests: sustituyen a los servicios reales, al aviso de push y al intervalo.
+  final MatchService? matchService;
+  final NewsService? newsService;
+  final Stream<void>? avisosDeResultados;
+  final Duration intervalo;
+
+  /// Si la portada es la pestaña visible (en el shell, solo con la pestaña de inicio abierta). Sin
+  /// él, siempre visible.
+  final ValueListenable<bool>? visible;
+
+  const HomePage({
+    super.key,
+    this.matchService,
+    this.newsService,
+    this.avisosDeResultados,
+    this.intervalo = intervaloEnDirecto,
+    this.visible,
+  });
 
   @override
   State<HomePage> createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   static const _sinPartidoPrimerEquipo = MatchModel(
     categoria: 'Primer Equipo',
     equipo: 'Primer Equipo',
     rival: '',
   );
 
-  final MatchService _matchService = MatchService();
-  final NewsService _newsService = NewsService();
+  late final MatchService _matchService = widget.matchService ?? MatchService();
+  late final NewsService _newsService = widget.newsService ?? NewsService();
 
   int _notificacionesNoLeidas = 0;
 
-  late Future<MatchModel?> _futureMatch;
+  /// La tarjeta del Primer Equipo: lo último que ha contestado el servidor.
+  MatchModel? _partido;
+  bool _cargandoPartido = true;
+  bool _errorPartido = false;
+  bool _hayPartido = false;
+
   late Future<List<NewsModel>> _futureNews;
+
+  /// Mientras la tarjeta del Primer Equipo dice que el partido está en juego, y la portada está a la
+  /// vista, se vuelve a pedir cada 30 segundos.
+  Timer? _temporizador;
+  StreamSubscription<void>? _avisos;
+  bool _enJuego = false;
+  bool _enPrimerPlano = true;
+  bool _refrescando = false;
+
+  bool get _visible => widget.visible?.value ?? true;
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
   AppLocalizations get _t => AppLocalizations.of(context);
@@ -47,11 +86,114 @@ class HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    _futureMatch = _matchService.obtenerResultadoPrimerEquipo();
+    WidgetsBinding.instance.addObserver(this);
+    widget.visible?.addListener(_alCambiarVisibilidad);
+
+    // Un push del directo con la app abierta refresca la tarjeta al momento.
+    _avisos = (widget.avisosDeResultados ??
+            PushNotificationService.avisosDeResultados)
+        .listen((_) => _refrescarPortada());
+
+    _cargarPartido(inicial: true);
 
     _futureNews = _newsService.obtenerNoticias();
 
     _cargarContadorNotificaciones();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    widget.visible?.removeListener(_alCambiarVisibilidad);
+    _avisos?.cancel();
+    _temporizador?.cancel();
+    super.dispose();
+  }
+
+  /// Con la app en segundo plano no se pide nada; al volver, si el partido sigue en juego, se
+  /// actualiza al momento.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _enPrimerPlano = state == AppLifecycleState.resumed;
+
+    if (_enPrimerPlano && _enJuego) {
+      _refrescarPortada();
+    }
+
+    _sincronizarTemporizador();
+  }
+
+  void _alCambiarVisibilidad() {
+    if (_visible && _enJuego) {
+      _refrescarPortada();
+    }
+
+    _sincronizarTemporizador();
+  }
+
+  /// Pide la tarjeta del Primer Equipo y apunta si el partido está en juego. Con [silencioso] (y algo ya a
+  /// la vista) no pasa por la tarjeta de "cargando" y, si falla, se queda lo que se veía.
+  Future<void> _cargarPartido({
+    bool silencioso = false,
+    bool inicial = false,
+  }) async {
+    final sinCargando = silencioso && _hayPartido;
+
+    if (!sinCargando && !inicial) {
+      setState(() {
+        _cargandoPartido = true;
+        _errorPartido = false;
+      });
+    }
+
+    try {
+      final partido = await _matchService.obtenerResultadoPrimerEquipo();
+
+      if (!mounted) return;
+
+      setState(() {
+        _partido = partido;
+        _hayPartido = true;
+        _cargandoPartido = false;
+        _errorPartido = false;
+        _enJuego = partido?.enJuego ?? false;
+      });
+
+      _sincronizarTemporizador();
+    } catch (_) {
+      if (!mounted || sinCargando) return;
+
+      setState(() {
+        _cargandoPartido = false;
+        _errorPartido = true;
+      });
+    }
+  }
+
+  Future<void> _refrescarPortada() async {
+    if (_refrescando || !mounted) return;
+
+    _refrescando = true;
+
+    try {
+      await _cargarPartido(silencioso: true);
+    } finally {
+      _refrescando = false;
+    }
+  }
+
+  void _sincronizarTemporizador() {
+    final debePedir = _enJuego && _visible && _enPrimerPlano;
+
+    if (debePedir && _temporizador == null) {
+      _temporizador = Timer.periodic(
+        widget.intervalo,
+        (_) => _refrescarPortada(),
+      );
+    } else if (!debePedir) {
+      _temporizador?.cancel();
+      _temporizador = null;
+    }
   }
 
   Future<void> _cargarContadorNotificaciones() async {
@@ -75,13 +217,11 @@ class HomePageState extends State<HomePage> {
 
   Future<void> _recargar() async {
     setState(() {
-      _futureMatch = _matchService.obtenerResultadoPrimerEquipo();
-
       _futureNews = _newsService.obtenerNoticias();
     });
 
     await Future.wait([
-      _futureMatch,
+      _cargarPartido(silencioso: true),
       _futureNews,
       _cargarContadorNotificaciones(),
     ]);
@@ -179,35 +319,7 @@ class HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              FutureBuilder<MatchModel?>(
-                future: _futureMatch,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const _MatchLoadingCard();
-                  }
-
-                  if (snapshot.hasError) {
-                    return _MatchErrorCard(
-                      onRetry: () {
-                        setState(() {
-                          _futureMatch = _matchService
-                              .obtenerResultadoPrimerEquipo();
-                        });
-                      },
-                    );
-                  }
-
-                  // El backend siempre devuelve un ResultadoDTO para el
-                  // primer equipo (rival vacío si no hay próximo partido
-                  // ni último jugado, igual que una jornada de descanso),
-                  // pero por si alguna vez llegara un cuerpo vacío, se
-                  // pinta la misma tarjeta "sin partido" en vez de dejar
-                  // la sección sin ninguna tarjeta.
-                  final match = snapshot.data ?? _sinPartidoPrimerEquipo;
-
-                  return MatchCard(match: match, mostrarPrimerEquipo: true);
-                },
-              ),
+              _buildTarjetaPrimerEquipo(),
 
               const SizedBox(height: 28),
 
@@ -228,6 +340,24 @@ class HomePageState extends State<HomePage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTarjetaPrimerEquipo() {
+    if (_cargandoPartido && !_hayPartido) {
+      return const _MatchLoadingCard();
+    }
+
+    if (_errorPartido) {
+      return _MatchErrorCard(onRetry: _cargarPartido);
+    }
+
+    // El backend siempre devuelve un ResultadoDTO para el primer equipo (rival vacío si no hay próximo
+    // partido ni último jugado, igual que una jornada de descanso), pero por si alguna vez llegara un
+    // cuerpo vacío, se pinta la misma tarjeta "sin partido" en vez de dejar la sección sin tarjeta.
+    return MatchCard(
+      match: _partido ?? _sinPartidoPrimerEquipo,
+      mostrarPrimerEquipo: true,
     );
   }
 

@@ -19,14 +19,23 @@ class _PublicShellPageState extends State<PublicShellPage> {
 
   final GlobalKey<HomePageState> _homeKey = GlobalKey<HomePageState>();
 
+  /// Si la portada es la pestaña visible: mientras no lo es, no se actualiza el partido en juego.
+  final ValueNotifier<bool> _homeVisible = ValueNotifier<bool>(true);
+
   late final List<Widget> _pages;
+
+  @override
+  void dispose() {
+    _homeVisible.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
 
     _pages = [
-      HomePage(key: _homeKey),
+      HomePage(key: _homeKey, visible: _homeVisible),
       const NewsPage(),
       const MatchesPage(),
       const StorePage(),
@@ -54,6 +63,8 @@ class _PublicShellPageState extends State<PublicShellPage> {
     setState(() {
       _currentIndex = index;
     });
+
+    _homeVisible.value = index == 0;
 
     if (index == 0) {
       _homeKey.currentState?.actualizarContadorNotificaciones();

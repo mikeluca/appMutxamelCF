@@ -1858,12 +1858,6 @@ abstract class AppLocalizations {
   /// **'Suplentes'**
   String get liveSubstitutesLabel;
 
-  /// No description provided for @liveFillLineupError.
-  ///
-  /// In es, this message translates to:
-  /// **'Rellena el once inicial y los suplentes.'**
-  String get liveFillLineupError;
-
   /// No description provided for @liveLineupSentMessage.
   ///
   /// In es, this message translates to:
@@ -4365,6 +4359,108 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Minuto corregido.'**
   String get liveMinuteSaved;
+
+  /// No description provided for @liveLineupOriginCallup.
+  ///
+  /// In es, this message translates to:
+  /// **'De la convocatoria'**
+  String get liveLineupOriginCallup;
+
+  /// No description provided for @liveLineupOriginSquad.
+  ///
+  /// In es, this message translates to:
+  /// **'De toda la plantilla'**
+  String get liveLineupOriginSquad;
+
+  /// No description provided for @liveLineupStartingHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca a los jugadores en el orden en que quieres publicarlos. Toca de nuevo para quitar a uno.'**
+  String get liveLineupStartingHint;
+
+  /// No description provided for @liveLineupSubstitutesHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Opcional. Toca a los suplentes en el orden en que quieres publicarlos.'**
+  String get liveLineupSubstitutesHint;
+
+  /// No description provided for @liveLineupIncompleteWarning.
+  ///
+  /// In es, this message translates to:
+  /// **'El once no está completo ({count}/{max}). Puedes continuar igualmente.'**
+  String liveLineupIncompleteWarning(int count, int max);
+
+  /// No description provided for @liveLineupMaxReached.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya hay {max} titulares: quita uno para elegir a otro.'**
+  String liveLineupMaxReached(int max);
+
+  /// No description provided for @liveLineupNext.
+  ///
+  /// In es, this message translates to:
+  /// **'Siguiente'**
+  String get liveLineupNext;
+
+  /// No description provided for @liveLineupBack.
+  ///
+  /// In es, this message translates to:
+  /// **'Atrás'**
+  String get liveLineupBack;
+
+  /// No description provided for @liveLineupAddRest.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir el resto de convocados'**
+  String get liveLineupAddRest;
+
+  /// No description provided for @liveLineupPreviewTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Vista previa del aviso'**
+  String get liveLineupPreviewTitle;
+
+  /// No description provided for @liveLineupNoSubstitutes.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin suplentes'**
+  String get liveLineupNoSubstitutes;
+
+  /// No description provided for @liveLineupNoPlayers.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay jugadores entre los que elegir.'**
+  String get liveLineupNoPlayers;
+
+  /// No description provided for @liveLineupLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se han podido cargar los jugadores.'**
+  String get liveLineupLoadError;
+
+  /// No description provided for @liveLineupNeedStarters.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige al menos un titular.'**
+  String get liveLineupNeedStarters;
+
+  /// No description provided for @matchLiveBanner.
+  ///
+  /// In es, this message translates to:
+  /// **'PARTIDO EN JUEGO'**
+  String get matchLiveBanner;
+
+  /// No description provided for @matchHalfTime.
+  ///
+  /// In es, this message translates to:
+  /// **'Descanso'**
+  String get matchHalfTime;
+
+  /// No description provided for @matchScorers.
+  ///
+  /// In es, this message translates to:
+  /// **'Goles: {goleadores}'**
+  String matchScorers(String goleadores);
 
   /// No description provided for @inviteButton.
   ///

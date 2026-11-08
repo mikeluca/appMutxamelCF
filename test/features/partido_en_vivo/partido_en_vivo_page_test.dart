@@ -42,6 +42,9 @@ class _ServicioFalso extends PartidoEnVivoService {
   /// Si no es null, obtenerConvocados espera a que se complete.
   Completer<List<ConvocadoEnVivo>>? convocadosPendientes;
 
+  /// Si no es null, son los jugadores que devuelve obtenerConvocados.
+  List<ConvocadoEnVivo>? convocadosForzados;
+
   _ServicioFalso(this.reloj, this.partidos, {this.local = true});
 
   int get _favor => eventos.where((e) => e.tipo == 'GOL_FAVOR').length;
@@ -129,6 +132,12 @@ class _ServicioFalso extends PartidoEnVivoService {
 
     if (pendientes != null) {
       return pendientes.future;
+    }
+
+    final forzados = convocadosForzados;
+
+    if (forzados != null) {
+      return forzados;
     }
 
     return const [
@@ -475,6 +484,31 @@ void main() {
         expect(find.byKey(const ValueKey('campo-minuto')), findsOneWidget);
       },
     );
+
+    testWidgets('el autor muestra también el nombre de retransmisión si lo tiene', (
+      tester,
+    ) async {
+      final servicio = _ServicioFalso(reloj, _unPartido)
+        ..convocadosForzados = const [
+          ConvocadoEnVivo(
+            jugadorId: 10,
+            dorsal: 9,
+            nombre: 'Pablo Garcia',
+            nombreRetransmision: 'Pepe',
+          ),
+          ConvocadoEnVivo(
+            jugadorId: 11,
+            dorsal: 1,
+            nombre: 'Luis Lopez',
+            nombreRetransmision: 'Luis Lopez',
+          ),
+        ];
+      await iniciarYAbrirSelector(tester, servicio);
+
+      expect(find.text('Pablo Garcia'), findsOneWidget);
+      expect(find.text('Pepe'), findsOneWidget);
+      expect(find.text('Luis Lopez'), findsOneWidget);
+    });
 
     testWidgets('un convocado se envía por su jugadorId', (tester) async {
       final servicio = _ServicioFalso(reloj, _unPartido);

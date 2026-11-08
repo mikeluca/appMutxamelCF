@@ -974,9 +974,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String get liveSubstitutesLabel => 'Suplents';
 
   @override
-  String get liveFillLineupError => 'Omple l\'onze inicial i els suplents.';
-
-  @override
   String get liveLineupSentMessage => 'Alineació enviada.';
 
   @override
@@ -2480,6 +2477,65 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get liveMinuteSaved => 'Minut corregit.';
+
+  @override
+  String get liveLineupOriginCallup => 'De la convocatòria';
+
+  @override
+  String get liveLineupOriginSquad => 'De tota la plantilla';
+
+  @override
+  String get liveLineupStartingHint =>
+      'Toca els jugadors en l\'ordre en què vols publicar-los. Toca de nou per llevar-ne un.';
+
+  @override
+  String get liveLineupSubstitutesHint =>
+      'Opcional. Toca els suplents en l\'ordre en què vols publicar-los.';
+
+  @override
+  String liveLineupIncompleteWarning(int count, int max) {
+    return 'L\'onze no està complet ($count/$max). Pots continuar igualment.';
+  }
+
+  @override
+  String liveLineupMaxReached(int max) {
+    return 'Ja hi ha $max titulars: lleva\'n un per triar-ne un altre.';
+  }
+
+  @override
+  String get liveLineupNext => 'Següent';
+
+  @override
+  String get liveLineupBack => 'Enrere';
+
+  @override
+  String get liveLineupAddRest => 'Afegir la resta de convocats';
+
+  @override
+  String get liveLineupPreviewTitle => 'Vista prèvia de l\'avís';
+
+  @override
+  String get liveLineupNoSubstitutes => 'Sense suplents';
+
+  @override
+  String get liveLineupNoPlayers => 'No hi ha jugadors per triar.';
+
+  @override
+  String get liveLineupLoadError => 'No s\'han pogut carregar els jugadors.';
+
+  @override
+  String get liveLineupNeedStarters => 'Tria almenys un titular.';
+
+  @override
+  String get matchLiveBanner => 'PARTIT EN JOC';
+
+  @override
+  String get matchHalfTime => 'Descans';
+
+  @override
+  String matchScorers(String goleadores) {
+    return 'Gols: $goleadores';
+  }
 
   @override
   String get inviteButton => 'Convida';

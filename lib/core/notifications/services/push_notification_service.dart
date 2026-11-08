@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' show Platform;
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -299,12 +300,23 @@ class PushNotificationService {
     }
   }
 
+  static final StreamController<void> _avisosDeResultados =
+      StreamController<void>.broadcast();
+
+  /// Un evento por cada push del partido en directo recibido con la app abierta (el de la cuenta,
+  /// con tipo RESULTADO, o el de un topic anónimo, que no trae datos): la portada se refresca con él.
+  static Stream<void> get avisosDeResultados => _avisosDeResultados.stream;
+
   /// Push recibido con la app abierta: se enseña como notificación local, que
   /// al tocarla navega igual que el push de fondo.
   @visibleForTesting
   static Future<void> mostrarEnPrimerPlano(RemoteMessage message) async {
     final tipo = message.data['tipo'];
     final referenciaIdString = message.data['referenciaId'];
+
+    if (tipo == _tipoResultado || tipo == null) {
+      _avisosDeResultados.add(null);
+    }
 
     if (!_esTipoDeComunicacion(tipo)) {
       if (tipo != _tipoResultado && tipo != _tipoNoticia) {

@@ -4,14 +4,17 @@ import '../models/partido_en_vivo_models.dart';
 class PartidoEnVivoService {
   static const String _base = '/app/partido-en-vivo';
 
-  Future<void> enviarAlineacion({
-    required String onceInicial,
-    required String suplentes,
+  /// Alineación elegida entre los jugadores del partido: los ids de titulares y suplentes, cada lista
+  /// en el orden en que debe salir en el aviso. Los suplentes son opcionales.
+  Future<void> enviarAlineacion(
+    int partidoId, {
+    required List<int> titulares,
+    List<int> suplentes = const [],
   }) {
     return ApiClient.post(
-      '$_base/alineacion',
+      '$_base/$partidoId/alineacion',
       autenticado: true,
-      body: {'onceInicial': onceInicial, 'suplentes': suplentes},
+      body: {'titulares': titulares, 'suplentes': suplentes},
     );
   }
 
@@ -35,7 +38,8 @@ class PartidoEnVivoService {
     return EstadoPartidoEnVivo.fromJson(data as Map<String, dynamic>);
   }
 
-  /// Jugadores de la convocatoria del partido (o la plantilla del Primer Equipo).
+  /// Jugadores entre los que elegir autor o alineación: los convocados efectivos (`origen` CONVOCATORIA)
+  /// o, sin convocatoria, la plantilla activa (`origen` PLANTILLA).
   Future<List<ConvocadoEnVivo>> obtenerConvocados(int partidoId) async {
     final data =
         await ApiClient.get('$_base/$partidoId/convocados', autenticado: true)

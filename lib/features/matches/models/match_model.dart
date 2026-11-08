@@ -52,6 +52,19 @@ class MatchModel {
   /// juega en él como invitado autorizado ("Invitado con equipo").
   final bool invitado;
 
+  /// Solo en la portada del Primer Equipo: el partido se está retransmitiendo (desde el inicio hasta
+  /// el final). Ausente en backends antiguos: false.
+  final bool enJuego;
+
+  /// PRIMERA_PARTE, DESCANSO, SEGUNDA_PARTE o FINALIZADO; null si el partido no se ha retransmitido
+  /// (o el backend es antiguo). Con el partido en juego `resultado` sigue vacío y el marcador va en
+  /// golesFavor y golesContra.
+  final String? fase;
+
+  /// Goles del Mutxamel con el nombre de retransmisión y agrupados ("Pepe (2)"), como los manda el
+  /// backend; solo con el partido retransmitido y FINALIZADO, vacía en otro caso.
+  final List<String> goleadores;
+
   const MatchModel({
     this.id,
     this.equipoId,
@@ -77,6 +90,9 @@ class MatchModel {
     this.puedeJustificar = false,
     this.limiteJustificacion,
     this.invitado = false,
+    this.enJuego = false,
+    this.fase,
+    this.goleadores = const [],
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -109,6 +125,11 @@ class MatchModel {
         json['limiteJustificacion']?.toString() ?? '',
       ),
       invitado: json['invitado'] as bool? ?? false,
+      enJuego: json['enJuego'] as bool? ?? false,
+      fase: json['fase'] as String?,
+      goleadores: (json['goleadores'] as List<dynamic>? ?? const [])
+          .map((g) => g.toString())
+          .toList(),
     );
   }
 
@@ -132,6 +153,23 @@ class MatchModel {
   /// (el guardado es siempre "goles Mutxamel-goles rival").
   String? get marcadorLocalVisitante =>
       marcador.marcadorLocalVisitante(resultado, local: local);
+
+  /// El marcador en directo para pintarlo local | visitante ("2 - 1"); null si el backend no manda los goles.
+  String? get marcadorEnDirecto {
+    final favor = golesFavor;
+    final contra = golesContra;
+
+    if (favor == null || contra == null) {
+      return null;
+    }
+
+    return local ? '$favor - $contra' : '$contra - $favor';
+  }
+
+  bool get enDescanso => enJuego && fase == 'DESCANSO';
+
+  /// Los goleadores solo se enseñan con el partido FINALIZADO.
+  bool get tieneGoleadores => fase == 'FINALIZADO' && goleadores.isNotEmpty;
 
   bool get estaJugado {
     return resultado != null && resultado!.trim().isNotEmpty;

@@ -22,6 +22,8 @@ class MatchCard extends StatelessWidget {
 
     if (match.estaDescansando) {
       tarjeta = _buildRestCard(context);
+    } else if (match.enJuego) {
+      tarjeta = _buildLiveMatchCard(context);
     } else if (match.estaJugado) {
       tarjeta = _buildPlayedMatchCard(context);
     } else if (match.pendienteResultado) {
@@ -159,6 +161,97 @@ class MatchCard extends StatelessWidget {
   }
 
   // ============================================================
+  // PARTIDO EN JUEGO
+  // ============================================================
+
+  Widget _buildLiveMatchCard(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      shape: _shapeTipo,
+      child: Column(
+        children: [
+          Container(
+            key: const ValueKey('letrero-en-juego'),
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            color: Colors.red.shade700,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.circle, size: 10, color: Colors.white),
+                const SizedBox(width: 8),
+                Text(
+                  t.matchLiveBanner,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildTeam(
+                      context,
+                      match.local ? match.equipo : match.rival,
+                      isHomeTeam: match.local,
+                    ),
+
+                    Text(
+                      match.marcadorEnDirecto ?? '-',
+                      key: const ValueKey('marcador-en-directo'),
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+
+                    _buildTeam(
+                      context,
+                      match.local ? match.rival : match.equipo,
+                      isHomeTeam: !match.local,
+                    ),
+                  ],
+                ),
+
+                if (match.enDescanso)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      t.matchHalfTime,
+                      key: const ValueKey('descanso'),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+
+                const SizedBox(height: 20),
+
+                _buildMatchInformation(context),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
   // ÚLTIMO RESULTADO
   // ============================================================
 
@@ -206,6 +299,20 @@ class MatchCard extends StatelessWidget {
                     ),
                   ],
                 ),
+
+                if (match.tieneGoleadores)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      t.matchScorers(match.goleadores.join(', ')),
+                      key: const ValueKey('goleadores'),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
 
                 const SizedBox(height: 20),
 

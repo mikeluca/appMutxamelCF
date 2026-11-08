@@ -979,9 +979,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get liveSubstitutesLabel => 'Suplentes';
 
   @override
-  String get liveFillLineupError => 'Rellena el once inicial y los suplentes.';
-
-  @override
   String get liveLineupSentMessage => 'Alineación enviada.';
 
   @override
@@ -2489,6 +2486,65 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get liveMinuteSaved => 'Minuto corregido.';
+
+  @override
+  String get liveLineupOriginCallup => 'De la convocatoria';
+
+  @override
+  String get liveLineupOriginSquad => 'De toda la plantilla';
+
+  @override
+  String get liveLineupStartingHint =>
+      'Toca a los jugadores en el orden en que quieres publicarlos. Toca de nuevo para quitar a uno.';
+
+  @override
+  String get liveLineupSubstitutesHint =>
+      'Opcional. Toca a los suplentes en el orden en que quieres publicarlos.';
+
+  @override
+  String liveLineupIncompleteWarning(int count, int max) {
+    return 'El once no está completo ($count/$max). Puedes continuar igualmente.';
+  }
+
+  @override
+  String liveLineupMaxReached(int max) {
+    return 'Ya hay $max titulares: quita uno para elegir a otro.';
+  }
+
+  @override
+  String get liveLineupNext => 'Siguiente';
+
+  @override
+  String get liveLineupBack => 'Atrás';
+
+  @override
+  String get liveLineupAddRest => 'Añadir el resto de convocados';
+
+  @override
+  String get liveLineupPreviewTitle => 'Vista previa del aviso';
+
+  @override
+  String get liveLineupNoSubstitutes => 'Sin suplentes';
+
+  @override
+  String get liveLineupNoPlayers => 'No hay jugadores entre los que elegir.';
+
+  @override
+  String get liveLineupLoadError => 'No se han podido cargar los jugadores.';
+
+  @override
+  String get liveLineupNeedStarters => 'Elige al menos un titular.';
+
+  @override
+  String get matchLiveBanner => 'PARTIDO EN JUEGO';
+
+  @override
+  String get matchHalfTime => 'Descanso';
+
+  @override
+  String matchScorers(String goleadores) {
+    return 'Goles: $goleadores';
+  }
 
   @override
   String get inviteButton => 'Invitar';

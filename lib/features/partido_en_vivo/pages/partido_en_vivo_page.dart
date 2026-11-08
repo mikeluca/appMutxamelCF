@@ -7,6 +7,7 @@ import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/partido_en_vivo_models.dart';
 import '../services/partido_en_vivo_service.dart';
+import 'alineacion_page.dart';
 
 /// Panel del retransmisor (rol RETRANSMISION): se elige el partido de hoy del
 /// Primer Equipo y cada botón registra un evento de ESE partido. El marcador,
@@ -387,7 +388,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
         icono: Icons.list_alt,
         titulo: _t.liveLineupButton,
         necesitaEstado: false,
-        onPressed: _abrirDialogoAlineacion,
+        onPressed: _abrirAlineacion,
       ),
       const SizedBox(height: 12),
       _construirBotonConfirmacion(
@@ -907,80 +908,19 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
     return texto == null ? null : _AutorGol.texto(texto);
   }
 
-  Future<void> _abrirDialogoAlineacion() async {
-    final onceController = TextEditingController();
-    final suplentesController = TextEditingController();
+  Future<void> _abrirAlineacion() async {
+    final partido = _partido;
 
-    final confirmado = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(_t.liveLineupButton),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: onceController,
-                minLines: 2,
-                maxLines: 4,
-                decoration: InputDecoration(
-                  labelText: _t.liveStartingLineupLabel,
-                  border: const OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 14),
-              TextField(
-                controller: suplentesController,
-                minLines: 2,
-                maxLines: 4,
-                decoration: InputDecoration(
-                  labelText: _t.liveSubstitutesLabel,
-                  border: const OutlineInputBorder(),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(_t.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(_t.send),
-          ),
-        ],
+    if (partido == null) return;
+
+    final enviada = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => AlineacionPage(service: _service, partido: partido),
       ),
     );
 
-    if (confirmado != true) return;
-
-    if (onceController.text.trim().isEmpty ||
-        suplentesController.text.trim().isEmpty) {
-      _mostrarMensaje(_t.liveFillLineupError);
-      return;
-    }
-
-    setState(() => _enviando = true);
-
-    try {
-      await _service.enviarAlineacion(
-        onceInicial: onceController.text.trim(),
-        suplentes: suplentesController.text.trim(),
-      );
-
-      if (!mounted) return;
-
+    if (enviada == true && mounted) {
       _mostrarMensaje(_t.liveLineupSentMessage);
-    } catch (e) {
-      if (!mounted) return;
-
-      _mostrarMensaje(_t.liveSendError(e.toString()));
-    } finally {
-      if (mounted) {
-        setState(() => _enviando = false);
-      }
     }
   }
 
@@ -1144,6 +1084,9 @@ class _SelectorAutorGolState extends State<_SelectorAutorGol> {
                   ),
                 ),
                 title: Text(jugador.nombre),
+                subtitle: jugador.tieneNombreRetransmision
+                    ? Text(jugador.nombreRetransmision!)
+                    : null,
                 onTap: () => _elegir(_AutorGol.jugador(jugador.jugadorId)),
               ),
             const Divider(),

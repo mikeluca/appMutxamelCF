@@ -27,13 +27,24 @@ class PartidoEnVivoDisponible {
   /// true si el Mutxamel juega de local.
   final bool local;
 
+  /// F11, F8 o F5 si el backend la envía (hoy no): marca cuántos titulares caben.
+  final String? modalidad;
+
   const PartidoEnVivoDisponible({
     required this.id,
     required this.rival,
     this.hora,
     this.campo,
     this.local = true,
+    this.modalidad,
   });
+
+  /// Titulares de una alineación según la modalidad (F11 11, F8 8, F5 5); 11 si no se conoce.
+  int get maximoTitulares => switch (modalidad) {
+    'F8' => 8,
+    'F5' => 5,
+    _ => 11,
+  };
 
   factory PartidoEnVivoDisponible.fromJson(Map<String, dynamic> json) {
     return PartidoEnVivoDisponible(
@@ -42,29 +53,59 @@ class PartidoEnVivoDisponible {
       hora: json['hora'] as String?,
       campo: json['campo'] as String?,
       local: json['local'] as bool? ?? true,
+      modalidad: json['modalidad'] as String?,
     );
   }
 }
 
-/// Un jugador entre los que elegir al autor de un gol.
+/// Un jugador entre los que elegir al autor de un gol o la alineación.
 class ConvocadoEnVivo {
+  static const String origenConvocatoria = 'CONVOCATORIA';
+  static const String origenPlantilla = 'PLANTILLA';
+
   final int jugadorId;
   final int? dorsal;
+
+  /// Nombre y apellidos (el campo antiguo `nombre`).
   final String nombre;
+
+  /// Cómo saldrá en los avisos y la portada; null si el backend no lo envía. Si el jugador no tiene
+  /// uno propio, el backend manda el nombre completo.
+  final String? nombreRetransmision;
+
+  /// CONVOCATORIA (convocados efectivos) o PLANTILLA (el partido no tiene convocatoria); null en un
+  /// backend antiguo.
+  final String? origen;
 
   const ConvocadoEnVivo({
     required this.jugadorId,
     this.dorsal,
     required this.nombre,
+    this.nombreRetransmision,
+    this.origen,
   });
 
   factory ConvocadoEnVivo.fromJson(Map<String, dynamic> json) {
+    final nombre = (json['nombreCompleto'] ?? json['nombre']) as String? ?? '';
+    final retransmision = (json['nombreRetransmision'] as String?)?.trim();
+
     return ConvocadoEnVivo(
       jugadorId: (json['jugadorId'] as num).toInt(),
       dorsal: (json['dorsal'] as num?)?.toInt(),
-      nombre: json['nombre'] as String? ?? '',
+      nombre: nombre,
+      nombreRetransmision: retransmision == null || retransmision.isEmpty
+          ? null
+          : retransmision,
+      origen: json['origen'] as String?,
     );
   }
+
+  /// El nombre con el que saldrá en el aviso: el de retransmisión o, si no, nombre y apellidos.
+  String get nombreEnDirecto => nombreRetransmision ?? nombre;
+
+  /// true si el nombre de retransmisión es distinto del completo (merece enseñarse aparte).
+  bool get tieneNombreRetransmision =>
+      nombreRetransmision != null && nombreRetransmision != nombre;
 }
 
 class EventoEnVivo {
