@@ -237,7 +237,7 @@ void main() {
       expect(
         abierta.toString(),
         'https://www.google.com/maps/search/?api=1&query='
-        'Campo%20Municipal%20de%20Pego%2C%20Alicante',
+        'Campo%20Municipal%20de%20Pego',
       );
     });
 

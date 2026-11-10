@@ -17,17 +17,9 @@ class ComoLlegar {
       launchUrl(url, mode: LaunchMode.externalApplication);
 }
 
-/// El texto que se busca en el mapa: si [lugar] no contiene ya "Mutxamel" ni una
-/// coma (una dirección completa), se añade ", Alicante" para afinar la búsqueda.
-String consultaComoLlegar(String lugar) {
-  final texto = lugar.trim();
-
-  if (texto.toLowerCase().contains('mutxamel') || texto.contains(',')) {
-    return texto;
-  }
-
-  return '$texto, Alicante';
-}
+/// El texto que se busca en el mapa: exactamente [lugar] (el campo o el lugar de
+/// citación que viene del backend), sin añadir ninguna ciudad.
+String consultaComoLlegar(String lugar) => lugar.trim();
 
 /// La URL que abre el mapa del sistema: Apple Maps en iOS y Google Maps en
 /// Android.

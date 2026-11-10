@@ -263,7 +263,6 @@ void main() {
     await tester.tap(find.byIcon(Icons.directions).first);
     await tester.pump();
 
-    expect(abiertas.single.queryParameters['query'],
-        'Campo Municipal, Alicante');
+    expect(abiertas.single.queryParameters['query'], 'Campo Municipal');
   });
 }

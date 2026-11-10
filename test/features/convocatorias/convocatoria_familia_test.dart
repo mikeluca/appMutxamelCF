@@ -259,8 +259,8 @@ void main() {
       await tester.pump();
 
       expect(abiertas.map((u) => u.queryParameters['query']), [
-        'Campo Municipal, Alicante',
-        'Vestuarios, Alicante',
+        'Campo Municipal',
+        'Vestuarios',
       ]);
     });
 

@@ -26,15 +26,12 @@ void main() {
   });
 
   group('consultaComoLlegar', () {
-    test('añade ", Alicante" si no hay Mutxamel ni coma', () {
-      expect(
-        consultaComoLlegar('Campo Municipal'),
-        'Campo Municipal, Alicante',
-      );
-      expect(consultaComoLlegar('  Pabellón  '), 'Pabellón, Alicante');
+    test('sin coma ni Mutxamel no añade nada, solo hace trim', () {
+      expect(consultaComoLlegar('Campo Municipal'), 'Campo Municipal');
+      expect(consultaComoLlegar('  Pabellón  '), 'Pabellón');
     });
 
-    test('no lo añade si ya contiene Mutxamel (sin distinguir mayúsculas)', () {
+    test('con Mutxamel (sin distinguir mayúsculas) lo deja igual', () {
       expect(
         consultaComoLlegar('Campo Municipal de Mutxamel'),
         'Campo Municipal de Mutxamel',
@@ -42,24 +39,53 @@ void main() {
       expect(consultaComoLlegar('MUTXAMEL'), 'MUTXAMEL');
     });
 
-    test('no lo añade si ya tiene una coma', () {
+    test('con coma lo deja igual', () {
       expect(consultaComoLlegar('Calle Mayor 3, Pego'), 'Calle Mayor 3, Pego');
+    });
+
+    test('conserva acentos, "&" y paréntesis', () {
+      expect(
+        consultaComoLlegar(' Camp d\'Esports & Co (Camí Vell) '),
+        'Camp d\'Esports & Co (Camí Vell)',
+      );
     });
   });
 
   group('urlComoLlegar', () {
-    test('iOS abre Apple Maps con el lugar codificado', () {
+    test('iOS abre Apple Maps con el nombre exacto codificado', () {
       expect(
         urlComoLlegar('Campo Municipal', esIos: true).toString(),
-        'https://maps.apple.com/?q=Campo%20Municipal%2C%20Alicante',
+        'https://maps.apple.com/?q=Campo%20Municipal',
       );
     });
 
-    test('Android abre Google Maps con el lugar codificado', () {
+    test('Android abre Google Maps con el nombre exacto codificado', () {
       expect(
         urlComoLlegar('Camp d\'Esports & Co', esIos: false).toString(),
         'https://www.google.com/maps/search/?api=1&query='
-        'Camp%20d\'Esports%20%26%20Co%2C%20Alicante',
+        'Camp%20d\'Esports%20%26%20Co',
+      );
+    });
+
+    test('con coma no se añade nada y la coma se codifica', () {
+      expect(
+        urlComoLlegar('Calle Mayor 3, Pego', esIos: false).toString(),
+        'https://www.google.com/maps/search/?api=1&query='
+        'Calle%20Mayor%203%2C%20Pego',
+      );
+    });
+
+    test('con Mutxamel no se añade nada', () {
+      expect(
+        urlComoLlegar('Campo de Mutxamel', esIos: true).toString(),
+        'https://maps.apple.com/?q=Campo%20de%20Mutxamel',
+      );
+    });
+
+    test('codifica acentos, "&" y paréntesis', () {
+      expect(
+        urlComoLlegar(' Pabellón Camí (B) & Co ', esIos: true).toString(),
+        'https://maps.apple.com/?q=Pabell%C3%B3n%20Cam%C3%AD%20(B)%20%26%20Co',
       );
     });
   });
