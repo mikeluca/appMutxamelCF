@@ -5469,6 +5469,276 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'🚿 Ducha recomendable después del partido'**
   String get callupShowerReminder;
+
+  /// No description provided for @fichaTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ficha del partido'**
+  String get fichaTitle;
+
+  /// No description provided for @fichaTabDetail.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle'**
+  String get fichaTabDetail;
+
+  /// No description provided for @fichaTabLineup.
+  ///
+  /// In es, this message translates to:
+  /// **'Alineación'**
+  String get fichaTabLineup;
+
+  /// No description provided for @fichaTabForm.
+  ///
+  /// In es, this message translates to:
+  /// **'Forma del equipo'**
+  String get fichaTabForm;
+
+  /// No description provided for @fichaStatusLive.
+  ///
+  /// In es, this message translates to:
+  /// **'En directo'**
+  String get fichaStatusLive;
+
+  /// No description provided for @fichaStatusHalftime.
+  ///
+  /// In es, this message translates to:
+  /// **'Descanso'**
+  String get fichaStatusHalftime;
+
+  /// No description provided for @fichaStatusFinished.
+  ///
+  /// In es, this message translates to:
+  /// **'Finalizado'**
+  String get fichaStatusFinished;
+
+  /// No description provided for @fichaStatusCancelled.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelado'**
+  String get fichaStatusCancelled;
+
+  /// No description provided for @fichaNotBroadcast.
+  ///
+  /// In es, this message translates to:
+  /// **'Este partido no se ha retransmitido'**
+  String get fichaNotBroadcast;
+
+  /// No description provided for @fichaNoLineup.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin alineación'**
+  String get fichaNoLineup;
+
+  /// No description provided for @fichaSubstitutes.
+  ///
+  /// In es, this message translates to:
+  /// **'Suplentes'**
+  String get fichaSubstitutes;
+
+  /// No description provided for @fichaSubIn.
+  ///
+  /// In es, this message translates to:
+  /// **'Entra'**
+  String get fichaSubIn;
+
+  /// No description provided for @fichaSubOut.
+  ///
+  /// In es, this message translates to:
+  /// **'Sale'**
+  String get fichaSubOut;
+
+  /// No description provided for @fichaHalftimeSeparator.
+  ///
+  /// In es, this message translates to:
+  /// **'Descanso'**
+  String get fichaHalftimeSeparator;
+
+  /// No description provided for @fichaFinalSeparator.
+  ///
+  /// In es, this message translates to:
+  /// **'Final'**
+  String get fichaFinalSeparator;
+
+  /// No description provided for @fichaGoal.
+  ///
+  /// In es, this message translates to:
+  /// **'Gol'**
+  String get fichaGoal;
+
+  /// No description provided for @fichaGoalAgainst.
+  ///
+  /// In es, this message translates to:
+  /// **'Gol del rival'**
+  String get fichaGoalAgainst;
+
+  /// No description provided for @fichaYellowCard.
+  ///
+  /// In es, this message translates to:
+  /// **'Tarjeta amarilla'**
+  String get fichaYellowCard;
+
+  /// No description provided for @fichaRedCard.
+  ///
+  /// In es, this message translates to:
+  /// **'Tarjeta roja'**
+  String get fichaRedCard;
+
+  /// No description provided for @fichaSecondYellow.
+  ///
+  /// In es, this message translates to:
+  /// **'Doble amarilla'**
+  String get fichaSecondYellow;
+
+  /// No description provided for @fichaLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido cargar la ficha del partido.'**
+  String get fichaLoadError;
+
+  /// No description provided for @fichaNotAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'La ficha solo está disponible para los partidos del Primer Equipo.'**
+  String get fichaNotAvailable;
+
+  /// No description provided for @fichaFormEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay partidos con resultado'**
+  String get fichaFormEmpty;
+
+  /// No description provided for @liveFormationTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Formación'**
+  String get liveFormationTitle;
+
+  /// No description provided for @liveFormationHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige la formación antes del once: el orden en que elijas a los jugadores los coloca en el campo (portero, defensas de izquierda a derecha, medios y delanteros).'**
+  String get liveFormationHint;
+
+  /// No description provided for @liveFormationNone.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin formación'**
+  String get liveFormationNone;
+
+  /// No description provided for @liveLineupNotify.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar aviso'**
+  String get liveLineupNotify;
+
+  /// No description provided for @liveLineupFormationNeeds.
+  ///
+  /// In es, this message translates to:
+  /// **'Con esta formación hacen falta {n} titulares (portero incluido).'**
+  String liveLineupFormationNeeds(int n);
+
+  /// No description provided for @liveSubButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambio'**
+  String get liveSubButton;
+
+  /// No description provided for @liveSubOutTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Sale'**
+  String get liveSubOutTitle;
+
+  /// No description provided for @liveSubInTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Entra'**
+  String get liveSubInTitle;
+
+  /// No description provided for @liveSubNoneOut.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay jugadores en el campo.'**
+  String get liveSubNoneOut;
+
+  /// No description provided for @liveSubNoneIn.
+  ///
+  /// In es, this message translates to:
+  /// **'No quedan suplentes por entrar.'**
+  String get liveSubNoneIn;
+
+  /// No description provided for @liveSubPick.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige quién sale y quién entra.'**
+  String get liveSubPick;
+
+  /// No description provided for @liveSubSent.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambio registrado.'**
+  String get liveSubSent;
+
+  /// No description provided for @liveCardButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Tarjeta'**
+  String get liveCardButton;
+
+  /// No description provided for @liveCardPlayerTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿A quién se la han enseñado?'**
+  String get liveCardPlayerTitle;
+
+  /// No description provided for @liveCardYellow.
+  ///
+  /// In es, this message translates to:
+  /// **'Amarilla'**
+  String get liveCardYellow;
+
+  /// No description provided for @liveCardRed.
+  ///
+  /// In es, this message translates to:
+  /// **'Roja'**
+  String get liveCardRed;
+
+  /// No description provided for @liveCardSecondYellow.
+  ///
+  /// In es, this message translates to:
+  /// **'Es su segunda amarilla: será expulsado.'**
+  String get liveCardSecondYellow;
+
+  /// No description provided for @liveCardPick.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige al jugador.'**
+  String get liveCardPick;
+
+  /// No description provided for @liveCardSent.
+  ///
+  /// In es, this message translates to:
+  /// **'Tarjeta registrada.'**
+  String get liveCardSent;
+
+  /// No description provided for @liveCardsAndSubs.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambios y tarjetas'**
+  String get liveCardsAndSubs;
+
+  /// No description provided for @liveNoCardsAndSubs.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay cambios ni tarjetas'**
+  String get liveNoCardsAndSubs;
+
+  /// No description provided for @liveSendOffRow.
+  ///
+  /// In es, this message translates to:
+  /// **'expulsión por doble amarilla'**
+  String get liveSendOffRow;
 }
 
 class _AppLocalizationsDelegate

@@ -3137,4 +3137,144 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get callupShowerReminder => '🚿 Shower recommended after the match';
+
+  @override
+  String get fichaTitle => 'Match sheet';
+
+  @override
+  String get fichaTabDetail => 'Details';
+
+  @override
+  String get fichaTabLineup => 'Lineup';
+
+  @override
+  String get fichaTabForm => 'Team form';
+
+  @override
+  String get fichaStatusLive => 'Live';
+
+  @override
+  String get fichaStatusHalftime => 'Half-time';
+
+  @override
+  String get fichaStatusFinished => 'Finished';
+
+  @override
+  String get fichaStatusCancelled => 'Cancelled';
+
+  @override
+  String get fichaNotBroadcast => 'This match was not broadcast';
+
+  @override
+  String get fichaNoLineup => 'No lineup';
+
+  @override
+  String get fichaSubstitutes => 'Substitutes';
+
+  @override
+  String get fichaSubIn => 'On';
+
+  @override
+  String get fichaSubOut => 'Off';
+
+  @override
+  String get fichaHalftimeSeparator => 'Half-time';
+
+  @override
+  String get fichaFinalSeparator => 'Full-time';
+
+  @override
+  String get fichaGoal => 'Goal';
+
+  @override
+  String get fichaGoalAgainst => 'Opponent goal';
+
+  @override
+  String get fichaYellowCard => 'Yellow card';
+
+  @override
+  String get fichaRedCard => 'Red card';
+
+  @override
+  String get fichaSecondYellow => 'Second yellow';
+
+  @override
+  String get fichaLoadError => 'The match sheet could not be loaded.';
+
+  @override
+  String get fichaNotAvailable =>
+      'The match sheet is only available for First Team matches.';
+
+  @override
+  String get fichaFormEmpty => 'No matches with a result yet';
+
+  @override
+  String get liveFormationTitle => 'Formation';
+
+  @override
+  String get liveFormationHint =>
+      'Choose the formation before the starting eleven: the order you pick players in places them on the pitch (goalkeeper, defenders left to right, midfielders and forwards).';
+
+  @override
+  String get liveFormationNone => 'No formation';
+
+  @override
+  String get liveLineupNotify => 'Send notification';
+
+  @override
+  String liveLineupFormationNeeds(int n) {
+    return 'This formation needs $n starters (goalkeeper included).';
+  }
+
+  @override
+  String get liveSubButton => 'Substitution';
+
+  @override
+  String get liveSubOutTitle => 'Comes off';
+
+  @override
+  String get liveSubInTitle => 'Comes on';
+
+  @override
+  String get liveSubNoneOut => 'There are no players on the pitch.';
+
+  @override
+  String get liveSubNoneIn => 'No substitutes left to come on.';
+
+  @override
+  String get liveSubPick => 'Choose who comes off and who comes on.';
+
+  @override
+  String get liveSubSent => 'Substitution recorded.';
+
+  @override
+  String get liveCardButton => 'Card';
+
+  @override
+  String get liveCardPlayerTitle => 'Who was shown the card?';
+
+  @override
+  String get liveCardYellow => 'Yellow';
+
+  @override
+  String get liveCardRed => 'Red';
+
+  @override
+  String get liveCardSecondYellow =>
+      'This is his second yellow: he will be sent off.';
+
+  @override
+  String get liveCardPick => 'Choose the player.';
+
+  @override
+  String get liveCardSent => 'Card recorded.';
+
+  @override
+  String get liveCardsAndSubs => 'Substitutions and cards';
+
+  @override
+  String get liveNoCardsAndSubs => 'No substitutions or cards yet';
+
+  @override
+  String get liveSendOffRow => 'sent off for two yellows';
 }

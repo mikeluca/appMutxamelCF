@@ -38,8 +38,18 @@ class ApiClient {
 
   static const Duration _timeout = Duration(seconds: 15);
 
-  static Future<dynamic> get(String path, {bool autenticado = false}) {
-    return _enviar(_HttpMethod.get, path, autenticado: autenticado);
+  /// [headers] añade cabeceras (p. ej. Accept-Language) a las de siempre.
+  static Future<dynamic> get(
+    String path, {
+    bool autenticado = false,
+    Map<String, String>? headers,
+  }) {
+    return _enviar(
+      _HttpMethod.get,
+      path,
+      autenticado: autenticado,
+      headers: headers,
+    );
   }
 
   static Future<dynamic> post(
@@ -94,11 +104,12 @@ class ApiClient {
     String path, {
     Object? body,
     bool autenticado = false,
+    Map<String, String>? headers,
   }) async {
-    final headers = <String, String>{...jsonHeaders};
+    final cabeceras = <String, String>{...jsonHeaders, ...?headers};
 
     if (body != null) {
-      headers['Content-Type'] = 'application/json';
+      cabeceras['Content-Type'] = 'application/json';
     }
 
     if (autenticado) {
@@ -108,7 +119,7 @@ class ApiClient {
         throw const ApiException('No hay una sesión activa.');
       }
 
-      headers['Authorization'] = 'Bearer $token';
+      cabeceras['Authorization'] = 'Bearer $token';
     }
 
     final uri = Uri.parse('$baseUrl$path');
@@ -119,26 +130,26 @@ class ApiClient {
     try {
       switch (metodo) {
         case _HttpMethod.get:
-          response = await http.get(uri, headers: headers).timeout(_timeout);
+          response = await http.get(uri, headers: cabeceras).timeout(_timeout);
           break;
         case _HttpMethod.post:
           response = await http
-              .post(uri, headers: headers, body: bodyJson)
+              .post(uri, headers: cabeceras, body: bodyJson)
               .timeout(_timeout);
           break;
         case _HttpMethod.put:
           response = await http
-              .put(uri, headers: headers, body: bodyJson)
+              .put(uri, headers: cabeceras, body: bodyJson)
               .timeout(_timeout);
           break;
         case _HttpMethod.patch:
           response = await http
-              .patch(uri, headers: headers, body: bodyJson)
+              .patch(uri, headers: cabeceras, body: bodyJson)
               .timeout(_timeout);
           break;
         case _HttpMethod.delete:
           response = await http
-              .delete(uri, headers: headers, body: bodyJson)
+              .delete(uri, headers: cabeceras, body: bodyJson)
               .timeout(_timeout);
           break;
       }

@@ -374,10 +374,15 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
     final enCurso =
         fase == FasePartido.primeraParte || fase == FasePartido.segundaParte;
 
+    // Los cambios y las tarjetas valen también en el descanso.
+    final enJuego = enCurso || fase == FasePartido.descanso;
+
     return [
       _construirMarcador(),
       const SizedBox(height: 16),
       _construirGoleadores(),
+      const SizedBox(height: 16),
+      _construirCambiosYTarjetas(),
       const SizedBox(height: 20),
       Text(
         _t.liveMatchWarning,
@@ -411,6 +416,20 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
         titulo: _t.liveEventGoalAgainst,
         habilitado: enCurso && !_cargandoConvocados,
         onPressed: _confirmarGolContra,
+      ),
+      const SizedBox(height: 12),
+      _construirBoton(
+        icono: Icons.swap_vert,
+        titulo: _t.liveSubButton,
+        habilitado: enJuego && !_cargandoConvocados,
+        onPressed: _abrirCambio,
+      ),
+      const SizedBox(height: 12),
+      _construirBoton(
+        icono: Icons.style_outlined,
+        titulo: _t.liveCardButton,
+        habilitado: enJuego && !_cargandoConvocados,
+        onPressed: _abrirTarjeta,
       ),
       const SizedBox(height: 12),
       _construirBotonConfirmacion(
@@ -567,6 +586,61 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
     );
   }
 
+  /// Los cambios y las tarjetas registrados, que se pueden pulsar para corregir su minuto (sin aviso).
+  Widget _construirCambiosYTarjetas() {
+    final hechos = (_estado?.eventos ?? const <EventoEnVivo>[])
+        .where((e) => e.tipo == EventoEnVivo.cambio || e.esTarjeta)
+        .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _t.liveCardsAndSubs,
+          style: TextStyle(
+            color: _colors.onSurface,
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 6),
+        if (hechos.isEmpty)
+          Text(
+            _t.liveNoCardsAndSubs,
+            style: TextStyle(color: _colors.onSurfaceVariant),
+          )
+        else
+          for (final hecho in hechos)
+            InkWell(
+              key: ValueKey('hecho-${hecho.id}'),
+              onTap: _enviando ? null : () => _corregirMinuto(hecho),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Text(
+                  _textoCambioOTarjeta(hecho),
+                  style: TextStyle(color: _colors.onSurface, fontSize: 15),
+                ),
+              ),
+            ),
+      ],
+    );
+  }
+
+  /// "🔄 60' Sale: Luis · Entra: Ana", "🟨 35' Pérez" o "🟥 80' Pérez (expulsión por doble amarilla)".
+  String _textoCambioOTarjeta(EventoEnVivo evento) {
+    final minuto = evento.minuto == null ? '' : "${evento.minuto}' ";
+
+    if (evento.tipo == EventoEnVivo.cambio) {
+      return '🔄 $minuto${_t.liveSubOutTitle}: ${evento.autor ?? ''}'
+          ' · ${_t.liveSubInTitle}: ${evento.jugadorEntra ?? ''}';
+    }
+
+    final emoji = evento.tipo == EventoEnVivo.tarjetaRoja ? '🟥' : '🟨';
+    final doble = evento.dobleAmarilla ? ' (${_t.liveSendOffRow})' : '';
+
+    return '$emoji $minuto${evento.autor ?? ''}$doble';
+  }
+
   /// "⚽ 23' Pérez" (a favor) o "🥅 31' Gol en contra"; sin minuto, sin esa parte.
   String _textoGol(EventoEnVivo gol) {
     final minuto = gol.minuto == null ? '' : "${gol.minuto}' ";
@@ -662,6 +736,8 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
       'DESCANSO' => _t.liveEventHalftime,
       'SEGUNDA_PARTE' => _t.liveEventSecondHalf,
       'FINAL' => _t.liveEventFulltime,
+      'CAMBIO' => _t.liveSubButton,
+      'TARJETA_AMARILLA' || 'TARJETA_ROJA' => _t.liveCardButton,
       _ => _t.liveEventAlert,
     };
   }
@@ -915,13 +991,153 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
 
     final enviada = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => AlineacionPage(service: _service, partido: partido),
+        builder: (_) => AlineacionPage(
+          service: _service,
+          partido: partido,
+          // Si ya se envió una, reenviarla no avisa de nuevo salvo que se marque.
+          yaEnviada: _estado?.alineacion != null,
+        ),
       ),
     );
 
     if (enviada == true && mounted) {
       _mostrarMensaje(_t.liveLineupSentMessage);
+
+      // La alineación guardada decide quién puede salir y entrar en un cambio.
+      await _refrescar();
     }
+  }
+
+  /// Cambio: hoja con quién sale (los que están en el campo), quién entra (los suplentes que no han entrado) y el
+  /// minuto, calculado como en los goles y editable. Sin alineación guardada vale cualquier pareja de la lista.
+  Future<void> _abrirCambio() async {
+    final partido = _partido;
+
+    if (partido == null || _cargandoConvocados) return;
+
+    setState(() => _cargandoConvocados = true);
+
+    List<ConvocadoEnVivo> convocados;
+
+    try {
+      convocados = await _service.obtenerConvocados(partido.id);
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() => _cargandoConvocados = false);
+      _mostrarMensaje(_t.liveSendError(e.toString()));
+      return;
+    }
+
+    // Recarga el estado: la alineación y el minuto tienen que ser los de ahora.
+    final minutoInicial = await _minutoParaGol();
+
+    if (!mounted) return;
+
+    setState(() => _cargandoConvocados = false);
+
+    final alineacion = _estado?.alineacion;
+
+    final salen = alineacion == null
+        ? convocados
+        : convocados
+              .where((j) => alineacion.enElCampo.contains(j.jugadorId))
+              .toList();
+    final entran = alineacion == null
+        ? convocados
+        : convocados
+              .where((j) => alineacion.suplentesDisponibles.contains(j.jugadorId))
+              .toList();
+
+    final cambio = await showModalBottomSheet<_CambioElegido>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) => _SelectorCambio(
+        salen: salen,
+        entran: entran,
+        minutoInicial: minutoInicial,
+      ),
+    );
+
+    if (cambio == null || !mounted) return;
+
+    await _ejecutarEvento(
+      (id) => _service.enviarCambio(
+        id,
+        jugadorSaleId: cambio.sale,
+        jugadorEntraId: cambio.entra,
+        minuto: cambio.minuto,
+      ),
+      _t.liveSubSent,
+    );
+  }
+
+  /// Tarjeta: jugador, amarilla o roja y minuto. Si es la segunda amarilla del jugador, avisa de que será expulsión.
+  Future<void> _abrirTarjeta() async {
+    final partido = _partido;
+
+    if (partido == null || _cargandoConvocados) return;
+
+    setState(() => _cargandoConvocados = true);
+
+    List<ConvocadoEnVivo> convocados;
+
+    try {
+      convocados = await _service.obtenerConvocados(partido.id);
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() => _cargandoConvocados = false);
+      _mostrarMensaje(_t.liveSendError(e.toString()));
+      return;
+    }
+
+    final minutoInicial = await _minutoParaGol();
+
+    if (!mounted) return;
+
+    setState(() => _cargandoConvocados = false);
+
+    final eventos = _estado?.eventos ?? const <EventoEnVivo>[];
+
+    final conAmarilla = {
+      for (final e in eventos)
+        if (e.tipo == EventoEnVivo.tarjetaAmarilla && e.jugadorId != null)
+          e.jugadorId!,
+    };
+    final expulsados = {
+      ...?_estado?.alineacion?.expulsados,
+      for (final e in eventos)
+        if ((e.tipo == EventoEnVivo.tarjetaRoja || e.dobleAmarilla) &&
+            e.jugadorId != null)
+          e.jugadorId!,
+    };
+
+    final tarjeta = await showModalBottomSheet<_TarjetaElegida>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) => _SelectorTarjeta(
+        jugadores: convocados
+            .where((j) => !expulsados.contains(j.jugadorId))
+            .toList(),
+        conAmarilla: conAmarilla,
+        minutoInicial: minutoInicial,
+      ),
+    );
+
+    if (tarjeta == null || !mounted) return;
+
+    await _ejecutarEvento(
+      (id) => _service.enviarTarjeta(
+        id,
+        jugadorId: tarjeta.jugadorId,
+        color: tarjeta.roja ? 'ROJA' : 'AMARILLA',
+        minuto: tarjeta.minuto,
+      ),
+      _t.liveCardSent,
+    );
   }
 
   void _mostrarMensaje(String mensaje) {
@@ -955,6 +1171,399 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
               onPressed: _cargarPartidos,
               icon: const Icon(Icons.refresh),
               label: Text(_t.retry),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Cambio elegido en la hoja: quién sale, quién entra y el minuto (null = que lo calcule el servidor).
+class _CambioElegido {
+  final int sale;
+  final int entra;
+  final int? minuto;
+
+  const _CambioElegido(this.sale, this.entra, this.minuto);
+}
+
+/// Hoja inferior del cambio: el minuto, quién sale y quién entra. El que sale no puede salir también en la lista de
+/// los que entran.
+class _SelectorCambio extends StatefulWidget {
+  final List<ConvocadoEnVivo> salen;
+  final List<ConvocadoEnVivo> entran;
+  final int? minutoInicial;
+
+  const _SelectorCambio({
+    required this.salen,
+    required this.entran,
+    required this.minutoInicial,
+  });
+
+  @override
+  State<_SelectorCambio> createState() => _SelectorCambioState();
+}
+
+class _SelectorCambioState extends State<_SelectorCambio> {
+  late final TextEditingController _minuto = TextEditingController(
+    text: widget.minutoInicial?.toString() ?? '',
+  );
+
+  int? _sale;
+  int? _entra;
+  bool _minutoInvalido = false;
+
+  @override
+  void dispose() {
+    _minuto.dispose();
+    super.dispose();
+  }
+
+  void _confirmar() {
+    final lectura = _leerMinuto(_minuto.text);
+
+    if (!lectura.valido) {
+      setState(() => _minutoInvalido = true);
+      return;
+    }
+
+    Navigator.pop(context, _CambioElegido(_sale!, _entra!, lectura.minuto));
+  }
+
+  Widget _lista(
+    String prefijo,
+    List<ConvocadoEnVivo> jugadores,
+    int? elegido,
+    void Function(int) alElegir,
+    String vacio,
+  ) {
+    final colors = Theme.of(context).colorScheme;
+
+    if (jugadores.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+        child: Text(vacio, style: TextStyle(color: colors.onSurfaceVariant)),
+      );
+    }
+
+    return Column(
+      children: [
+        for (final jugador in jugadores)
+          ListTile(
+            key: ValueKey('$prefijo-${jugador.jugadorId}'),
+            selected: elegido == jugador.jugadorId,
+            leading: CircleAvatar(
+              backgroundColor: elegido == jugador.jugadorId
+                  ? colors.primary
+                  : colors.primaryContainer,
+              child: Text(
+                jugador.dorsal?.toString() ?? '-',
+                style: TextStyle(
+                  color: elegido == jugador.jugadorId
+                      ? colors.onPrimary
+                      : colors.onPrimaryContainer,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            title: Text(jugador.nombre),
+            trailing: elegido == jugador.jugadorId
+                ? Icon(Icons.check_circle, color: colors.primary)
+                : null,
+            onTap: () => alElegir(jugador.jugadorId),
+          ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
+
+    final entran = widget.entran.where((j) => j.jugadorId != _sale).toList();
+
+    return SafeArea(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+        ),
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Text(
+                t.liveSubButton,
+                style: TextStyle(
+                  color: colors.onSurface,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: TextField(
+                key: const ValueKey('campo-minuto'),
+                controller: _minuto,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                maxLength: 3,
+                decoration: InputDecoration(
+                  labelText: t.liveMinuteLabel,
+                  errorText: _minutoInvalido ? t.liveMinuteInvalid : null,
+                  counterText: '',
+                  isDense: true,
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.arrow_downward,
+                    size: 18,
+                    color: Color(0xFFD62828),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    t.liveSubOutTitle,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+            _lista(
+              'sale',
+              widget.salen,
+              _sale,
+              (id) => setState(() {
+                _sale = id;
+                // El que sale no puede ser también el que entra.
+                if (_entra == id) _entra = null;
+              }),
+              t.liveSubNoneOut,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.arrow_upward,
+                    size: 18,
+                    color: Color(0xFF2E9E4F),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    t.liveSubInTitle,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+            _lista(
+              'entra',
+              entran,
+              _entra,
+              (id) => setState(() => _entra = id),
+              t.liveSubNoneIn,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: FilledButton(
+                key: const ValueKey('confirmar-cambio'),
+                onPressed: _sale == null || _entra == null ? null : _confirmar,
+                child: Text(t.send),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Tarjeta elegida en la hoja.
+class _TarjetaElegida {
+  final int jugadorId;
+  final bool roja;
+  final int? minuto;
+
+  const _TarjetaElegida(this.jugadorId, this.roja, this.minuto);
+}
+
+/// Hoja inferior de la tarjeta: el minuto, el color y el jugador. Si es amarilla y el jugador ya tiene otra, avisa de
+/// que será expulsión.
+class _SelectorTarjeta extends StatefulWidget {
+  final List<ConvocadoEnVivo> jugadores;
+
+  /// Jugadores con una amarilla ya en este partido.
+  final Set<int> conAmarilla;
+  final int? minutoInicial;
+
+  const _SelectorTarjeta({
+    required this.jugadores,
+    required this.conAmarilla,
+    required this.minutoInicial,
+  });
+
+  @override
+  State<_SelectorTarjeta> createState() => _SelectorTarjetaState();
+}
+
+class _SelectorTarjetaState extends State<_SelectorTarjeta> {
+  late final TextEditingController _minuto = TextEditingController(
+    text: widget.minutoInicial?.toString() ?? '',
+  );
+
+  int? _jugador;
+  bool _roja = false;
+  bool _minutoInvalido = false;
+
+  @override
+  void dispose() {
+    _minuto.dispose();
+    super.dispose();
+  }
+
+  bool get _seraExpulsion =>
+      !_roja && _jugador != null && widget.conAmarilla.contains(_jugador);
+
+  void _confirmar() {
+    final lectura = _leerMinuto(_minuto.text);
+
+    if (!lectura.valido) {
+      setState(() => _minutoInvalido = true);
+      return;
+    }
+
+    Navigator.pop(context, _TarjetaElegida(_jugador!, _roja, lectura.minuto));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
+
+    return SafeArea(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+        ),
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Text(
+                t.liveCardPlayerTitle,
+                style: TextStyle(
+                  color: colors.onSurface,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: SegmentedButton<bool>(
+                key: const ValueKey('color-tarjeta'),
+                segments: [
+                  ButtonSegment(
+                    value: false,
+                    label: Text(t.liveCardYellow),
+                    icon: const Icon(Icons.rectangle, color: Color(0xFFF2C500)),
+                  ),
+                  ButtonSegment(
+                    value: true,
+                    label: Text(t.liveCardRed),
+                    icon: const Icon(Icons.rectangle, color: Color(0xFFD62828)),
+                  ),
+                ],
+                selected: {_roja},
+                onSelectionChanged: (valor) =>
+                    setState(() => _roja = valor.first),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: TextField(
+                key: const ValueKey('campo-minuto'),
+                controller: _minuto,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                maxLength: 3,
+                decoration: InputDecoration(
+                  labelText: t.liveMinuteLabel,
+                  errorText: _minutoInvalido ? t.liveMinuteInvalid : null,
+                  counterText: '',
+                  isDense: true,
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ),
+            if (_seraExpulsion)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: Row(
+                  children: [
+                    Icon(Icons.warning_amber, color: colors.error),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        t.liveCardSecondYellow,
+                        key: const ValueKey('aviso-segunda-amarilla'),
+                        style: TextStyle(color: colors.error),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (widget.jugadores.isEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                child: Text(
+                  t.liveNoPlayersToPick,
+                  style: TextStyle(color: colors.onSurfaceVariant),
+                ),
+              ),
+            for (final jugador in widget.jugadores)
+              ListTile(
+                key: ValueKey('tarjeta-${jugador.jugadorId}'),
+                selected: _jugador == jugador.jugadorId,
+                leading: CircleAvatar(
+                  backgroundColor: _jugador == jugador.jugadorId
+                      ? colors.primary
+                      : colors.primaryContainer,
+                  child: Text(
+                    jugador.dorsal?.toString() ?? '-',
+                    style: TextStyle(
+                      color: _jugador == jugador.jugadorId
+                          ? colors.onPrimary
+                          : colors.onPrimaryContainer,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                title: Text(jugador.nombre),
+                trailing: _jugador == jugador.jugadorId
+                    ? Icon(Icons.check_circle, color: colors.primary)
+                    : null,
+                onTap: () => setState(() => _jugador = jugador.jugadorId),
+              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: FilledButton(
+                key: const ValueKey('confirmar-tarjeta'),
+                onPressed: _jugador == null ? null : _confirmar,
+                child: Text(t.send),
+              ),
             ),
           ],
         ),

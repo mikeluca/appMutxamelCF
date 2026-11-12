@@ -3171,4 +3171,143 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get callupShowerReminder =>
       '🚿 Ducha recomendable después del partido';
+
+  @override
+  String get fichaTitle => 'Ficha del partido';
+
+  @override
+  String get fichaTabDetail => 'Detalle';
+
+  @override
+  String get fichaTabLineup => 'Alineación';
+
+  @override
+  String get fichaTabForm => 'Forma del equipo';
+
+  @override
+  String get fichaStatusLive => 'En directo';
+
+  @override
+  String get fichaStatusHalftime => 'Descanso';
+
+  @override
+  String get fichaStatusFinished => 'Finalizado';
+
+  @override
+  String get fichaStatusCancelled => 'Cancelado';
+
+  @override
+  String get fichaNotBroadcast => 'Este partido no se ha retransmitido';
+
+  @override
+  String get fichaNoLineup => 'Sin alineación';
+
+  @override
+  String get fichaSubstitutes => 'Suplentes';
+
+  @override
+  String get fichaSubIn => 'Entra';
+
+  @override
+  String get fichaSubOut => 'Sale';
+
+  @override
+  String get fichaHalftimeSeparator => 'Descanso';
+
+  @override
+  String get fichaFinalSeparator => 'Final';
+
+  @override
+  String get fichaGoal => 'Gol';
+
+  @override
+  String get fichaGoalAgainst => 'Gol del rival';
+
+  @override
+  String get fichaYellowCard => 'Tarjeta amarilla';
+
+  @override
+  String get fichaRedCard => 'Tarjeta roja';
+
+  @override
+  String get fichaSecondYellow => 'Doble amarilla';
+
+  @override
+  String get fichaLoadError => 'No se ha podido cargar la ficha del partido.';
+
+  @override
+  String get fichaNotAvailable =>
+      'La ficha solo está disponible para los partidos del Primer Equipo.';
+
+  @override
+  String get fichaFormEmpty => 'Todavía no hay partidos con resultado';
+
+  @override
+  String get liveFormationTitle => 'Formación';
+
+  @override
+  String get liveFormationHint =>
+      'Elige la formación antes del once: el orden en que elijas a los jugadores los coloca en el campo (portero, defensas de izquierda a derecha, medios y delanteros).';
+
+  @override
+  String get liveFormationNone => 'Sin formación';
+
+  @override
+  String get liveLineupNotify => 'Enviar aviso';
+
+  @override
+  String liveLineupFormationNeeds(int n) {
+    return 'Con esta formación hacen falta $n titulares (portero incluido).';
+  }
+
+  @override
+  String get liveSubButton => 'Cambio';
+
+  @override
+  String get liveSubOutTitle => 'Sale';
+
+  @override
+  String get liveSubInTitle => 'Entra';
+
+  @override
+  String get liveSubNoneOut => 'No hay jugadores en el campo.';
+
+  @override
+  String get liveSubNoneIn => 'No quedan suplentes por entrar.';
+
+  @override
+  String get liveSubPick => 'Elige quién sale y quién entra.';
+
+  @override
+  String get liveSubSent => 'Cambio registrado.';
+
+  @override
+  String get liveCardButton => 'Tarjeta';
+
+  @override
+  String get liveCardPlayerTitle => '¿A quién se la han enseñado?';
+
+  @override
+  String get liveCardYellow => 'Amarilla';
+
+  @override
+  String get liveCardRed => 'Roja';
+
+  @override
+  String get liveCardSecondYellow => 'Es su segunda amarilla: será expulsado.';
+
+  @override
+  String get liveCardPick => 'Elige al jugador.';
+
+  @override
+  String get liveCardSent => 'Tarjeta registrada.';
+
+  @override
+  String get liveCardsAndSubs => 'Cambios y tarjetas';
+
+  @override
+  String get liveNoCardsAndSubs => 'Todavía no hay cambios ni tarjetas';
+
+  @override
+  String get liveSendOffRow => 'expulsión por doble amarilla';
 }

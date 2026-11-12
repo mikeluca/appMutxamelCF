@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/como_llegar.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../l10n/gen/app_localizations.dart';
+import '../../ficha_partido/pages/ficha_partido_page.dart';
 import '../models/match_model.dart';
 
 class MatchCard extends StatelessWidget {
@@ -32,7 +33,19 @@ class MatchCard extends StatelessWidget {
       tarjeta = _buildUpcomingMatchCard(context);
     }
 
-    return _envolverConEtiquetaTipo(context, tarjeta);
+    final envuelta = _envolverConEtiquetaTipo(context, tarjeta);
+
+    // La tarjeta del Primer Equipo de la portada abre la ficha del partido.
+    if (!mostrarPrimerEquipo || !match.tieneFicha) {
+      return envuelta;
+    }
+
+    return GestureDetector(
+      key: const ValueKey('abrir-ficha'),
+      behavior: HitTestBehavior.opaque,
+      onTap: () => FichaPartidoPage.abrir(context, match.id!),
+      child: envuelta,
+    );
   }
 
   // ============================================================

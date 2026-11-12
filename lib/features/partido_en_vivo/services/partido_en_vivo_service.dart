@@ -5,18 +5,54 @@ class PartidoEnVivoService {
   static const String _base = '/app/partido-en-vivo';
 
   /// Alineación elegida entre los jugadores del partido: los ids de titulares y suplentes, cada lista
-  /// en el orden en que debe salir en el aviso. Los suplentes son opcionales.
+  /// en el orden en que se eligieron (con [formacion], el de los titulares da la posición en el campo). Los
+  /// suplentes y la formación son opcionales. El aviso solo sale con [avisar]; reenviarla reemplaza a la anterior.
   Future<void> enviarAlineacion(
     int partidoId, {
     required List<int> titulares,
     List<int> suplentes = const [],
+    String? formacion,
+    bool avisar = false,
   }) {
     return ApiClient.post(
       '$_base/$partidoId/alineacion',
       autenticado: true,
-      body: {'titulares': titulares, 'suplentes': suplentes},
+      body: {
+        'titulares': titulares,
+        'suplentes': suplentes,
+        'formacion': formacion,
+        'avisar': avisar,
+      },
     );
   }
+
+  /// Cambio: sale [jugadorSaleId], entra [jugadorEntraId]. Sin [minuto] lo calcula el servidor. Sin aviso.
+  Future<EstadoPartidoEnVivo> enviarCambio(
+    int partidoId, {
+    required int jugadorSaleId,
+    required int jugadorEntraId,
+    int? minuto,
+  }) => _evento(
+    partidoId,
+    'cambio',
+    body: {
+      'jugadorSaleId': jugadorSaleId,
+      'jugadorEntraId': jugadorEntraId,
+      'minuto': minuto,
+    },
+  );
+
+  /// Tarjeta ([color] AMARILLA o ROJA). La segunda amarilla de un jugador es una expulsión. Sin aviso.
+  Future<EstadoPartidoEnVivo> enviarTarjeta(
+    int partidoId, {
+    required int jugadorId,
+    required String color,
+    int? minuto,
+  }) => _evento(
+    partidoId,
+    'tarjeta',
+    body: {'jugadorId': jugadorId, 'color': color, 'minuto': minuto},
+  );
 
   /// Partidos del Primer Equipo de hoy, no cancelados. Vacía si no hay.
   Future<List<PartidoEnVivoDisponible>> obtenerPartidosDisponibles() async {
@@ -82,7 +118,7 @@ class PartidoEnVivoService {
   Future<EstadoPartidoEnVivo> enviarFinalPartido(int partidoId) =>
       _evento(partidoId, 'final');
 
-  /// Corrige el minuto (0-150) de un gol no anulado del partido de hoy; el servidor no
+  /// Corrige el minuto (0-150) de un gol, cambio o tarjeta no anulado del partido de hoy; el servidor no
   /// reenvía ningún aviso.
   Future<EstadoPartidoEnVivo> corregirMinuto(
     int partidoId,

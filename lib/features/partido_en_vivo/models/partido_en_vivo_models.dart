@@ -111,17 +111,28 @@ class ConvocadoEnVivo {
 class EventoEnVivo {
   final int id;
 
-  /// INICIO, GOL_FAVOR, GOL_CONTRA, DESCANSO, SEGUNDA_PARTE o FINAL.
+  /// INICIO, GOL_FAVOR, GOL_CONTRA, DESCANSO, SEGUNDA_PARTE, FINAL, CAMBIO, TARJETA_AMARILLA o TARJETA_ROJA.
+  static const String cambio = 'CAMBIO';
+  static const String tarjetaAmarilla = 'TARJETA_AMARILLA';
+  static const String tarjetaRoja = 'TARJETA_ROJA';
+
   final String tipo;
   final int? jugadorId;
 
-  /// Nombre del jugador, texto libre o 'p.p.'.
+  /// Nombre del jugador, texto libre o 'p.p.'. En un cambio, el que sale; en una tarjeta, el amonestado.
   final String? autor;
   final DateTime? fecha;
 
   /// Minuto del partido en que se marcó el gol (0-150); null en el resto de eventos
   /// y en goles de un backend antiguo.
   final int? minuto;
+
+  /// Solo en un CAMBIO: el que entra.
+  final int? jugadorEntraId;
+  final String? jugadorEntra;
+
+  /// true en la segunda amarilla de un jugador (expulsiÃ³n).
+  final bool dobleAmarilla;
 
   const EventoEnVivo({
     required this.id,
@@ -130,7 +141,17 @@ class EventoEnVivo {
     this.autor,
     this.fecha,
     this.minuto,
+    this.jugadorEntraId,
+    this.jugadorEntra,
+    this.dobleAmarilla = false,
   });
+
+  bool get esGol => tipo == 'GOL_FAVOR' || tipo == 'GOL_CONTRA';
+
+  bool get esTarjeta => tipo == tarjetaAmarilla || tipo == tarjetaRoja;
+
+  /// Los eventos a los que se puede corregir el minuto: goles, cambios y tarjetas.
+  bool get minutoCorregible => esGol || tipo == cambio || esTarjeta;
 
   factory EventoEnVivo.fromJson(Map<String, dynamic> json) {
     return EventoEnVivo(
@@ -140,6 +161,43 @@ class EventoEnVivo {
       autor: json['autor'] as String?,
       fecha: DateTime.tryParse(json['fecha']?.toString() ?? ''),
       minuto: (json['minuto'] as num?)?.toInt(),
+      jugadorEntraId: (json['jugadorEntraId'] as num?)?.toInt(),
+      jugadorEntra: json['jugadorEntra'] as String?,
+      dobleAmarilla: json['dobleAmarilla'] as bool? ?? false,
+    );
+  }
+}
+
+/// La alineaciÃ³n guardada del partido y quiÃ©n estÃ¡ ahora en el campo (ids de jugador).
+class AlineacionEnVivo {
+  final String? formacion;
+  final List<int> titulares;
+  final List<int> suplentes;
+  final List<int> enElCampo;
+  final List<int> suplentesDisponibles;
+  final List<int> expulsados;
+
+  const AlineacionEnVivo({
+    this.formacion,
+    this.titulares = const [],
+    this.suplentes = const [],
+    this.enElCampo = const [],
+    this.suplentesDisponibles = const [],
+    this.expulsados = const [],
+  });
+
+  factory AlineacionEnVivo.fromJson(Map<String, dynamic> json) {
+    List<int> ids(String clave) => (json[clave] as List<dynamic>? ?? const [])
+        .map((e) => (e as num).toInt())
+        .toList();
+
+    return AlineacionEnVivo(
+      formacion: json['formacion'] as String?,
+      titulares: ids('titulares'),
+      suplentes: ids('suplentes'),
+      enElCampo: ids('enElCampo'),
+      suplentesDisponibles: ids('suplentesDisponibles'),
+      expulsados: ids('expulsados'),
     );
   }
 }
@@ -167,6 +225,9 @@ class EstadoPartidoEnVivo {
   /// descanso y tras el final.
   final int? minutoActual;
 
+  /// La alineaciÃ³n guardada y quiÃ©n estÃ¡ en el campo; null si no se ha enviado ninguna (o backend antiguo).
+  final AlineacionEnVivo? alineacion;
+
   const EstadoPartidoEnVivo({
     required this.partidoId,
     this.rival = '',
@@ -179,6 +240,7 @@ class EstadoPartidoEnVivo {
     this.deshacibleId,
     this.deshacibleSegundos,
     this.minutoActual,
+    this.alineacion,
   });
 
   factory EstadoPartidoEnVivo.fromJson(Map<String, dynamic> json) {
@@ -199,6 +261,9 @@ class EstadoPartidoEnVivo {
       deshacibleSegundos: (deshacible?['segundosRestantesDeshacer'] as num?)
           ?.toInt(),
       minutoActual: (json['minutoActual'] as num?)?.toInt(),
+      alineacion: json['alineacion'] is Map<String, dynamic>
+          ? AlineacionEnVivo.fromJson(json['alineacion'] as Map<String, dynamic>)
+          : null,
     );
   }
 

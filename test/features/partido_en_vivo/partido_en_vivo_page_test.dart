@@ -45,6 +45,12 @@ class _ServicioFalso extends PartidoEnVivoService {
   /// Si no es null, son los jugadores que devuelve obtenerConvocados.
   List<ConvocadoEnVivo>? convocadosForzados;
 
+  /// La alineaciÃ³n guardada que dice el estado (null = ninguna).
+  AlineacionEnVivo? alineacion;
+
+  /// Si no es null, el siguiente cambio o tarjeta lo rechaza el servidor con este mensaje.
+  String? errorDeCambioOTarjeta;
+
   _ServicioFalso(this.reloj, this.partidos, {this.local = true});
 
   int get _favor => eventos.where((e) => e.tipo == 'GOL_FAVOR').length;
@@ -71,6 +77,7 @@ class _ServicioFalso extends PartidoEnVivoService {
       ],
       eventos: List.of(eventos),
       minutoActual: minutoActual,
+      alineacion: alineacion,
       deshacibleId: deshacible ? ultimo.id : null,
       deshacibleSegundos: deshacible
           ? segundosForzados ??
@@ -89,6 +96,9 @@ class _ServicioFalso extends PartidoEnVivoService {
     int? jugadorId,
     String? autor,
     int? minuto,
+    int? jugadorEntraId,
+    String? jugadorEntra,
+    bool dobleAmarilla = false,
   }) {
     llamadas.add('$tipo:$partidoId');
 
@@ -105,6 +115,9 @@ class _ServicioFalso extends PartidoEnVivoService {
         autor: autor,
         fecha: reloj.ahora,
         minuto: minuto,
+        jugadorEntraId: jugadorEntraId,
+        jugadorEntra: jugadorEntra,
+        dobleAmarilla: dobleAmarilla,
       ),
     );
     fase = nuevaFase;
@@ -199,9 +212,95 @@ class _ServicioFalso extends PartidoEnVivoService {
       autor: e.autor,
       fecha: e.fecha,
       minuto: minuto,
+      jugadorEntraId: e.jugadorEntraId,
+      jugadorEntra: e.jugadorEntra,
+      dobleAmarilla: e.dobleAmarilla,
     );
 
     return _estado(partidoId);
+  }
+
+  static const _nombres = {
+    10: 'Pablo Garcia',
+    11: 'Luis Lopez',
+    12: 'Ana Ruiz',
+    13: 'Juan Perez',
+  };
+
+  @override
+  Future<EstadoPartidoEnVivo> enviarCambio(
+    int partidoId, {
+    required int jugadorSaleId,
+    required int jugadorEntraId,
+    int? minuto,
+  }) async {
+    llamadas.add('cambio:$jugadorSaleId>$jugadorEntraId:$minuto');
+
+    final error = errorDeCambioOTarjeta;
+    if (error != null) {
+      errorDeCambioOTarjeta = null;
+      throw Exception(error);
+    }
+
+    final actual = alineacion;
+    if (actual != null) {
+      alineacion = AlineacionEnVivo(
+        formacion: actual.formacion,
+        titulares: actual.titulares,
+        suplentes: actual.suplentes,
+        enElCampo: [
+          ...actual.enElCampo.where((id) => id != jugadorSaleId),
+          jugadorEntraId,
+        ],
+        suplentesDisponibles: actual.suplentesDisponibles
+            .where((id) => id != jugadorEntraId)
+            .toList(),
+        expulsados: actual.expulsados,
+      );
+    }
+
+    return _registrar(
+      partidoId,
+      'CAMBIO',
+      fase,
+      minuto: minuto,
+      jugadorId: jugadorSaleId,
+      autor: _nombres[jugadorSaleId],
+      jugadorEntraId: jugadorEntraId,
+      jugadorEntra: _nombres[jugadorEntraId],
+    );
+  }
+
+  @override
+  Future<EstadoPartidoEnVivo> enviarTarjeta(
+    int partidoId, {
+    required int jugadorId,
+    required String color,
+    int? minuto,
+  }) async {
+    llamadas.add('tarjeta:$jugadorId:$color:$minuto');
+
+    final error = errorDeCambioOTarjeta;
+    if (error != null) {
+      errorDeCambioOTarjeta = null;
+      throw Exception(error);
+    }
+
+    final segundaAmarilla =
+        color == 'AMARILLA' &&
+        eventos.any(
+          (e) => e.tipo == 'TARJETA_AMARILLA' && e.jugadorId == jugadorId,
+        );
+
+    return _registrar(
+      partidoId,
+      color == 'ROJA' ? 'TARJETA_ROJA' : 'TARJETA_AMARILLA',
+      fase,
+      minuto: minuto,
+      jugadorId: jugadorId,
+      autor: _nombres[jugadorId],
+      dobleAmarilla: segundaAmarilla,
+    );
   }
 
   @override
@@ -1035,6 +1134,430 @@ void main() {
 
       expect(servicio.llamadas, contains('minuto-gol:null'));
       expect(find.text('⚽ Pablo Garcia'), findsOneWidget);
+    });
+  });
+
+  group('cambio y tarjeta', () {
+    const jugadores = [
+      ConvocadoEnVivo(jugadorId: 10, dorsal: 9, nombre: 'Pablo Garcia'),
+      ConvocadoEnVivo(jugadorId: 11, dorsal: 1, nombre: 'Luis Lopez'),
+      ConvocadoEnVivo(jugadorId: 12, dorsal: 14, nombre: 'Ana Ruiz'),
+      ConvocadoEnVivo(jugadorId: 13, dorsal: 15, nombre: 'Juan Perez'),
+    ];
+
+    const alineacion = AlineacionEnVivo(
+      formacion: '4-4-2',
+      titulares: [10, 11],
+      suplentes: [12, 13],
+      enElCampo: [10, 11],
+      suplentesDisponibles: [12, 13],
+    );
+
+    final campoMinuto = find.byKey(const ValueKey('campo-minuto'));
+
+    Future<_ServicioFalso> empezar(
+      WidgetTester tester, {
+      AlineacionEnVivo? conAlineacion = alineacion,
+      int? minuto = 23,
+    }) async {
+      final servicio = _ServicioFalso(reloj, _unPartido)
+        ..convocadosForzados = jugadores
+        ..alineacion = conAlineacion
+        ..minutoActual = minuto;
+      await _pintar(tester, servicio, reloj);
+      await _pulsarYConfirmar(tester, 'Inicio de partido');
+      return servicio;
+    }
+
+    Future<void> abrirCambio(WidgetTester tester) async {
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Cambio'));
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> abrirTarjeta(WidgetTester tester) async {
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Tarjeta'));
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> tocar(WidgetTester tester, String clave) async {
+      await tester.tap(find.byKey(ValueKey(clave)));
+      await tester.pumpAndSettle();
+    }
+
+    Future<void> confirmar(WidgetTester tester, String clave) async {
+      await tester.tap(find.byKey(ValueKey(clave)));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('los botones solo valen con el partido en juego o en el descanso', (
+      tester,
+    ) async {
+      final servicio = _ServicioFalso(reloj, _unPartido);
+      await _pintar(tester, servicio, reloj);
+
+      expect(_habilitado(tester, 'Cambio'), isFalse);
+      expect(_habilitado(tester, 'Tarjeta'), isFalse);
+
+      await _pulsarYConfirmar(tester, 'Inicio de partido');
+      expect(_habilitado(tester, 'Cambio'), isTrue);
+      expect(_habilitado(tester, 'Tarjeta'), isTrue);
+
+      await _pulsarYConfirmar(tester, 'Descanso');
+      expect(_habilitado(tester, 'Cambio'), isTrue);
+      expect(_habilitado(tester, 'Tarjeta'), isTrue);
+
+      await _pulsarYConfirmar(tester, 'Segunda parte');
+      await _pulsarYConfirmar(tester, 'Final de partido');
+      expect(_habilitado(tester, 'Cambio'), isFalse);
+      expect(_habilitado(tester, 'Tarjeta'), isFalse);
+    });
+
+    testWidgets('con alineación, sale uno del campo y entra un suplente, con el minuto calculado', (
+      tester,
+    ) async {
+      final servicio = await empezar(tester);
+      await abrirCambio(tester);
+
+      // Salen los que están en el campo; entran los suplentes disponibles.
+      expect(find.byKey(const ValueKey('sale-10')), findsOneWidget);
+      expect(find.byKey(const ValueKey('sale-11')), findsOneWidget);
+      expect(find.byKey(const ValueKey('sale-12')), findsNothing);
+      expect(find.byKey(const ValueKey('entra-12')), findsOneWidget);
+      expect(find.byKey(const ValueKey('entra-13')), findsOneWidget);
+      expect(find.byKey(const ValueKey('entra-10')), findsNothing);
+
+      // El minuto viene calculado y es editable.
+      expect(tester.widget<TextField>(campoMinuto).controller?.text, '23');
+
+      // Sin elegir los dos no se puede enviar.
+      expect(
+        tester
+            .widget<FilledButton>(find.byKey(const ValueKey('confirmar-cambio')))
+            .onPressed,
+        isNull,
+      );
+
+      await tocar(tester, 'sale-10');
+      expect(
+        tester
+            .widget<FilledButton>(find.byKey(const ValueKey('confirmar-cambio')))
+            .onPressed,
+        isNull,
+      );
+      await tocar(tester, 'entra-12');
+      await confirmar(tester, 'confirmar-cambio');
+
+      expect(servicio.llamadas, contains('cambio:10>12:23'));
+      expect(find.text('Cambio registrado.'), findsOneWidget);
+      expect(
+        find.text("🔄 23' Sale: Pablo Garcia · Entra: Ana Ruiz"),
+        findsOneWidget,
+      );
+
+      // El estado se actualiza: el que entró puede salir y el que salió ya no.
+      await abrirCambio(tester);
+      expect(find.byKey(const ValueKey('sale-10')), findsNothing);
+      expect(find.byKey(const ValueKey('sale-12')), findsOneWidget);
+      expect(find.byKey(const ValueKey('entra-12')), findsNothing);
+      expect(find.byKey(const ValueKey('entra-13')), findsOneWidget);
+    });
+
+    testWidgets('el minuto del cambio se puede editar y debe estar entre 0 y 150', (
+      tester,
+    ) async {
+      final servicio = await empezar(tester);
+      await abrirCambio(tester);
+
+      await tocar(tester, 'sale-11');
+      await tocar(tester, 'entra-13');
+
+      await tester.enterText(campoMinuto, '200');
+      await confirmar(tester, 'confirmar-cambio');
+      expect(find.text('El minuto debe estar entre 0 y 150.'), findsOneWidget);
+      expect(servicio.llamadas.where((l) => l.startsWith('cambio')), isEmpty);
+
+      await tester.enterText(campoMinuto, '31');
+      await confirmar(tester, 'confirmar-cambio');
+      expect(servicio.llamadas, contains('cambio:11>13:31'));
+    });
+
+    testWidgets('en el descanso no hay minuto calculado y se manda sin él', (
+      tester,
+    ) async {
+      final servicio = await empezar(tester, minuto: null);
+      await _pulsarYConfirmar(tester, 'Descanso');
+      await abrirCambio(tester);
+
+      expect(tester.widget<TextField>(campoMinuto).controller?.text, '');
+
+      await tocar(tester, 'sale-10');
+      await tocar(tester, 'entra-12');
+      await confirmar(tester, 'confirmar-cambio');
+
+      expect(servicio.llamadas, contains('cambio:10>12:null'));
+    });
+
+    testWidgets('sin alineación guardada valen todos los convocados y el que sale no puede entrar', (
+      tester,
+    ) async {
+      await empezar(tester, conAlineacion: null);
+      await abrirCambio(tester);
+
+      for (final id in [10, 11, 12, 13]) {
+        expect(find.byKey(ValueKey('sale-$id')), findsOneWidget);
+        expect(find.byKey(ValueKey('entra-$id')), findsOneWidget);
+      }
+
+      await tocar(tester, 'sale-10');
+      expect(find.byKey(const ValueKey('entra-10')), findsNothing);
+      expect(find.byKey(const ValueKey('entra-11')), findsOneWidget);
+
+      // Elegir como entrante a uno y luego hacerlo saliente lo quita de la elección.
+      await tocar(tester, 'entra-11');
+      await tocar(tester, 'sale-11');
+      expect(
+        tester
+            .widget<FilledButton>(find.byKey(const ValueKey('confirmar-cambio')))
+            .onPressed,
+        isNull,
+      );
+    });
+
+    testWidgets('el error del servidor se enseña en texto claro', (tester) async {
+      final servicio = await empezar(tester);
+      servicio.errorDeCambioOTarjeta = 'El jugador que sale no está en el campo';
+
+      await abrirCambio(tester);
+      await tocar(tester, 'sale-10');
+      await tocar(tester, 'entra-12');
+      await confirmar(tester, 'confirmar-cambio');
+
+      expect(
+        find.textContaining('El jugador que sale no está en el campo'),
+        findsOneWidget,
+      );
+      // Se vuelve a leer el estado y sigue sin haber cambio.
+      expect(find.textContaining('🔄'), findsNothing);
+    });
+
+    testWidgets('la tarjeta amarilla se envía con jugador y minuto y sale en la lista', (
+      tester,
+    ) async {
+      final servicio = await empezar(tester);
+      await abrirTarjeta(tester);
+
+      expect(tester.widget<TextField>(campoMinuto).controller?.text, '23');
+      expect(
+        tester
+            .widget<FilledButton>(find.byKey(const ValueKey('confirmar-tarjeta')))
+            .onPressed,
+        isNull,
+      );
+
+      await tocar(tester, 'tarjeta-10');
+      await confirmar(tester, 'confirmar-tarjeta');
+
+      expect(servicio.llamadas, contains('tarjeta:10:AMARILLA:23'));
+      expect(find.text('Tarjeta registrada.'), findsOneWidget);
+      expect(find.text("🟨 23' Pablo Garcia"), findsOneWidget);
+    });
+
+    testWidgets('la roja se elige con el selector de color', (tester) async {
+      final servicio = await empezar(tester);
+      await abrirTarjeta(tester);
+
+      await tester.tap(find.text('Roja'));
+      await tester.pumpAndSettle();
+      await tocar(tester, 'tarjeta-11');
+      await tester.enterText(campoMinuto, '40');
+      await confirmar(tester, 'confirmar-tarjeta');
+
+      expect(servicio.llamadas, contains('tarjeta:11:ROJA:40'));
+      expect(find.text("🟥 40' Luis Lopez"), findsOneWidget);
+
+      // Un expulsado ya no sale en la lista de jugadores para una tarjeta.
+      await abrirTarjeta(tester);
+      expect(find.byKey(const ValueKey('tarjeta-11')), findsNothing);
+      expect(find.byKey(const ValueKey('tarjeta-10')), findsOneWidget);
+    });
+
+    testWidgets('si es su segunda amarilla avisa de que será expulsión y la doble amarilla se anota como tal', (
+      tester,
+    ) async {
+      final servicio = await empezar(tester);
+
+      await abrirTarjeta(tester);
+      await tocar(tester, 'tarjeta-10');
+      // La primera amarilla no avisa de nada.
+      expect(find.byKey(const ValueKey('aviso-segunda-amarilla')), findsNothing);
+      await confirmar(tester, 'confirmar-tarjeta');
+
+      await abrirTarjeta(tester);
+      expect(find.byKey(const ValueKey('aviso-segunda-amarilla')), findsNothing);
+
+      // Otro jugador sin amarilla: sin aviso.
+      await tocar(tester, 'tarjeta-11');
+      expect(find.byKey(const ValueKey('aviso-segunda-amarilla')), findsNothing);
+
+      // El que ya tiene una: aviso.
+      await tocar(tester, 'tarjeta-10');
+      expect(
+        find.text('Es su segunda amarilla: será expulsado.'),
+        findsOneWidget,
+      );
+
+      // Con roja no hay doble amarilla: sin aviso.
+      await tester.tap(find.text('Roja'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('aviso-segunda-amarilla')), findsNothing);
+      await tester.tap(find.text('Amarilla'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('aviso-segunda-amarilla')), findsOneWidget);
+
+      await confirmar(tester, 'confirmar-tarjeta');
+
+      expect(servicio.llamadas.where((l) => l.startsWith('tarjeta:10:AMARILLA')),
+          hasLength(2));
+      expect(
+        find.text("🟨 23' Pablo Garcia (expulsión por doble amarilla)"),
+        findsOneWidget,
+      );
+
+      // Expulsado por la doble amarilla: ya no sale para otra tarjeta.
+      await abrirTarjeta(tester);
+      expect(find.byKey(const ValueKey('tarjeta-10')), findsNothing);
+    });
+
+    testWidgets('el error de la tarjeta llega en texto claro', (tester) async {
+      final servicio = await empezar(tester);
+      servicio.errorDeCambioOTarjeta = 'El jugador ya ha sido expulsado';
+
+      await abrirTarjeta(tester);
+      await tocar(tester, 'tarjeta-10');
+      await confirmar(tester, 'confirmar-tarjeta');
+
+      expect(find.textContaining('El jugador ya ha sido expulsado'), findsOneWidget);
+    });
+
+    testWidgets('pulsar un cambio o una tarjeta de la lista corrige su minuto', (
+      tester,
+    ) async {
+      final servicio = await empezar(tester);
+
+      await abrirCambio(tester);
+      await tocar(tester, 'sale-10');
+      await tocar(tester, 'entra-12');
+      await confirmar(tester, 'confirmar-cambio');
+
+      await abrirTarjeta(tester);
+      await tocar(tester, 'tarjeta-11');
+      await confirmar(tester, 'confirmar-tarjeta');
+
+      await tester.tap(find.textContaining('🔄'));
+      await tester.pumpAndSettle();
+      expect(find.text('Corregir el minuto'), findsOneWidget);
+      await tester.enterText(campoMinuto, '25');
+      await tester.tap(find.widgetWithText(FilledButton, 'Guardar'));
+      await tester.pumpAndSettle();
+
+      expect(servicio.llamadas, contains('corregir:2:25'));
+      expect(
+        find.text("🔄 25' Sale: Pablo Garcia · Entra: Ana Ruiz"),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.textContaining('🟨'));
+      await tester.pumpAndSettle();
+      await tester.enterText(campoMinuto, '26');
+      await tester.tap(find.widgetWithText(FilledButton, 'Guardar'));
+      await tester.pumpAndSettle();
+
+      expect(servicio.llamadas, contains('corregir:3:26'));
+      expect(find.text("🟨 26' Luis Lopez"), findsOneWidget);
+    });
+
+    testWidgets('se puede deshacer un cambio y una tarjeta, con su etiqueta en la barra', (
+      tester,
+    ) async {
+      final servicio = await empezar(tester);
+
+      await abrirCambio(tester);
+      await tocar(tester, 'sale-10');
+      await tocar(tester, 'entra-12');
+      await confirmar(tester, 'confirmar-cambio');
+
+      expect(find.text('Último aviso: Cambio'), findsOneWidget);
+
+      await tester.tap(find.textContaining('Deshacer ('));
+      await tester.pumpAndSettle();
+
+      expect(servicio.llamadas, contains('deshacer:2'));
+      expect(find.textContaining('🔄'), findsNothing);
+
+      await abrirTarjeta(tester);
+      await tocar(tester, 'tarjeta-10');
+      await confirmar(tester, 'confirmar-tarjeta');
+
+      expect(find.text('Último aviso: Tarjeta'), findsOneWidget);
+
+      await tester.tap(find.textContaining('Deshacer ('));
+      await tester.pumpAndSettle();
+
+      expect(servicio.llamadas, contains('deshacer:3'));
+      expect(find.textContaining('🟨'), findsNothing);
+    });
+
+    testWidgets('sin cambios ni tarjetas lo dice', (tester) async {
+      await empezar(tester);
+
+      expect(find.text('Todavía no hay cambios ni tarjetas'), findsOneWidget);
+    });
+
+    test('el modelo lee los campos nuevos del evento y la alineación del estado', () {
+      final estado = EstadoPartidoEnVivo.fromJson({
+        'partidoId': 30,
+        'fase': 'SEGUNDA_PARTE',
+        'eventos': [
+          {
+            'id': 5,
+            'tipo': 'CAMBIO',
+            'jugadorId': 10,
+            'autor': 'Pablo Garcia',
+            'minuto': 60,
+            'jugadorEntraId': 12,
+            'jugadorEntra': 'Ana Ruiz',
+            'dobleAmarilla': false,
+          },
+          {
+            'id': 6,
+            'tipo': 'TARJETA_AMARILLA',
+            'jugadorId': 11,
+            'dobleAmarilla': true,
+          },
+        ],
+        'alineacion': {
+          'formacion': '4-4-2',
+          'titulares': [10, 11],
+          'suplentes': [12],
+          'enElCampo': [11, 12],
+          'suplentesDisponibles': [],
+          'expulsados': [],
+        },
+      });
+
+      expect(estado.eventos[0].jugadorEntraId, 12);
+      expect(estado.eventos[0].jugadorEntra, 'Ana Ruiz');
+      expect(estado.eventos[0].minutoCorregible, isTrue);
+      expect(estado.eventos[1].dobleAmarilla, isTrue);
+      expect(estado.eventos[1].esTarjeta, isTrue);
+      expect(estado.alineacion!.formacion, '4-4-2');
+      expect(estado.alineacion!.enElCampo, [11, 12]);
+
+      // Un backend antiguo sin alineación.
+      expect(
+        EstadoPartidoEnVivo.fromJson({'partidoId': 1}).alineacion,
+        isNull,
+      );
     });
   });
 }

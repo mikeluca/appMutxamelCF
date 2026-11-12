@@ -3163,4 +3163,143 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get callupShowerReminder => '🚿 Dutxa recomanable després del partit';
+
+  @override
+  String get fichaTitle => 'Fitxa del partit';
+
+  @override
+  String get fichaTabDetail => 'Detall';
+
+  @override
+  String get fichaTabLineup => 'Alineació';
+
+  @override
+  String get fichaTabForm => 'Forma de l\'equip';
+
+  @override
+  String get fichaStatusLive => 'En directe';
+
+  @override
+  String get fichaStatusHalftime => 'Descans';
+
+  @override
+  String get fichaStatusFinished => 'Finalitzat';
+
+  @override
+  String get fichaStatusCancelled => 'Cancel·lat';
+
+  @override
+  String get fichaNotBroadcast => 'Aquest partit no s\'ha retransmés';
+
+  @override
+  String get fichaNoLineup => 'Sense alineació';
+
+  @override
+  String get fichaSubstitutes => 'Suplents';
+
+  @override
+  String get fichaSubIn => 'Entra';
+
+  @override
+  String get fichaSubOut => 'Surt';
+
+  @override
+  String get fichaHalftimeSeparator => 'Descans';
+
+  @override
+  String get fichaFinalSeparator => 'Final';
+
+  @override
+  String get fichaGoal => 'Gol';
+
+  @override
+  String get fichaGoalAgainst => 'Gol del rival';
+
+  @override
+  String get fichaYellowCard => 'Targeta groga';
+
+  @override
+  String get fichaRedCard => 'Targeta vermella';
+
+  @override
+  String get fichaSecondYellow => 'Doble groga';
+
+  @override
+  String get fichaLoadError => 'No s\'ha pogut carregar la fitxa del partit.';
+
+  @override
+  String get fichaNotAvailable =>
+      'La fitxa només està disponible per als partits del Primer Equip.';
+
+  @override
+  String get fichaFormEmpty => 'Encara no hi ha partits amb resultat';
+
+  @override
+  String get liveFormationTitle => 'Formació';
+
+  @override
+  String get liveFormationHint =>
+      'Tria la formació abans de l\'onze: l\'ordre en què triïs els jugadors els col·loca al camp (porter, defenses d\'esquerra a dreta, migcampistes i davanters).';
+
+  @override
+  String get liveFormationNone => 'Sense formació';
+
+  @override
+  String get liveLineupNotify => 'Enviar avís';
+
+  @override
+  String liveLineupFormationNeeds(int n) {
+    return 'Amb aquesta formació calen $n titulars (porter inclòs).';
+  }
+
+  @override
+  String get liveSubButton => 'Canvi';
+
+  @override
+  String get liveSubOutTitle => 'Surt';
+
+  @override
+  String get liveSubInTitle => 'Entra';
+
+  @override
+  String get liveSubNoneOut => 'No hi ha jugadors al camp.';
+
+  @override
+  String get liveSubNoneIn => 'No queden suplents per entrar.';
+
+  @override
+  String get liveSubPick => 'Tria qui surt i qui entra.';
+
+  @override
+  String get liveSubSent => 'Canvi registrat.';
+
+  @override
+  String get liveCardButton => 'Targeta';
+
+  @override
+  String get liveCardPlayerTitle => 'A qui l\'han ensenyada?';
+
+  @override
+  String get liveCardYellow => 'Groga';
+
+  @override
+  String get liveCardRed => 'Vermella';
+
+  @override
+  String get liveCardSecondYellow => 'És la seua segona groga: serà expulsat.';
+
+  @override
+  String get liveCardPick => 'Tria el jugador.';
+
+  @override
+  String get liveCardSent => 'Targeta registrada.';
+
+  @override
+  String get liveCardsAndSubs => 'Canvis i targetes';
+
+  @override
+  String get liveNoCardsAndSubs => 'Encara no hi ha canvis ni targetes';
+
+  @override
+  String get liveSendOffRow => 'expulsió per doble groga';
 }

@@ -5,6 +5,7 @@ import '../../../core/utils/como_llegar.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
+import '../../ficha_partido/pages/ficha_partido_page.dart';
 import '../models/match_model.dart';
 import '../../teams/pages/team_standings_page.dart';
 import '../services/match_service.dart';
@@ -192,7 +193,19 @@ class PartidoListaCard extends StatelessWidget {
       tarjeta = _buildProximoCard(context);
     }
 
-    return _envolverConEtiquetaTipo(context, tarjeta);
+    final envuelta = _envolverConEtiquetaTipo(context, tarjeta);
+
+    // Los partidos del Primer Equipo abren su ficha; los demás equipos, como siempre.
+    if (!partido.tieneFicha) {
+      return envuelta;
+    }
+
+    return GestureDetector(
+      key: const ValueKey('abrir-ficha'),
+      behavior: HitTestBehavior.opaque,
+      onTap: () => FichaPartidoPage.abrir(context, partido.id!),
+      child: envuelta,
+    );
   }
 
   // ============================================================

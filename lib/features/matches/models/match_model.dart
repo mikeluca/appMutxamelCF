@@ -168,6 +168,12 @@ class MatchModel {
 
   bool get enDescanso => enJuego && fase == 'DESCANSO';
 
+  /// El partido es del Primer Equipo (por el nombre del equipo, como lo decide el backend).
+  bool get esPrimerEquipo => equipo.trim().toLowerCase() == 'primer equipo';
+
+  /// Tiene ficha pÃºblica: es del Primer Equipo, es un partido de verdad (no un descanso) y el backend manda su id.
+  bool get tieneFicha => esPrimerEquipo && id != null && !estaDescansando;
+
   /// Los goleadores solo se enseñan con el partido FINALIZADO.
   bool get tieneGoleadores => fase == 'FINALIZADO' && goleadores.isNotEmpty;
 

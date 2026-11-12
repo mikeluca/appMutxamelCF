@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:app_mutxamel_cf/features/auth/models/login_response.dart';
 import 'package:app_mutxamel_cf/features/auth/services/auth_session.dart';
+import 'package:app_mutxamel_cf/features/partido_en_vivo/models/formaciones.dart';
 import 'package:app_mutxamel_cf/features/partido_en_vivo/models/partido_en_vivo_models.dart';
 import 'package:app_mutxamel_cf/features/partido_en_vivo/pages/alineacion_page.dart';
 import 'package:app_mutxamel_cf/features/partido_en_vivo/services/partido_en_vivo_service.dart';
@@ -17,8 +18,16 @@ import '../../support/http_test_helpers.dart';
 
 class _ServicioFalso extends PartidoEnVivoService {
   final List<ConvocadoEnVivo> jugadores;
-  final List<({int partido, List<int> titulares, List<int> suplentes})> envios =
-      [];
+  final List<
+    ({
+      int partido,
+      List<int> titulares,
+      List<int> suplentes,
+      String? formacion,
+      bool avisar,
+    })
+  >
+  envios = [];
   Object? errorAlEnviar;
   int cargas = 0;
   bool fallarCarga = false;
@@ -41,11 +50,19 @@ class _ServicioFalso extends PartidoEnVivoService {
     int partidoId, {
     required List<int> titulares,
     List<int> suplentes = const [],
+    String? formacion,
+    bool avisar = false,
   }) async {
     final error = errorAlEnviar;
     if (error != null) throw error;
 
-    envios.add((partido: partidoId, titulares: titulares, suplentes: suplentes));
+    envios.add((
+      partido: partidoId,
+      titulares: titulares,
+      suplentes: suplentes,
+      formacion: formacion,
+      avisar: avisar,
+    ));
   }
 }
 
@@ -95,7 +112,16 @@ Future<void> _pintar(
     rival: 'Pego C.F.',
   ),
   Locale locale = const Locale('es'),
+  bool yaEnviada = false,
+
+  /// Salta el paso de la formaciÃ³n (se queda en "Sin formaciÃ³n"), que es el primero.
+  bool saltarFormacion = true,
 }) async {
+  // Una pantalla alta: la lista es perezosa y con la vista previa del campo queda poco sitio.
+  tester.view.physicalSize = const Size(800, 2400);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
+
   await tester.pumpWidget(
     MaterialApp(
       locale: locale,
@@ -112,8 +138,11 @@ Future<void> _pintar(
             child: ElevatedButton(
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<bool>(
-                  builder: (_) =>
-                      AlineacionPage(service: servicio, partido: partido),
+                  builder: (_) => AlineacionPage(
+                    service: servicio,
+                    partido: partido,
+                    yaEnviada: yaEnviada,
+                  ),
                 ),
               ),
               child: const Text('abrir'),
@@ -126,6 +155,11 @@ Future<void> _pintar(
 
   await tester.tap(find.text('abrir'));
   await tester.pumpAndSettle();
+
+  if (saltarFormacion) {
+    await tester.tap(find.byKey(const ValueKey('paso-formacion')));
+    await tester.pumpAndSettle();
+  }
 }
 
 Finder _jugador(int id) => find.byKey(ValueKey('jugador-$id'));
@@ -136,6 +170,8 @@ String _numeroDeOrden(WidgetTester tester, int id) =>
     tester.widget<Text>(find.descendant(of: _orden(id), matching: find.byType(Text))).data!;
 
 Future<void> _tocar(WidgetTester tester, int id) async {
+  await tester.ensureVisible(_jugador(id));
+  await tester.pump();
   await tester.tap(_jugador(id));
   await tester.pump();
 }
@@ -199,11 +235,13 @@ void main() {
     testWidgets('si falla la carga se puede reintentar', (tester) async {
       final servicio = _ServicioFalso(_plantilla())..fallarCarga = true;
 
-      await _pintar(tester, servicio);
+      await _pintar(tester, servicio, saltarFormacion: false);
 
       expect(find.text('No se han podido cargar los jugadores.'), findsOneWidget);
 
       await tester.tap(find.text('Reintentar'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('paso-formacion')));
       await tester.pumpAndSettle();
 
       expect(find.text('Pablo Garcia'), findsOneWidget);
@@ -474,6 +512,8 @@ void main() {
       expect(jsonDecode(peticion!.body), {
         'titulares': [3, 1, 5],
         'suplentes': [2],
+        'formacion': null,
+        'avisar': false,
       });
     });
 
@@ -522,6 +562,449 @@ void main() {
       expect(antiguo.tieneNombreRetransmision, isFalse);
       expect(antiguo.nombreEnDirecto, 'Ana Ruiz');
       expect(antiguo.origen, isNull);
+    });
+  });
+
+  group('formación y vista previa del campo', () {
+    List<ConvocadoEnVivo> once() => [
+      for (var i = 1; i <= 12; i++)
+        ConvocadoEnVivo(
+          jugadorId: i,
+          dorsal: i,
+          nombre: 'Jugador $i',
+          origen: 'PLANTILLA',
+        ),
+    ];
+
+    Future<void> elegirFormacion(WidgetTester tester, String formacion) async {
+      await tester.tap(find.byKey(ValueKey('formacion-$formacion')));
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('paso-formacion')));
+      await tester.pumpAndSettle();
+    }
+
+    Finder posicion(int fila, int columna) =>
+        find.byKey(ValueKey('posicion-$fila-$columna'));
+
+    testWidgets('el primer paso es la formación, con "Sin formación" elegida por defecto', (
+      tester,
+    ) async {
+      await _pintar(tester, _ServicioFalso(once()), saltarFormacion: false);
+
+      expect(_texto(tester, 'titulo-paso'), 'Formación');
+
+      for (final formacion in [
+        '4-4-2', '4-3-3', '4-2-3-1', '4-5-1', '4-1-4-1', '3-5-2', '3-4-3', '5-3-2', '5-4-1',
+      ]) {
+        expect(find.byKey(ValueKey('formacion-$formacion')), findsOneWidget);
+      }
+
+      expect(
+        tester
+            .widget<ChoiceChip>(find.byKey(const ValueKey('formacion-ninguna')))
+            .selected,
+        isTrue,
+      );
+      // Aún no se han pedido jugadores para elegir: se ve la lista de formaciones.
+      expect(find.byKey(ValueKey('jugador-1')), findsNothing);
+    });
+
+    testWidgets('las formaciones salen según la modalidad del equipo', (tester) async {
+      await _pintar(
+        tester,
+        _ServicioFalso(once()),
+        saltarFormacion: false,
+        partido: const PartidoEnVivoDisponible(
+          id: 30,
+          rival: 'Pego C.F.',
+          modalidad: 'F8',
+        ),
+      );
+
+      expect(find.byKey(const ValueKey('formacion-3-3-1')), findsOneWidget);
+      expect(find.byKey(const ValueKey('formacion-4-4-2')), findsNothing);
+    });
+
+    testWidgets('sin formación no hay vista previa del campo', (tester) async {
+      await _pintar(tester, _ServicioFalso(once()));
+
+      expect(find.byKey(const ValueKey('vista-previa-campo')), findsNothing);
+      expect(_texto(tester, 'contador-titulares'), '0/11');
+    });
+
+    testWidgets('con 4-4-2 el orden de elección rellena portero, defensas, medios y delanteros', (
+      tester,
+    ) async {
+      await _pintar(tester, _ServicioFalso(once()), saltarFormacion: false);
+      await elegirFormacion(tester, '4-4-2');
+
+      expect(find.byKey(const ValueKey('vista-previa-campo')), findsOneWidget);
+      expect(_texto(tester, 'campo-formacion'), '4-4-2');
+      expect(_texto(tester, 'contador-titulares'), '0/11');
+
+      // El campo se va llenando: de momento vacío.
+      expect(find.byKey(const ValueKey('posicion-1-1')), findsNothing);
+
+      await _tocar(tester, 7); // portero
+      await _tocar(tester, 3); // defensa izquierdo
+      expect(posicion(1, 1), findsOneWidget);
+      expect(posicion(2, 1), findsOneWidget);
+      expect(posicion(2, 2), findsNothing);
+
+      for (final id in [1, 2, 4, 5, 6, 8, 9, 10, 11]) {
+        await _tocar(tester, id);
+      }
+
+      // 1 portero + 4 defensas + 4 medios + 2 delanteros.
+      expect(posicion(1, 1), findsOneWidget);
+      for (var c = 1; c <= 4; c++) {
+        expect(posicion(2, c), findsOneWidget);
+        expect(posicion(3, c), findsOneWidget);
+      }
+      expect(posicion(4, 1), findsOneWidget);
+      expect(posicion(4, 2), findsOneWidget);
+      expect(posicion(4, 3), findsNothing);
+
+      // El 7 (1.º) es el portero; el 3 (2.º) el primer defensa; el 10 y el 11 los delanteros.
+      expect(
+        find.descendant(of: posicion(1, 1), matching: find.text('7')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: posicion(2, 1), matching: find.text('3')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: posicion(4, 1), matching: find.text('10')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: posicion(4, 2), matching: find.text('11')),
+        findsOneWidget,
+      );
+
+      // Portero abajo y delanteros arriba; de izquierda a derecha.
+      expect(tester.getCenter(posicion(1, 1)).dy,
+          greaterThan(tester.getCenter(posicion(2, 1)).dy));
+      expect(tester.getCenter(posicion(2, 1)).dy,
+          greaterThan(tester.getCenter(posicion(4, 1)).dy));
+      expect(tester.getCenter(posicion(4, 1)).dx,
+          lessThan(tester.getCenter(posicion(4, 2)).dx));
+    });
+
+    testWidgets('con 4-5-1 salen cinco medios y un delantero', (tester) async {
+      await _pintar(tester, _ServicioFalso(once()), saltarFormacion: false);
+      await elegirFormacion(tester, '4-5-1');
+
+      for (var id = 1; id <= 11; id++) {
+        await _tocar(tester, id);
+      }
+
+      expect(_texto(tester, 'campo-formacion'), '4-5-1');
+      for (var c = 1; c <= 5; c++) {
+        expect(posicion(3, c), findsOneWidget);
+      }
+      expect(posicion(4, 1), findsOneWidget);
+      expect(posicion(4, 2), findsNothing);
+    });
+
+    testWidgets('quitar a un jugador recoloca a los siguientes', (tester) async {
+      await _pintar(tester, _ServicioFalso(once()), saltarFormacion: false);
+      await elegirFormacion(tester, '4-4-2');
+
+      await _tocar(tester, 1);
+      await _tocar(tester, 2);
+      await _tocar(tester, 3);
+      expect(posicion(2, 2), findsOneWidget);
+
+      await _tocar(tester, 2);
+
+      expect(posicion(2, 2), findsNothing);
+      expect(
+        find.descendant(of: posicion(2, 1), matching: find.text('3')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('con formación hace falta el once exacto y se avisa de cuántos', (
+      tester,
+    ) async {
+      await _pintar(tester, _ServicioFalso(once()), saltarFormacion: false);
+      await elegirFormacion(tester, '4-4-2');
+
+      await _tocar(tester, 1);
+
+      expect(
+        _texto(tester, 'aviso-incompleto'),
+        'Con esta formación hacen falta 11 titulares (portero incluido).',
+      );
+      expect(
+        tester
+            .widget<FilledButton>(find.byKey(const ValueKey('paso-siguiente')))
+            .onPressed,
+        isNull,
+      );
+
+      for (var id = 2; id <= 11; id++) {
+        await _tocar(tester, id);
+      }
+
+      expect(_texto(tester, 'contador-titulares'), '11/11');
+      expect(find.byKey(const ValueKey('aviso-incompleto')), findsNothing);
+      expect(
+        tester
+            .widget<FilledButton>(find.byKey(const ValueKey('paso-siguiente')))
+            .onPressed,
+        isNotNull,
+      );
+
+      // Un duodécimo no cabe.
+      await _tocar(tester, 12);
+      expect(_orden(12), findsNothing);
+      expect(find.textContaining('Ya hay 11 titulares'), findsOneWidget);
+    });
+
+    testWidgets('se envía con la formación y los titulares en el orden elegido', (
+      tester,
+    ) async {
+      final servicio = _ServicioFalso(once());
+      await _pintar(tester, servicio, saltarFormacion: false);
+      await elegirFormacion(tester, '4-3-3');
+
+      final orden = [5, 1, 2, 3, 4, 6, 7, 8, 9, 10, 11];
+      for (final id in orden) {
+        await _tocar(tester, id);
+      }
+      await _siguiente(tester);
+      await _tocar(tester, 12);
+
+      await tester.tap(find.byKey(const ValueKey('enviar-alineacion')));
+      await tester.pumpAndSettle();
+
+      final envio = servicio.envios.single;
+      expect(envio.formacion, '4-3-3');
+      expect(envio.titulares, orden);
+      expect(envio.suplentes, [12]);
+    });
+
+    testWidgets('volver a la formación y dejarla en "Sin formación" manda null', (
+      tester,
+    ) async {
+      final servicio = _ServicioFalso(once());
+      await _pintar(tester, servicio, saltarFormacion: false);
+      await elegirFormacion(tester, '4-4-2');
+      await _tocar(tester, 1);
+
+      await tester.tap(find.text('Atrás'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('formacion-ninguna')));
+      await tester.pump();
+      await tester.tap(find.byKey(const ValueKey('paso-formacion')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('vista-previa-campo')), findsNothing);
+      // Lo elegido se conserva.
+      expect(_numeroDeOrden(tester, 1), '1');
+
+      await _siguiente(tester);
+      await tester.tap(find.byKey(const ValueKey('enviar-alineacion')));
+      await tester.pumpAndSettle();
+
+      expect(servicio.envios.single.formacion, isNull);
+    });
+  });
+
+  group('casilla "Enviar aviso"', () {
+    Future<void> hastaSuplentes(WidgetTester tester) async {
+      await _tocar(tester, 1);
+      await _siguiente(tester);
+    }
+
+    bool marcada(WidgetTester tester) => tester
+        .widget<CheckboxListTile>(find.byKey(const ValueKey('enviar-aviso')))
+        .value!;
+
+    testWidgets('la primera vez viene marcada y se envía con aviso', (tester) async {
+      final servicio = _ServicioFalso(_plantilla());
+      await _pintar(tester, servicio);
+      await hastaSuplentes(tester);
+
+      expect(find.text('Enviar aviso'), findsOneWidget);
+      expect(marcada(tester), isTrue);
+
+      await tester.tap(find.byKey(const ValueKey('enviar-alineacion')));
+      await tester.pumpAndSettle();
+
+      expect(servicio.envios.single.avisar, isTrue);
+    });
+
+    testWidgets('si ya se envió una alineación viene desmarcada y no avisa', (
+      tester,
+    ) async {
+      final servicio = _ServicioFalso(_plantilla());
+      await _pintar(tester, servicio, yaEnviada: true);
+      await hastaSuplentes(tester);
+
+      expect(marcada(tester), isFalse);
+
+      await tester.tap(find.byKey(const ValueKey('enviar-alineacion')));
+      await tester.pumpAndSettle();
+
+      expect(servicio.envios.single.avisar, isFalse);
+    });
+
+    testWidgets('se puede marcar o desmarcar a mano', (tester) async {
+      final servicio = _ServicioFalso(_plantilla());
+      await _pintar(tester, servicio, yaEnviada: true);
+      await hastaSuplentes(tester);
+
+      await tester.tap(find.byKey(const ValueKey('enviar-aviso')));
+      await tester.pump();
+      expect(marcada(tester), isTrue);
+
+      await tester.tap(find.byKey(const ValueKey('enviar-alineacion')));
+      await tester.pumpAndSettle();
+
+      expect(servicio.envios.single.avisar, isTrue);
+    });
+
+    testWidgets('el texto sale en valenciano y en inglés', (tester) async {
+      await _pintar(tester, _ServicioFalso(_plantilla()), locale: const Locale('ca'));
+      await hastaSuplentes(tester);
+      expect(find.text('Enviar avís'), findsOneWidget);
+    });
+  });
+
+  group('formaciones', () {
+    test('las listas cerradas de cada modalidad', () {
+      expect(Formaciones.paraModalidad(null), Formaciones.f11);
+      expect(Formaciones.paraModalidad('F11'), Formaciones.f11);
+      expect(Formaciones.paraModalidad('F8'), Formaciones.f8);
+      expect(Formaciones.paraModalidad('F5'), Formaciones.f5);
+      expect(Formaciones.f11, hasLength(9));
+    });
+
+    test('los titulares son 1 + la suma de la formación', () {
+      expect(Formaciones.titulares('4-4-2'), 11);
+      expect(Formaciones.titulares('4-2-3-1'), 11);
+      expect(Formaciones.titulares('3-3-1'), 8);
+      expect(Formaciones.titulares('2-2'), 5);
+
+      for (final formacion in Formaciones.f11) {
+        expect(Formaciones.titulares(formacion), 11);
+      }
+      for (final formacion in Formaciones.f8) {
+        expect(Formaciones.titulares(formacion), 8);
+      }
+      for (final formacion in Formaciones.f5) {
+        expect(Formaciones.titulares(formacion), 5);
+      }
+    });
+
+    test('la posición sale del orden: portero, líneas de atrás adelante y de izquierda a derecha', () {
+      ({int fila, int columna})? p(int orden) => Formaciones.posicion('4-2-3-1', orden);
+
+      expect(p(1), (fila: 1, columna: 1));
+      expect(p(2), (fila: 2, columna: 1));
+      expect(p(5), (fila: 2, columna: 4));
+      expect(p(6), (fila: 3, columna: 1));
+      expect(p(7), (fila: 3, columna: 2));
+      expect(p(8), (fila: 4, columna: 1));
+      expect(p(10), (fila: 4, columna: 3));
+      expect(p(11), (fila: 5, columna: 1));
+      expect(p(12), isNull);
+      expect(p(0), isNull);
+      expect(Formaciones.filas('4-2-3-1'), 5);
+    });
+  });
+
+  group('servicio: formación, aviso, cambio y tarjeta', () {
+    setUp(() async {
+      FlutterSecureStoragePlatform.instance = TestFlutterSecureStoragePlatform(
+        <String, String>{},
+      );
+      await AuthSession.guardarSesion(
+        LoginResponse(
+          token: 'tok',
+          usuarioId: 1,
+          email: 'a@a.com',
+          roles: const ['RETRANSMISION'],
+        ),
+      );
+    });
+
+    test('la alineación manda formacion y avisar', () async {
+      http.Request? peticion;
+
+      await conMockHttp((request) async {
+        peticion = request;
+        return http.Response('', 200);
+      }, () => PartidoEnVivoService().enviarAlineacion(
+        30,
+        titulares: [3, 1, 5],
+        suplentes: [2],
+        formacion: '4-4-2',
+        avisar: true,
+      ));
+
+      expect(jsonDecode(peticion!.body), {
+        'titulares': [3, 1, 5],
+        'suplentes': [2],
+        'formacion': '4-4-2',
+        'avisar': true,
+      });
+    });
+
+    test('el cambio va a POST /{partidoId}/cambio con quién sale, quién entra y el minuto', () async {
+      http.Request? peticion;
+
+      final estado = await conMockHttp((request) async {
+        peticion = request;
+        return http.Response(
+          '{"partidoId":30,"fase":"PRIMERA_PARTE","eventos":[]}',
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      }, () => PartidoEnVivoService().enviarCambio(
+        30,
+        jugadorSaleId: 10,
+        jugadorEntraId: 12,
+        minuto: 60,
+      ));
+
+      expect(peticion!.method, 'POST');
+      expect(peticion!.url.path, endsWith('/app/partido-en-vivo/30/cambio'));
+      expect(jsonDecode(peticion!.body), {
+        'jugadorSaleId': 10,
+        'jugadorEntraId': 12,
+        'minuto': 60,
+      });
+      expect(peticion!.headers['Authorization'], 'Bearer tok');
+      expect(estado.partidoId, 30);
+    });
+
+    test('la tarjeta va a POST /{partidoId}/tarjeta con jugador, color y minuto', () async {
+      http.Request? peticion;
+
+      await conMockHttp((request) async {
+        peticion = request;
+        return http.Response(
+          '{"partidoId":30,"fase":"PRIMERA_PARTE","eventos":[]}',
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      }, () => PartidoEnVivoService().enviarTarjeta(
+        30,
+        jugadorId: 10,
+        color: 'ROJA',
+      ));
+
+      expect(peticion!.url.path, endsWith('/app/partido-en-vivo/30/tarjeta'));
+      expect(jsonDecode(peticion!.body), {
+        'jugadorId': 10,
+        'color': 'ROJA',
+        'minuto': null,
+      });
     });
   });
 }
