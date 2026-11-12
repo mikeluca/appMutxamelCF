@@ -3292,6 +3292,12 @@ abstract class AppLocalizations {
   /// **'T. roja'**
   String get matchResultRedCardShort;
 
+  /// No description provided for @matchResultCardsHelp.
+  ///
+  /// In es, this message translates to:
+  /// **'Una expulsión por doble amarilla se anota como 1 roja (sin amarillas): las dos amarillas que la causan no cuentan para la acumulación.'**
+  String get matchResultCardsHelp;
+
   /// No description provided for @matchResultSaveButton.
   ///
   /// In es, this message translates to:

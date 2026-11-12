@@ -667,6 +667,7 @@
   "matchResultAssistsShort": "Assists",
   "matchResultYellowCardsShort": "Yellow cards",
   "matchResultRedCardShort": "Red card",
+  "matchResultCardsHelp": "A sending-off for two yellow cards is recorded as 1 red card (no yellows): the two yellows that cause it do not count towards accumulation.",
   "matchResultSaveButton": "Save result",
   "matchResultSavedSuccess": "Result saved successfully.",
   "matchResultSaveError": "The result could not be saved: {error}",

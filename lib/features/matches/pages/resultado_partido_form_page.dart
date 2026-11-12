@@ -284,6 +284,24 @@ class _ResultadoPartidoFormPageState extends State<ResultadoPartidoFormPage> {
                     if (datos.admiteEstadisticas) ...[
                       const SizedBox(height: 24),
                       _construirTituloJugadores(),
+                      const SizedBox(height: 6),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.info_outline,
+                              size: 18, color: _colors.onSurfaceVariant),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _t.matchResultCardsHelp,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: _colors.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 12),
                       if (_filas.isEmpty)
                         _construirSinJugadores()

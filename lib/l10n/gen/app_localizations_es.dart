@@ -1791,6 +1791,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get matchResultRedCardShort => 'T. roja';
 
   @override
+  String get matchResultCardsHelp =>
+      'Una expulsión por doble amarilla se anota como 1 roja (sin amarillas): las dos amarillas que la causan no cuentan para la acumulación.';
+
+  @override
   String get matchResultSaveButton => 'Guardar resultado';
 
   @override

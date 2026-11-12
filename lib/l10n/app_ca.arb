@@ -667,6 +667,7 @@
   "matchResultAssistsShort": "Assist.",
   "matchResultYellowCardsShort": "T. grogues",
   "matchResultRedCardShort": "T. roja",
+  "matchResultCardsHelp": "Una expulsió per doble groga s'anota com 1 vermella (sense grogues): les dues grogues que la causen no compten per a l'acumulació.",
   "matchResultSaveButton": "Guarda el resultat",
   "matchResultSavedSuccess": "Resultat guardat correctament.",
   "matchResultSaveError": "No s'ha pogut guardar el resultat: {error}",

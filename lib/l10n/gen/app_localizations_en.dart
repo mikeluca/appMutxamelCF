@@ -1771,6 +1771,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get matchResultRedCardShort => 'Red card';
 
   @override
+  String get matchResultCardsHelp =>
+      'A sending-off for two yellow cards is recorded as 1 red card (no yellows): the two yellows that cause it do not count towards accumulation.';
+
+  @override
   String get matchResultSaveButton => 'Save result';
 
   @override

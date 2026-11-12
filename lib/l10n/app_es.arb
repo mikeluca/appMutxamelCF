@@ -667,6 +667,7 @@
   "matchResultAssistsShort": "Asist.",
   "matchResultYellowCardsShort": "T. amarillas",
   "matchResultRedCardShort": "T. roja",
+  "matchResultCardsHelp": "Una expulsión por doble amarilla se anota como 1 roja (sin amarillas): las dos amarillas que la causan no cuentan para la acumulación.",
   "matchResultSaveButton": "Guardar resultado",
   "matchResultSavedSuccess": "Resultado guardado correctamente.",
   "matchResultSaveError": "No se ha podido guardar el resultado: {error}",

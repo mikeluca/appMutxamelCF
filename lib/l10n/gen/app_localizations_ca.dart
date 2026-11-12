@@ -1781,6 +1781,10 @@ class AppLocalizationsCa extends AppLocalizations {
   String get matchResultRedCardShort => 'T. roja';
 
   @override
+  String get matchResultCardsHelp =>
+      'Una expulsió per doble groga s\'anota com 1 vermella (sense grogues): les dues grogues que la causen no compten per a l\'acumulació.';
+
+  @override
   String get matchResultSaveButton => 'Guarda el resultat';
 
   @override
