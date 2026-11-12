@@ -959,6 +959,10 @@
   "liveLineupNeedStarters": "Tria almenys un titular.",
   "matchLiveBanner": "PARTIT EN JOC",
   "matchHalfTime": "Descans",
+  "matchViewMatch": "Veure el partit",
+  "matchFollowLive": "Seguir en directe",
+  "matchViewMatchAgainst": "Veure el partit contra {rival}",
+  "@matchViewMatchAgainst": { "placeholders": { "rival": { "type": "String" } } },
   "matchScorers": "Gols: {goleadores}",
   "@matchScorers": { "placeholders": { "goleadores": { "type": "String" } } },
 

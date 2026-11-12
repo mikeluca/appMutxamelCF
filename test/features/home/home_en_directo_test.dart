@@ -197,7 +197,8 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('Goles: Pepe (2)'), findsOneWidget);
+    expect(find.textContaining('Goles'), findsNothing);
+    expect(find.text('2-0'), findsOneWidget);
     expect(partidos.llamadas, 2);
 
     await tester.pump(const Duration(minutes: 5));

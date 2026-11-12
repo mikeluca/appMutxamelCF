@@ -4462,6 +4462,24 @@ abstract class AppLocalizations {
   /// **'Descanso'**
   String get matchHalfTime;
 
+  /// No description provided for @matchViewMatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver partido'**
+  String get matchViewMatch;
+
+  /// No description provided for @matchFollowLive.
+  ///
+  /// In es, this message translates to:
+  /// **'Seguir en directo'**
+  String get matchFollowLive;
+
+  /// No description provided for @matchViewMatchAgainst.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver partido contra {rival}'**
+  String matchViewMatchAgainst(String rival);
+
   /// No description provided for @matchScorers.
   ///
   /// In es, this message translates to:

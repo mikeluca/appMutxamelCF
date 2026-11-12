@@ -234,7 +234,7 @@ void main() {
       });
     }
 
-    testWidgets('finalizado con goleadores: "Goles: ..." debajo del resultado', (tester) async {
+    testWidgets('finalizado con goleadores: la tarjeta ya no pinta la línea de goles', (tester) async {
       await _pintar(
         tester,
         const MatchModel(
@@ -250,7 +250,9 @@ void main() {
       );
 
       expect(find.text('3-1'), findsOneWidget);
-      expect(find.text('Goles: Pepe (2), Juanma'), findsOneWidget);
+      expect(find.textContaining('Goles'), findsNothing);
+      expect(find.byKey(const ValueKey('goleadores')), findsNothing);
+      expect(find.textContaining('Pepe'), findsNothing);
       expect(find.text('PARTIDO EN JUEGO'), findsNothing);
     });
 

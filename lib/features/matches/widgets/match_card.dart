@@ -35,16 +35,53 @@ class MatchCard extends StatelessWidget {
 
     final envuelta = _envolverConEtiquetaTipo(context, tarjeta);
 
-    // La tarjeta del Primer Equipo de la portada abre la ficha del partido.
-    if (!mostrarPrimerEquipo || !match.tieneFicha) {
-      return envuelta;
-    }
+    return envuelta;
+  }
 
-    return GestureDetector(
-      key: const ValueKey('abrir-ficha'),
-      behavior: HitTestBehavior.opaque,
-      onTap: () => FichaPartidoPage.abrir(context, match.id!),
-      child: envuelta,
+  /// La tarjeta del Primer Equipo de la portada abre la ficha del partido.
+  bool get _abreFicha => mostrarPrimerEquipo && match.tieneFicha;
+
+  /// Con ficha, el contenido de la tarjeta es pulsable (el efecto cae dentro de su Material) y lleva al pie
+  /// "Ver partido" / "Seguir en directo"; el botón Cómo llegar sigue funcionando por su cuenta.
+  Widget _tocable(BuildContext context, Widget contenido) {
+    if (!_abreFicha) return contenido;
+
+    final t = AppLocalizations.of(context);
+    final color = Theme.of(context).colorScheme.primary;
+
+    return Semantics(
+      button: true,
+      label: t.matchViewMatchAgainst(match.rival),
+      child: InkWell(
+        key: const ValueKey('abrir-ficha'),
+        borderRadius: BorderRadius.circular(8),
+        onTap: () => FichaPartidoPage.abrir(context, match.id!),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            contenido,
+            const Divider(height: 1, thickness: 0.5),
+            Padding(
+              key: const ValueKey('pie-ficha'),
+              padding: const EdgeInsets.fromLTRB(16, 8, 12, 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    match.enJuego ? t.matchFollowLive : t.matchViewMatch,
+                    style: TextStyle(
+                      color: color,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Icon(Icons.chevron_right, size: 18, color: color),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -88,7 +125,8 @@ class MatchCard extends StatelessWidget {
       children: [
         tarjeta,
         Positioned(
-          bottom: 8,
+          // Con ficha hay un pie debajo: la etiqueta se sube para no taparlo.
+          bottom: _abreFicha ? 48 : 8,
           right: 8,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -120,7 +158,7 @@ class MatchCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: _shapeTipo,
-      child: Column(
+      child: _tocable(context, Column(
         children: [
           _buildHeader(
             mostrarPrimerEquipo
@@ -169,7 +207,7 @@ class MatchCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
+      )),
     );
   }
 
@@ -183,7 +221,7 @@ class MatchCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: _shapeTipo,
-      child: Column(
+      child: _tocable(context, Column(
         children: [
           Container(
             key: const ValueKey('letrero-en-juego'),
@@ -260,7 +298,7 @@ class MatchCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
+      )),
     );
   }
 
@@ -274,7 +312,7 @@ class MatchCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: _shapeTipo,
-      child: Column(
+      child: _tocable(context, Column(
         children: [
           _buildHeader(
             mostrarPrimerEquipo
@@ -313,20 +351,6 @@ class MatchCard extends StatelessWidget {
                   ],
                 ),
 
-                if (match.tieneGoleadores)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Text(
-                      t.matchScorers(match.goleadores.join(', ')),
-                      key: const ValueKey('goleadores'),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-
                 const SizedBox(height: 20),
 
                 // Fecha, hora y campo
@@ -335,7 +359,7 @@ class MatchCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
+      )),
     );
   }
 
@@ -349,7 +373,7 @@ class MatchCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: _shapeTipo,
-      child: Column(
+      child: _tocable(context, Column(
         children: [
           _buildHeader(
             mostrarPrimerEquipo
@@ -403,7 +427,7 @@ class MatchCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
+      )),
     );
   }
 
@@ -429,7 +453,7 @@ class MatchCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: _shapeTipo,
-      child: Column(
+      child: _tocable(context, Column(
         children: [
           Container(
             width: double.infinity,
@@ -484,7 +508,7 @@ class MatchCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
+      )),
     );
   }
 

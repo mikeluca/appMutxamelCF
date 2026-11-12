@@ -2537,6 +2537,17 @@ class AppLocalizationsCa extends AppLocalizations {
   String get matchHalfTime => 'Descans';
 
   @override
+  String get matchViewMatch => 'Veure el partit';
+
+  @override
+  String get matchFollowLive => 'Seguir en directe';
+
+  @override
+  String matchViewMatchAgainst(String rival) {
+    return 'Veure el partit contra $rival';
+  }
+
+  @override
   String matchScorers(String goleadores) {
     return 'Gols: $goleadores';
   }

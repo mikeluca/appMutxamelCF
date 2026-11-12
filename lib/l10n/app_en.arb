@@ -959,6 +959,10 @@
   "liveLineupNeedStarters": "Pick at least one starter.",
   "matchLiveBanner": "MATCH IN PROGRESS",
   "matchHalfTime": "Half-time",
+  "matchViewMatch": "View match",
+  "matchFollowLive": "Follow live",
+  "matchViewMatchAgainst": "View match against {rival}",
+  "@matchViewMatchAgainst": { "placeholders": { "rival": { "type": "String" } } },
   "matchScorers": "Goals: {goleadores}",
   "@matchScorers": { "placeholders": { "goleadores": { "type": "String" } } },
 

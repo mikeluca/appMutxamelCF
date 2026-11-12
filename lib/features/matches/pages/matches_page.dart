@@ -193,18 +193,44 @@ class PartidoListaCard extends StatelessWidget {
       tarjeta = _buildProximoCard(context);
     }
 
-    final envuelta = _envolverConEtiquetaTipo(context, tarjeta);
+    return _envolverConEtiquetaTipo(context, tarjeta);
+  }
 
-    // Los partidos del Primer Equipo abren su ficha; los demás equipos, como siempre.
+  /// El cuerpo de la tarjeta. Los partidos del Primer Equipo con ficha son pulsables (el efecto cae dentro de la
+  /// tarjeta) y llevan un chevron al final de la fila; los demás equipos, como siempre.
+  Widget _cuerpo(BuildContext context, {required Widget child}) {
     if (!partido.tieneFicha) {
-      return envuelta;
+      return Padding(padding: const EdgeInsets.all(16), child: child);
     }
 
-    return GestureDetector(
-      key: const ValueKey('abrir-ficha'),
-      behavior: HitTestBehavior.opaque,
-      onTap: () => FichaPartidoPage.abrir(context, partido.id!),
-      child: envuelta,
+    return Semantics(
+      button: true,
+      label: AppLocalizations.of(context).matchViewMatchAgainst(partido.rival),
+      child: InkWell(
+        key: const ValueKey('abrir-ficha'),
+        borderRadius: BorderRadius.circular(8),
+        onTap: () => FichaPartidoPage.abrir(context, partido.id!),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 36, 16),
+              child: child,
+            ),
+            Positioned(
+              top: 0,
+              bottom: 0,
+              right: 8,
+              child: Center(
+                child: Icon(
+                  Icons.chevron_right,
+                  key: const ValueKey('chevron-ficha'),
+                  color: _colors(context).primary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -266,8 +292,8 @@ class PartidoListaCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: _shapeTipo,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+      child: _cuerpo(
+        context,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -340,8 +366,8 @@ class PartidoListaCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: _shapeTipo,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+      child: _cuerpo(
+        context,
         child: Column(
           children: [
             _buildHeader(
@@ -410,8 +436,8 @@ class PartidoListaCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: _shapeTipo,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+      child: _cuerpo(
+        context,
         child: Column(
           children: [
             _buildHeader(context, t.matchesResult, Icons.sports_soccer),
@@ -477,8 +503,8 @@ class PartidoListaCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: _shapeTipo,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+      child: _cuerpo(
+        context,
         child: Column(
           children: [
             Row(

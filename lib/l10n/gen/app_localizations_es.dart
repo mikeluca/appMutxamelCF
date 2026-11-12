@@ -2546,6 +2546,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get matchHalfTime => 'Descanso';
 
   @override
+  String get matchViewMatch => 'Ver partido';
+
+  @override
+  String get matchFollowLive => 'Seguir en directo';
+
+  @override
+  String matchViewMatchAgainst(String rival) {
+    return 'Ver partido contra $rival';
+  }
+
+  @override
   String matchScorers(String goleadores) {
     return 'Goles: $goleadores';
   }

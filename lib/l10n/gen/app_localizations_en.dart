@@ -2517,6 +2517,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get matchHalfTime => 'Half-time';
 
   @override
+  String get matchViewMatch => 'View match';
+
+  @override
+  String get matchFollowLive => 'Follow live';
+
+  @override
+  String matchViewMatchAgainst(String rival) {
+    return 'View match against $rival';
+  }
+
+  @override
   String matchScorers(String goleadores) {
     return 'Goals: $goleadores';
   }
