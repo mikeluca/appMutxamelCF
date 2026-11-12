@@ -15,6 +15,7 @@ import '../../../core/navigation/app_navigator.dart';
 import '../../../features/auth/services/auth_manager.dart';
 import '../utils/convocatoria_notificacion.dart';
 import '../../version/control_version.dart';
+import '../../../features/ficha_partido/pages/ficha_partido_page.dart';
 
 class PushNotificationService {
   // FL-04: se registraba 'ANDROID' también en iOS.
@@ -335,6 +336,11 @@ class PushNotificationService {
     final partidoId = partidoDeAviso(message.data);
 
     if (partidoId != null) {
+      // Con la ficha de ese partido a la vista no se avisa: ya se está recargando sola.
+      if (FichaPartidoPage.estaVisible(partidoId)) {
+        return;
+      }
+
       await mostrarNotificacionLocal(
         comunicacionId: partidoId,
         titulo: message.notification?.title ?? '',

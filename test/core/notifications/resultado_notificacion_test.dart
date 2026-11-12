@@ -252,6 +252,50 @@ void main() {
   );
 
   testWidgets(
+    'con la ficha de ese partido a la vista no sale la notificación local: solo se recarga',
+    (tester) async {
+      await _pintarApp(tester);
+
+      _tocar(_push());
+      await tester.pumpAndSettle();
+      expect(servicio.llamadas, [30]);
+
+      await PushNotificationService.mostrarEnPrimerPlano(_push());
+      await tester.pumpAndSettle();
+
+      expect(mostradas, isEmpty);
+    },
+  );
+
+  testWidgets(
+    'con la ficha de otro partido a la vista, o la de ese pero tapada, sí sale la notificación local',
+    (tester) async {
+      await _pintarApp(tester);
+
+      _tocar(_push(data: {'tipo': 'RESULTADO', 'partidoId': '31'}));
+      await tester.pumpAndSettle();
+
+      await PushNotificationService.mostrarEnPrimerPlano(_push());
+      expect(mostradas, hasLength(1));
+
+      // La ficha del 30 abierta pero con otra pantalla encima: tampoco está a la vista.
+      _tocar(_push());
+      await tester.pumpAndSettle();
+      unawaited(
+        AppNavigator.navigator!.push(
+          MaterialPageRoute<void>(
+            builder: (_) => const Scaffold(body: Text('OTRA')),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await PushNotificationService.mostrarEnPrimerPlano(_push());
+      expect(mostradas, hasLength(2));
+    },
+  );
+
+  testWidgets(
     'con la app abierta y sin partidoId solo se refresca, sin notificación local',
     (tester) async {
       await _pintarApp(tester);

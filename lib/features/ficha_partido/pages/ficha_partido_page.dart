@@ -36,6 +36,11 @@ class FichaPartidoPage extends StatefulWidget {
   /// Las fichas que están abiertas ahora mismo (la más reciente, al final).
   static final List<_FichaPartidoPageState> _abiertas = [];
 
+  /// true si la ficha de ese partido es la pantalla actual (la que el usuario está viendo).
+  static bool estaVisible(int partidoId) => _abiertas.any(
+    (a) => a.widget.partidoId == partidoId && a.mounted && (a._ruta?.isCurrent ?? false),
+  );
+
   /// Abre la ficha del partido. Si la ficha de ese mismo partido ya está abierta no se apila otra: se vuelve a
   /// ella (cerrando lo que tenga encima) y se refresca.
   static Future<void> abrir(
