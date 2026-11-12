@@ -174,10 +174,15 @@ class _FilaJugador extends StatelessWidget {
               style: TextStyle(color: colors.onSurface, fontSize: 15),
             ),
           ),
-          for (final tarjeta in tarjetas)
+          // Con doble amarilla, la primera amarilla ya va dentro del grupo (2 amarillas + roja).
+          for (final tarjeta in tarjetas.where(
+            (t) => t.dobleAmarilla || !tarjetas.any((o) => o.dobleAmarilla),
+          ))
             Padding(
               padding: const EdgeInsets.only(left: 6),
-              child: TarjetaIcono(roja: tarjeta.esRoja, alto: 14),
+              child: tarjeta.dobleAmarilla
+                  ? const TarjetasDobleAmarilla(alto: 14)
+                  : TarjetaIcono(roja: tarjeta.esRoja, alto: 14),
             ),
           if (extra != null)
             Padding(padding: const EdgeInsets.only(left: 8), child: extra),
@@ -199,7 +204,7 @@ class _TitularEnCampo extends StatelessWidget {
     final tarjeta = titular.tarjetas.isEmpty
         ? null
         : titular.tarjetas.firstWhere(
-            (t) => t.esRoja,
+            (t) => t.dobleAmarilla || t.esRoja,
             orElse: () => titular.tarjetas.last,
           );
 
@@ -248,7 +253,9 @@ class _TitularEnCampo extends StatelessWidget {
                 Positioned(
                   top: -2,
                   right: 2,
-                  child: TarjetaIcono(roja: tarjeta.esRoja, alto: 14),
+                  child: tarjeta.dobleAmarilla
+                      ? const TarjetasDobleAmarilla(alto: 14)
+                      : TarjetaIcono(roja: tarjeta.esRoja, alto: 14),
                 ),
             ],
           ),

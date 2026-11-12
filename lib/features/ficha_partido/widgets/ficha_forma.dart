@@ -5,7 +5,7 @@ import '../../../l10n/gen/app_localizations.dart';
 import '../models/ficha_partido_model.dart';
 import 'ficha_comunes.dart';
 
-/// Pestaña Forma del equipo: los últimos partidos con resultado, cada uno con el escudo local, la píldora del
+/// Pestaña Últ. partidos: los últimos partidos con resultado, cada uno con el escudo local, la píldora del
 /// resultado (verde ganado, gris empatado, rojo perdido) y el escudo visitante, con el Mutxamel en casa o fuera según
 /// se jugó. Tocar una fila abre la ficha de ese partido.
 class FichaForma extends StatelessWidget {

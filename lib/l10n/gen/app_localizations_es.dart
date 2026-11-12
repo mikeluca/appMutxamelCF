@@ -3182,7 +3182,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get fichaTabLineup => 'Alineación';
 
   @override
-  String get fichaTabForm => 'Forma del equipo';
+  String get fichaTabForm => 'Últ. partidos';
 
   @override
   String get fichaStatusLive => 'En directo';

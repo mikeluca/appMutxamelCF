@@ -13,7 +13,7 @@ import '../widgets/ficha_detalle.dart';
 import '../widgets/ficha_forma.dart';
 
 /// Ficha pública de un partido del Primer Equipo (sin sesión): cabecera fija y las pestañas Detalle, Alineación y
-/// Forma del equipo. Mientras el partido está en juego o en el descanso y la pantalla está a la vista, se recarga
+/// Últ. partidos (forma del equipo). Mientras el partido está en juego o en el descanso y la pantalla está a la vista, se recarga
 /// cada 30 segundos y al llegar un push del directo; al salir o con la app en segundo plano se para.
 class FichaPartidoPage extends StatefulWidget {
   static const Duration intervaloEnDirecto = Duration(seconds: 30);
@@ -33,13 +33,37 @@ class FichaPartidoPage extends StatefulWidget {
     this.intervalo = intervaloEnDirecto,
   });
 
-  /// Abre la ficha del partido.
+  /// Las fichas que están abiertas ahora mismo (la más reciente, al final).
+  static final List<_FichaPartidoPageState> _abiertas = [];
+
+  /// Abre la ficha del partido. Si la ficha de ese mismo partido ya está abierta no se apila otra: se vuelve a
+  /// ella (cerrando lo que tenga encima) y se refresca.
   static Future<void> abrir(
     BuildContext context,
     int partidoId, {
     FichaPartidoService? service,
+  }) => abrirEn(Navigator.of(context), partidoId, service: service);
+
+  /// Igual que [abrir], con el navegador ya resuelto (el de la app, para los avisos).
+  static Future<void> abrirEn(
+    NavigatorState navigator,
+    int partidoId, {
+    FichaPartidoService? service,
   }) {
-    return Navigator.of(context).push(
+    for (final abierta in _abiertas.reversed) {
+      if (abierta.widget.partidoId == partidoId && abierta.mounted) {
+        final ruta = abierta._ruta;
+
+        if (ruta != null && ruta.isActive) {
+          navigator.popUntil((r) => r == ruta);
+          abierta._recargar(silencioso: true);
+
+          return Future<void>.value();
+        }
+      }
+    }
+
+    return navigator.push(
       MaterialPageRoute<void>(
         builder: (_) => FichaPartidoPage(partidoId: partidoId, service: service),
       ),
@@ -66,10 +90,13 @@ class _FichaPartidoPageState extends State<FichaPartidoPage>
   bool _pausada = false;
   bool _recargando = false;
   bool _iniciada = false;
+  ModalRoute<dynamic>? _ruta;
 
   @override
   void initState() {
     super.initState();
+
+    FichaPartidoPage._abiertas.add(this);
 
     WidgetsBinding.instance.addObserver(this);
 
@@ -86,6 +113,8 @@ class _FichaPartidoPageState extends State<FichaPartidoPage>
   void didChangeDependencies() {
     super.didChangeDependencies();
 
+    _ruta = ModalRoute.of(context);
+
     if (!_iniciada) {
       _iniciada = true;
       _recargar();
@@ -94,6 +123,7 @@ class _FichaPartidoPageState extends State<FichaPartidoPage>
 
   @override
   void dispose() {
+    FichaPartidoPage._abiertas.remove(this);
     WidgetsBinding.instance.removeObserver(this);
     _avisos?.cancel();
     _temporizador?.cancel();

@@ -76,6 +76,7 @@ class LocalNotificationService {
 
     const prefijoPrivada = 'PRIVADA:';
     const prefijoComunicacion = 'COMUNICACION:';
+    const prefijoPartido = 'FICHA_PARTIDO:';
 
     // Aviso de una convocatoria: el calendario o la edición de la convocatoria.
     final destino = destinoDePayload(payload);
@@ -90,6 +91,16 @@ class LocalNotificationService {
 
       if (autorId != null && autorId > 0) {
         AppNavigator.abrirChatPrivado(autorId);
+      }
+
+      return;
+    }
+
+    if (payload.startsWith(prefijoPartido)) {
+      final partidoId = int.tryParse(payload.substring(prefijoPartido.length));
+
+      if (partidoId != null && partidoId > 0) {
+        AppNavigator.abrirFichaPartido(partidoId);
       }
 
       return;
@@ -125,6 +136,11 @@ class LocalNotificationService {
   }) {
     final tipo = datos['tipo']?.toString();
 
+    // El aviso del directo abre la ficha de su partido (comunicacionId es aquí el id del partido).
+    if (tipo == 'RESULTADO' && datos['partidoId'] != null) {
+      return 'FICHA_PARTIDO:$comunicacionId';
+    }
+
     final destino = destinoDeAvisoConvocatoria(
       tipo: tipo,
       titulo: titulo,
@@ -151,6 +167,7 @@ class LocalNotificationService {
   static const int _baseReporte = 1000000000;
   static const int _basePasarLista = 1100000000;
   static const int _baseContinuidad = 1200000000;
+  static const int _basePartido = 1300000000;
   static const int _tamanoEspacio = 100000000;
 
   @visibleForTesting
@@ -160,6 +177,7 @@ class LocalNotificationService {
       tipoPushPasarLista => _basePasarLista + referenciaId % _tamanoEspacio,
       tipoPushContinuidad ||
       tipoPushContinuidadRespuesta => _baseContinuidad + referenciaId % _tamanoEspacio,
+      'RESULTADO' => _basePartido + referenciaId % _tamanoEspacio,
       _ => referenciaId,
     };
   }

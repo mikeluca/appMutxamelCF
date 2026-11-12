@@ -19,6 +19,8 @@ import '../../features/convocatorias/pages/convocatoria_form_page.dart';
 import '../../features/convocatorias/services/convocatoria_partido_service.dart';
 import '../../features/convocatorias/services/convocatoria_service.dart';
 import '../../features/entrenamientos/model/entrenamiento_model.dart';
+import '../../features/ficha_partido/pages/ficha_partido_page.dart';
+import '../../features/ficha_partido/services/ficha_partido_service.dart';
 import '../../features/invitados/models/invitacion_model.dart';
 import '../../features/invitados/pages/invitaciones_page.dart';
 import '../../features/entrenamientos/pages/entrenamiento_form_page.dart';
@@ -56,6 +58,26 @@ class AppNavigator {
 
   @visibleForTesting
   static Widget Function()? constructorModeracion;
+
+  /// Solo para tests: sustituye al servicio real de la ficha pública.
+  @visibleForTesting
+  static FichaPartidoService? servicioFichaPartido;
+
+  /// Tocar un aviso del partido en directo: la ficha de ese partido (si ya está abierta, no se apila otra: se
+  /// refresca).
+  static Future<void> abrirFichaPartido(int partidoId) async {
+    final navigatorState = navigator;
+
+    if (navigatorState == null || ControlVersion.bloqueada) {
+      return;
+    }
+
+    await FichaPartidoPage.abrirEn(
+      navigatorState,
+      partidoId,
+      service: servicioFichaPartido,
+    );
+  }
 
   static Future<void> abrirComunicacion(int comunicacionId) async {
     final navigatorState = navigator;

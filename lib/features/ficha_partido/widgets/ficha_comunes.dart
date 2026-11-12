@@ -113,3 +113,25 @@ class FotoJugador extends StatelessWidget {
 /// Texto del marcador "2-1" para una píldora.
 String marcadorTexto(int? izquierda, int? derecha) =>
     '${izquierda ?? '-'}-${derecha ?? '-'}';
+
+/// La expulsión por doble amarilla: dos tarjetas amarillas y una roja juntas, en ese orden.
+class TarjetasDobleAmarilla extends StatelessWidget {
+  final double alto;
+
+  const TarjetasDobleAmarilla({super.key, this.alto = 16});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      key: const ValueKey('tarjetas-doble-amarilla'),
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TarjetaIcono(roja: false, alto: alto),
+        const SizedBox(width: 2),
+        TarjetaIcono(roja: false, alto: alto),
+        const SizedBox(width: 2),
+        TarjetaIcono(roja: true, alto: alto),
+      ],
+    );
+  }
+}

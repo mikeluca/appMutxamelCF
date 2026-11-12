@@ -47,6 +47,19 @@ class PushNotificationService {
   // notificación de sistema abre la app en el inicio. No es un tipo desconocido.
   static const String _tipoNoticia = 'NOTICIA';
 
+  /// El partido al que lleva un aviso del directo (data "tipo" RESULTADO con "partidoId"), o null si no lo lleva
+  /// (avisos antiguos o de versiones anteriores del backend, y los de otros tipos).
+  @visibleForTesting
+  static int? partidoDeAviso(Map<String, dynamic> datos) {
+    if (datos['tipo'] != _tipoResultado) {
+      return null;
+    }
+
+    final id = int.tryParse(datos['partidoId']?.toString() ?? '');
+
+    return id != null && id > 0 ? id : null;
+  }
+
   // Los tipos de push que nacen de una comunicación: la normal y las de una
   // convocatoria (CONVOCATORIA abre el calendario; CONVOCATORIA_EDITAR, la
   // edición de esa convocatoria).
@@ -318,6 +331,19 @@ class PushNotificationService {
       _avisosDeResultados.add(null);
     }
 
+    // El aviso del directo con partido se enseña como notificación local que, al tocarla, abre su ficha.
+    final partidoId = partidoDeAviso(message.data);
+
+    if (partidoId != null) {
+      await mostrarNotificacionLocal(
+        comunicacionId: partidoId,
+        titulo: message.notification?.title ?? '',
+        mensaje: message.notification?.body ?? '',
+        datos: message.data,
+      );
+      return;
+    }
+
     if (!_esTipoDeComunicacion(tipo)) {
       if (tipo != _tipoResultado && tipo != _tipoNoticia) {
         debugPrint('Push con tipo no reconocido en foreground: $tipo');
@@ -356,6 +382,14 @@ class PushNotificationService {
   @visibleForTesting
   static Future<void> procesarNotificacion(RemoteMessage message) async {
     final tipo = message.data['tipo'];
+
+    // El aviso del directo abre la ficha de su partido; sin partido, como siempre (abre la app en el inicio).
+    final partidoId = partidoDeAviso(message.data);
+
+    if (partidoId != null) {
+      await AppNavigator.abrirFichaPartido(partidoId);
+      return;
+    }
 
     if (!_esTipoDeComunicacion(tipo)) {
       if (tipo != _tipoResultado && tipo != _tipoNoticia) {
@@ -417,6 +451,12 @@ class PushNotificationService {
 
     _notificacionInicial = null;
 
+    // La ficha pública no necesita sesión, pero igual que la convocatoria espera a que el splash dé paso a home.
+    if (partidoDeAviso(message.data) != null) {
+      _avisoPendiente = message;
+      return;
+    }
+
     // El aviso de una convocatoria necesita la sesión (su destino depende del
     // rol) y que el splash ya haya dado paso a home: se guarda y lo abre
     // procesarAvisoPendiente() después. El resto se abre al momento.
@@ -451,6 +491,12 @@ class PushNotificationService {
 
     // Espera a que home se haya pintado: el destino se abre encima de ella.
     await WidgetsBinding.instance.endOfFrame;
+
+    // La ficha del partido es pública: se abre también sin sesión.
+    if (partidoDeAviso(message.data) != null) {
+      await procesarNotificacion(message);
+      return;
+    }
 
     var sesionValida = false;
 

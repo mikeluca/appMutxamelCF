@@ -269,7 +269,9 @@ class _Centro extends StatelessWidget {
       case EventoFicha.tarjetaRoja:
         return Semantics(
           label: evento.dobleAmarilla ? t.fichaSecondYellow : t.fichaRedCard,
-          child: const TarjetaIcono(roja: true),
+          child: evento.dobleAmarilla
+              ? const TarjetasDobleAmarilla()
+              : const TarjetaIcono(roja: true),
         );
       default:
         return Semantics(
@@ -284,7 +286,7 @@ class _Centro extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
 
     return SizedBox(
-      width: 78,
+      width: 98,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -302,7 +304,7 @@ class _Centro extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          SizedBox(width: 24, child: Center(child: _icono(context))),
+          SizedBox(width: 44, child: Center(child: _icono(context))),
         ],
       ),
     );

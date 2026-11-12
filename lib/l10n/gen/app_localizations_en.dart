@@ -3148,7 +3148,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fichaTabLineup => 'Lineup';
 
   @override
-  String get fichaTabForm => 'Team form';
+  String get fichaTabForm => 'Last matches';
 
   @override
   String get fichaStatusLive => 'Live';

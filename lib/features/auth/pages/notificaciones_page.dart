@@ -115,6 +115,13 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
       await AppNavigator.abrirDestinoConvocatoria(destino);
 
       await _cargarNotificaciones();
+    } else if (notificacion.tipo == 'RESULTADO' &&
+        notificacion.referenciaId != null &&
+        notificacion.referenciaId! > 0) {
+      // Aviso del partido en directo: su referenciaId es el id del partido. Sin él (avisos antiguos), solo se marca leída.
+      await AppNavigator.abrirFichaPartido(notificacion.referenciaId!);
+
+      await _cargarNotificaciones();
     } else if (notificacion.tipo == 'COMUNICACION' &&
         notificacion.referenciaId != null &&
         notificacion.referenciaId! > 0) {

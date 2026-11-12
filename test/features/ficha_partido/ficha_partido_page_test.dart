@@ -440,7 +440,12 @@ void main() {
       expect(find.byKey(const ValueKey('icono-gol')), findsWidgets);
       expect(find.byKey(const ValueKey('icono-cambio')), findsOneWidget);
       expect(find.byKey(const ValueKey('tarjeta-roja')), findsOneWidget);
-      expect(find.byKey(const ValueKey('tarjeta-amarilla')), findsOneWidget);
+      // Una amarilla sola (la del jugador del minuto 30) y, en la doble amarilla, 2 amarillas + 1 roja juntas.
+      expect(find.byKey(const ValueKey('tarjeta-amarilla')), findsNWidgets(3));
+      expect(
+        find.byKey(const ValueKey('tarjetas-doble-amarilla')),
+        findsOneWidget,
+      );
       expect(find.byIcon(Icons.sports), findsNWidgets(2));
 
       final entra = tester.widget<Text>(find.byKey(const ValueKey('cambio-entra')));
@@ -753,6 +758,124 @@ void main() {
 
       expect(find.text('Sin alineación'), findsOneWidget);
       expect(find.byKey(const ValueKey('campo-pintado')), findsNothing);
+    });
+  });
+
+  group('doble amarilla', () {
+    testWidgets('en el detalle: 2 amarillas y 1 roja juntas, en ese orden, con el texto debajo', (
+      tester,
+    ) async {
+      final servicio = _ServicioFalso({
+        30: _ficha(
+          eventos: const [
+            EventoFicha(
+              tipo: EventoFicha.tarjetaRoja,
+              minuto: 80,
+              jugador: 'Ana Ruiz',
+              dobleAmarilla: true,
+            ),
+            EventoFicha(
+              tipo: EventoFicha.tarjetaAmarilla,
+              minuto: 40,
+              jugador: 'Ana Ruiz',
+            ),
+          ],
+        ),
+      });
+      await _pintar(tester, servicio);
+
+      final grupo = find.byKey(const ValueKey('tarjetas-doble-amarilla'));
+      expect(grupo, findsOneWidget);
+
+      final colores = [
+        for (final e in tester.widgetList<Container>(
+          find.descendant(of: grupo, matching: find.byType(Container)),
+        ))
+          (e.decoration as BoxDecoration).color,
+      ];
+      expect(colores, [
+        const Color(0xFFF2C500),
+        const Color(0xFFF2C500),
+        const Color(0xFFD62828),
+      ]);
+      expect(find.text('Doble amarilla'), findsOneWidget);
+
+      // La primera amarilla sigue saliendo sola, en su minuto.
+      expect(
+        find.descendant(of: grupo, matching: find.byKey(const ValueKey('tarjeta-roja'))),
+        findsOneWidget,
+      );
+      expect(find.byKey(const ValueKey('tarjeta-amarilla')), findsNWidgets(3));
+      expect(find.text("40'"), findsOneWidget);
+    });
+
+    testWidgets('en la alineación: el titular en el campo y el suplente, sin la amarilla suelta', (
+      tester,
+    ) async {
+      const doble = [
+        TarjetaFicha(color: 'AMARILLA', minuto: 20),
+        TarjetaFicha(color: 'ROJA', minuto: 70, dobleAmarilla: true),
+      ];
+      final servicio = _ServicioFalso({
+        30: _ficha(
+          alineacion: const AlineacionFicha(
+            formacion: '4-4-2',
+            titulares: [
+              TitularFicha(dorsal: 1, nombre: 'Jugador 1', fila: 1, columna: 1),
+              TitularFicha(
+                dorsal: 2,
+                nombre: 'Jugador 2',
+                fila: 2,
+                columna: 1,
+                tarjetas: doble,
+              ),
+            ],
+            suplentes: [
+              SuplenteFicha(dorsal: 12, nombre: 'Suplente Doble', tarjetas: doble),
+            ],
+          ),
+        ),
+      });
+      await _pintar(tester, servicio);
+      await _pestana(tester, 'pestana-alineacion');
+
+      await tester.ensureVisible(find.byKey(const ValueKey('ficha-suplentes')));
+      await tester.pump();
+
+      final enCampo = find.descendant(
+        of: find.byKey(const ValueKey('titular-Jugador 2')),
+        matching: find.byKey(const ValueKey('tarjetas-doble-amarilla')),
+      );
+      final enLista = find.descendant(
+        of: find.byKey(const ValueKey('jugador-Suplente Doble')),
+        matching: find.byKey(const ValueKey('tarjetas-doble-amarilla')),
+      );
+      expect(enCampo, findsOneWidget);
+      expect(enLista, findsOneWidget);
+
+      // Ni una amarilla suelta ni una roja suelta: solo las del grupo (2 amarillas + 1 roja cada uno).
+      expect(find.byKey(const ValueKey('tarjeta-amarilla')), findsNWidgets(4));
+      expect(find.byKey(const ValueKey('tarjeta-roja')), findsNWidgets(2));
+    });
+  });
+
+  group('nombre de la pestaña de los últimos partidos', () {
+    testWidgets('es "Últ. partidos" en castellano', (tester) async {
+      await _pintar(tester, _ServicioFalso({30: _ficha()}));
+
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('pestana-forma')),
+          matching: find.text('Últ. partidos'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Forma del equipo'), findsNothing);
+    });
+
+    test('en catalán e inglés', () {
+      expect(lookupAppLocalizations(const Locale('ca')).fichaTabForm, 'Últ. partits');
+      expect(lookupAppLocalizations(const Locale('en')).fichaTabForm, 'Last matches');
     });
   });
 

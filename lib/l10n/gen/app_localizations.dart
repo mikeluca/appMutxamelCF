@@ -5491,7 +5491,7 @@ abstract class AppLocalizations {
   /// No description provided for @fichaTabForm.
   ///
   /// In es, this message translates to:
-  /// **'Forma del equipo'**
+  /// **'Últ. partidos'**
   String get fichaTabForm;
 
   /// No description provided for @fichaStatusLive.
