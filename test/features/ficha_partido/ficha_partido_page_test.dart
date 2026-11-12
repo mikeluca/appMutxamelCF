@@ -126,7 +126,7 @@ String _texto(WidgetTester tester, String clave) =>
 
 Future<void> _pestana(WidgetTester tester, String clave) async {
   await tester.tap(find.byKey(ValueKey(clave)));
-  // Los tests que cambian de pestaÃ±a no tienen el punto parpadeante: se puede esperar a que termine.
+  // Los tests que cambian de pestaña no tienen el punto parpadeante: se puede esperar a que termine.
   await tester.pumpAndSettle();
 }
 

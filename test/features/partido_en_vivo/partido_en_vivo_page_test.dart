@@ -45,7 +45,7 @@ class _ServicioFalso extends PartidoEnVivoService {
   /// Si no es null, son los jugadores que devuelve obtenerConvocados.
   List<ConvocadoEnVivo>? convocadosForzados;
 
-  /// La alineaciÃ³n guardada que dice el estado (null = ninguna).
+  /// La alineación guardada que dice el estado (null = ninguna).
   AlineacionEnVivo? alineacion;
 
   /// Si no es null, el siguiente cambio o tarjeta lo rechaza el servidor con este mensaje.

@@ -23,7 +23,7 @@ class CampoFutbol extends StatelessWidget {
   final List<PosicionEnCampo> jugadores;
   final String? formacion;
 
-  /// TamaÃ±o de cada jugador (mÃ¡s pequeÃ±o en la vista previa de la retransmisiÃ³n).
+  /// Tamaño de cada jugador (más pequeño en la vista previa de la retransmisión).
   final double anchoJugador;
   final double altoJugador;
 

@@ -190,7 +190,7 @@ class _Estado extends StatelessWidget {
       EstadoFicha.proximo => Text(cabecera.hora?.trim() ?? '', style: estilo),
     };
 
-    // Que quepa siempre en la columna central, tambiÃ©n con letra grande.
+    // Que quepa siempre en la columna central, también con letra grande.
     return FittedBox(
       key: const ValueKey('ficha-estado'),
       fit: BoxFit.scaleDown,

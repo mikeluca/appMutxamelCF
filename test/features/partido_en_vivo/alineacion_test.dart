@@ -114,7 +114,7 @@ Future<void> _pintar(
   Locale locale = const Locale('es'),
   bool yaEnviada = false,
 
-  /// Salta el paso de la formaciÃ³n (se queda en "Sin formaciÃ³n"), que es el primero.
+  /// Salta el paso de la formación (se queda en "Sin formación"), que es el primero.
   bool saltarFormacion = true,
 }) async {
   // Una pantalla alta: la lista es perezosa y con la vista previa del campo queda poco sitio.

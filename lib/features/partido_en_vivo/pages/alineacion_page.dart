@@ -520,7 +520,7 @@ class _AlineacionPageState extends State<AlineacionPage> {
                 ),
               ),
             if (esSuplentes)
-              // Un Material propio: el ListTile pinta sobre el Material mÃ¡s cercano y el pie tiene color.
+              // Un Material propio: el ListTile pinta sobre el Material más cercano y el pie tiene color.
               Material(
                 color: Colors.transparent,
                 child: CheckboxListTile(

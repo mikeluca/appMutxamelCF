@@ -131,7 +131,7 @@ class EventoEnVivo {
   final int? jugadorEntraId;
   final String? jugadorEntra;
 
-  /// true en la segunda amarilla de un jugador (expulsiÃ³n).
+  /// true en la segunda amarilla de un jugador (expulsión).
   final bool dobleAmarilla;
 
   const EventoEnVivo({
@@ -168,7 +168,7 @@ class EventoEnVivo {
   }
 }
 
-/// La alineaciÃ³n guardada del partido y quiÃ©n estÃ¡ ahora en el campo (ids de jugador).
+/// La alineación guardada del partido y quién está ahora en el campo (ids de jugador).
 class AlineacionEnVivo {
   final String? formacion;
   final List<int> titulares;
@@ -225,7 +225,7 @@ class EstadoPartidoEnVivo {
   /// descanso y tras el final.
   final int? minutoActual;
 
-  /// La alineaciÃ³n guardada y quiÃ©n estÃ¡ en el campo; null si no se ha enviado ninguna (o backend antiguo).
+  /// La alineación guardada y quién está en el campo; null si no se ha enviado ninguna (o backend antiguo).
   final AlineacionEnVivo? alineacion;
 
   const EstadoPartidoEnVivo({
