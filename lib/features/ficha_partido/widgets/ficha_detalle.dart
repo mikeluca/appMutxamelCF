@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/ficha_partido_model.dart';
 import 'ficha_comunes.dart';
+import '../../directo/widgets/barra_momentos.dart';
 
 /// Pestaña Detalle: los eventos con lo último arriba. Minuto e icono en el centro; los hechos del Mutxamel a su lado
 /// (izquierda si juega de local, derecha si es visitante) y el gol del rival al otro; el descanso y el final, como
@@ -41,8 +42,12 @@ class FichaDetalle extends StatelessWidget {
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: ficha.eventos.length,
-      itemBuilder: (context, indice) {
+      itemCount: ficha.eventos.length + 1,
+      itemBuilder: (context, posicion) {
+        // Arriba del todo, la barra de momentos (no se pinta sin hechos con minuto).
+        if (posicion == 0) return BarraMomentos(ficha: ficha);
+
+        final indice = posicion - 1;
         final evento = ficha.eventos[indice];
 
         return evento.esSeparador

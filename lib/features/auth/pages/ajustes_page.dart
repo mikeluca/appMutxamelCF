@@ -148,6 +148,12 @@ class _AjustesPageState extends State<AjustesPage> {
       setState(() {
         _preferencias = actualizadas;
       });
+
+      if (actualizadas.notificacionesActivadas &&
+          actualizadas.resultadosActivados) {
+        // Ya recibe los resultados por su cuenta: seguir partidos duplicaría los avisos.
+        await PushNotificationService.sinSeguirPartidos();
+      }
     } catch (_) {
       if (!mounted) return;
 

@@ -6,6 +6,8 @@ import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../ficha_partido/pages/ficha_partido_page.dart';
 import '../../ficha_partido/widgets/reloj_en_directo.dart';
+import '../../directo/widgets/cuenta_atras_texto.dart';
+import '../../directo/widgets/marcador_que_late.dart';
 import '../models/match_model.dart';
 
 class MatchCard extends StatelessWidget {
@@ -207,6 +209,24 @@ class MatchCard extends StatelessWidget {
                   ],
                 ),
 
+                // La cuenta atrás de la tarjeta del Primer Equipo ("Empieza en 3 h 15 min"); sin hora, solo el día.
+                if (mostrarPrimerEquipo &&
+                    CuentaAtrasTexto.aplica(match.dia, match.hora))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 14),
+                    child: CuentaAtrasTexto(
+                      dia: match.dia,
+                      hora: match.hora,
+                      ahora: ahora,
+                      crearTemporizador: crearTemporizador,
+                      estilo: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ),
+
                 const SizedBox(height: 20),
 
                 _buildMatchInformation(context),
@@ -266,15 +286,7 @@ class MatchCard extends StatelessWidget {
                       isHomeTeam: match.local,
                     ),
 
-                    Text(
-                      match.marcadorEnDirecto ?? '-',
-                      key: const ValueKey('marcador-en-directo'),
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
+                    _marcadorEnDirecto(context),
 
                     _buildTeam(
                       context,
@@ -322,6 +334,32 @@ class MatchCard extends StatelessWidget {
           ),
         ],
       )),
+    );
+  }
+
+  /// El marcador en directo; el número que sube late (ver [MarcadorQueLate]).
+  Widget _marcadorEnDirecto(BuildContext context) {
+    final estilo = TextStyle(
+      fontSize: 28,
+      fontWeight: FontWeight.bold,
+      color: Theme.of(context).colorScheme.onSurface,
+    );
+
+    if (match.golesFavor == null || match.golesContra == null) {
+      return Text(
+        '-',
+        key: const ValueKey('marcador-en-directo'),
+        style: estilo,
+      );
+    }
+
+    return MarcadorQueLate(
+      key: const ValueKey('marcador-en-directo'),
+      partidoId: match.id,
+      golesFavor: match.golesFavor,
+      golesContra: match.golesContra,
+      mutxamelEsLocal: match.local,
+      estilo: estilo,
     );
   }
 

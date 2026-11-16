@@ -3338,4 +3338,99 @@ class AppLocalizationsCa extends AppLocalizations {
   String fichaDorsal(String dorsal) {
     return 'Dorsal $dorsal';
   }
+
+  @override
+  String get countdownAboutToStart => 'A punt de començar';
+
+  @override
+  String countdownDaysHours(int d, int h) {
+    return 'Comença en $d d $h h';
+  }
+
+  @override
+  String countdownHoursMinutes(int h, int m) {
+    return 'Comença en $h h $m min';
+  }
+
+  @override
+  String countdownMinutes(int m) {
+    return 'Comença en $m min';
+  }
+
+  @override
+  String get countdownWarmingUp => 'Escalfant…';
+
+  @override
+  String get followAlreadyAll => 'Ja reps els avisos de tots els partits';
+
+  @override
+  String get followError =>
+      'No s\'ha pogut actualitzar el seguiment. Torna-ho a provar.';
+
+  @override
+  String get followMatchButton => 'Seguir aquest partit';
+
+  @override
+  String get followPermissionDenied =>
+      'Per seguir el partit activa les notificacions de l\'app als ajustos del mòbil.';
+
+  @override
+  String get followStarted => 'Rebràs els avisos d\'aquest partit.';
+
+  @override
+  String get followStopped => 'Deixes de seguir aquest partit.';
+
+  @override
+  String get followingMatchButton => 'Seguint';
+
+  @override
+  String get goalCelebrationTitle => 'GOOOL!';
+
+  @override
+  String goalOurBanner(String marcador) {
+    return 'Gol del Mutxamel! · $marcador';
+  }
+
+  @override
+  String goalRivalBanner(String marcador) {
+    return 'Gol del rival · $marcador';
+  }
+
+  @override
+  String momentSubstitution(String entra, String sale) {
+    return 'Canvi: entra $entra, surt $sale';
+  }
+
+  @override
+  String get momentsBarLabel => 'Moments del partit';
+
+  @override
+  String get momentsHalftimeShort => 'DESC.';
+
+  @override
+  String get shareError => 'No s\'ha pogut compartir el partit.';
+
+  @override
+  String get shareImageFooter => 'Segueix-lo a l\'app del Mutxamel CF';
+
+  @override
+  String get shareStatusFinal => 'Final';
+
+  @override
+  String shareTextScore(
+    String estado,
+    String local,
+    String marcador,
+    String visitante,
+  ) {
+    return '$local $marcador $visitante · $estado';
+  }
+
+  @override
+  String shareTextUpcoming(String cuando, String local, String visitante) {
+    return '$local - $visitante · $cuando';
+  }
+
+  @override
+  String get shareTooltip => 'Compartir partit';
 }

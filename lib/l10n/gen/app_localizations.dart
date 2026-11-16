@@ -5799,6 +5799,155 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Dorsal {dorsal}'**
   String fichaDorsal(String dorsal);
+
+  /// No description provided for @countdownAboutToStart.
+  ///
+  /// In es, this message translates to:
+  /// **'A punto de empezar'**
+  String get countdownAboutToStart;
+
+  /// No description provided for @countdownDaysHours.
+  ///
+  /// In es, this message translates to:
+  /// **'Empieza en {d} d {h} h'**
+  String countdownDaysHours(int d, int h);
+
+  /// No description provided for @countdownHoursMinutes.
+  ///
+  /// In es, this message translates to:
+  /// **'Empieza en {h} h {m} min'**
+  String countdownHoursMinutes(int h, int m);
+
+  /// No description provided for @countdownMinutes.
+  ///
+  /// In es, this message translates to:
+  /// **'Empieza en {m} min'**
+  String countdownMinutes(int m);
+
+  /// No description provided for @countdownWarmingUp.
+  ///
+  /// In es, this message translates to:
+  /// **'Calentando…'**
+  String get countdownWarmingUp;
+
+  /// No description provided for @followAlreadyAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya recibes los avisos de todos los partidos'**
+  String get followAlreadyAll;
+
+  /// No description provided for @followError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido actualizar el seguimiento. Inténtalo de nuevo.'**
+  String get followError;
+
+  /// No description provided for @followMatchButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Seguir este partido'**
+  String get followMatchButton;
+
+  /// No description provided for @followPermissionDenied.
+  ///
+  /// In es, this message translates to:
+  /// **'Para seguir el partido activa las notificaciones de la app en los ajustes del móvil.'**
+  String get followPermissionDenied;
+
+  /// No description provided for @followStarted.
+  ///
+  /// In es, this message translates to:
+  /// **'Recibirás los avisos de este partido.'**
+  String get followStarted;
+
+  /// No description provided for @followStopped.
+  ///
+  /// In es, this message translates to:
+  /// **'Dejas de seguir este partido.'**
+  String get followStopped;
+
+  /// No description provided for @followingMatchButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Siguiendo'**
+  String get followingMatchButton;
+
+  /// No description provided for @goalCelebrationTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¡GOOOL!'**
+  String get goalCelebrationTitle;
+
+  /// No description provided for @goalOurBanner.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Gol del Mutxamel! · {marcador}'**
+  String goalOurBanner(String marcador);
+
+  /// No description provided for @goalRivalBanner.
+  ///
+  /// In es, this message translates to:
+  /// **'Gol del rival · {marcador}'**
+  String goalRivalBanner(String marcador);
+
+  /// No description provided for @momentSubstitution.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambio: entra {entra}, sale {sale}'**
+  String momentSubstitution(String entra, String sale);
+
+  /// No description provided for @momentsBarLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Momentos del partido'**
+  String get momentsBarLabel;
+
+  /// No description provided for @momentsHalftimeShort.
+  ///
+  /// In es, this message translates to:
+  /// **'DESC.'**
+  String get momentsHalftimeShort;
+
+  /// No description provided for @shareError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido compartir el partido.'**
+  String get shareError;
+
+  /// No description provided for @shareImageFooter.
+  ///
+  /// In es, this message translates to:
+  /// **'Síguelo en la app del Mutxamel CF'**
+  String get shareImageFooter;
+
+  /// No description provided for @shareStatusFinal.
+  ///
+  /// In es, this message translates to:
+  /// **'Final'**
+  String get shareStatusFinal;
+
+  /// No description provided for @shareTextScore.
+  ///
+  /// In es, this message translates to:
+  /// **'{local} {marcador} {visitante} · {estado}'**
+  String shareTextScore(
+    String estado,
+    String local,
+    String marcador,
+    String visitante,
+  );
+
+  /// No description provided for @shareTextUpcoming.
+  ///
+  /// In es, this message translates to:
+  /// **'{local} - {visitante} · {cuando}'**
+  String shareTextUpcoming(String cuando, String local, String visitante);
+
+  /// No description provided for @shareTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Compartir partido'**
+  String get shareTooltip;
 }
 
 class _AppLocalizationsDelegate

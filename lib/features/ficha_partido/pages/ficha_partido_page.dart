@@ -11,6 +11,10 @@ import '../widgets/ficha_alineacion.dart';
 import '../widgets/ficha_cabecera.dart';
 import '../widgets/ficha_detalle.dart';
 import '../widgets/ficha_forma.dart';
+import '../../directo/services/seguir_partido_service.dart';
+import '../../directo/widgets/boton_seguir_partido.dart';
+import '../../directo/widgets/celebra_goles.dart';
+import '../../directo/widgets/compartir_partido.dart';
 
 /// Ficha pública de un partido del Primer Equipo (sin sesión): cabecera fija y las pestañas Detalle, Alineación y
 /// Últ. partidos (forma del equipo). Mientras el partido está en juego o en el descanso y la pantalla está a la vista, se recarga
@@ -25,12 +29,16 @@ class FichaPartidoPage extends StatefulWidget {
   final Stream<void>? avisosDeResultados;
   final Duration intervalo;
 
+  /// Solo para tests: el servicio de "Seguir este partido" (por defecto, el real).
+  final SeguirPartidoService? seguirService;
+
   const FichaPartidoPage({
     super.key,
     required this.partidoId,
     this.service,
     this.avisosDeResultados,
     this.intervalo = intervaloEnDirecto,
+    this.seguirService,
   });
 
   /// Las fichas que están abiertas ahora mismo (la más reciente, al final).
@@ -38,7 +46,10 @@ class FichaPartidoPage extends StatefulWidget {
 
   /// true si la ficha de ese partido es la pantalla actual (la que el usuario está viendo).
   static bool estaVisible(int partidoId) => _abiertas.any(
-    (a) => a.widget.partidoId == partidoId && a.mounted && (a._ruta?.isCurrent ?? false),
+    (a) =>
+        a.widget.partidoId == partidoId &&
+        a.mounted &&
+        (a._ruta?.isCurrent ?? false),
   );
 
   /// Abre la ficha del partido. Si la ficha de ese mismo partido ya está abierta no se apila otra: se vuelve a
@@ -70,7 +81,8 @@ class FichaPartidoPage extends StatefulWidget {
 
     return navigator.push(
       MaterialPageRoute<void>(
-        builder: (_) => FichaPartidoPage(partidoId: partidoId, service: service),
+        builder: (_) =>
+            FichaPartidoPage(partidoId: partidoId, service: service),
       ),
     );
   }
@@ -84,6 +96,8 @@ class _FichaPartidoPageState extends State<FichaPartidoPage>
   late final FichaPartidoService _service =
       widget.service ?? FichaPartidoService();
   late final TabController _pestanas = TabController(length: 3, vsync: this);
+  late final SeguirPartidoService _seguir =
+      widget.seguirService ?? PushNotificationService.seguirPartidos;
 
   FichaPartido? _ficha;
   bool _cargando = true;
@@ -105,13 +119,14 @@ class _FichaPartidoPageState extends State<FichaPartidoPage>
 
     WidgetsBinding.instance.addObserver(this);
 
-    _avisos = (widget.avisosDeResultados ??
-            PushNotificationService.avisosDeResultados)
-        .listen((_) {
-          if (_ficha?.cabecera.estado.seEstaJugando ?? false) {
-            _recargar(silencioso: true);
-          }
-        });
+    _avisos =
+        (widget.avisosDeResultados ??
+                PushNotificationService.avisosDeResultados)
+            .listen((_) {
+              if (_ficha?.cabecera.estado.seEstaJugando ?? false) {
+                _recargar(silencioso: true);
+              }
+            });
   }
 
   @override
@@ -177,6 +192,14 @@ class _FichaPartidoPageState extends State<FichaPartidoPage>
         _cargando = false;
         _error = null;
       });
+
+      // Terminado o cancelado: ya no hay avisos que seguir.
+      if (ficha.cabecera.estado == EstadoFicha.finalizado ||
+          ficha.cabecera.estado == EstadoFicha.cancelado) {
+        unawaited(
+          _seguir.bajaSiTermino(widget.partidoId).catchError((_) {}),
+        );
+      }
     } catch (e) {
       if (!mounted || sinCargando) return;
 
@@ -221,6 +244,7 @@ class _FichaPartidoPageState extends State<FichaPartidoPage>
           service: widget.service,
           avisosDeResultados: widget.avisosDeResultados,
           intervalo: widget.intervalo,
+          seguirService: widget.seguirService,
         ),
       ),
     );
@@ -243,6 +267,14 @@ class _FichaPartidoPageState extends State<FichaPartidoPage>
         foregroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
+        actions: [
+          IconButton(
+            key: const ValueKey('boton-compartir'),
+            icon: const Icon(Icons.share),
+            tooltip: t.shareTooltip,
+            onPressed: _ficha == null ? null : _compartir,
+          ),
+        ],
       ),
       body: _construirCuerpo(t),
     );
@@ -259,16 +291,30 @@ class _FichaPartidoPageState extends State<FichaPartidoPage>
       return _construirError(t);
     }
 
-    return Column(
+    final cabecera = ficha.cabecera;
+    final terminado =
+        cabecera.estado == EstadoFicha.finalizado ||
+        cabecera.estado == EstadoFicha.cancelado;
+
+    final cuerpo = Column(
       children: [
-        FichaCabecera(cabecera: ficha.cabecera),
+        FichaCabecera(cabecera: cabecera),
+        if (!terminado)
+          BotonSeguirPartido(
+            partidoId: widget.partidoId,
+            fecha: cabecera.dia,
+            service: _seguir,
+          ),
         Material(
           color: Theme.of(context).colorScheme.surface,
           elevation: 1,
           child: TabBar(
             controller: _pestanas,
             tabs: [
-              Tab(key: const ValueKey('pestana-detalle'), text: t.fichaTabDetail),
+              Tab(
+                key: const ValueKey('pestana-detalle'),
+                text: t.fichaTabDetail,
+              ),
               Tab(
                 key: const ValueKey('pestana-alineacion'),
                 text: t.fichaTabLineup,
@@ -291,6 +337,54 @@ class _FichaPartidoPageState extends State<FichaPartidoPage>
         ),
       ],
     );
+
+    // El goleador es el del último gol del Mutxamel (lo último va primero) y el dorsal el del último del rival.
+    String? goleador;
+    int? dorsalRival;
+
+    for (final e in ficha.eventos) {
+      if (goleador == null && e.tipo == EventoFicha.golFavor) {
+        goleador = e.jugador;
+      }
+
+      if (dorsalRival == null && e.tipo == EventoFicha.golContra) {
+        dorsalRival = e.dorsalRival;
+      }
+    }
+
+    return CelebraGoles(
+      partidoId: cabecera.partidoId == 0 ? null : cabecera.partidoId,
+      golesFavor: cabecera.golesFavor,
+      golesContra: cabecera.golesContra,
+      mutxamelEsLocal: cabecera.mutxamelEsLocal,
+      goleador: goleador,
+      dorsalRival: dorsalRival,
+      child: cuerpo,
+    );
+  }
+
+  /// Genera la imagen del partido y abre el menú de compartir del sistema.
+  Future<void> _compartir() async {
+    final ficha = _ficha;
+
+    if (ficha == null) return;
+
+    final t = AppLocalizations.of(context);
+    final mensajes = ScaffoldMessenger.of(context);
+
+    try {
+      final datos = DatosCompartir.desdeCabecera(
+        ficha.cabecera,
+        t,
+        ahora: DateTime.now(),
+      );
+
+      await CompartirPartido.compartir(context, datos);
+    } catch (e) {
+      debugPrint('NO SE PUDO COMPARTIR EL PARTIDO: $e');
+
+      mensajes.showSnackBar(SnackBar(content: Text(t.shareError)));
+    }
   }
 
   Widget _conRefresco(Widget contenido) {
@@ -298,8 +392,8 @@ class _FichaPartidoPageState extends State<FichaPartidoPage>
   }
 
   Widget _construirError(AppLocalizations t) {
-    final noDisponible = _error is ApiException &&
-        (_error as ApiException).statusCode == 404;
+    final noDisponible =
+        _error is ApiException && (_error as ApiException).statusCode == 404;
 
     return Center(
       child: Padding(

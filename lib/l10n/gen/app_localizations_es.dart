@@ -3346,4 +3346,99 @@ class AppLocalizationsEs extends AppLocalizations {
   String fichaDorsal(String dorsal) {
     return 'Dorsal $dorsal';
   }
+
+  @override
+  String get countdownAboutToStart => 'A punto de empezar';
+
+  @override
+  String countdownDaysHours(int d, int h) {
+    return 'Empieza en $d d $h h';
+  }
+
+  @override
+  String countdownHoursMinutes(int h, int m) {
+    return 'Empieza en $h h $m min';
+  }
+
+  @override
+  String countdownMinutes(int m) {
+    return 'Empieza en $m min';
+  }
+
+  @override
+  String get countdownWarmingUp => 'Calentando…';
+
+  @override
+  String get followAlreadyAll => 'Ya recibes los avisos de todos los partidos';
+
+  @override
+  String get followError =>
+      'No se ha podido actualizar el seguimiento. Inténtalo de nuevo.';
+
+  @override
+  String get followMatchButton => 'Seguir este partido';
+
+  @override
+  String get followPermissionDenied =>
+      'Para seguir el partido activa las notificaciones de la app en los ajustes del móvil.';
+
+  @override
+  String get followStarted => 'Recibirás los avisos de este partido.';
+
+  @override
+  String get followStopped => 'Dejas de seguir este partido.';
+
+  @override
+  String get followingMatchButton => 'Siguiendo';
+
+  @override
+  String get goalCelebrationTitle => '¡GOOOL!';
+
+  @override
+  String goalOurBanner(String marcador) {
+    return '¡Gol del Mutxamel! · $marcador';
+  }
+
+  @override
+  String goalRivalBanner(String marcador) {
+    return 'Gol del rival · $marcador';
+  }
+
+  @override
+  String momentSubstitution(String entra, String sale) {
+    return 'Cambio: entra $entra, sale $sale';
+  }
+
+  @override
+  String get momentsBarLabel => 'Momentos del partido';
+
+  @override
+  String get momentsHalftimeShort => 'DESC.';
+
+  @override
+  String get shareError => 'No se ha podido compartir el partido.';
+
+  @override
+  String get shareImageFooter => 'Síguelo en la app del Mutxamel CF';
+
+  @override
+  String get shareStatusFinal => 'Final';
+
+  @override
+  String shareTextScore(
+    String estado,
+    String local,
+    String marcador,
+    String visitante,
+  ) {
+    return '$local $marcador $visitante · $estado';
+  }
+
+  @override
+  String shareTextUpcoming(String cuando, String local, String visitante) {
+    return '$local - $visitante · $cuando';
+  }
+
+  @override
+  String get shareTooltip => 'Compartir partido';
 }

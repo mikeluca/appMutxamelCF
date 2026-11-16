@@ -17,6 +17,7 @@ import '../news/services/news_services.dart';
 import '../../../routing/app_routes.dart';
 import '../auth/services/auth_manager.dart';
 import '../matches/widgets/match_card.dart';
+import '../directo/widgets/celebra_goles.dart';
 import '../auth/services/notificacion_service.dart';
 import '../../core/notifications/services/push_notification_service.dart';
 import '../auth/pages/notificaciones_page.dart';
@@ -355,9 +356,15 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     // El backend siempre devuelve un ResultadoDTO para el primer equipo (rival vacío si no hay próximo
     // partido ni último jugado, igual que una jornada de descanso), pero por si alguna vez llegara un
     // cuerpo vacío, se pinta la misma tarjeta "sin partido" en vez de dejar la sección sin tarjeta.
-    return MatchCard(
-      match: _partido ?? _sinPartidoPrimerEquipo,
-      mostrarPrimerEquipo: true,
+    final partido = _partido ?? _sinPartidoPrimerEquipo;
+
+    // Si el marcador sube mientras la portada está a la vista, se celebra el gol (ver CelebraGoles).
+    return CelebraGoles(
+      partidoId: partido.tieneFicha ? partido.id : null,
+      golesFavor: partido.golesFavor,
+      golesContra: partido.golesContra,
+      mutxamelEsLocal: partido.local,
+      child: MatchCard(match: partido, mostrarPrimerEquipo: true),
     );
   }
 

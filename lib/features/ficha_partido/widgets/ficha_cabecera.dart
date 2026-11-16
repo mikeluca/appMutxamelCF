@@ -6,6 +6,8 @@ import '../../../l10n/gen/app_localizations.dart';
 import '../models/ficha_partido_model.dart';
 import 'ficha_comunes.dart';
 import 'reloj_en_directo.dart';
+import '../../directo/widgets/cuenta_atras_texto.dart';
+import '../../directo/widgets/marcador_que_late.dart';
 
 /// Cabecera fija de la ficha: fondo oscuro con degradado del color del club, los dos escudos (el del Mutxamel y
 /// uno genérico para el rival) según local/visitante, la fecha, el marcador, el estado y la competición.
@@ -131,6 +133,12 @@ class _Equipo extends StatelessWidget {
   }
 }
 
+const TextStyle _estiloMarcador = TextStyle(
+  color: Colors.white,
+  fontSize: 34,
+  fontWeight: FontWeight.bold,
+);
+
 class _Centro extends StatelessWidget {
   final CabeceraFicha cabecera;
   final String fecha;
@@ -162,17 +170,20 @@ class _Centro extends StatelessWidget {
         const SizedBox(height: 4),
         FittedBox(
           fit: BoxFit.scaleDown,
-          child: Text(
-            sinMarcador
-                ? '-'
-                : '${cabecera.golesLocal} - ${cabecera.golesVisitante}',
-            key: const ValueKey('ficha-marcador'),
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 34,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          child: sinMarcador
+              ? const Text(
+                  '-',
+                  key: ValueKey('ficha-marcador'),
+                  style: _estiloMarcador,
+                )
+              : MarcadorQueLate(
+                  key: const ValueKey('ficha-marcador'),
+                  partidoId: cabecera.partidoId,
+                  golesFavor: cabecera.golesFavor,
+                  golesContra: cabecera.golesContra,
+                  mutxamelEsLocal: cabecera.mutxamelEsLocal,
+                  estilo: _estiloMarcador,
+                ),
         ),
         const SizedBox(height: 4),
         _Estado(
@@ -232,6 +243,16 @@ class _Estado extends StatelessWidget {
         t.fichaStatusCancelled,
         style: estilo.copyWith(color: AppColors.dorado),
       ),
+      // Con día y hora, la cuenta atrás ("Empieza en 3 h 15 min"); sin hora, como antes.
+      EstadoFicha.proximo
+          when CuentaAtrasTexto.aplica(cabecera.dia, cabecera.hora) =>
+        CuentaAtrasTexto(
+          dia: cabecera.dia,
+          hora: cabecera.hora,
+          estilo: estilo,
+          ahora: ahora,
+          crearTemporizador: crearTemporizador,
+        ),
       EstadoFicha.proximo => Text(cabecera.hora?.trim() ?? '', style: estilo),
     };
 

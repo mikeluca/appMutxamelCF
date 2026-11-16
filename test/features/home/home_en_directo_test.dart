@@ -11,6 +11,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../../support/marcador_helpers.dart';
 
 class _MatchFalso extends MatchService {
   final List<MatchModel> respuestas;
@@ -98,7 +99,7 @@ void main() {
     await _pintar(tester, partidos);
 
     expect(find.text('PARTIDO EN JUEGO'), findsOneWidget);
-    expect(find.text('0 - 0'), findsOneWidget);
+    expect(encuentraMarcador('0 - 0'), findsOneWidget);
     expect(partidos.llamadas, 1);
 
     await tester.pump(_intervalo);
@@ -106,14 +107,14 @@ void main() {
     await tester.pump();
 
     expect(partidos.llamadas, 2);
-    expect(find.text('1 - 0'), findsOneWidget);
+    expect(encuentraMarcador('1 - 0'), findsOneWidget);
 
     await tester.pump(_intervalo);
     await tester.pump();
     await tester.pump();
 
     expect(partidos.llamadas, 3);
-    expect(find.text('2 - 0'), findsOneWidget);
+    expect(encuentraMarcador('2 - 0'), findsOneWidget);
 
     await _quitarPagina(tester);
   });
@@ -143,7 +144,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('1 - 0'), findsOneWidget);
+    expect(encuentraMarcador('1 - 0'), findsOneWidget);
     expect(find.text('PARTIDO EN JUEGO'), findsOneWidget);
 
     await _quitarPagina(tester);
@@ -242,7 +243,7 @@ void main() {
       await tester.pump();
 
       expect(partidos.llamadas, 2);
-      expect(find.text('1 - 0'), findsOneWidget);
+      expect(encuentraMarcador('1 - 0'), findsOneWidget);
 
       await _quitarPagina(tester);
     },

@@ -9,6 +9,7 @@ import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../../support/marcador_helpers.dart';
 import 'package:http/http.dart' as http;
 
 import '../../support/http_test_helpers.dart';
@@ -122,7 +123,7 @@ Future<void> _cerrar(WidgetTester tester) async {
 }
 
 String _texto(WidgetTester tester, String clave) =>
-    tester.widget<Text>(find.byKey(ValueKey(clave))).data!;
+    textoDe(tester, find.byKey(ValueKey(clave)));
 
 Future<void> _pestana(WidgetTester tester, String clave) async {
   await tester.tap(find.byKey(ValueKey(clave)));
@@ -141,10 +142,11 @@ void main() {
       expect(_texto(tester, 'ficha-fecha'), '11/11/2026 • 21:00');
       expect(_texto(tester, 'ficha-marcador'), '-');
       expect(_texto(tester, 'ficha-competicion'), 'Segona FFCV, Grup 7 · Jornada 9');
+      // Con día y hora, el estado es la cuenta atrás (su texto depende de la hora de hoy).
       expect(
         find.descendant(
           of: find.byKey(const ValueKey('ficha-estado')),
-          matching: find.text('21:00'),
+          matching: find.byKey(const ValueKey('cuenta-atras')),
         ),
         findsOneWidget,
       );
@@ -1000,9 +1002,7 @@ void main() {
       expect(find.byType(FichaPartidoPage), findsNWidgets(2));
       // La ficha nueva queda encima de la anterior.
       expect(
-        tester
-            .widget<Text>(find.byKey(const ValueKey('ficha-marcador')).last)
-            .data,
+        textoDe(tester, find.byKey(const ValueKey('ficha-marcador')).last),
         '4 - 1',
       );
     });

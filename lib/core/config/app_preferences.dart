@@ -21,6 +21,9 @@ class AppPreferences {
   static const String _claveUltimoIdiomaEnviado = 'ultimo_idioma_enviado';
   static const String _claveIdiomaTopics = 'idioma_topics_anonimos';
 
+  // Partidos que el usuario sigue ("Seguir este partido"): "id|yyyy-MM-dd" (el día del partido).
+  static const String _clavePartidosSeguidos = 'partidos_seguidos';
+
   static Future<String> obtenerTema() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -86,6 +89,35 @@ class AppPreferences {
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.setString(_claveIdiomaTopics, idioma);
+  }
+
+  /// Los partidos seguidos: id -> día en que se juegan.
+  static Future<Map<int, DateTime>> obtenerPartidosSeguidos() async {
+    final prefs = await SharedPreferences.getInstance();
+    final seguidos = <int, DateTime>{};
+
+    for (final texto in prefs.getStringList(_clavePartidosSeguidos) ?? const <String>[]) {
+      final partes = texto.split('|');
+      final id = int.tryParse(partes.first);
+      final fecha = partes.length > 1 ? DateTime.tryParse(partes[1]) : null;
+
+      if (id != null && fecha != null) {
+        seguidos[id] = DateTime(fecha.year, fecha.month, fecha.day);
+      }
+    }
+
+    return seguidos;
+  }
+
+  static Future<void> guardarPartidosSeguidos(Map<int, DateTime> seguidos) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    String dia(DateTime f) =>
+        '${f.year.toString().padLeft(4, "0")}-${f.month.toString().padLeft(2, "0")}-${f.day.toString().padLeft(2, "0")}';
+
+    await prefs.setStringList(_clavePartidosSeguidos, [
+      for (final e in seguidos.entries) '${e.key}|${dia(e.value)}',
+    ]);
   }
 
   static Future<bool> obtenerNotifNoticias() async {

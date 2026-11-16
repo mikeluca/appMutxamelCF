@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../../../support/marcador_helpers.dart';
 import 'package:app_mutxamel_cf/core/utils/como_llegar.dart';
 import 'package:app_mutxamel_cf/features/matches/models/match_model.dart';
 import 'package:app_mutxamel_cf/features/matches/widgets/match_card.dart';
@@ -154,7 +155,7 @@ void main() {
 
       expect(find.text('PARTIDO EN JUEGO'), findsOneWidget);
       expect(find.byKey(const ValueKey('marcador-en-directo')), findsOneWidget);
-      expect(find.text('2 - 1'), findsOneWidget);
+      expect(encuentraMarcador('2 - 1'), findsOneWidget);
       expect(find.text('Descanso'), findsNothing);
       expect(find.text('Pego C.F.'), findsOneWidget);
     });
@@ -174,7 +175,7 @@ void main() {
         ),
       );
 
-      expect(find.text('1 - 2'), findsOneWidget);
+      expect(encuentraMarcador('1 - 2'), findsOneWidget);
     });
 
     testWidgets('en el descanso, debajo del marcador, sale "Descanso"', (tester) async {

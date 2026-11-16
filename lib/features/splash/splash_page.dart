@@ -92,6 +92,8 @@ class _SplashPageState extends State<SplashPage> {
     await IdiomaService.sincronizarAlArrancar();
 
     await PushNotificationService.sincronizarTopicsAnonimos();
+
+    await PushNotificationService.sincronizarPartidosSeguidos();
   }
 
   Future<void> _inicializarNotificaciones() async {

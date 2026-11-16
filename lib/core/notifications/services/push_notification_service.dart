@@ -7,6 +7,9 @@ import '../../../features/auth/services/notificacion_service.dart';
 import '../../../features/auth/services/auth_session.dart';
 import '../../config/app_preferences.dart';
 import 'topics_anonimos.dart';
+import '../../../features/directo/services/seguir_partido_service.dart';
+import '../../../features/directo/widgets/partido_visible.dart';
+import '../../../features/auth/services/preferencias_notificacion_service.dart';
 
 import 'dispositivo_app_service.dart';
 import 'local_notification_service.dart';
@@ -106,6 +109,66 @@ class PushNotificationService {
   static Future<void> desuscribirDeTopic(String topic) =>
       _messaging.unsubscribeFromTopic(topic);
 
+  /// "Seguir este partido": altas y bajas en `partido_{id}_{idioma}` y los partidos seguidos (en AppPreferences).
+  /// Los tests lo sustituyen por uno con funciones falsas.
+  static SeguirPartidoService seguirPartidos = SeguirPartidoService(
+    suscribir: suscribirATopic,
+    desuscribir: desuscribirDeTopic,
+    obtenerIdioma: AppPreferences.obtenerIdioma,
+    leer: AppPreferences.obtenerPartidosSeguidos,
+    guardar: AppPreferences.guardarPartidosSeguidos,
+    pedirPermiso: pedirPermisoDeNotificaciones,
+    recibeResultados: recibeAvisosDeResultados,
+  );
+
+  /// Pide el permiso de notificaciones (como al arrancar la app); true si se tiene (también el provisional de iOS).
+  static Future<bool> pedirPermisoDeNotificaciones() async {
+    try {
+      final ajustes = await _messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+
+      return ajustes.authorizationStatus == AuthorizationStatus.authorized ||
+          ajustes.authorizationStatus == AuthorizationStatus.provisional;
+    } catch (e) {
+      debugPrint('NO SE PUDO PEDIR EL PERMISO DE NOTIFICACIONES: $e');
+      return false;
+    }
+  }
+
+  /// true si este dispositivo ya recibe los avisos de resultados: sin cuenta, su interruptor anónimo; con cuenta, su
+  /// preferencia de avisos de resultados (con las notificaciones activadas). null si no se puede saber (error de red).
+  static Future<bool?> recibeAvisosDeResultados() async {
+    try {
+      final token = await AuthSession.obtenerToken();
+
+      if (token == null || token.isEmpty) {
+        return await AppPreferences.obtenerNotifResultados();
+      }
+
+      final preferencias =
+          await PreferenciasNotificacionService.obtenerPreferencias();
+
+      return preferencias.notificacionesActivadas &&
+          preferencias.resultadosActivados;
+    } catch (e) {
+      debugPrint('NO SE PUDO SABER SI RECIBE LOS RESULTADOS: $e');
+      return null;
+    }
+  }
+
+  /// Al arrancar: baja de los partidos seguidos caducados (más de 2 días) y, si el dispositivo ya recibe los
+  /// resultados, de todos (evita avisos duplicados). Nunca lanza.
+  static Future<void> sincronizarPartidosSeguidos() async {
+    try {
+      await seguirPartidos.alArrancar();
+    } catch (e) {
+      debugPrint('ERROR AL SINCRONIZAR LOS PARTIDOS SEGUIDOS: $e');
+    }
+  }
+
   /// Solo para tests: sustituye a las altas y bajas reales de Firebase.
   @visibleForTesting
   static TopicsAnonimos topicsAnonimos = TopicsAnonimos(
@@ -134,8 +197,20 @@ class PushNotificationService {
         TopicsAnonimos.baseResultados,
         await AppPreferences.obtenerIdioma(),
       );
+
+      // Ya recibe los avisos de todos los partidos: seguir alguno duplicaría los avisos.
+      await sinSeguirPartidos();
     } else {
       await topicsAnonimos.desactivar(TopicsAnonimos.baseResultados);
+    }
+  }
+
+  /// Baja de todos los partidos seguidos (porque pasa a recibir todos los resultados). Nunca lanza.
+  static Future<void> sinSeguirPartidos() async {
+    try {
+      await seguirPartidos.bajaDeTodos();
+    } catch (e) {
+      debugPrint('ERROR AL DEJAR DE SEGUIR LOS PARTIDOS: $e');
     }
   }
 
@@ -149,6 +224,8 @@ class PushNotificationService {
         noticias: await AppPreferences.obtenerNotifNoticias(),
         resultados: await AppPreferences.obtenerNotifResultados(),
       );
+
+      await seguirPartidos.alCambiarIdioma(anterior, nuevo);
 
       await AppPreferences.guardarIdiomaTopics(nuevo);
     } catch (e) {
@@ -165,7 +242,14 @@ class PushNotificationService {
     try {
       final idioma = await AppPreferences.obtenerIdioma();
 
-      if (await AppPreferences.obtenerIdiomaTopics() == idioma) {
+      final idiomaAnterior = await AppPreferences.obtenerIdiomaTopics();
+
+      // El idioma cambió sin pasar por Ajustes: los partidos seguidos también se mueven.
+      if (idiomaAnterior != null && idiomaAnterior != idioma) {
+        await seguirPartidos.alCambiarIdioma(idiomaAnterior, idioma);
+      }
+
+      if (idiomaAnterior == idioma) {
         return;
       }
 
@@ -337,7 +421,8 @@ class PushNotificationService {
 
     if (partidoId != null) {
       // Con la ficha de ese partido a la vista no se avisa: ya se está recargando sola.
-      if (FichaPartidoPage.estaVisible(partidoId)) {
+      if (FichaPartidoPage.estaVisible(partidoId) ||
+          PartidoVisible.estaVisible(partidoId)) {
         return;
       }
 

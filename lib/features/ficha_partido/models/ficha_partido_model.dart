@@ -80,6 +80,10 @@ class CabeceraFicha {
   /// Reloj en directo; null fuera de la primera parte, el descanso y la segunda parte (o backend antiguo).
   final RelojDirecto? reloj;
 
+  /// Duración de una parte según la modalidad del equipo (cabecera.minutosParte): la barra de momentos va de 0 a
+  /// el doble. Un backend antiguo no lo manda: 45.
+  final int minutosParte;
+
   /// El club se llama siempre "Mutxamel CF" en la ficha.
   static const String nombreClub = 'Mutxamel CF';
 
@@ -94,6 +98,7 @@ class CabeceraFicha {
     this.estado = EstadoFicha.proximo,
     this.competicion = '',
     this.reloj,
+    this.minutosParte = 45,
   });
 
   factory CabeceraFicha.fromJson(Map<String, dynamic> json) {
@@ -108,7 +113,14 @@ class CabeceraFicha {
       estado: EstadoFicha.desdeTexto(json['estado'] as String?),
       competicion: json['competicion'] as String? ?? '',
       reloj: RelojDirecto.desdeJson(json['reloj']),
+      minutosParte: _minutosParte(json['minutosParte']),
     );
+  }
+
+  static int _minutosParte(Object? valor) {
+    final minutos = (valor as num?)?.toInt();
+
+    return minutos != null && minutos > 0 ? minutos : 45;
   }
 
   /// true si el Mutxamel juega de local.
