@@ -60,7 +60,7 @@ class FichaCabecera extends StatelessWidget {
             children: [
               Expanded(
                 child: _Equipo(
-                  nombre: cabecera.equipoLocal,
+                  nombre: cabecera.nombreLocal,
                   mutxamel: local || cabecera.rivalEsPropio,
                   url: local ? null : cabecera.escudoRivalUrl,
                   clave: 'ficha-equipo-local',
@@ -78,7 +78,7 @@ class FichaCabecera extends StatelessWidget {
               ),
               Expanded(
                 child: _Equipo(
-                  nombre: cabecera.equipoVisitante,
+                  nombre: cabecera.nombreVisitante,
                   mutxamel: !local || cabecera.rivalEsPropio,
                   url: local ? cabecera.escudoRivalUrl : null,
                   clave: 'ficha-equipo-visitante',

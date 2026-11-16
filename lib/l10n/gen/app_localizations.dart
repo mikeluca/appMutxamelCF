@@ -325,7 +325,7 @@ abstract class AppLocalizations {
   /// No description provided for @storeHeroKicker.
   ///
   /// In es, this message translates to:
-  /// **'MUTXAMEL CF'**
+  /// **'MUTXAMEL C.F.'**
   String get storeHeroKicker;
 
   /// No description provided for @storeHeroTitle.
@@ -349,7 +349,7 @@ abstract class AppLocalizations {
   /// No description provided for @storeProductShirtDescription.
   ///
   /// In es, this message translates to:
-  /// **'La esencia del Mutxamel CF, un año más, vestida de azul. Nuestra primera equipación combina la tradición y la identidad del club con un diseño moderno.'**
+  /// **'La esencia del Mutxamel C.F., un año más, vestida de azul. Nuestra primera equipación combina la tradición y la identidad del club con un diseño moderno.'**
   String get storeProductShirtDescription;
 
   /// No description provided for @storeProductSecondKitTitle.
@@ -751,7 +751,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsAboutApp.
   ///
   /// In es, this message translates to:
-  /// **'Acerca de Mutxamel CF'**
+  /// **'Acerca de Mutxamel C.F.'**
   String get settingsAboutApp;
 
   /// No description provided for @settingsAboutAppSubtitle.
@@ -5785,7 +5785,7 @@ abstract class AppLocalizations {
   /// No description provided for @liveCardTeamClub.
   ///
   /// In es, this message translates to:
-  /// **'Mutxamel CF'**
+  /// **'Mutxamel C.F.'**
   String get liveCardTeamClub;
 
   /// No description provided for @liveCardTeamRival.
@@ -5917,7 +5917,7 @@ abstract class AppLocalizations {
   /// No description provided for @shareImageFooter.
   ///
   /// In es, this message translates to:
-  /// **'Síguelo en la app del Mutxamel CF'**
+  /// **'Síguelo en la app del Mutxamel C.F.'**
   String get shareImageFooter;
 
   /// No description provided for @shareStatusFinal.
@@ -5948,6 +5948,144 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Compartir partido'**
   String get shareTooltip;
+
+  /// No description provided for @shareLabelLive.
+  ///
+  /// In es, this message translates to:
+  /// **'EN DIRECTO'**
+  String get shareLabelLive;
+
+  /// No description provided for @shareLabelHalftime.
+  ///
+  /// In es, this message translates to:
+  /// **'DESCANSO'**
+  String get shareLabelHalftime;
+
+  /// No description provided for @shareLabelFinal.
+  ///
+  /// In es, this message translates to:
+  /// **'FINAL'**
+  String get shareLabelFinal;
+
+  /// No description provided for @shareLabelCancelled.
+  ///
+  /// In es, this message translates to:
+  /// **'CANCELADO'**
+  String get shareLabelCancelled;
+
+  /// No description provided for @shareLabelMatchDay.
+  ///
+  /// In es, this message translates to:
+  /// **'DÍA DE PARTIDO'**
+  String get shareLabelMatchDay;
+
+  /// No description provided for @shareLabelNextMatch.
+  ///
+  /// In es, this message translates to:
+  /// **'PRÓXIMO PARTIDO'**
+  String get shareLabelNextMatch;
+
+  /// No description provided for @shareRibbonWin.
+  ///
+  /// In es, this message translates to:
+  /// **'¡VICTORIA!'**
+  String get shareRibbonWin;
+
+  /// No description provided for @shareRibbonDraw.
+  ///
+  /// In es, this message translates to:
+  /// **'EMPATE'**
+  String get shareRibbonDraw;
+
+  /// No description provided for @shareSeeYou.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Te esperamos!'**
+  String get shareSeeYou;
+
+  /// No description provided for @shareLastFive.
+  ///
+  /// In es, this message translates to:
+  /// **'Últimos 5'**
+  String get shareLastFive;
+
+  /// No description provided for @shareMoreScorers.
+  ///
+  /// In es, this message translates to:
+  /// **'y {n} más'**
+  String shareMoreScorers(int n);
+
+  /// No description provided for @shareDownloadApp.
+  ///
+  /// In es, this message translates to:
+  /// **'Descarga la app'**
+  String get shareDownloadApp;
+
+  /// No description provided for @shareFormatLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Formato'**
+  String get shareFormatLabel;
+
+  /// No description provided for @shareFormatPost.
+  ///
+  /// In es, this message translates to:
+  /// **'Publicación'**
+  String get shareFormatPost;
+
+  /// No description provided for @shareFormatStory.
+  ///
+  /// In es, this message translates to:
+  /// **'Historia'**
+  String get shareFormatStory;
+
+  /// No description provided for @shareStyleLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Estilo'**
+  String get shareStyleLabel;
+
+  /// No description provided for @shareStyleClub.
+  ///
+  /// In es, this message translates to:
+  /// **'Azul club'**
+  String get shareStyleClub;
+
+  /// No description provided for @shareStyleDark.
+  ///
+  /// In es, this message translates to:
+  /// **'Oscuro'**
+  String get shareStyleDark;
+
+  /// No description provided for @shareStyleLight.
+  ///
+  /// In es, this message translates to:
+  /// **'Claro'**
+  String get shareStyleLight;
+
+  /// No description provided for @shareToggleScorers.
+  ///
+  /// In es, this message translates to:
+  /// **'Goleadores'**
+  String get shareToggleScorers;
+
+  /// No description provided for @shareToggleForm.
+  ///
+  /// In es, this message translates to:
+  /// **'Racha'**
+  String get shareToggleForm;
+
+  /// No description provided for @shareToggleQr.
+  ///
+  /// In es, this message translates to:
+  /// **'QR'**
+  String get shareToggleQr;
+
+  /// No description provided for @shareButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Compartir'**
+  String get shareButton;
 }
 
 class _AppLocalizationsDelegate

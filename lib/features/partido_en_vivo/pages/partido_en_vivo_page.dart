@@ -1555,7 +1555,7 @@ class _TarjetaElegida {
   });
 }
 
-/// Hoja inferior de la tarjeta: Mutxamel CF o Rival, el color, el minuto y el jugador (o el dorsal del rival, opcional).
+/// Hoja inferior de la tarjeta: Mutxamel C.F. o Rival, el color, el minuto y el jugador (o el dorsal del rival, opcional).
 /// Si es amarilla y el jugador (o el dorsal del rival) ya tiene otra, avisa de que será expulsión.
 class _SelectorTarjeta extends StatefulWidget {
   final List<ConvocadoEnVivo> jugadores;

@@ -4,7 +4,7 @@ class AppColors {
   AppColors._();
 
   // ============================================================
-  // COLORES CORPORATIVOS MUTXAMEL CF
+  // COLORES CORPORATIVOS MUTXAMEL C.F.
   // ============================================================
 
   static const Color azulOscuro = Color(0xFF0B3D5C);

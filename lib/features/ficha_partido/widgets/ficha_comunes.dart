@@ -12,12 +12,14 @@ class EscudoEquipo extends StatelessWidget {
 
   /// El escudo del club rival (ruta relativa del backend); sin él, el genérico.
   final String? url;
+  final Color colorGenerico;
 
   const EscudoEquipo({
     super.key,
     required this.mutxamel,
     this.tamano = 56,
     this.url,
+    this.colorGenerico = Colors.white70,
   });
 
   @override
@@ -32,7 +34,7 @@ class EscudoEquipo extends StatelessWidget {
       );
     }
 
-    return EscudoRival(url: url, tamano: tamano, colorGenerico: Colors.white70);
+    return EscudoRival(url: url, tamano: tamano, colorGenerico: colorGenerico);
   }
 }
 

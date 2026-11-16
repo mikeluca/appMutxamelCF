@@ -173,7 +173,7 @@ class _MutxamelCfAppState extends State<MutxamelCfApp>
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Mutxamel CF',
+      title: 'Mutxamel C.F.',
       debugShowCheckedModeBanner: false,
 
       navigatorKey: AppNavigator.navigatorKey,

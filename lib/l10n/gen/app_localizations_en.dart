@@ -121,7 +121,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get storeTitle => 'Store';
 
   @override
-  String get storeHeroKicker => 'MUTXAMEL CF';
+  String get storeHeroKicker => 'MUTXAMEL C.F.';
 
   @override
   String get storeHeroTitle => 'Wear the colors';
@@ -135,7 +135,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get storeProductShirtDescription =>
-      'The essence of Mutxamel CF, once again dressed in blue. Our home kit combines the club\'s tradition and identity with a modern design.';
+      'The essence of Mutxamel C.F., once again dressed in blue. Our home kit combines the club\'s tradition and identity with a modern design.';
 
   @override
   String get storeProductSecondKitTitle => 'Second kit';
@@ -352,7 +352,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsLanguageEnglish => 'English';
 
   @override
-  String get settingsAboutApp => 'About Mutxamel CF';
+  String get settingsAboutApp => 'About Mutxamel C.F.';
 
   @override
   String get settingsAboutAppSubtitle => 'App information';
@@ -3304,7 +3304,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get liveDorsalInvalid => 'The number must be between 0 and 99.';
 
   @override
-  String get liveCardTeamClub => 'Mutxamel CF';
+  String get liveCardTeamClub => 'Mutxamel C.F.';
 
   @override
   String get liveCardTeamRival => 'Opponent';
@@ -3385,7 +3385,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareError => 'Couldn\'t share the match.';
 
   @override
-  String get shareImageFooter => 'Follow it in the Mutxamel CF app';
+  String get shareImageFooter => 'Follow it in the Mutxamel C.F. app';
 
   @override
   String get shareStatusFinal => 'Full time';
@@ -3407,4 +3407,75 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shareTooltip => 'Share match';
+
+  @override
+  String get shareLabelLive => 'LIVE';
+
+  @override
+  String get shareLabelHalftime => 'HALF-TIME';
+
+  @override
+  String get shareLabelFinal => 'FULL TIME';
+
+  @override
+  String get shareLabelCancelled => 'CANCELLED';
+
+  @override
+  String get shareLabelMatchDay => 'MATCH DAY';
+
+  @override
+  String get shareLabelNextMatch => 'NEXT MATCH';
+
+  @override
+  String get shareRibbonWin => 'VICTORY!';
+
+  @override
+  String get shareRibbonDraw => 'DRAW';
+
+  @override
+  String get shareSeeYou => 'See you there!';
+
+  @override
+  String get shareLastFive => 'Last 5';
+
+  @override
+  String shareMoreScorers(int n) {
+    return 'and $n more';
+  }
+
+  @override
+  String get shareDownloadApp => 'Download the app';
+
+  @override
+  String get shareFormatLabel => 'Format';
+
+  @override
+  String get shareFormatPost => 'Post';
+
+  @override
+  String get shareFormatStory => 'Story';
+
+  @override
+  String get shareStyleLabel => 'Style';
+
+  @override
+  String get shareStyleClub => 'Club blue';
+
+  @override
+  String get shareStyleDark => 'Dark';
+
+  @override
+  String get shareStyleLight => 'Light';
+
+  @override
+  String get shareToggleScorers => 'Scorers';
+
+  @override
+  String get shareToggleForm => 'Form';
+
+  @override
+  String get shareToggleQr => 'QR';
+
+  @override
+  String get shareButton => 'Share';
 }

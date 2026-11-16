@@ -553,6 +553,79 @@ void main() {
       );
     });
 
+    testWidgets('clasificación: una fila con esPropio (un filial) lleva nuestro escudo aunque no sea esNuestro', (
+      tester,
+    ) async {
+      pantalla(tester);
+      _marcarRed();
+
+      StandingsRowModel fila(
+        int pos,
+        String equipo, {
+        bool nuestro = false,
+        bool propio = false,
+        String? url,
+      }) => StandingsRowModel(
+        posicion: pos,
+        equipo: equipo,
+        esNuestro: nuestro,
+        puntos: 10,
+        pj: 5,
+        pg: 3,
+        pe: 1,
+        pp: 1,
+        gf: 8,
+        gc: 4,
+        escudoUrl: url,
+        esPropio: propio,
+      );
+
+      await tester.pumpWidget(
+        appCon(
+          SingleChildScrollView(
+            child: TeamStandingsSection(
+              future: Future.value(
+                StandingsModel(
+                  competicion: 'Liga',
+                  jornada: 5,
+                  fechaImportacion: null,
+                  filas: [
+                    fila(1, 'Pego C.F.', url: _ruta7),
+                    fila(2, 'Mutxamel C.F.', nuestro: true, propio: true),
+                    fila(3, "C.F. Mutxamel 'B'", propio: true),
+                    fila(4, 'Orba C.F.'),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+
+      // Nuestro escudo en nuestra fila y en la del filial; el del rival y el genérico en las demás.
+      expect(find.byKey(_nuestro), findsNWidgets(2));
+      expect(_red(_ruta7), findsOneWidget);
+      expect(find.byKey(_generico), findsOneWidget);
+    });
+
+    testWidgets('clasificación: el modelo lee esPropio (false si no viene)', (
+      tester,
+    ) async {
+      final con = StandingsRowModel.fromJson({
+        'posicion': 3,
+        'equipo': "C.F. Mutxamel 'B'",
+        'esNuestro': false,
+        'esPropio': true,
+      });
+      final sin = StandingsRowModel.fromJson({'posicion': 2, 'equipo': 'X'});
+
+      expect(con.esPropio, isTrue);
+      expect(con.esNuestro, isFalse);
+      expect(sin.esPropio, isFalse);
+    });
+
     testWidgets('clasificación: el modelo lee escudoUrl y sin él sigue igual', (
       tester,
     ) async {
@@ -570,20 +643,22 @@ void main() {
 
   group('imagen de compartir', () {
     DatosCompartir datos({String? url, bool propio = false}) => DatosCompartir(
-      local: 'Mutxamel CF',
+      local: 'Mutxamel C.F.',
       visitante: 'Pego C.F.',
       mutxamelEsLocal: true,
-      marcador: '2 - 1',
-      estado: 'Final',
+      golesLocal: 2,
+      golesVisitante: 1,
+      fase: FaseCompartir.finalizado,
+      etiqueta: 'FINAL',
       competicion: 'Liga',
       fecha: '14/11/2026',
-      texto: 'Mutxamel CF 2-1 Pego C.F. · Final',
+      textoBase: 'Mutxamel C.F. 2-1 Pego C.F. · Final',
       escudoRivalUrl: url,
       rivalEsPropio: propio,
     );
 
     Future<void> pintarTarjeta(WidgetTester tester, DatosCompartir d) async {
-      tester.view.physicalSize = const Size(1200, 1200);
+      tester.view.physicalSize = const Size(1200, 1500);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
@@ -620,12 +695,14 @@ void main() {
         appCon(
           Builder(
             builder: (context) {
-              d = DatosCompartir.desdeCabecera(
-                const CabeceraFicha(
-                  partidoId: 30,
-                  equipoLocal: 'Mutxamel CF',
-                  equipoVisitante: 'Pego C.F.',
-                  escudoRivalUrl: _ruta7,
+              d = DatosCompartir.desdeFicha(
+                const FichaPartido(
+                  cabecera: CabeceraFicha(
+                    partidoId: 30,
+                    equipoLocal: 'Mutxamel CF',
+                    equipoVisitante: 'Pego C.F.',
+                    escudoRivalUrl: _ruta7,
+                  ),
                 ),
                 AppLocalizations.of(context),
                 ahora: DateTime(2026, 11, 14),
@@ -638,7 +715,7 @@ void main() {
 
       expect(d.escudoRivalUrl, _ruta7);
       expect(d.conEscudoRival(null).escudoRivalUrl, isNull);
-      expect(d.conEscudoRival(null).texto, d.texto);
+      expect(d.conEscudoRival(null).textoCompartir(), d.textoCompartir());
     });
 
     /// Genera el PNG con el escudo precargado (o no) y devuelve los datos con los que se pintó la tarjeta.

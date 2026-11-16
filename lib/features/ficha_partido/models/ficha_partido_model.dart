@@ -89,8 +89,29 @@ class CabeceraFicha {
   final String? escudoRivalUrl;
   final bool rivalEsPropio;
 
-  /// El club se llama siempre "Mutxamel CF" en la ficha.
-  static const String nombreClub = 'Mutxamel CF';
+  /// Cómo se llama el club en todo lo que se ve (el backend antiguo manda "Mutxamel CF"; el nuevo, quizá, con puntos).
+  static const String nombreClub = 'Mutxamel C.F.';
+
+  /// true si [nombre] es el nombre de nuestro club, con o sin puntos y sin importar las mayúsculas.
+  static bool esNombreClub(String nombre) =>
+      nombre
+          .replaceAll('.', '')
+          .replaceAll(RegExp(r'\s+'), ' ')
+          .trim()
+          .toLowerCase() ==
+      'mutxamel cf';
+
+  /// Lado del Mutxamel según el backend nuevo (cabecera.mutxamelLocal); null si no lo manda (backend antiguo).
+  final bool? mutxamelLocal;
+
+  /// Nuestros goleadores, en el orden que da el backend; vacía sin datos o con un backend antiguo.
+  final List<GoleadorFicha> goleadores;
+
+  /// El campo del partido tal cual; null si no hay.
+  final String? campo;
+
+  /// Número de jornada; null si no la tiene.
+  final int? jornada;
 
   const CabeceraFicha({
     required this.partidoId,
@@ -106,6 +127,10 @@ class CabeceraFicha {
     this.minutosParte = 45,
     this.escudoRivalUrl,
     this.rivalEsPropio = false,
+    this.mutxamelLocal,
+    this.goleadores = const [],
+    this.campo,
+    this.jornada,
   });
 
   factory CabeceraFicha.fromJson(Map<String, dynamic> json) {
@@ -123,7 +148,17 @@ class CabeceraFicha {
       minutosParte: _minutosParte(json['minutosParte']),
       escudoRivalUrl: json['escudoRivalUrl'] as String?,
       rivalEsPropio: json['rivalEsPropio'] as bool? ?? false,
+      mutxamelLocal: json['mutxamelLocal'] as bool?,
+      goleadores: _lista(json['goleadores'], GoleadorFicha.fromJson),
+      campo: _textoONull(json['campo']),
+      jornada: (json['jornada'] as num?)?.toInt(),
     );
+  }
+
+  static String? _textoONull(Object? valor) {
+    final texto = (valor as String?)?.trim();
+
+    return texto == null || texto.isEmpty ? null : texto;
   }
 
   static int _minutosParte(Object? valor) {
@@ -132,14 +167,45 @@ class CabeceraFicha {
     return minutos != null && minutos > 0 ? minutos : 45;
   }
 
-  /// true si el Mutxamel juega de local.
-  bool get mutxamelEsLocal => equipoLocal.trim() == nombreClub;
+  /// true si el Mutxamel juega de local: lo dice el backend (mutxamelLocal) y, si es antiguo, el nombre del local
+  /// ("Mutxamel CF" o "Mutxamel C.F.").
+  bool get mutxamelEsLocal => mutxamelLocal ?? esNombreClub(equipoLocal);
+
+  /// Los nombres tal como se pintan: nuestro lado siempre "Mutxamel C.F.", aunque el backend mande "Mutxamel CF".
+  String get nombreLocal => mutxamelEsLocal ? nombreClub : equipoLocal;
+  String get nombreVisitante => mutxamelEsLocal ? equipoVisitante : nombreClub;
 
   String get rival => mutxamelEsLocal ? equipoVisitante : equipoLocal;
 
   /// Goles del equipo local y del visitante, tal como se pintan; null si no hay marcador.
   int? get golesLocal => mutxamelEsLocal ? golesFavor : golesContra;
   int? get golesVisitante => mutxamelEsLocal ? golesContra : golesFavor;
+}
+
+/// Un goleador nuestro en la cabecera de la ficha.
+class GoleadorFicha {
+  final String nombre;
+  final int goles;
+
+  /// Minutos de sus goles; vacía si el dato viene de las estadísticas guardadas.
+  final List<int> minutos;
+
+  const GoleadorFicha({
+    required this.nombre,
+    this.goles = 1,
+    this.minutos = const [],
+  });
+
+  factory GoleadorFicha.fromJson(Map<String, dynamic> json) {
+    return GoleadorFicha(
+      nombre: json['nombre'] as String? ?? '',
+      goles: (json['goles'] as num?)?.toInt() ?? 1,
+      minutos: (json['minutos'] as List<dynamic>? ?? const [])
+          .whereType<num>()
+          .map((m) => m.toInt())
+          .toList(),
+    );
+  }
 }
 
 /// Un hecho del partido o un separador (DESCANSO, FINAL).

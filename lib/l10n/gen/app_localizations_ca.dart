@@ -122,7 +122,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get storeTitle => 'Botiga';
 
   @override
-  String get storeHeroKicker => 'MUTXAMEL CF';
+  String get storeHeroKicker => 'MUTXAMEL C.F.';
 
   @override
   String get storeHeroTitle => 'Vesteix els colors';
@@ -136,7 +136,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get storeProductShirtDescription =>
-      'L\'essència del Mutxamel CF, un any més, vestida de blau. La nostra primera equipació combina la tradició i la identitat del club amb un disseny modern.';
+      'L\'essència del Mutxamel C.F., un any més, vestida de blau. La nostra primera equipació combina la tradició i la identitat del club amb un disseny modern.';
 
   @override
   String get storeProductSecondKitTitle => 'Segona equipació';
@@ -356,7 +356,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get settingsLanguageEnglish => 'Anglès';
 
   @override
-  String get settingsAboutApp => 'Sobre Mutxamel CF';
+  String get settingsAboutApp => 'Sobre Mutxamel C.F.';
 
   @override
   String get settingsAboutAppSubtitle => 'Informació de l\'aplicació';
@@ -3329,7 +3329,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get liveDorsalInvalid => 'El dorsal ha d\'estar entre 0 i 99.';
 
   @override
-  String get liveCardTeamClub => 'Mutxamel CF';
+  String get liveCardTeamClub => 'Mutxamel C.F.';
 
   @override
   String get liveCardTeamRival => 'Rival';
@@ -3411,7 +3411,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get shareError => 'No s\'ha pogut compartir el partit.';
 
   @override
-  String get shareImageFooter => 'Segueix-lo a l\'app del Mutxamel CF';
+  String get shareImageFooter => 'Segueix-lo a l\'app del Mutxamel C.F.';
 
   @override
   String get shareStatusFinal => 'Final';
@@ -3433,4 +3433,75 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get shareTooltip => 'Compartir partit';
+
+  @override
+  String get shareLabelLive => 'EN DIRECTE';
+
+  @override
+  String get shareLabelHalftime => 'DESCANS';
+
+  @override
+  String get shareLabelFinal => 'FINAL';
+
+  @override
+  String get shareLabelCancelled => 'CANCEL·LAT';
+
+  @override
+  String get shareLabelMatchDay => 'DIA DE PARTIT';
+
+  @override
+  String get shareLabelNextMatch => 'PRÒXIM PARTIT';
+
+  @override
+  String get shareRibbonWin => 'VICTÒRIA!';
+
+  @override
+  String get shareRibbonDraw => 'EMPAT';
+
+  @override
+  String get shareSeeYou => 'Us esperem!';
+
+  @override
+  String get shareLastFive => 'Últims 5';
+
+  @override
+  String shareMoreScorers(int n) {
+    return 'i $n més';
+  }
+
+  @override
+  String get shareDownloadApp => 'Descarrega l\'app';
+
+  @override
+  String get shareFormatLabel => 'Format';
+
+  @override
+  String get shareFormatPost => 'Publicació';
+
+  @override
+  String get shareFormatStory => 'Història';
+
+  @override
+  String get shareStyleLabel => 'Estil';
+
+  @override
+  String get shareStyleClub => 'Blau club';
+
+  @override
+  String get shareStyleDark => 'Fosc';
+
+  @override
+  String get shareStyleLight => 'Clar';
+
+  @override
+  String get shareToggleScorers => 'Golejadors';
+
+  @override
+  String get shareToggleForm => 'Ratxa';
+
+  @override
+  String get shareToggleQr => 'QR';
+
+  @override
+  String get shareButton => 'Compartir';
 }

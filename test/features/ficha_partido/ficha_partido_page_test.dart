@@ -250,7 +250,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Pego C.F.'), findsOneWidget);
-      expect(find.text('Mutxamel CF'), findsOneWidget);
+      expect(find.text('Mutxamel C.F.'), findsOneWidget);
     });
 
     testWidgets('de local: escudo del club a la izquierda y genérico a la derecha', (

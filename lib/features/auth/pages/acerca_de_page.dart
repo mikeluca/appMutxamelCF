@@ -143,7 +143,7 @@ class _AcercaDePageState extends State<AcercaDePage> {
                 subtitulo: t.aboutThirdPartyLicensesSubtitle,
                 onTap: () => showLicensePage(
                   context: context,
-                  applicationName: 'Mutxamel CF',
+                  applicationName: 'Mutxamel C.F.',
                   applicationVersion: _version(t),
                   applicationIcon: Padding(
                     padding: const EdgeInsets.only(bottom: 16),
@@ -187,7 +187,7 @@ class _AcercaDePageState extends State<AcercaDePage> {
           const SizedBox(height: 16),
 
           const Text(
-            'Mutxamel CF',
+            'Mutxamel C.F.',
             style: TextStyle(
               color: Colors.white,
               fontSize: 26,

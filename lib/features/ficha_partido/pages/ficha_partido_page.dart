@@ -14,7 +14,7 @@ import '../widgets/ficha_forma.dart';
 import '../../directo/services/seguir_partido_service.dart';
 import '../../directo/widgets/boton_seguir_partido.dart';
 import '../../directo/widgets/celebra_goles.dart';
-import '../../directo/widgets/compartir_partido.dart';
+import '../../directo/pages/compartir_vista_previa_page.dart';
 
 /// Ficha pública de un partido del Primer Equipo (sin sesión): cabecera fija y las pestañas Detalle, Alineación y
 /// Últ. partidos (forma del equipo). Mientras el partido está en juego o en el descanso y la pantalla está a la vista, se recarga
@@ -369,22 +369,13 @@ class _FichaPartidoPageState extends State<FichaPartidoPage>
 
     if (ficha == null) return;
 
-    final t = AppLocalizations.of(context);
-    final mensajes = ScaffoldMessenger.of(context);
-
-    try {
-      final datos = DatosCompartir.desdeCabecera(
-        ficha.cabecera,
-        t,
-        ahora: DateTime.now(),
-      );
-
-      await CompartirPartido.compartir(context, datos);
-    } catch (e) {
-      debugPrint('NO SE PUDO COMPARTIR EL PARTIDO: $e');
-
-      mensajes.showSnackBar(SnackBar(content: Text(t.shareError)));
-    }
+    // La vista previa genera la imagen y la comparte (y avisa si falla).
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => CompartirVistaPreviaPage(ficha: ficha),
+      ),
+    );
   }
 
   Widget _conRefresco(Widget contenido) {

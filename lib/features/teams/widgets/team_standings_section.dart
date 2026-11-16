@@ -175,7 +175,7 @@ class TeamStandingsSection extends StatelessWidget {
           // Un escudo pequeño delante del nombre: el del club, el nuestro en nuestra fila o el genérico.
           EscudoRival(
             url: f.escudoUrl,
-            esPropio: f.esNuestro,
+            esPropio: f.esNuestro || f.esPropio,
             tamano: 22,
             colorGenerico: colors.outline,
           ),
