@@ -46,11 +46,7 @@ class FichaDetalle extends StatelessWidget {
         final evento = ficha.eventos[indice];
 
         return evento.esSeparador
-            ? _Separador(
-                clave: 'evento-$indice',
-                evento: evento,
-                local: local,
-              )
+            ? _Separador(clave: 'evento-$indice', evento: evento, local: local)
             : _FilaEvento(
                 clave: 'evento-$indice',
                 evento: evento,
@@ -163,7 +159,9 @@ class _FilaEvento extends StatelessWidget {
       case EventoFicha.golFavor:
       case EventoFicha.golContra:
         final nombre = evento.tipo == EventoFicha.golContra
-            ? t.fichaGoalAgainst
+            ? (evento.dorsalRival == null
+                  ? t.fichaGoalAgainst
+                  : t.fichaDorsal(evento.dorsalRival.toString()))
             : (evento.jugador ?? t.fichaGoal);
 
         return Row(
@@ -226,7 +224,17 @@ class _FilaEvento extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(evento.jugador ?? '', style: texto),
+            // La tarjeta del rival lleva su dorsal ("Dorsal 9") o nada; el campo `jugador` que el backend rellena
+            // para las versiones antiguas no se usa.
+            Text(
+              evento.rival
+                  ? (evento.dorsalRival == null
+                        ? ''
+                        : t.fichaDorsal(evento.dorsalRival.toString()))
+                  : evento.jugador ?? '',
+              key: evento.rival ? const ValueKey('tarjeta-rival') : null,
+              style: texto,
+            ),
             if (evento.dobleAmarilla)
               Text(
                 t.fichaSecondYellow,

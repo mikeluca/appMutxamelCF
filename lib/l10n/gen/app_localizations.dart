@@ -5757,6 +5757,48 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'expulsión por doble amarilla'**
   String get liveSendOffRow;
+
+  /// No description provided for @liveRivalRow.
+  ///
+  /// In es, this message translates to:
+  /// **'Rival'**
+  String get liveRivalRow;
+
+  /// No description provided for @liveDorsalRow.
+  ///
+  /// In es, this message translates to:
+  /// **'Dorsal {dorsal}'**
+  String liveDorsalRow(String dorsal);
+
+  /// No description provided for @liveDorsalLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Dorsal'**
+  String get liveDorsalLabel;
+
+  /// No description provided for @liveDorsalInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'El dorsal debe estar entre 0 y 99.'**
+  String get liveDorsalInvalid;
+
+  /// No description provided for @liveCardTeamClub.
+  ///
+  /// In es, this message translates to:
+  /// **'Mutxamel CF'**
+  String get liveCardTeamClub;
+
+  /// No description provided for @liveCardTeamRival.
+  ///
+  /// In es, this message translates to:
+  /// **'Rival'**
+  String get liveCardTeamRival;
+
+  /// No description provided for @fichaDorsal.
+  ///
+  /// In es, this message translates to:
+  /// **'Dorsal {dorsal}'**
+  String fichaDorsal(String dorsal);
 }
 
 class _AppLocalizationsDelegate

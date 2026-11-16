@@ -67,16 +67,20 @@ void main() {
   });
 
   test('el gol a favor envía el minuto con el autor', () async {
-    await conMockHttp((request) async {
-      expect(request.url.path, endsWith('/partido-en-vivo/30/gol-favor'));
-      expect(jsonDecode(request.body), {
-        'jugadorId': 10,
-        'autorTexto': null,
-        'minuto': 23,
-      });
+    await conMockHttp(
+      (request) async {
+        expect(request.url.path, endsWith('/partido-en-vivo/30/gol-favor'));
+        expect(jsonDecode(request.body), {
+          'jugadorId': 10,
+          'autorTexto': null,
+          'minuto': 23,
+        });
 
-      return _estado();
-    }, () => PartidoEnVivoService().enviarGolFavor(30, jugadorId: 10, minuto: 23));
+        return _estado();
+      },
+      () =>
+          PartidoEnVivoService().enviarGolFavor(30, jugadorId: 10, minuto: 23),
+    );
   });
 
   test('el gol en contra envía el minuto (o null para que lo calcule el '
@@ -94,6 +98,90 @@ void main() {
       return _estado();
     }, () => PartidoEnVivoService().enviarGolContra(30));
   });
+
+  test('el gol en contra envía el dorsal solo si se indica', () async {
+    await conMockHttp((request) async {
+      expect(request.url.path, endsWith('/partido-en-vivo/30/gol-contra'));
+      expect(jsonDecode(request.body), {'minuto': 31, 'dorsal': 9});
+
+      return _estado();
+    }, () => PartidoEnVivoService().enviarGolContra(30, minuto: 31, dorsal: 9));
+
+    // El 0 es un dorsal: se envía.
+    await conMockHttp((request) async {
+      expect(jsonDecode(request.body), {'minuto': null, 'dorsal': 0});
+
+      return _estado();
+    }, () => PartidoEnVivoService().enviarGolContra(30, dorsal: 0));
+  });
+
+  test(
+    'la tarjeta de un jugador nuestro envía jugadorId y color, como siempre',
+    () async {
+      await conMockHttp(
+        (request) async {
+          expect(request.url.path, endsWith('/partido-en-vivo/30/tarjeta'));
+          expect(jsonDecode(request.body), {
+            'jugadorId': 10,
+            'color': 'ROJA',
+            'minuto': 40,
+          });
+
+          return _estado();
+        },
+        () => PartidoEnVivoService().enviarTarjeta(
+          30,
+          jugadorId: 10,
+          color: 'ROJA',
+          minuto: 40,
+        ),
+      );
+    },
+  );
+
+  test(
+    'la tarjeta del rival envía rival: true y dorsal, sin jugadorId',
+    () async {
+      await conMockHttp(
+        (request) async {
+          expect(request.url.path, endsWith('/partido-en-vivo/30/tarjeta'));
+          final cuerpo = jsonDecode(request.body) as Map<String, dynamic>;
+
+          expect(cuerpo, {
+            'rival': true,
+            'color': 'AMARILLA',
+            'minuto': 35,
+            'dorsal': 9,
+          });
+          expect(cuerpo.containsKey('jugadorId'), isFalse);
+
+          return _estado();
+        },
+        () => PartidoEnVivoService().enviarTarjeta(
+          30,
+          color: 'AMARILLA',
+          minuto: 35,
+          rival: true,
+          dorsal: 9,
+        ),
+      );
+
+      // Sin dorsal el campo va a null (opcional).
+      await conMockHttp(
+        (request) async {
+          expect(jsonDecode(request.body)['dorsal'], isNull);
+          expect(jsonDecode(request.body)['rival'], isTrue);
+
+          return _estado();
+        },
+        () => PartidoEnVivoService().enviarTarjeta(
+          30,
+          color: 'ROJA',
+          rival: true,
+        ),
+      );
+    },
+  );
 
   test('corregir el minuto hace PATCH .../eventos/{id}/minuto', () async {
     final estado = await conMockHttp((request) async {

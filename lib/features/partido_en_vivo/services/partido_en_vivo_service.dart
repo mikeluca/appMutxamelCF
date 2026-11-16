@@ -43,15 +43,22 @@ class PartidoEnVivoService {
   );
 
   /// Tarjeta ([color] AMARILLA o ROJA). La segunda amarilla de un jugador es una expulsión. Sin aviso.
+  ///
+  /// Con [rival] es una tarjeta a un jugador del rival: sin [jugadorId] y con el [dorsal] (0-99) opcional; la
+  /// segunda amarilla al mismo dorsal es expulsión.
   Future<EstadoPartidoEnVivo> enviarTarjeta(
     int partidoId, {
-    required int jugadorId,
+    int? jugadorId,
     required String color,
     int? minuto,
+    bool rival = false,
+    int? dorsal,
   }) => _evento(
     partidoId,
     'tarjeta',
-    body: {'jugadorId': jugadorId, 'color': color, 'minuto': minuto},
+    body: rival
+        ? {'rival': true, 'color': color, 'minuto': minuto, 'dorsal': dorsal}
+        : {'jugadorId': jugadorId, 'color': color, 'minuto': minuto},
   );
 
   /// Partidos del Primer Equipo de hoy, no cancelados. Vacía si no hay.
@@ -98,16 +105,19 @@ class PartidoEnVivoService {
   }) => _evento(
     partidoId,
     'gol-favor',
-    body: {
-      'jugadorId': jugadorId,
-      'autorTexto': autorTexto,
-      'minuto': minuto,
-    },
+    body: {'jugadorId': jugadorId, 'autorTexto': autorTexto, 'minuto': minuto},
   );
 
-  /// Sin [minuto] lo calcula el servidor.
-  Future<EstadoPartidoEnVivo> enviarGolContra(int partidoId, {int? minuto}) =>
-      _evento(partidoId, 'gol-contra', body: {'minuto': minuto});
+  /// Sin [minuto] lo calcula el servidor. El [dorsal] (0-99) del autor es opcional: solo se envía si se indica.
+  Future<EstadoPartidoEnVivo> enviarGolContra(
+    int partidoId, {
+    int? minuto,
+    int? dorsal,
+  }) => _evento(
+    partidoId,
+    'gol-contra',
+    body: {'minuto': minuto, 'dorsal': ?dorsal},
+  );
 
   Future<EstadoPartidoEnVivo> enviarDescanso(int partidoId) =>
       _evento(partidoId, 'descanso');

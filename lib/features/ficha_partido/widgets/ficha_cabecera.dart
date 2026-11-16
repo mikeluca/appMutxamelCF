@@ -5,13 +5,23 @@ import '../../../core/theme/app_colors.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/ficha_partido_model.dart';
 import 'ficha_comunes.dart';
+import 'reloj_en_directo.dart';
 
 /// Cabecera fija de la ficha: fondo oscuro con degradado del color del club, los dos escudos (el del Mutxamel y
 /// uno genérico para el rival) según local/visitante, la fecha, el marcador, el estado y la competición.
 class FichaCabecera extends StatelessWidget {
   final CabeceraFicha cabecera;
 
-  const FichaCabecera({super.key, required this.cabecera});
+  /// Solo para tests: la hora del móvil y el temporizador del reloj.
+  final DateTime Function()? ahora;
+  final CrearTemporizador? crearTemporizador;
+
+  const FichaCabecera({
+    super.key,
+    required this.cabecera,
+    this.ahora,
+    this.crearTemporizador,
+  });
 
   /// "11/11/2026 • 21:00" (sin la hora, solo la fecha).
   String _fecha() {
@@ -53,7 +63,16 @@ class FichaCabecera extends StatelessWidget {
                   clave: 'ficha-equipo-local',
                 ),
               ),
-              SizedBox(width: 120, child: _Centro(cabecera: cabecera, fecha: _fecha(), t: t)),
+              SizedBox(
+                width: 120,
+                child: _Centro(
+                  cabecera: cabecera,
+                  fecha: _fecha(),
+                  t: t,
+                  ahora: ahora,
+                  crearTemporizador: crearTemporizador,
+                ),
+              ),
               Expanded(
                 child: _Equipo(
                   nombre: cabecera.equipoVisitante,
@@ -116,11 +135,15 @@ class _Centro extends StatelessWidget {
   final CabeceraFicha cabecera;
   final String fecha;
   final AppLocalizations t;
+  final DateTime Function()? ahora;
+  final CrearTemporizador? crearTemporizador;
 
   const _Centro({
     required this.cabecera,
     required this.fecha,
     required this.t,
+    this.ahora,
+    this.crearTemporizador,
   });
 
   @override
@@ -152,7 +175,12 @@ class _Centro extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        _Estado(cabecera: cabecera, t: t),
+        _Estado(
+          cabecera: cabecera,
+          t: t,
+          ahora: ahora,
+          crearTemporizador: crearTemporizador,
+        ),
       ],
     );
   }
@@ -162,7 +190,15 @@ class _Estado extends StatelessWidget {
   final CabeceraFicha cabecera;
   final AppLocalizations t;
 
-  const _Estado({required this.cabecera, required this.t});
+  final DateTime Function()? ahora;
+  final CrearTemporizador? crearTemporizador;
+
+  const _Estado({
+    required this.cabecera,
+    required this.t,
+    this.ahora,
+    this.crearTemporizador,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -173,6 +209,15 @@ class _Estado extends StatelessWidget {
     );
 
     final contenido = switch (cabecera.estado) {
+      // Con reloj, el tiempo de partido (MM:ss con el punto parpadeante) en lugar de "En directo".
+      EstadoFicha.enJuego
+          when cabecera.reloj != null && !cabecera.reloj!.enDescanso =>
+        RelojEnDirecto(
+          reloj: cabecera.reloj!,
+          estilo: estilo,
+          ahora: ahora,
+          crearTemporizador: crearTemporizador,
+        ),
       EstadoFicha.enJuego => Row(
         mainAxisSize: MainAxisSize.min,
         children: [

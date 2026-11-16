@@ -1221,5 +1221,14 @@
   "liveCardSent": "Tarjeta registrada.",
   "liveCardsAndSubs": "Cambios y tarjetas",
   "liveNoCardsAndSubs": "Todavía no hay cambios ni tarjetas",
-  "liveSendOffRow": "expulsión por doble amarilla"
+  "liveSendOffRow": "expulsión por doble amarilla",
+  "liveRivalRow": "Rival",
+  "liveDorsalRow": "Dorsal {dorsal}",
+  "@liveDorsalRow": { "placeholders": { "dorsal": { "type": "String" } } },
+  "liveDorsalLabel": "Dorsal",
+  "liveDorsalInvalid": "El dorsal debe estar entre 0 y 99.",
+  "liveCardTeamClub": "Mutxamel CF",
+  "liveCardTeamRival": "Rival",
+  "fichaDorsal": "Dorsal {dorsal}",
+  "@fichaDorsal": { "placeholders": { "dorsal": { "type": "String" } } }
 }

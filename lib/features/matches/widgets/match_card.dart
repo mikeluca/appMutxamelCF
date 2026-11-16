@@ -5,16 +5,23 @@ import '../../../core/utils/como_llegar.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../ficha_partido/pages/ficha_partido_page.dart';
+import '../../ficha_partido/widgets/reloj_en_directo.dart';
 import '../models/match_model.dart';
 
 class MatchCard extends StatelessWidget {
   final MatchModel match;
   final bool mostrarPrimerEquipo;
 
+  /// Solo para tests: la hora del móvil y el temporizador del reloj en directo.
+  final DateTime Function()? ahora;
+  final CrearTemporizador? crearTemporizador;
+
   const MatchCard({
     super.key,
     required this.match,
     this.mostrarPrimerEquipo = false,
+    this.ahora,
+    this.crearTemporizador,
   });
 
   @override
@@ -276,6 +283,22 @@ class MatchCard extends StatelessWidget {
                     ),
                   ],
                 ),
+
+                // El reloj en directo (MM:ss con el punto rojo parpadeante); en el descanso, el texto de siempre.
+                if (match.reloj case final reloj? when !reloj.enDescanso)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: RelojEnDirecto(
+                      reloj: reloj,
+                      ahora: ahora,
+                      crearTemporizador: crearTemporizador,
+                      estilo: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
 
                 if (match.enDescanso)
                   Padding(

@@ -1,3 +1,5 @@
+import 'reloj_directo.dart';
+
 /// Estado del partido en la cabecera de la ficha pública.
 enum EstadoFicha {
   proximo,
@@ -75,6 +77,9 @@ class CabeceraFicha {
   /// Ya redactada por el backend en el idioma pedido.
   final String competicion;
 
+  /// Reloj en directo; null fuera de la primera parte, el descanso y la segunda parte (o backend antiguo).
+  final RelojDirecto? reloj;
+
   /// El club se llama siempre "Mutxamel CF" en la ficha.
   static const String nombreClub = 'Mutxamel CF';
 
@@ -88,6 +93,7 @@ class CabeceraFicha {
     this.golesContra,
     this.estado = EstadoFicha.proximo,
     this.competicion = '',
+    this.reloj,
   });
 
   factory CabeceraFicha.fromJson(Map<String, dynamic> json) {
@@ -101,6 +107,7 @@ class CabeceraFicha {
       golesContra: (json['golesContra'] as num?)?.toInt(),
       estado: EstadoFicha.desdeTexto(json['estado'] as String?),
       competicion: json['competicion'] as String? ?? '',
+      reloj: RelojDirecto.desdeJson(json['reloj']),
     );
   }
 
@@ -139,6 +146,12 @@ class EventoFicha {
   final String? texto;
   final bool dobleAmarilla;
 
+  /// true en una tarjeta a un jugador del rival (el backend antiguo no lo manda: false).
+  final bool rival;
+
+  /// Dorsal del rival en su tarjeta o en su gol, si se indicó.
+  final int? dorsalRival;
+
   const EventoFicha({
     required this.tipo,
     this.minuto,
@@ -148,6 +161,8 @@ class EventoFicha {
     this.golesContra,
     this.texto,
     this.dobleAmarilla = false,
+    this.rival = false,
+    this.dorsalRival,
   });
 
   factory EventoFicha.fromJson(Map<String, dynamic> json) {
@@ -160,13 +175,15 @@ class EventoFicha {
       golesContra: (json['golesContra'] as num?)?.toInt(),
       texto: json['texto'] as String?,
       dobleAmarilla: json['dobleAmarilla'] as bool? ?? false,
+      rival: json['rival'] as bool? ?? false,
+      dorsalRival: (json['dorsalRival'] as num?)?.toInt(),
     );
   }
 
   bool get esSeparador => tipo == descanso || tipo == finalPartido;
 
-  /// Los hechos del Mutxamel: todos menos el gol del rival (solo se registran los nuestros).
-  bool get esNuestro => tipo != golContra;
+  /// Los hechos del Mutxamel: todos menos el gol del rival y las tarjetas del rival.
+  bool get esNuestro => tipo != golContra && !rival;
 }
 
 class TarjetaFicha {

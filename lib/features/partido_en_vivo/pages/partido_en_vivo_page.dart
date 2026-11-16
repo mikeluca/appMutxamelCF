@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
+import '../../ficha_partido/widgets/reloj_en_directo.dart';
 import '../models/partido_en_vivo_models.dart';
 import '../services/partido_en_vivo_service.dart';
 import 'alineacion_page.dart';
@@ -40,6 +41,78 @@ class _AutorGol {
   _AutorGol conMinuto(int? minuto) => jugadorId != null
       ? _AutorGol.jugador(jugadorId!, minuto: minuto)
       : _AutorGol.texto(texto!, minuto: minuto);
+}
+
+/// Lee el campo "Dorsal": vacío es válido (sin dorsal); si no, un entero entre 0 y 99 (el 0 es un dorsal).
+({bool valido, int? dorsal}) _leerDorsal(String texto) {
+  final limpio = texto.trim();
+
+  if (limpio.isEmpty) {
+    return (valido: true, dorsal: null);
+  }
+
+  final dorsal = int.tryParse(limpio);
+
+  if (dorsal == null || dorsal < 0 || dorsal > 99) {
+    return (valido: false, dorsal: null);
+  }
+
+  return (valido: true, dorsal: dorsal);
+}
+
+/// Cuerpo de una hoja inferior con teclado: el contenido se desplaza y el botón de [pie] (Enviar) queda fijo abajo,
+/// fuera de la lista. La hoja sube con el teclado (relleno con `viewInsets.bottom`; el `isScrollControlled` lo pone
+/// quien abre la hoja) y tocar un hueco cierra el teclado, que en iOS no tiene tecla "Hecho" en el numérico.
+class _HojaConTeclado extends StatelessWidget {
+  final List<Widget> children;
+  final Widget? pie;
+  final double alturaMaxima;
+
+  const _HojaConTeclado({
+    required this.children,
+    this.pie,
+    this.alturaMaxima = 0.85,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final teclado = MediaQuery.viewInsetsOf(context).bottom;
+    final alto = MediaQuery.sizeOf(context).height;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: teclado),
+        child: SafeArea(
+          // Con el teclado abierto ya no hay barra de gestos debajo.
+          bottom: teclado == 0,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: alto * alturaMaxima),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                    children: children,
+                  ),
+                ),
+                if (pie != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 4, 24, 12),
+                    child: SizedBox(width: double.infinity, child: pie),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /// Lee el campo "Minuto": vacío es válido (sin minuto); si no, un entero entre 0 y 150.
@@ -524,6 +597,21 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
                 ),
               ),
             ),
+            // El reloj para quien retransmite (en el descanso no hay: ya lo dice la fase).
+            if (_estado?.reloj case final reloj? when !reloj.enDescanso) ...[
+              const SizedBox(height: 10),
+              RelojEnDirecto(
+                reloj: reloj,
+                ahora: widget.ahora,
+                // Sin punto parpadeante: es para quien retransmite, no para el público.
+                conPunto: false,
+                estilo: TextStyle(
+                  color: _colors.onPrimaryContainer,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -637,17 +725,31 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
 
     final emoji = evento.tipo == EventoEnVivo.tarjetaRoja ? '🟥' : '🟨';
     final doble = evento.dobleAmarilla ? ' (${_t.liveSendOffRow})' : '';
+    final quien = evento.rival
+        ? _textoRival(evento.dorsalRival)
+        : evento.autor ?? '';
 
-    return '$emoji $minuto${evento.autor ?? ''}$doble';
+    return '$emoji $minuto$quien$doble';
   }
 
-  /// "⚽ 23' Pérez" (a favor) o "🥅 31' Gol en contra"; sin minuto, sin esa parte.
+  /// "Rival · Dorsal 9" o, sin dorsal, "Rival".
+  String _textoRival(int? dorsal) => dorsal == null
+      ? _t.liveRivalRow
+      : '${_t.liveRivalRow} · ${_t.liveDorsalRow(dorsal.toString())}';
+
+  /// "⚽ 23' Pérez" (a favor) o "🥅 31' Gol en contra" (con " · Dorsal 9" si se indicó); sin minuto, sin esa parte.
   String _textoGol(EventoEnVivo gol) {
     final minuto = gol.minuto == null ? '' : "${gol.minuto}' ";
 
-    return gol.tipo == 'GOL_FAVOR'
-        ? '⚽ $minuto${_nombreAutor(gol.autor ?? '')}'.trimRight()
-        : '🥅 $minuto${_t.liveGoalAgainstRow}';
+    if (gol.tipo == 'GOL_FAVOR') {
+      return '⚽ $minuto${_nombreAutor(gol.autor ?? '')}'.trimRight();
+    }
+
+    final dorsal = gol.dorsalRival == null
+        ? ''
+        : ' · ${_t.liveDorsalRow(gol.dorsalRival.toString())}';
+
+    return '🥅 $minuto${_t.liveGoalAgainstRow}$dorsal';
   }
 
   String _nombreAutor(String autor) =>
@@ -803,27 +905,32 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
 
     setState(() => _cargandoConvocados = false);
 
-    final respuesta = await showDialog<({int? minuto})>(
+    final respuesta = await showDialog<({int? minuto, int? dorsal})>(
       context: context,
       builder: (context) => _DialogoMinuto(
         titulo: titulo,
         mensaje: _t.liveConfirmGoalAgainst,
         minutoInicial: minutoInicial,
         textoConfirmar: _t.send,
+        conDorsal: true,
       ),
     );
 
     if (respuesta == null) return;
 
     await _ejecutarEvento(
-      (id) => _service.enviarGolContra(id, minuto: respuesta.minuto),
+      (id) => _service.enviarGolContra(
+        id,
+        minuto: respuesta.minuto,
+        dorsal: respuesta.dorsal,
+      ),
       _t.liveNotificationSentMessage(titulo),
     );
   }
 
   /// Pulsar un gol de la lista: diálogo para corregir su minuto (sin nuevo aviso).
   Future<void> _corregirMinuto(EventoEnVivo evento) async {
-    final respuesta = await showDialog<({int? minuto})>(
+    final respuesta = await showDialog<({int? minuto, int? dorsal})>(
       context: context,
       builder: (context) => _DialogoMinuto(
         titulo: _t.liveMinuteEditTitle,
@@ -1046,7 +1153,9 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
     final entran = alineacion == null
         ? convocados
         : convocados
-              .where((j) => alineacion.suplentesDisponibles.contains(j.jugadorId))
+              .where(
+                (j) => alineacion.suplentesDisponibles.contains(j.jugadorId),
+              )
               .toList();
 
     final cambio = await showModalBottomSheet<_CambioElegido>(
@@ -1114,6 +1223,13 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
           e.jugadorId!,
     };
 
+    // Dorsales del rival con una amarilla: los que dice el servidor y los que salen de los eventos (los que ya
+    // tienen una doble no cuentan).
+    final dorsalesRival = {
+      ...?_estado?.dorsalesRivalConAmarilla,
+      ..._dorsalesRivalConUnaAmarilla(eventos),
+    };
+
     final tarjeta = await showModalBottomSheet<_TarjetaElegida>(
       context: context,
       isScrollControlled: true,
@@ -1123,6 +1239,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
             .where((j) => !expulsados.contains(j.jugadorId))
             .toList(),
         conAmarilla: conAmarilla,
+        dorsalesRivalConAmarilla: dorsalesRival,
         minutoInicial: minutoInicial,
       ),
     );
@@ -1135,9 +1252,29 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
         jugadorId: tarjeta.jugadorId,
         color: tarjeta.roja ? 'ROJA' : 'AMARILLA',
         minuto: tarjeta.minuto,
+        rival: tarjeta.rival,
+        dorsal: tarjeta.dorsal,
       ),
       _t.liveCardSent,
     );
+  }
+
+  /// Dorsales del rival con exactamente una amarilla y sin expulsión (una segunda ya anotada como doble).
+  static Set<int> _dorsalesRivalConUnaAmarilla(List<EventoEnVivo> eventos) {
+    final amarillas = <int, int>{};
+
+    for (final e in eventos) {
+      if (e.rival &&
+          e.dorsalRival != null &&
+          e.tipo == EventoEnVivo.tarjetaAmarilla) {
+        amarillas.update(e.dorsalRival!, (n) => n + 1, ifAbsent: () => 1);
+      }
+    }
+
+    return {
+      for (final entrada in amarillas.entries)
+        if (entrada.value == 1) entrada.key,
+    };
   }
 
   void _mostrarMensaje(String mensaje) {
@@ -1188,8 +1325,45 @@ class _CambioElegido {
   const _CambioElegido(this.sale, this.entra, this.minuto);
 }
 
+/// Campo numérico "Minuto" de las hojas: se cierra con "Hecho" (`done`) o tocando fuera.
+class _CampoMinuto extends StatelessWidget {
+  final TextEditingController controlador;
+  final String etiqueta;
+  final String? error;
+  final TextInputAction accion;
+
+  const _CampoMinuto({
+    required this.controlador,
+    required this.etiqueta,
+    required this.error,
+    this.accion = TextInputAction.done,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: TextField(
+        key: const ValueKey('campo-minuto'),
+        controller: controlador,
+        keyboardType: TextInputType.number,
+        textInputAction: accion,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        maxLength: 3,
+        decoration: InputDecoration(
+          labelText: etiqueta,
+          errorText: error,
+          counterText: '',
+          isDense: true,
+          border: const OutlineInputBorder(),
+        ),
+      ),
+    );
+  }
+}
+
 /// Hoja inferior del cambio: el minuto, quién sale y quién entra. El que sale no puede salir también en la lista de
-/// los que entran.
+/// los que entran. El botón Enviar queda fijo abajo (el teclado no lo tapa).
 class _SelectorCambio extends StatefulWidget {
   final List<ConvocadoEnVivo> salen;
   final List<ConvocadoEnVivo> entran;
@@ -1284,131 +1458,119 @@ class _SelectorCambioState extends State<_SelectorCambio> {
 
     final entran = widget.entran.where((j) => j.jugadorId != _sale).toList();
 
-    return SafeArea(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.85,
-        ),
-        child: ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: Text(
-                t.liveSubButton,
-                style: TextStyle(
-                  color: colors.onSurface,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: TextField(
-                key: const ValueKey('campo-minuto'),
-                controller: _minuto,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                maxLength: 3,
-                decoration: InputDecoration(
-                  labelText: t.liveMinuteLabel,
-                  errorText: _minutoInvalido ? t.liveMinuteInvalid : null,
-                  counterText: '',
-                  isDense: true,
-                  border: const OutlineInputBorder(),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.arrow_downward,
-                    size: 18,
-                    color: Color(0xFFD62828),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    t.liveSubOutTitle,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-            _lista(
-              'sale',
-              widget.salen,
-              _sale,
-              (id) => setState(() {
-                _sale = id;
-                // El que sale no puede ser también el que entra.
-                if (_entra == id) _entra = null;
-              }),
-              t.liveSubNoneOut,
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.arrow_upward,
-                    size: 18,
-                    color: Color(0xFF2E9E4F),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    t.liveSubInTitle,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-            _lista(
-              'entra',
-              entran,
-              _entra,
-              (id) => setState(() => _entra = id),
-              t.liveSubNoneIn,
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: FilledButton(
-                key: const ValueKey('confirmar-cambio'),
-                onPressed: _sale == null || _entra == null ? null : _confirmar,
-                child: Text(t.send),
-              ),
-            ),
-          ],
-        ),
+    return _HojaConTeclado(
+      pie: FilledButton(
+        key: const ValueKey('confirmar-cambio'),
+        onPressed: _sale == null || _entra == null ? null : _confirmar,
+        child: Text(t.send),
       ),
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: Text(
+            t.liveSubButton,
+            style: TextStyle(
+              color: colors.onSurface,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        _CampoMinuto(
+          controlador: _minuto,
+          etiqueta: t.liveMinuteLabel,
+          error: _minutoInvalido ? t.liveMinuteInvalid : null,
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.arrow_downward,
+                size: 18,
+                color: Color(0xFFD62828),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                t.liveSubOutTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+        _lista(
+          'sale',
+          widget.salen,
+          _sale,
+          (id) => setState(() {
+            _sale = id;
+            // El que sale no puede ser también el que entra.
+            if (_entra == id) _entra = null;
+          }),
+          t.liveSubNoneOut,
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.arrow_upward,
+                size: 18,
+                color: Color(0xFF2E9E4F),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                t.liveSubInTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+        _lista(
+          'entra',
+          entran,
+          _entra,
+          (id) => setState(() => _entra = id),
+          t.liveSubNoneIn,
+        ),
+      ],
     );
   }
 }
 
-/// Tarjeta elegida en la hoja.
+/// Tarjeta elegida en la hoja: a un jugador nuestro ([jugadorId]) o a uno del rival ([rival], con [dorsal] opcional).
 class _TarjetaElegida {
-  final int jugadorId;
+  final int? jugadorId;
   final bool roja;
   final int? minuto;
+  final bool rival;
+  final int? dorsal;
 
-  const _TarjetaElegida(this.jugadorId, this.roja, this.minuto);
+  const _TarjetaElegida(
+    this.jugadorId,
+    this.roja,
+    this.minuto, {
+    this.rival = false,
+    this.dorsal,
+  });
 }
 
-/// Hoja inferior de la tarjeta: el minuto, el color y el jugador. Si es amarilla y el jugador ya tiene otra, avisa de
-/// que será expulsión.
+/// Hoja inferior de la tarjeta: Mutxamel CF o Rival, el color, el minuto y el jugador (o el dorsal del rival, opcional).
+/// Si es amarilla y el jugador (o el dorsal del rival) ya tiene otra, avisa de que será expulsión.
 class _SelectorTarjeta extends StatefulWidget {
   final List<ConvocadoEnVivo> jugadores;
 
   /// Jugadores con una amarilla ya en este partido.
   final Set<int> conAmarilla;
+
+  /// Dorsales del rival con una amarilla ya en este partido.
+  final Set<int> dorsalesRivalConAmarilla;
   final int? minutoInicial;
 
   const _SelectorTarjeta({
     required this.jugadores,
     required this.conAmarilla,
+    this.dorsalesRivalConAmarilla = const {},
     required this.minutoInicial,
   });
 
@@ -1420,29 +1582,61 @@ class _SelectorTarjetaState extends State<_SelectorTarjeta> {
   late final TextEditingController _minuto = TextEditingController(
     text: widget.minutoInicial?.toString() ?? '',
   );
+  final TextEditingController _dorsal = TextEditingController();
 
   int? _jugador;
+  bool _rival = false;
   bool _roja = false;
   bool _minutoInvalido = false;
+  bool _dorsalInvalido = false;
 
   @override
   void dispose() {
     _minuto.dispose();
+    _dorsal.dispose();
     super.dispose();
   }
 
-  bool get _seraExpulsion =>
-      !_roja && _jugador != null && widget.conAmarilla.contains(_jugador);
+  bool get _seraExpulsion {
+    if (_roja) return false;
+
+    if (_rival) {
+      final dorsal = _leerDorsal(_dorsal.text);
+
+      return dorsal.valido &&
+          dorsal.dorsal != null &&
+          widget.dorsalesRivalConAmarilla.contains(dorsal.dorsal);
+    }
+
+    return _jugador != null && widget.conAmarilla.contains(_jugador);
+  }
+
+  bool get _puedeEnviar => _rival || _jugador != null;
 
   void _confirmar() {
-    final lectura = _leerMinuto(_minuto.text);
+    final minuto = _leerMinuto(_minuto.text);
+    final dorsal = _rival
+        ? _leerDorsal(_dorsal.text)
+        : (valido: true, dorsal: null as int?);
 
-    if (!lectura.valido) {
-      setState(() => _minutoInvalido = true);
+    if (!minuto.valido || !dorsal.valido) {
+      setState(() {
+        _minutoInvalido = !minuto.valido;
+        _dorsalInvalido = !dorsal.valido;
+      });
       return;
     }
 
-    Navigator.pop(context, _TarjetaElegida(_jugador!, _roja, lectura.minuto));
+    Navigator.pop(
+      context,
+      _TarjetaElegida(
+        _rival ? null : _jugador,
+        _roja,
+        minuto.minuto,
+        rival: _rival,
+        dorsal: dorsal.dorsal,
+      ),
+    );
   }
 
   @override
@@ -1450,130 +1644,140 @@ class _SelectorTarjetaState extends State<_SelectorTarjeta> {
     final t = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
 
-    return SafeArea(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.85,
-        ),
-        child: ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: Text(
-                t.liveCardPlayerTitle,
-                style: TextStyle(
-                  color: colors.onSurface,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: SegmentedButton<bool>(
-                key: const ValueKey('color-tarjeta'),
-                segments: [
-                  ButtonSegment(
-                    value: false,
-                    label: Text(t.liveCardYellow),
-                    icon: const Icon(Icons.rectangle, color: Color(0xFFF2C500)),
-                  ),
-                  ButtonSegment(
-                    value: true,
-                    label: Text(t.liveCardRed),
-                    icon: const Icon(Icons.rectangle, color: Color(0xFFD62828)),
-                  ),
-                ],
-                selected: {_roja},
-                onSelectionChanged: (valor) =>
-                    setState(() => _roja = valor.first),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: TextField(
-                key: const ValueKey('campo-minuto'),
-                controller: _minuto,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                maxLength: 3,
-                decoration: InputDecoration(
-                  labelText: t.liveMinuteLabel,
-                  errorText: _minutoInvalido ? t.liveMinuteInvalid : null,
-                  counterText: '',
-                  isDense: true,
-                  border: const OutlineInputBorder(),
-                ),
-              ),
-            ),
-            if (_seraExpulsion)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: Row(
-                  children: [
-                    Icon(Icons.warning_amber, color: colors.error),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        t.liveCardSecondYellow,
-                        key: const ValueKey('aviso-segunda-amarilla'),
-                        style: TextStyle(color: colors.error),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            if (widget.jugadores.isEmpty)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-                child: Text(
-                  t.liveNoPlayersToPick,
-                  style: TextStyle(color: colors.onSurfaceVariant),
-                ),
-              ),
-            for (final jugador in widget.jugadores)
-              ListTile(
-                key: ValueKey('tarjeta-${jugador.jugadorId}'),
-                selected: _jugador == jugador.jugadorId,
-                leading: CircleAvatar(
-                  backgroundColor: _jugador == jugador.jugadorId
-                      ? colors.primary
-                      : colors.primaryContainer,
-                  child: Text(
-                    jugador.dorsal?.toString() ?? '-',
-                    style: TextStyle(
-                      color: _jugador == jugador.jugadorId
-                          ? colors.onPrimary
-                          : colors.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                title: Text(jugador.nombre),
-                trailing: _jugador == jugador.jugadorId
-                    ? Icon(Icons.check_circle, color: colors.primary)
-                    : null,
-                onTap: () => setState(() => _jugador = jugador.jugadorId),
-              ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: FilledButton(
-                key: const ValueKey('confirmar-tarjeta'),
-                onPressed: _jugador == null ? null : _confirmar,
-                child: Text(t.send),
-              ),
-            ),
-          ],
-        ),
+    return _HojaConTeclado(
+      pie: FilledButton(
+        key: const ValueKey('confirmar-tarjeta'),
+        onPressed: _puedeEnviar ? _confirmar : null,
+        child: Text(t.send),
       ),
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: Text(
+            t.liveCardPlayerTitle,
+            style: TextStyle(
+              color: colors.onSurface,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: SegmentedButton<bool>(
+            key: const ValueKey('equipo-tarjeta'),
+            segments: [
+              ButtonSegment(value: false, label: Text(t.liveCardTeamClub)),
+              ButtonSegment(value: true, label: Text(t.liveCardTeamRival)),
+            ],
+            selected: {_rival},
+            onSelectionChanged: (valor) => setState(() => _rival = valor.first),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: SegmentedButton<bool>(
+            key: const ValueKey('color-tarjeta'),
+            segments: [
+              ButtonSegment(
+                value: false,
+                label: Text(t.liveCardYellow),
+                icon: const Icon(Icons.rectangle, color: Color(0xFFF2C500)),
+              ),
+              ButtonSegment(
+                value: true,
+                label: Text(t.liveCardRed),
+                icon: const Icon(Icons.rectangle, color: Color(0xFFD62828)),
+              ),
+            ],
+            selected: {_roja},
+            onSelectionChanged: (valor) => setState(() => _roja = valor.first),
+          ),
+        ),
+        _CampoMinuto(
+          controlador: _minuto,
+          etiqueta: t.liveMinuteLabel,
+          error: _minutoInvalido ? t.liveMinuteInvalid : null,
+          accion: _rival ? TextInputAction.next : TextInputAction.done,
+        ),
+        if (_rival)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: TextField(
+              key: const ValueKey('campo-dorsal'),
+              controller: _dorsal,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              maxLength: 2,
+              onChanged: (_) => setState(() => _dorsalInvalido = false),
+              decoration: InputDecoration(
+                labelText: t.liveDorsalLabel,
+                errorText: _dorsalInvalido ? t.liveDorsalInvalid : null,
+                counterText: '',
+                isDense: true,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+          ),
+        if (_seraExpulsion)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: Row(
+              children: [
+                Icon(Icons.warning_amber, color: colors.error),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    t.liveCardSecondYellow,
+                    key: const ValueKey('aviso-segunda-amarilla'),
+                    style: TextStyle(color: colors.error),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        if (!_rival && widget.jugadores.isEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+            child: Text(
+              t.liveNoPlayersToPick,
+              style: TextStyle(color: colors.onSurfaceVariant),
+            ),
+          ),
+        if (!_rival)
+          for (final jugador in widget.jugadores)
+            ListTile(
+              key: ValueKey('tarjeta-${jugador.jugadorId}'),
+              selected: _jugador == jugador.jugadorId,
+              leading: CircleAvatar(
+                backgroundColor: _jugador == jugador.jugadorId
+                    ? colors.primary
+                    : colors.primaryContainer,
+                child: Text(
+                  jugador.dorsal?.toString() ?? '-',
+                  style: TextStyle(
+                    color: _jugador == jugador.jugadorId
+                        ? colors.onPrimary
+                        : colors.onPrimaryContainer,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              title: Text(jugador.nombre),
+              trailing: _jugador == jugador.jugadorId
+                  ? Icon(Icons.check_circle, color: colors.primary)
+                  : null,
+              onTap: () => setState(() => _jugador = jugador.jugadorId),
+            ),
+      ],
     );
   }
 }
 
 /// Hoja inferior para elegir quién ha marcado, con el campo "Minuto" (prerrellenado con
-/// el minuto actual del partido; vacío = que lo calcule el servidor).
+/// el minuto actual del partido; vacío = que lo calcule el servidor). Cada jugador se envía al tocarlo, así que
+/// no hay botón Enviar: la lista se desplaza por encima del teclado.
 class _SelectorAutorGol extends StatefulWidget {
   final List<ConvocadoEnVivo> convocados;
   final String titulo;
@@ -1635,105 +1839,87 @@ class _SelectorAutorGolState extends State<_SelectorAutorGol> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
-    return SafeArea(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.8,
+    return _HojaConTeclado(
+      alturaMaxima: 0.8,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: Text(
+            widget.titulo,
+            style: TextStyle(
+              color: colors.onSurface,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
-        child: ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+        _CampoMinuto(
+          controlador: _minuto,
+          etiqueta: widget.etiquetaMinuto,
+          error: _minutoInvalido ? widget.errorMinuto : null,
+        ),
+        if (widget.convocados.isEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+            child: Text(
+              widget.sinJugadores,
+              style: TextStyle(color: colors.onSurfaceVariant),
+            ),
+          ),
+        for (final jugador in widget.convocados)
+          ListTile(
+            leading: CircleAvatar(
+              backgroundColor: colors.primaryContainer,
               child: Text(
-                widget.titulo,
+                jugador.dorsal?.toString() ?? '-',
                 style: TextStyle(
-                  color: colors.onSurface,
-                  fontSize: 18,
+                  color: colors.onPrimaryContainer,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: TextField(
-                key: const ValueKey('campo-minuto'),
-                controller: _minuto,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                maxLength: 3,
-                decoration: InputDecoration(
-                  labelText: widget.etiquetaMinuto,
-                  errorText: _minutoInvalido ? widget.errorMinuto : null,
-                  counterText: '',
-                  isDense: true,
-                  border: const OutlineInputBorder(),
-                ),
-              ),
-            ),
-            if (widget.convocados.isEmpty)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-                child: Text(
-                  widget.sinJugadores,
-                  style: TextStyle(color: colors.onSurfaceVariant),
-                ),
-              ),
-            for (final jugador in widget.convocados)
-              ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: colors.primaryContainer,
-                  child: Text(
-                    jugador.dorsal?.toString() ?? '-',
-                    style: TextStyle(
-                      color: colors.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                title: Text(jugador.nombre),
-                subtitle: jugador.tieneNombreRetransmision
-                    ? Text(jugador.nombreRetransmision!)
-                    : null,
-                onTap: () => _elegir(_AutorGol.jugador(jugador.jugadorId)),
-              ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: Text(widget.otro),
-              onTap: () async {
-                if (_minutoElegido() == null) return;
+            title: Text(jugador.nombre),
+            subtitle: jugador.tieneNombreRetransmision
+                ? Text(jugador.nombreRetransmision!)
+                : null,
+            onTap: () => _elegir(_AutorGol.jugador(jugador.jugadorId)),
+          ),
+        const Divider(),
+        ListTile(
+          leading: const Icon(Icons.edit_outlined),
+          title: Text(widget.otro),
+          onTap: () async {
+            if (_minutoElegido() == null) return;
 
-                final autor = await widget.alElegirOtro();
+            final autor = await widget.alElegirOtro();
 
-                if (autor != null && mounted) {
-                  _elegir(autor);
-                }
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.sports_soccer_outlined),
-              title: Text(widget.propiaPuerta),
-              onTap: () =>
-                  _elegir(const _AutorGol.texto(EstadoPartidoEnVivo.propiaPuerta)),
-            ),
-          ],
+            if (autor != null && mounted) {
+              _elegir(autor);
+            }
+          },
         ),
-      ),
+        ListTile(
+          leading: const Icon(Icons.sports_soccer_outlined),
+          title: Text(widget.propiaPuerta),
+          onTap: () =>
+              _elegir(const _AutorGol.texto(EstadoPartidoEnVivo.propiaPuerta)),
+        ),
+      ],
     );
   }
 }
 
-/// Diálogo con el campo "Minuto": para confirmar un gol en contra (con [mensaje]) o
-/// para corregir el minuto de un gol ([obligatorio]). Devuelve `(minuto: n)`, con n
-/// null si se deja vacío (lo calcula el servidor), o null si se cancela.
+/// Diálogo con el campo "Minuto": para confirmar un gol en contra (con [mensaje] y, con [conDorsal], el campo
+/// opcional "Dorsal" del autor) o para corregir el minuto de un evento ([obligatorio]). Devuelve
+/// `(minuto: n, dorsal: d)`, con n o d null si se dejan vacíos, o null si se cancela. El diálogo sube con el
+/// teclado y los botones quedan fijos abajo; "Hecho" o tocar fuera cierran el teclado.
 class _DialogoMinuto extends StatefulWidget {
   final String titulo;
   final String? mensaje;
   final int? minutoInicial;
   final String textoConfirmar;
   final bool obligatorio;
+  final bool conDorsal;
 
   const _DialogoMinuto({
     required this.titulo,
@@ -1741,6 +1927,7 @@ class _DialogoMinuto extends StatefulWidget {
     required this.minutoInicial,
     required this.textoConfirmar,
     this.obligatorio = false,
+    this.conDorsal = false,
   });
 
   @override
@@ -1751,24 +1938,36 @@ class _DialogoMinutoState extends State<_DialogoMinuto> {
   late final TextEditingController _controlador = TextEditingController(
     text: widget.minutoInicial?.toString() ?? '',
   );
+  final TextEditingController _dorsal = TextEditingController();
 
   bool _invalido = false;
+  bool _dorsalInvalido = false;
 
   @override
   void dispose() {
     _controlador.dispose();
+    _dorsal.dispose();
     super.dispose();
   }
 
   void _confirmar() {
     final lectura = _leerMinuto(_controlador.text);
+    final dorsal = widget.conDorsal
+        ? _leerDorsal(_dorsal.text)
+        : (valido: true, dorsal: null as int?);
 
-    if (!lectura.valido || (widget.obligatorio && lectura.minuto == null)) {
-      setState(() => _invalido = true);
+    final minutoMal =
+        !lectura.valido || (widget.obligatorio && lectura.minuto == null);
+
+    if (minutoMal || !dorsal.valido) {
+      setState(() {
+        _invalido = minutoMal;
+        _dorsalInvalido = !dorsal.valido;
+      });
       return;
     }
 
-    Navigator.pop(context, (minuto: lectura.minuto));
+    Navigator.pop(context, (minuto: lectura.minuto, dorsal: dorsal.dorsal));
   }
 
   @override
@@ -1777,29 +1976,56 @@ class _DialogoMinutoState extends State<_DialogoMinuto> {
 
     return AlertDialog(
       title: Text(widget.titulo),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (widget.mensaje != null) ...[
-            Text(widget.mensaje!),
-            const SizedBox(height: 14),
-          ],
-          TextField(
-            key: const ValueKey('campo-minuto'),
-            controller: _controlador,
-            autofocus: widget.mensaje == null,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            maxLength: 3,
-            decoration: InputDecoration(
-              labelText: t.liveMinuteLabel,
-              errorText: _invalido ? t.liveMinuteInvalid : null,
-              counterText: '',
-              border: const OutlineInputBorder(),
+      // Con el teclado abierto el contenido se desplaza y los botones siguen a la vista.
+      scrollable: true,
+      content: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (widget.mensaje != null) ...[
+              Text(widget.mensaje!),
+              const SizedBox(height: 14),
+            ],
+            TextField(
+              key: const ValueKey('campo-minuto'),
+              controller: _controlador,
+              autofocus: widget.mensaje == null,
+              keyboardType: TextInputType.number,
+              textInputAction: widget.conDorsal
+                  ? TextInputAction.next
+                  : TextInputAction.done,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              maxLength: 3,
+              decoration: InputDecoration(
+                labelText: t.liveMinuteLabel,
+                errorText: _invalido ? t.liveMinuteInvalid : null,
+                counterText: '',
+                border: const OutlineInputBorder(),
+              ),
             ),
-          ),
-        ],
+            if (widget.conDorsal) ...[
+              const SizedBox(height: 12),
+              TextField(
+                key: const ValueKey('campo-dorsal'),
+                controller: _dorsal,
+                keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.done,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                maxLength: 2,
+                onChanged: (_) => setState(() => _dorsalInvalido = false),
+                decoration: InputDecoration(
+                  labelText: t.liveDorsalLabel,
+                  errorText: _dorsalInvalido ? t.liveDorsalInvalid : null,
+                  counterText: '',
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
       actions: [
         TextButton(
@@ -1832,16 +2058,30 @@ class _DialogoAutorLibreState extends State<_DialogoAutorLibre> {
     super.dispose();
   }
 
+  void _enviar() {
+    final t = AppLocalizations.of(context);
+    final valor = _controlador.text.trim();
+
+    if (valor.isEmpty) {
+      setState(() => _error = t.liveEnterGoalAuthorError);
+      return;
+    }
+
+    Navigator.pop(context, valor);
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
 
     return AlertDialog(
       title: Text(t.liveGoalOther),
+      scrollable: true,
       content: TextField(
         controller: _controlador,
         autofocus: true,
         maxLength: 60,
+        textInputAction: TextInputAction.done,
         decoration: InputDecoration(
           labelText: t.liveGoalOtherLabel,
           errorText: _error,
@@ -1853,19 +2093,7 @@ class _DialogoAutorLibreState extends State<_DialogoAutorLibre> {
           onPressed: () => Navigator.pop(context),
           child: Text(t.cancel),
         ),
-        FilledButton(
-          onPressed: () {
-            final valor = _controlador.text.trim();
-
-            if (valor.isEmpty) {
-              setState(() => _error = t.liveEnterGoalAuthorError);
-              return;
-            }
-
-            Navigator.pop(context, valor);
-          },
-          child: Text(t.send),
-        ),
+        FilledButton(onPressed: _enviar, child: Text(t.send)),
       ],
     );
   }

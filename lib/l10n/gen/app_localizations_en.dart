@@ -3288,4 +3288,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get liveSendOffRow => 'sent off for two yellows';
+
+  @override
+  String get liveRivalRow => 'Opponent';
+
+  @override
+  String liveDorsalRow(String dorsal) {
+    return 'Number $dorsal';
+  }
+
+  @override
+  String get liveDorsalLabel => 'Number';
+
+  @override
+  String get liveDorsalInvalid => 'The number must be between 0 and 99.';
+
+  @override
+  String get liveCardTeamClub => 'Mutxamel CF';
+
+  @override
+  String get liveCardTeamRival => 'Opponent';
+
+  @override
+  String fichaDorsal(String dorsal) {
+    return 'Number $dorsal';
+  }
 }

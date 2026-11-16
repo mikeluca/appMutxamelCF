@@ -1,4 +1,5 @@
 import '../../../core/utils/marcador.dart' as marcador;
+import '../../ficha_partido/models/reloj_directo.dart';
 
 class MatchModel {
   final int? id;
@@ -65,6 +66,10 @@ class MatchModel {
   /// backend; solo con el partido retransmitido y FINALIZADO, vacía en otro caso.
   final List<String> goleadores;
 
+  /// Reloj en directo (portada del Primer Equipo); null fuera de la primera parte, el descanso y la segunda
+  /// parte, o en un backend antiguo.
+  final RelojDirecto? reloj;
+
   const MatchModel({
     this.id,
     this.equipoId,
@@ -93,6 +98,7 @@ class MatchModel {
     this.enJuego = false,
     this.fase,
     this.goleadores = const [],
+    this.reloj,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -130,6 +136,7 @@ class MatchModel {
       goleadores: (json['goleadores'] as List<dynamic>? ?? const [])
           .map((g) => g.toString())
           .toList(),
+      reloj: RelojDirecto.desdeJson(json['reloj']),
     );
   }
 

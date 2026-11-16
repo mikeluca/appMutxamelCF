@@ -1207,5 +1207,14 @@
   "liveCardSent": "Card recorded.",
   "liveCardsAndSubs": "Substitutions and cards",
   "liveNoCardsAndSubs": "No substitutions or cards yet",
-  "liveSendOffRow": "sent off for two yellows"
+  "liveSendOffRow": "sent off for two yellows",
+  "liveRivalRow": "Opponent",
+  "liveDorsalRow": "Number {dorsal}",
+  "@liveDorsalRow": { "placeholders": { "dorsal": { "type": "String" } } },
+  "liveDorsalLabel": "Number",
+  "liveDorsalInvalid": "The number must be between 0 and 99.",
+  "liveCardTeamClub": "Mutxamel CF",
+  "liveCardTeamRival": "Opponent",
+  "fichaDorsal": "Number {dorsal}",
+  "@fichaDorsal": { "placeholders": { "dorsal": { "type": "String" } } }
 }

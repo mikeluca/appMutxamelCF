@@ -1,3 +1,5 @@
+import '../../ficha_partido/models/reloj_directo.dart';
+
 /// Fases del partido en directo, tal como las calcula el backend.
 enum FasePartido {
   sinEmpezar,
@@ -134,6 +136,12 @@ class EventoEnVivo {
   /// true en la segunda amarilla de un jugador (expulsión).
   final bool dobleAmarilla;
 
+  /// true en una tarjeta a un jugador del rival (sin `jugadorId` ni `autor`); false en un backend antiguo.
+  final bool rival;
+
+  /// Dorsal del rival en su tarjeta o en su gol (GOL_CONTRA), si se indicó.
+  final int? dorsalRival;
+
   const EventoEnVivo({
     required this.id,
     required this.tipo,
@@ -144,9 +152,14 @@ class EventoEnVivo {
     this.jugadorEntraId,
     this.jugadorEntra,
     this.dobleAmarilla = false,
+    this.rival = false,
+    this.dorsalRival,
   });
 
   bool get esGol => tipo == 'GOL_FAVOR' || tipo == 'GOL_CONTRA';
+
+  /// El texto "Rival" o "Rival · Dorsal 9" de un evento del rival: se compone en la pantalla (l10n).
+  bool get esDelRival => rival || tipo == 'GOL_CONTRA';
 
   bool get esTarjeta => tipo == tarjetaAmarilla || tipo == tarjetaRoja;
 
@@ -164,6 +177,8 @@ class EventoEnVivo {
       jugadorEntraId: (json['jugadorEntraId'] as num?)?.toInt(),
       jugadorEntra: json['jugadorEntra'] as String?,
       dobleAmarilla: json['dobleAmarilla'] as bool? ?? false,
+      rival: json['rival'] as bool? ?? false,
+      dorsalRival: (json['dorsalRival'] as num?)?.toInt(),
     );
   }
 }
@@ -228,6 +243,12 @@ class EstadoPartidoEnVivo {
   /// La alineación guardada y quién está en el campo; null si no se ha enviado ninguna (o backend antiguo).
   final AlineacionEnVivo? alineacion;
 
+  /// Dorsales del rival con una amarilla en el partido (la siguiente es expulsión); vacía en un backend antiguo.
+  final List<int> dorsalesRivalConAmarilla;
+
+  /// Reloj en directo; null fuera de juego y del descanso (o backend antiguo).
+  final RelojDirecto? reloj;
+
   const EstadoPartidoEnVivo({
     required this.partidoId,
     this.rival = '',
@@ -241,6 +262,8 @@ class EstadoPartidoEnVivo {
     this.deshacibleSegundos,
     this.minutoActual,
     this.alineacion,
+    this.dorsalesRivalConAmarilla = const [],
+    this.reloj,
   });
 
   factory EstadoPartidoEnVivo.fromJson(Map<String, dynamic> json) {
@@ -262,8 +285,15 @@ class EstadoPartidoEnVivo {
           ?.toInt(),
       minutoActual: (json['minutoActual'] as num?)?.toInt(),
       alineacion: json['alineacion'] is Map<String, dynamic>
-          ? AlineacionEnVivo.fromJson(json['alineacion'] as Map<String, dynamic>)
+          ? AlineacionEnVivo.fromJson(
+              json['alineacion'] as Map<String, dynamic>,
+            )
           : null,
+      dorsalesRivalConAmarilla:
+          (json['dorsalesRivalConAmarilla'] as List<dynamic>? ?? const [])
+              .map((e) => (e as num).toInt())
+              .toList(),
+      reloj: RelojDirecto.desdeJson(json['reloj']),
     );
   }
 
