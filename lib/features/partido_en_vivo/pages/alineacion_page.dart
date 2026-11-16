@@ -254,7 +254,8 @@ class _AlineacionPageState extends State<AlineacionPage> {
     return Column(
       children: [
         _construirCabecera(),
-        if (_paso == _pasoOnce && _formacion != null) _construirVistaPreviaCampo(),
+        if (_paso == _pasoOnce && _formacion != null)
+          _construirVistaPreviaCampo(),
         Expanded(child: _construirLista()),
         _construirPie(),
       ],

@@ -561,9 +561,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
 
     final opciones = _opcionesEquipaje;
     final principal = _equipajePorId(_equipacionId);
-    final detalle = principal == null
-        ? null
-        : detalleEquipacion(_t, principal);
+    final detalle = principal == null ? null : detalleEquipacion(_t, principal);
     final hayPrincipal = principal != null;
     final mochila = _equipajePorId(_mochilaId);
     final detalleMochila = mochila == null
@@ -628,7 +626,9 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
         ),
         if (hayPrincipal && _usarMochila) ...[
           DropdownButtonFormField<int>(
-            key: ValueKey('equipaje-mochila-selector-$_mochilaId-$_equipacionId'),
+            key: ValueKey(
+              'equipaje-mochila-selector-$_mochilaId-$_equipacionId',
+            ),
             initialValue: mochila?.id,
             decoration: InputDecoration(
               labelText: _t.callupKitBackpackLabel,

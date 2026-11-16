@@ -138,9 +138,7 @@ class _CuotasPageState extends State<CuotasPage> {
 
   Widget _construirGrupoJugador(List<CuotaFamiliarModel> cuotas) {
     final nombre = cuotas.first.jugadorNombre;
-    final pendientes = cuotas
-        .where((c) => c.estado != 'PAGADO')
-        .length;
+    final pendientes = cuotas.where((c) => c.estado != 'PAGADO').length;
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -218,9 +216,9 @@ class _CuotasPageState extends State<CuotasPage> {
 
   void _mostrarPagos(CuotaFamiliarModel cuota) {
     if (cuota.pagos.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_t.noPaymentRegistered)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_t.noPaymentRegistered)));
       return;
     }
 

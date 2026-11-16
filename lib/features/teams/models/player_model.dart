@@ -21,9 +21,7 @@ class PlayerModel {
     this.fotoBase64,
   });
 
-  factory PlayerModel.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory PlayerModel.fromJson(Map<String, dynamic> json) {
     return PlayerModel(
       id: json['id'] ?? 0,
       nombre: json['nombre'] ?? '',

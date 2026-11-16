@@ -30,7 +30,9 @@ class MatchService {
     int limite = 5,
   }) async {
     final data =
-        await ApiClient.get('/public/partidos?equipoId=$equipoId&limite=$limite')
+        await ApiClient.get(
+              '/public/partidos?equipoId=$equipoId&limite=$limite',
+            )
             as List<dynamic>;
 
     return data
@@ -44,9 +46,11 @@ class MatchService {
   }) async {
     final equipoCodificado = Uri.encodeQueryComponent(equipoNombre);
 
-    final data = await ApiClient.get(
-      '/public/partidos?equipo=$equipoCodificado&limite=$limite',
-    ) as List<dynamic>;
+    final data =
+        await ApiClient.get(
+              '/public/partidos?equipo=$equipoCodificado&limite=$limite',
+            )
+            as List<dynamic>;
 
     return data
         .map((json) => MatchModel.fromJson(json as Map<String, dynamic>))
@@ -64,16 +68,17 @@ class MatchService {
     int equipoId, {
     int? incluirPartidoId,
   }) async {
-    final query = StringBuffer('/app/partidos/sin-convocatoria?equipoId=$equipoId');
+    final query = StringBuffer(
+      '/app/partidos/sin-convocatoria?equipoId=$equipoId',
+    );
 
     if (incluirPartidoId != null) {
       query.write('&incluirPartidoId=$incluirPartidoId');
     }
 
-    final data = await ApiClient.get(
-      query.toString(),
-      autenticado: true,
-    ) as List<dynamic>;
+    final data =
+        await ApiClient.get(query.toString(), autenticado: true)
+            as List<dynamic>;
 
     return data
         .map((json) => MatchModel.fromJson(json as Map<String, dynamic>))

@@ -916,10 +916,7 @@ class _PartidoFormDialogState extends State<_PartidoFormDialog> {
             ),
             if (_error != null) ...[
               const SizedBox(height: 12),
-              Text(
-                _error!,
-                style: const TextStyle(color: Colors.redAccent),
-              ),
+              Text(_error!, style: const TextStyle(color: Colors.redAccent)),
             ],
           ],
         ),

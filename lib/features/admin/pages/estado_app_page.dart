@@ -252,7 +252,11 @@ class _EstadoAppPageState extends State<EstadoAppPage> {
             DataRow(
               key: ValueKey('version-${v.plataforma}-${v.version}'),
               cells: [
-                for (final texto in [v.plataforma, v.version, '${v.dispositivos}'])
+                for (final texto in [
+                  v.plataforma,
+                  v.version,
+                  '${v.dispositivos}',
+                ])
                   DataCell(
                     Text(
                       texto,

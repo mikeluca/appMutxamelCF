@@ -127,7 +127,9 @@ class _CuentasPendientesPageState extends State<CuentasPendientesPage> {
     final invitacion = await Navigator.push<InvitacionEnviadaModel>(
       context,
       MaterialPageRoute(
-        builder: (_) => widget.constructorInvitar?.call() ?? InvitarUsuarioPage(servicio: _servicio),
+        builder: (_) =>
+            widget.constructorInvitar?.call() ??
+            InvitarUsuarioPage(servicio: _servicio),
       ),
     );
 

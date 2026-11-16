@@ -75,7 +75,9 @@ void main() {
 
       test('si falta (backend antiguo) es false', () {
         expect(
-          SesionEntrenamientoModel.fromJson(jsonBase()).puedeRetirarJustificacion,
+          SesionEntrenamientoModel.fromJson(
+            jsonBase(),
+          ).puedeRetirarJustificacion,
           isFalse,
         );
       });

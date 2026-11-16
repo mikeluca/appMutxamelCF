@@ -11,8 +11,9 @@ void main() {
   // flutter_secure_storage distribuye para pruebas (en memoria), sin
   // tocar canales de plataforma reales.
   setUp(() {
-    FlutterSecureStoragePlatform.instance =
-        TestFlutterSecureStoragePlatform(<String, String>{});
+    FlutterSecureStoragePlatform.instance = TestFlutterSecureStoragePlatform(
+      <String, String>{},
+    );
   });
 
   LoginResponse loginDeEjemplo({
@@ -57,8 +58,12 @@ void main() {
     });
 
     test('una sesion nueva sustituye a la anterior', () async {
-      await AuthSession.guardarSesion(loginDeEjemplo(usuarioId: 1, email: 'a@a.com'));
-      await AuthSession.guardarSesion(loginDeEjemplo(usuarioId: 2, email: 'b@b.com'));
+      await AuthSession.guardarSesion(
+        loginDeEjemplo(usuarioId: 1, email: 'a@a.com'),
+      );
+      await AuthSession.guardarSesion(
+        loginDeEjemplo(usuarioId: 2, email: 'b@b.com'),
+      );
 
       expect(await AuthSession.obtenerUsuarioId(), 2);
       expect(await AuthSession.obtenerEmail(), 'b@b.com');

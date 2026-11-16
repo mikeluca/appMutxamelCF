@@ -36,7 +36,9 @@ final _convocatoria = ConvocatoriaModel(
   horaConvocatoria: '09:30',
   lugarConvocatoria: 'Vestuarios',
   usuarioEntrenadorId: 1,
-  jugadores: [ConvocatoriaJugadorModel(jugadorId: 100, jugador: 'Pablo Garcia')],
+  jugadores: [
+    ConvocatoriaJugadorModel(jugadorId: 100, jugador: 'Pablo Garcia'),
+  ],
 );
 
 final _conResultado = ConvocatoriaModel(
@@ -51,7 +53,9 @@ final _conResultado = ConvocatoriaModel(
   horaConvocatoria: '09:30',
   lugarConvocatoria: 'Vestuarios',
   usuarioEntrenadorId: 1,
-  jugadores: [ConvocatoriaJugadorModel(jugadorId: 100, jugador: 'Pablo Garcia')],
+  jugadores: [
+    ConvocatoriaJugadorModel(jugadorId: 100, jugador: 'Pablo Garcia'),
+  ],
   partidoConResultado: true,
 );
 

@@ -136,9 +136,7 @@ class _ModeracionPageState extends State<ModeracionPage> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(mensajeExito ?? _t.moderationResolvedDone)),
       );
     } catch (e) {

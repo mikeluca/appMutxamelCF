@@ -69,7 +69,8 @@ class _ContinuidadPageState extends State<ContinuidadPage> {
 
       setState(() {
         _jugadores = [
-          for (final j in _jugadores) j.jugadorId == nuevo.jugadorId ? nuevo : j,
+          for (final j in _jugadores)
+            j.jugadorId == nuevo.jugadorId ? nuevo : j,
         ];
       });
 

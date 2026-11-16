@@ -151,38 +151,47 @@ void main() {
       expect(modelo.convocados.first.esJugador('Ana', 'Lopez'), isFalse);
     });
 
-    test('el servicio pide GET /app/partidos/{id}/convocatoria?jugadorId=', () async {
-      FlutterSecureStoragePlatform.instance =
-          TestFlutterSecureStoragePlatform(<String, String>{});
-      await AuthSession.guardarSesion(
-        LoginResponse(
-          token: 'tok',
-          usuarioId: 1,
-          email: 'a@a.com',
-          roles: const [],
-        ),
-      );
-
-      final modelo = await conMockHttp((request) async {
-        expect(request.method, 'GET');
-        expect(request.url.path, endsWith('/app/partidos/30/convocatoria'));
-        expect(request.url.queryParameters['jugadorId'], '100');
-        expect(request.headers['Authorization'], 'Bearer tok');
-
-        return http.Response(
-          jsonEncode({
-            'convocatoriaId': 20,
-            'rival': 'Pego',
-            'convocado': false,
-            'convocados': [],
-          }),
-          200,
+    test(
+      'el servicio pide GET /app/partidos/{id}/convocatoria?jugadorId=',
+      () async {
+        FlutterSecureStoragePlatform.instance =
+            TestFlutterSecureStoragePlatform(<String, String>{});
+        await AuthSession.guardarSesion(
+          LoginResponse(
+            token: 'tok',
+            usuarioId: 1,
+            email: 'a@a.com',
+            roles: const [],
+          ),
         );
-      }, () => ConvocatoriaPartidoService().obtener(partidoId: 30, jugadorId: 100));
 
-      expect(modelo.rival, 'Pego');
-      expect(modelo.convocado, isFalse);
-    });
+        final modelo = await conMockHttp(
+          (request) async {
+            expect(request.method, 'GET');
+            expect(request.url.path, endsWith('/app/partidos/30/convocatoria'));
+            expect(request.url.queryParameters['jugadorId'], '100');
+            expect(request.headers['Authorization'], 'Bearer tok');
+
+            return http.Response(
+              jsonEncode({
+                'convocatoriaId': 20,
+                'rival': 'Pego',
+                'convocado': false,
+                'convocados': [],
+              }),
+              200,
+            );
+          },
+          () => ConvocatoriaPartidoService().obtener(
+            partidoId: 30,
+            jugadorId: 100,
+          ),
+        );
+
+        expect(modelo.rival, 'Pego');
+        expect(modelo.convocado, isFalse);
+      },
+    );
   });
 
   group('pantalla Convocatoria', () {
@@ -291,8 +300,10 @@ void main() {
         ),
       );
 
-      expect(find.text('Esta convocatoria ya no está disponible'),
-          findsOneWidget);
+      expect(
+        find.text('Esta convocatoria ya no está disponible'),
+        findsOneWidget,
+      );
       expect(find.text('Reintentar'), findsNothing);
     });
 
@@ -415,16 +426,13 @@ void main() {
         'calendario', (tester) async {
       await _pintar(tester, const Scaffold(body: Text('home')));
 
-      AppNavigator.fabricaConvocatoriaPartidoService = () => _FakeServicio(
-        porJugador: {100: _convocatoria(convocado: false)},
-      );
+      AppNavigator.fabricaConvocatoriaPartidoService = () =>
+          _FakeServicio(porJugador: {100: _convocatoria(convocado: false)});
       AppNavigator.cargarPerfilParaAviso = () async => _perfil([100]);
       AppNavigator.constructorCalendario = (dia) => const Text('calendario');
 
       // El Future de abrir la pantalla no termina hasta cerrarla: no se espera.
-      AppNavigator.abrirDestinoConvocatoria(
-        const AbrirDetalleConvocatoria(30),
-      );
+      AppNavigator.abrirDestinoConvocatoria(const AbrirDetalleConvocatoria(30));
       await tester.pumpAndSettle();
 
       expect(find.text('calendario'), findsOneWidget);

@@ -441,9 +441,7 @@ class _ConvocatoriaFamiliaPageState extends State<ConvocatoriaFamiliaPage> {
       ),
       margin: const EdgeInsets.only(bottom: 10),
       elevation: 1,
-      color: propio
-          ? AppColors.azul.withValues(alpha: 0.10)
-          : _colors.surface,
+      color: propio ? AppColors.azul.withValues(alpha: 0.10) : _colors.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
         side: BorderSide(

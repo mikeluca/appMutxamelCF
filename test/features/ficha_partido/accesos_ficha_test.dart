@@ -119,21 +119,26 @@ void main() {
       );
     });
 
-    test('el id del partido llega en el JSON de la portada y de los resultados', () {
-      final partido = MatchModel.fromJson({
-        'id': 30,
-        'equipo': 'Primer Equipo',
-        'categoria': 'Primer Equipo',
-        'rival': 'Pego C.F.',
-      });
+    test(
+      'el id del partido llega en el JSON de la portada y de los resultados',
+      () {
+        final partido = MatchModel.fromJson({
+          'id': 30,
+          'equipo': 'Primer Equipo',
+          'categoria': 'Primer Equipo',
+          'rival': 'Pego C.F.',
+        });
 
-      expect(partido.id, 30);
-      expect(partido.tieneFicha, isTrue);
-    });
+        expect(partido.id, 30);
+        expect(partido.tieneFicha, isTrue);
+      },
+    );
   });
 
   group('portada', () {
-    testWidgets('la tarjeta del Primer Equipo abre la ficha del partido', (tester) async {
+    testWidgets('la tarjeta del Primer Equipo abre la ficha del partido', (
+      tester,
+    ) async {
       await _pintarPortada(tester, _primerEquipo);
 
       expect(find.byKey(const ValueKey('abrir-ficha')), findsOneWidget);
@@ -142,7 +147,9 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 
-      final ficha = tester.widget<FichaPartidoPage>(find.byType(FichaPartidoPage));
+      final ficha = tester.widget<FichaPartidoPage>(
+        find.byType(FichaPartidoPage),
+      );
       expect(ficha.partidoId, 30);
 
       await tester.pumpWidget(const SizedBox());
@@ -171,14 +178,18 @@ void main() {
       await tester.pump(const Duration(milliseconds: 400));
 
       expect(
-        tester.widget<FichaPartidoPage>(find.byType(FichaPartidoPage)).partidoId,
+        tester
+            .widget<FichaPartidoPage>(find.byType(FichaPartidoPage))
+            .partidoId,
         30,
       );
 
       await tester.pumpWidget(const SizedBox());
     });
 
-    testWidgets('un partido ya jugado del Primer Equipo también', (tester) async {
+    testWidgets('un partido ya jugado del Primer Equipo también', (
+      tester,
+    ) async {
       await _pintarLista(
         tester,
         const MatchModel(

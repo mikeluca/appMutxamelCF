@@ -51,7 +51,8 @@ RemoteMessage _pushNuevaTemporada() => RemoteMessage(
   data: {'tipo': 'NOTICIA', 'referenciaId': ''},
   notification: RemoteNotification(
     title: 'Nueva temporada',
-    body: 'Empieza la temporada 2027/2028. Los equipos se publicarán en septiembre.',
+    body:
+        'Empieza la temporada 2027/2028. Los equipos se publicarán en septiembre.',
   ),
 );
 
@@ -122,69 +123,81 @@ void main() {
     AuthUser(usuarioId: 1, email: 'a@b.c', roles: roles),
   );
 
-  test('los destinos y los payloads de continuidad se leen y se escriben igual', () {
-    expect(destinoDeAvisoConvocatoria(tipo: 'CONTINUIDAD'), const AbrirContinuidad());
-    expect(
-      destinoDeAvisoConvocatoria(tipo: 'CONTINUIDAD_RESPUESTA'),
-      const AbrirBandeja(),
-    );
-    expect(payloadDeDestino(const AbrirContinuidad()), 'CONTINUIDAD');
-    expect(payloadDeDestino(const AbrirBandeja()), 'CONTINUIDAD_RESPUESTA');
-    expect(destinoDePayload('CONTINUIDAD'), const AbrirContinuidad());
-    expect(destinoDePayload('CONTINUIDAD_RESPUESTA'), const AbrirBandeja());
-    expect(esAvisoDeConvocatoria(tipo: 'CONTINUIDAD'), isTrue);
-    expect(esAvisoDeConvocatoria(tipo: 'CONTINUIDAD_RESPUESTA'), isTrue);
-    expect(esAvisoDeConvocatoria(tipo: 'NOTICIA'), isFalse);
-  });
+  test(
+    'los destinos y los payloads de continuidad se leen y se escriben igual',
+    () {
+      expect(
+        destinoDeAvisoConvocatoria(tipo: 'CONTINUIDAD'),
+        const AbrirContinuidad(),
+      );
+      expect(
+        destinoDeAvisoConvocatoria(tipo: 'CONTINUIDAD_RESPUESTA'),
+        const AbrirBandeja(),
+      );
+      expect(payloadDeDestino(const AbrirContinuidad()), 'CONTINUIDAD');
+      expect(payloadDeDestino(const AbrirBandeja()), 'CONTINUIDAD_RESPUESTA');
+      expect(destinoDePayload('CONTINUIDAD'), const AbrirContinuidad());
+      expect(destinoDePayload('CONTINUIDAD_RESPUESTA'), const AbrirBandeja());
+      expect(esAvisoDeConvocatoria(tipo: 'CONTINUIDAD'), isTrue);
+      expect(esAvisoDeConvocatoria(tipo: 'CONTINUIDAD_RESPUESTA'), isTrue);
+      expect(esAvisoDeConvocatoria(tipo: 'NOTICIA'), isFalse);
+    },
+  );
 
-  test('la notificación local lleva el destino de continuidad y su propio id', () {
-    final datos = _pushContinuidad().data;
+  test(
+    'la notificación local lleva el destino de continuidad y su propio id',
+    () {
+      final datos = _pushContinuidad().data;
 
-    expect(
-      LocalNotificationService.payloadDeAviso(
-        comunicacionId: 7,
-        titulo: 'Continuidad en 2027/2028',
-        datos: datos,
-      ),
-      'CONTINUIDAD',
-    );
-    expect(
-      LocalNotificationService.payloadDeAviso(
-        comunicacionId: 1,
-        titulo: 'No seguirá',
-        datos: _pushRespuesta().data,
-      ),
-      'CONTINUIDAD_RESPUESTA',
-    );
+      expect(
+        LocalNotificationService.payloadDeAviso(
+          comunicacionId: 7,
+          titulo: 'Continuidad en 2027/2028',
+          datos: datos,
+        ),
+        'CONTINUIDAD',
+      );
+      expect(
+        LocalNotificationService.payloadDeAviso(
+          comunicacionId: 1,
+          titulo: 'No seguirá',
+          datos: _pushRespuesta().data,
+        ),
+        'CONTINUIDAD_RESPUESTA',
+      );
 
-    // No pisa la notificación de una comunicación con el mismo número.
-    expect(LocalNotificationService.idDeNotificacion(7, datos), isNot(7));
-    expect(
-      LocalNotificationService.idDeNotificacion(7, datos),
-      LocalNotificationService.idDeNotificacion(7, _pushContinuidad().data),
-    );
-  });
+      // No pisa la notificación de una comunicación con el mismo número.
+      expect(LocalNotificationService.idDeNotificacion(7, datos), isNot(7));
+      expect(
+        LocalNotificationService.idDeNotificacion(7, datos),
+        LocalNotificationService.idDeNotificacion(7, _pushContinuidad().data),
+      );
+    },
+  );
 
-  testWidgets('con la app abierta CONTINUIDAD sale como notificación local y, al '
-      'tocarla, abre la pantalla de continuidad', (tester) async {
-    await conSesion(['FAMILIAR']);
-    await _pintarApp(tester);
+  testWidgets(
+    'con la app abierta CONTINUIDAD sale como notificación local y, al '
+    'tocarla, abre la pantalla de continuidad',
+    (tester) async {
+      await conSesion(['FAMILIAR']);
+      await _pintarApp(tester);
 
-    await PushNotificationService.mostrarEnPrimerPlano(_pushContinuidad());
+      await PushNotificationService.mostrarEnPrimerPlano(_pushContinuidad());
 
-    expect(mostradas, hasLength(1));
+      expect(mostradas, hasLength(1));
 
-    LocalNotificationService.procesarPayload(
-      LocalNotificationService.payloadDeAviso(
-        comunicacionId: 7,
-        titulo: 'Continuidad en 2027/2028',
-        datos: mostradas.single,
-      ),
-    );
-    await tester.pumpAndSettle();
+      LocalNotificationService.procesarPayload(
+        LocalNotificationService.payloadDeAviso(
+          comunicacionId: 7,
+          titulo: 'Continuidad en 2027/2028',
+          datos: mostradas.single,
+        ),
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('CONTINUIDAD'), findsOneWidget);
-  });
+      expect(find.text('CONTINUIDAD'), findsOneWidget);
+    },
+  );
 
   testWidgets('con la app en segundo plano CONTINUIDAD abre la pantalla de '
       'continuidad', (tester) async {
@@ -211,41 +224,49 @@ void main() {
     expect(find.text('CONTINUIDAD'), findsNothing);
   });
 
-  testWidgets('arranque en frío: CONTINUIDAD espera a la sesión y luego abre la '
-      'pantalla', (tester) async {
-    await conSesion(['FAMILIAR']);
-    await _pintarApp(tester);
+  testWidgets(
+    'arranque en frío: CONTINUIDAD espera a la sesión y luego abre la '
+    'pantalla',
+    (tester) async {
+      await conSesion(['FAMILIAR']);
+      await _pintarApp(tester);
 
-    PushNotificationService.simularMensajeInicial(_pushContinuidad());
+      PushNotificationService.simularMensajeInicial(_pushContinuidad());
 
-    await PushNotificationService.procesarNotificacionInicial();
-    await tester.pumpAndSettle();
+      await PushNotificationService.procesarNotificacionInicial();
+      await tester.pumpAndSettle();
 
-    expect(sesionesRestauradas, 0);
-    expect(find.text('CONTINUIDAD'), findsNothing);
+      expect(sesionesRestauradas, 0);
+      expect(find.text('CONTINUIDAD'), findsNothing);
 
-    unawaited(PushNotificationService.procesarAvisoPendiente());
-    await tester.pumpAndSettle();
+      unawaited(PushNotificationService.procesarAvisoPendiente());
+      await tester.pumpAndSettle();
 
-    expect(sesionesRestauradas, 1);
-    expect(find.text('CONTINUIDAD'), findsOneWidget);
-  });
+      expect(sesionesRestauradas, 1);
+      expect(find.text('CONTINUIDAD'), findsOneWidget);
+    },
+  );
 
-  testWidgets('arranque en frío: CONTINUIDAD_RESPUESTA también espera y abre la '
-      'bandeja', (tester) async {
-    await conSesion(['COORDINADOR']);
-    await _pintarApp(tester);
+  testWidgets(
+    'arranque en frío: CONTINUIDAD_RESPUESTA también espera y abre la '
+    'bandeja',
+    (tester) async {
+      await conSesion(['COORDINADOR']);
+      await _pintarApp(tester);
 
-    PushNotificationService.simularMensajeInicial(_pushRespuesta());
+      PushNotificationService.simularMensajeInicial(_pushRespuesta());
 
-    await PushNotificationService.procesarNotificacionInicial();
-    unawaited(PushNotificationService.procesarAvisoPendiente());
-    await tester.pumpAndSettle();
+      await PushNotificationService.procesarNotificacionInicial();
+      unawaited(PushNotificationService.procesarAvisoPendiente());
+      await tester.pumpAndSettle();
 
-    expect(find.text('BANDEJA'), findsOneWidget);
-  });
+      expect(find.text('BANDEJA'), findsOneWidget);
+    },
+  );
 
-  testWidgets('arranque en frío sin sesión válida: se descarta', (tester) async {
+  testWidgets('arranque en frío sin sesión válida: se descarta', (
+    tester,
+  ) async {
     await _pintarApp(tester);
 
     PushNotificationService.simularMensajeInicial(_pushContinuidad());

@@ -69,9 +69,8 @@ class CalendarioModel {
     return CalendarioModel(
       sesiones: sesionesJson
           .map(
-            (item) => SesionEntrenamientoModel.fromJson(
-              item as Map<String, dynamic>,
-            ),
+            (item) =>
+                SesionEntrenamientoModel.fromJson(item as Map<String, dynamic>),
           )
           .toList(),
       partidos: partidosJson

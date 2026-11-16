@@ -13,33 +13,43 @@ import '../../../support/http_test_helpers.dart';
 
 void main() {
   setUp(() async {
-    FlutterSecureStoragePlatform.instance =
-        TestFlutterSecureStoragePlatform(<String, String>{});
+    FlutterSecureStoragePlatform.instance = TestFlutterSecureStoragePlatform(
+      <String, String>{},
+    );
 
     await AuthSession.guardarSesion(
-      LoginResponse(token: 'tok', usuarioId: 1, email: 'a@a.com', roles: const []),
+      LoginResponse(
+        token: 'tok',
+        usuarioId: 1,
+        email: 'a@a.com',
+        roles: const [],
+      ),
     );
   });
 
   final service = CalendarioService();
 
   group('CalendarioService.obtenerTemporadaActiva', () {
-    test('sin temporada activa (404), devuelve null en vez de lanzar', () async {
-      final resultado = await conMockHttp(
-        (request) async {
+    test(
+      'sin temporada activa (404), devuelve null en vez de lanzar',
+      () async {
+        final resultado = await conMockHttp((request) async {
           expect(request.url.path, contains('/app/temporadas/activa'));
           return http.Response('', 404);
-        },
-        () => service.obtenerTemporadaActiva(),
-      );
+        }, () => service.obtenerTemporadaActiva());
 
-      expect(resultado, isNull);
-    });
+        expect(resultado, isNull);
+      },
+    );
 
     test('con temporada activa, mapea la fecha de inicio', () async {
       final resultado = await conMockHttp(
         (request) async => http.Response(
-          jsonEncode({'id': 1, 'nombre': '2026/2027', 'fechaInicio': '2026-09-01'}),
+          jsonEncode({
+            'id': 1,
+            'nombre': '2026/2027',
+            'fechaInicio': '2026-09-01',
+          }),
           200,
         ),
         () => service.obtenerTemporadaActiva(),
@@ -59,7 +69,10 @@ void main() {
           expect(request.url.queryParameters['hasta'], '2026-03-09');
           expect(request.url.queryParameters.containsKey('jugadorId'), isFalse);
 
-          return http.Response(jsonEncode({'sesiones': [], 'partidos': []}), 200);
+          return http.Response(
+            jsonEncode({'sesiones': [], 'partidos': []}),
+            200,
+          );
         },
         () => service.obtenerCalendario(
           equipoId: 3,
@@ -73,7 +86,10 @@ void main() {
       await conMockHttp(
         (request) async {
           expect(request.url.queryParameters['jugadorId'], '77');
-          return http.Response(jsonEncode({'sesiones': [], 'partidos': []}), 200);
+          return http.Response(
+            jsonEncode({'sesiones': [], 'partidos': []}),
+            200,
+          );
         },
         () => service.obtenerCalendario(
           equipoId: 3,
@@ -117,10 +133,10 @@ void main() {
   });
 
   group('CalendarioService.retirarJustificacion', () {
-    test('hace DELETE /app/sesiones-entrenamiento/{id}/justificaciones/{jugadorId}',
-        () async {
-      await conMockHttp(
-        (request) async {
+    test(
+      'hace DELETE /app/sesiones-entrenamiento/{id}/justificaciones/{jugadorId}',
+      () async {
+        await conMockHttp((request) async {
           expect(request.method, 'DELETE');
           expect(
             request.url.path,
@@ -129,33 +145,34 @@ void main() {
           expect(request.headers['Authorization'], 'Bearer tok');
 
           return http.Response('', 204);
-        },
-        () => service.retirarJustificacion(sesionId: 7, jugadorId: 100),
-      );
-    });
+        }, () => service.retirarJustificacion(sesionId: 7, jugadorId: 100));
+      },
+    );
 
-    test('si el backend la rechaza (fuera de plazo, 400) lanza la excepcion',
-        () async {
-      expect(
-        () => conMockHttp(
-          (request) async => http.Response('El plazo terminó', 400),
-          () => service.retirarJustificacion(sesionId: 7, jugadorId: 100),
-        ),
-        throwsA(isA<Exception>()),
-      );
-    });
+    test(
+      'si el backend la rechaza (fuera de plazo, 400) lanza la excepcion',
+      () async {
+        expect(
+          () => conMockHttp(
+            (request) async => http.Response('El plazo terminó', 400),
+            () => service.retirarJustificacion(sesionId: 7, jugadorId: 100),
+          ),
+          throwsA(isA<Exception>()),
+        );
+      },
+    );
   });
 
   group('CalendarioService.cancelarSesion', () {
     test('envia el motivo al endpoint de cancelacion', () async {
-      await conMockHttp(
-        (request) async {
-          expect(request.url.path, contains('/app/sesiones-entrenamiento/9/cancelar'));
-          expect(jsonDecode(request.body), {'motivo': 'Lluvia'});
-          return http.Response('', 200);
-        },
-        () => service.cancelarSesion(9, 'Lluvia'),
-      );
+      await conMockHttp((request) async {
+        expect(
+          request.url.path,
+          contains('/app/sesiones-entrenamiento/9/cancelar'),
+        );
+        expect(jsonDecode(request.body), {'motivo': 'Lluvia'});
+        return http.Response('', 200);
+      }, () => service.cancelarSesion(9, 'Lluvia'));
     });
   });
 }

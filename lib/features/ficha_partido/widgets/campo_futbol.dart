@@ -41,7 +41,8 @@ class CampoFutbol extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final totalFilas = filas ??
+    final totalFilas =
+        filas ??
         jugadores.fold<int>(1, (mayor, j) => j.fila > mayor ? j.fila : mayor);
 
     final porFila = <int, int>{};
@@ -83,7 +84,9 @@ class CampoFutbol extends StatelessWidget {
                   ),
                 for (final jugador in jugadores)
                   Positioned(
-                    key: ValueKey('posicion-${jugador.fila}-${jugador.columna}'),
+                    key: ValueKey(
+                      'posicion-${jugador.fila}-${jugador.columna}',
+                    ),
                     left:
                         ancho * jugador.columna / (porFila[jugador.fila]! + 1) -
                         anchoJugador / 2,

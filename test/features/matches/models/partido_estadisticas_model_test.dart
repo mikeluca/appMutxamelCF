@@ -70,8 +70,7 @@ void main() {
       expect(estadisticas.jugadores.first.jugador, 'Ana');
     });
 
-    test(
-        'resultado todavía no introducido: golesFavor/golesContra/resultado '
+    test('resultado todavía no introducido: golesFavor/golesContra/resultado '
         'nulos y jugadores vacío', () {
       final estadisticas = PartidoEstadisticasModel.fromJson({
         'partidoId': 10,
@@ -89,8 +88,7 @@ void main() {
   });
 
   group('fusionarRosterConEstadisticas', () {
-    test(
-        'un jugador de la plantilla sin estadística guardada se rellena a '
+    test('un jugador de la plantilla sin estadística guardada se rellena a '
         '0/false', () {
       final combinadas = fusionarRosterConEstadisticas(
         roster: const [RosterJugadorModel(jugadorId: 1, jugador: 'Ana')],
@@ -148,8 +146,7 @@ void main() {
       expect(bea.goles, 5);
     });
 
-    test(
-        'una estadística guardada de un jugador que ya no está en la '
+    test('una estadística guardada de un jugador que ya no está en la '
         'plantilla actual se descarta', () {
       final combinadas = fusionarRosterConEstadisticas(
         roster: const [RosterJugadorModel(jugadorId: 1, jugador: 'Ana')],

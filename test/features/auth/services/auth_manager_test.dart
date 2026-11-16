@@ -14,8 +14,9 @@ import '../../../support/http_test_helpers.dart';
 
 void main() {
   setUp(() {
-    FlutterSecureStoragePlatform.instance =
-        TestFlutterSecureStoragePlatform(<String, String>{});
+    FlutterSecureStoragePlatform.instance = TestFlutterSecureStoragePlatform(
+      <String, String>{},
+    );
   });
 
   group('AuthManager.cerrarSesion(desregistrarDispositivo: false)', () {
@@ -26,7 +27,12 @@ void main() {
     // Firebase/HTTP en absoluto: solo debe tocar el almacen local.
     test('borra la sesion local y el usuario actual', () async {
       await AuthSession.guardarSesion(
-        LoginResponse(token: 'tok', usuarioId: 1, email: 'a@a.com', roles: const []),
+        LoginResponse(
+          token: 'tok',
+          usuarioId: 1,
+          email: 'a@a.com',
+          roles: const [],
+        ),
       );
       await AuthManager.establecerUsuario(_usuarioDePrueba());
 
@@ -61,28 +67,37 @@ void main() {
   });
 
   group('AuthManager.restaurarSesion', () {
-    test('sin token guardado, devuelve false y no hay usuario actual', () async {
-      final restaurada = await AuthManager.restaurarSesion();
+    test(
+      'sin token guardado, devuelve false y no hay usuario actual',
+      () async {
+        final restaurada = await AuthManager.restaurarSesion();
 
-      expect(restaurada, isFalse);
-      expect(AuthManager.usuarioActual, isNull);
-    });
+        expect(restaurada, isFalse);
+        expect(AuthManager.usuarioActual, isNull);
+      },
+    );
 
     test('con token valido, carga el usuario y devuelve true', () async {
       await AuthSession.guardarSesion(
-        LoginResponse(token: 'tok-valido', usuarioId: 1, email: 'a@a.com', roles: const []),
+        LoginResponse(
+          token: 'tok-valido',
+          usuarioId: 1,
+          email: 'a@a.com',
+          roles: const [],
+        ),
       );
 
-      final restaurada = await conMockHttp(
-        (request) async {
-          expect(request.url.path, contains('/app/auth/me'));
-          return http.Response(
-            jsonEncode({'usuarioId': 7, 'email': 'a@a.com', 'roles': ['JUGADOR']}),
-            200,
-          );
-        },
-        () => AuthManager.restaurarSesion(),
-      );
+      final restaurada = await conMockHttp((request) async {
+        expect(request.url.path, contains('/app/auth/me'));
+        return http.Response(
+          jsonEncode({
+            'usuarioId': 7,
+            'email': 'a@a.com',
+            'roles': ['JUGADOR'],
+          }),
+          200,
+        );
+      }, () => AuthManager.restaurarSesion());
 
       expect(restaurada, isTrue);
       expect(AuthManager.usuarioActual?.usuarioId, 7);
@@ -90,33 +105,35 @@ void main() {
       await AuthManager.cerrarSesion(desregistrarDispositivo: false);
     });
 
-    test(
-      'con token que el servidor ya no acepta, no deja al usuario '
-      'autenticado pero SIN borrar el token guardado (FL-03)',
-      () async {
-        // FL-03: si el fallo es un 401, es ApiClient quien ya limpia la
-        // sesion (ver api_client_test.dart); si el fallo es de red, el
-        // token puede seguir siendo valido y no hay que expulsar al
-        // usuario solo por abrir la app sin cobertura. Aqui se simula
-        // ese segundo caso con un error que NO es un 401.
-        await AuthSession.guardarSesion(
-          LoginResponse(token: 'tok', usuarioId: 1, email: 'a@a.com', roles: const []),
-        );
+    test('con token que el servidor ya no acepta, no deja al usuario '
+        'autenticado pero SIN borrar el token guardado (FL-03)', () async {
+      // FL-03: si el fallo es un 401, es ApiClient quien ya limpia la
+      // sesion (ver api_client_test.dart); si el fallo es de red, el
+      // token puede seguir siendo valido y no hay que expulsar al
+      // usuario solo por abrir la app sin cobertura. Aqui se simula
+      // ese segundo caso con un error que NO es un 401.
+      await AuthSession.guardarSesion(
+        LoginResponse(
+          token: 'tok',
+          usuarioId: 1,
+          email: 'a@a.com',
+          roles: const [],
+        ),
+      );
 
-        final restaurada = await conMockHttp(
-          (request) async => http.Response('', 500),
-          () => AuthManager.restaurarSesion(),
-        );
+      final restaurada = await conMockHttp(
+        (request) async => http.Response('', 500),
+        () => AuthManager.restaurarSesion(),
+      );
 
-        expect(restaurada, isFalse);
-        expect(AuthManager.usuarioActual, isNull);
-        expect(
-          await AuthSession.obtenerToken(),
-          'tok',
-          reason: 'un fallo que no es 401 no debe borrar el token guardado',
-        );
-      },
-    );
+      expect(restaurada, isFalse);
+      expect(AuthManager.usuarioActual, isNull);
+      expect(
+        await AuthSession.obtenerToken(),
+        'tok',
+        reason: 'un fallo que no es 401 no debe borrar el token guardado',
+      );
+    });
   });
 }
 

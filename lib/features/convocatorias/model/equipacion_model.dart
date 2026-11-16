@@ -53,7 +53,8 @@ class EquipacionModel {
   }
 
   /// Si tiene algún dato de camiseta, pantalón o medias que mostrar.
-  bool get tieneDetalle => camiseta != null || pantalon != null || medias != null;
+  bool get tieneDetalle =>
+      camiseta != null || pantalon != null || medias != null;
 
   @override
   bool operator ==(Object other) =>
@@ -66,5 +67,6 @@ class EquipacionModel {
       other.colorHex == colorHex;
 
   @override
-  int get hashCode => Object.hash(id, nombre, camiseta, pantalon, medias, colorHex);
+  int get hashCode =>
+      Object.hash(id, nombre, camiseta, pantalon, medias, colorHex);
 }

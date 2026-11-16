@@ -16,13 +16,10 @@ Future<T> conMockHttp<T>(
 /// servicios que dependen de el NO hacen ninguna peticion de red cuando
 /// no deberian (p.ej. sin sesion iniciada).
 Future<T> conMockHttpQueNoDebeLlamarse<T>(Future<T> Function() body) {
-  return conMockHttp(
-    (request) async {
-      throw StateError(
-        'No se esperaba ninguna peticion HTTP, pero se llamo a '
-        '${request.method} ${request.url}',
-      );
-    },
-    body,
-  );
+  return conMockHttp((request) async {
+    throw StateError(
+      'No se esperaba ninguna peticion HTTP, pero se llamo a '
+      '${request.method} ${request.url}',
+    );
+  }, body);
 }

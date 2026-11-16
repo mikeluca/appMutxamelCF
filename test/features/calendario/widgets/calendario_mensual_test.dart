@@ -47,7 +47,8 @@ void main() {
             child: CalendarioMensual<ItemCalendario>(
               items: items,
               fechaDe: (item) => item.fecha,
-              textoSinEventosDia: 'No hay entrenamientos ni partidos programados.',
+              textoSinEventosDia:
+                  'No hay entrenamientos ni partidos programados.',
               locale: 'es',
               itemBuilder: (context, item) => ListTile(
                 key: ValueKey('item-${item.sesion?.id}-${item.fecha}'),
@@ -76,9 +77,7 @@ void main() {
   testWidgets(
     'muestra el mensaje de "sin eventos" cuando el día seleccionado no tiene nada',
     (tester) async {
-      await pumpCalendario(tester, [
-        ItemCalendario.deSesion(sesionEn(manana)),
-      ]);
+      await pumpCalendario(tester, [ItemCalendario.deSesion(sesionEn(manana))]);
 
       // Hoy (día seleccionado por defecto) no tiene eventos: el de
       // mañana no debe aparecer en la agenda inicial.
@@ -93,9 +92,7 @@ void main() {
   testWidgets('al tocar un día con eventos, la agenda se actualiza', (
     tester,
   ) async {
-    await pumpCalendario(tester, [
-      ItemCalendario.deSesion(sesionEn(manana)),
-    ]);
+    await pumpCalendario(tester, [ItemCalendario.deSesion(sesionEn(manana))]);
 
     expect(find.text('Entrenamiento'), findsNothing);
 

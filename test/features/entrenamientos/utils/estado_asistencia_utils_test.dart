@@ -21,9 +21,15 @@ void main() {
       );
     });
 
-    test('un estado no reconocido devuelve el propio codigo, no una cadena vacia', () {
-      expect(labelEstadoAsistencia(t, 'ESTADO_INVENTADO'), 'ESTADO_INVENTADO');
-    });
+    test(
+      'un estado no reconocido devuelve el propio codigo, no una cadena vacia',
+      () {
+        expect(
+          labelEstadoAsistencia(t, 'ESTADO_INVENTADO'),
+          'ESTADO_INVENTADO',
+        );
+      },
+    );
   });
 
   group('colorEstadoAsistencia', () {

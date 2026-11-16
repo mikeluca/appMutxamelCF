@@ -288,8 +288,11 @@ class _ResultadoPartidoFormPageState extends State<ResultadoPartidoFormPage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.info_outline,
-                              size: 18, color: _colors.onSurfaceVariant),
+                          Icon(
+                            Icons.info_outline,
+                            size: 18,
+                            color: _colors.onSurfaceVariant,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(

@@ -243,7 +243,10 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
           ],
 
           // "¿Seguirá X en la temporada Y?": solo aparece si hay algo que confirmar.
-          ContinuidadLista(key: _continuidad, servicio: widget.continuidadService),
+          ContinuidadLista(
+            key: _continuidad,
+            servicio: widget.continuidadService,
+          ),
 
           ...jugadores.map(
             (jugador) => Padding(

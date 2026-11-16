@@ -64,14 +64,11 @@ class _InvitarUsuarioPageState extends State<InvitarUsuarioPage> {
 
   bool get _hayFicha => _elegidos.isNotEmpty;
 
-  bool get _hayFamiliar =>
-      _elegidos.any((p) => p.tipo == TipoVinculo.familiar);
+  bool get _hayFamiliar => _elegidos.any((p) => p.tipo == TipoVinculo.familiar);
 
   /// Los roles que tendrá la cuenta: uno por tipo de vínculo elegido, más los adicionales.
-  List<String> get _rolesResultantes => {
-    for (final p in _elegidos) p.tipo.codigo,
-    ..._roles,
-  }.toList();
+  List<String> get _rolesResultantes =>
+      {for (final p in _elegidos) p.tipo.codigo, ..._roles}.toList();
 
   String _etiquetaTipo(TipoVinculo tipo) => switch (tipo) {
     TipoVinculo.jugador => _t.inviteLinkPlayer,

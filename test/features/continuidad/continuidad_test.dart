@@ -39,7 +39,10 @@ class _FakeContinuidad extends ContinuidadService {
   }
 
   @override
-  Future<ContinuidadJugadorModel> responder(int jugadorId, String respuesta) async {
+  Future<ContinuidadJugadorModel> responder(
+    int jugadorId,
+    String respuesta,
+  ) async {
     respuestas.add((jugadorId, respuesta));
 
     if (falloAlResponder != null) throw falloAlResponder!;
@@ -117,8 +120,9 @@ PerfilApp _perfil({String? equipo, String? categoria, int? equipoId}) {
 
 void main() {
   setUp(() {
-    FlutterSecureStoragePlatform.instance =
-        TestFlutterSecureStoragePlatform(<String, String>{});
+    FlutterSecureStoragePlatform.instance = TestFlutterSecureStoragePlatform(
+      <String, String>{},
+    );
   });
 
   group('modelo', () {
@@ -171,7 +175,12 @@ void main() {
 
   group('servicio', () {
     Future<void> iniciarSesion() => AuthSession.guardarSesion(
-      LoginResponse(token: 't', usuarioId: 1, email: 'a@a.com', roles: const []),
+      LoginResponse(
+        token: 't',
+        usuarioId: 1,
+        email: 'a@a.com',
+        roles: const [],
+      ),
     );
 
     test('listar pide GET /app/continuidad con el token', () async {
@@ -212,28 +221,31 @@ void main() {
       expect(lista, isEmpty);
     });
 
-    test('responder hace PUT con {respuesta} y devuelve el estado nuevo', () async {
-      await iniciarSesion();
+    test(
+      'responder hace PUT con {respuesta} y devuelve el estado nuevo',
+      () async {
+        await iniciarSesion();
 
-      final nuevo = await conMockHttp((request) async {
-        expect(request.method, 'PUT');
-        expect(request.url.path, endsWith('/app/continuidad/1'));
-        expect(jsonDecode(request.body), {'respuesta': 'DUDA'});
-        return http.Response(
-          jsonEncode({
-            'jugadorId': 1,
-            'nombre': 'Pablo Pérez',
-            'temporadaId': 7,
-            'temporada': '2027/2028',
-            'respuesta': 'DUDA',
-            'fechaRespuesta': '2027-05-03T09:30:00',
-          }),
-          200,
-        );
-      }, () => ContinuidadService().responder(1, 'DUDA'));
+        final nuevo = await conMockHttp((request) async {
+          expect(request.method, 'PUT');
+          expect(request.url.path, endsWith('/app/continuidad/1'));
+          expect(jsonDecode(request.body), {'respuesta': 'DUDA'});
+          return http.Response(
+            jsonEncode({
+              'jugadorId': 1,
+              'nombre': 'Pablo Pérez',
+              'temporadaId': 7,
+              'temporada': '2027/2028',
+              'respuesta': 'DUDA',
+              'fechaRespuesta': '2027-05-03T09:30:00',
+            }),
+            200,
+          );
+        }, () => ContinuidadService().responder(1, 'DUDA'));
 
-      expect(nuevo.respuesta, respuestaDuda);
-    });
+        expect(nuevo.respuesta, respuestaDuda);
+      },
+    );
 
     test('un 403 llega como ApiException con su código', () async {
       await iniciarSesion();
@@ -252,33 +264,37 @@ void main() {
   });
 
   group('tarjeta', () {
-    testWidgets('pregunta, ofrece Sí / No / Aún no lo sé y avisa de la respuesta', (
-      tester,
-    ) async {
-      final respuestas = <String>[];
+    testWidgets(
+      'pregunta, ofrece Sí / No / Aún no lo sé y avisa de la respuesta',
+      (tester) async {
+        final respuestas = <String>[];
 
-      await tester.pumpWidget(
-        _app(
-          Scaffold(
-            body: ContinuidadCard(jugador: _pablo(), onResponder: respuestas.add),
+        await tester.pumpWidget(
+          _app(
+            Scaffold(
+              body: ContinuidadCard(
+                jugador: _pablo(),
+                onResponder: respuestas.add,
+              ),
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(
-        find.text('¿Seguirá Pablo Pérez en la temporada 2027/2028?'),
-        findsOneWidget,
-      );
-      expect(find.text('Sí'), findsOneWidget);
-      expect(find.text('No'), findsOneWidget);
-      expect(find.text('Aún no lo sé'), findsOneWidget);
-      expect(find.text('Sin contestar todavía'), findsOneWidget);
+        expect(
+          find.text('¿Seguirá Pablo Pérez en la temporada 2027/2028?'),
+          findsOneWidget,
+        );
+        expect(find.text('Sí'), findsOneWidget);
+        expect(find.text('No'), findsOneWidget);
+        expect(find.text('Aún no lo sé'), findsOneWidget);
+        expect(find.text('Sin contestar todavía'), findsOneWidget);
 
-      await tester.tap(find.text('Aún no lo sé'));
-      await tester.tap(find.text('Sí'));
+        await tester.tap(find.text('Aún no lo sé'));
+        await tester.tap(find.text('Sí'));
 
-      expect(respuestas, ['DUDA', 'SIGUE']);
-    });
+        expect(respuestas, ['DUDA', 'SIGUE']);
+      },
+    );
 
     testWidgets('muestra la respuesta actual con su fecha y deja cambiarla', (
       tester,
@@ -353,7 +369,9 @@ void main() {
       expect(find.text('Respuesta guardada'), findsOneWidget);
     });
 
-    testWidgets('sin nada que confirmar lo dice con un texto claro', (tester) async {
+    testWidgets('sin nada que confirmar lo dice con un texto claro', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _app(ContinuidadPage(servicio: _FakeContinuidad([]))),
       );
@@ -362,7 +380,9 @@ void main() {
       expect(find.text('No tienes nada que confirmar ahora.'), findsOneWidget);
     });
 
-    testWidgets('si falla al guardar, avisa y no cambia la respuesta', (tester) async {
+    testWidgets('si falla al guardar, avisa y no cambia la respuesta', (
+      tester,
+    ) async {
       final servicio = _FakeContinuidad([_pablo()])
         ..falloAlResponder = const ApiException(
           'El jugador no tiene que confirmar.',
@@ -442,7 +462,9 @@ void main() {
       expect(find.text('Tu respuesta: Sí · 03/05/2027'), findsOneWidget);
     });
 
-    testWidgets('con la lista vacía no se muestra nada de continuidad', (tester) async {
+    testWidgets('con la lista vacía no se muestra nada de continuidad', (
+      tester,
+    ) async {
       await pintar(
         tester,
         perfil: _perfil(equipo: 'Alevín A', equipoId: 5),
@@ -454,7 +476,9 @@ void main() {
       expect(find.text('Pablo Pérez'), findsOneWidget);
     });
 
-    testWidgets('si falla la carga de continuidad la ficha sigue igual', (tester) async {
+    testWidgets('si falla la carga de continuidad la ficha sigue igual', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(900, 3000);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
@@ -476,22 +500,23 @@ void main() {
       expect(find.text('Aún no lo sé'), findsNothing);
     });
 
-    testWidgets('en un equipo de pretemporada muestra "<Categoría> · Pretemporada"', (
-      tester,
-    ) async {
-      await pintar(
-        tester,
-        perfil: _perfil(
-          equipo: 'Alevín (Pretemporada)',
-          categoria: 'Alevín',
-          equipoId: 10,
-        ),
-        continuidad: [],
-      );
+    testWidgets(
+      'en un equipo de pretemporada muestra "<Categoría> · Pretemporada"',
+      (tester) async {
+        await pintar(
+          tester,
+          perfil: _perfil(
+            equipo: 'Alevín (Pretemporada)',
+            categoria: 'Alevín',
+            equipoId: 10,
+          ),
+          continuidad: [],
+        );
 
-      expect(find.text('Alevín · Pretemporada'), findsOneWidget);
-      expect(find.text('Alevín (Pretemporada)'), findsNothing);
-    });
+        expect(find.text('Alevín · Pretemporada'), findsOneWidget);
+        expect(find.text('Alevín (Pretemporada)'), findsNothing);
+      },
+    );
 
     testWidgets('en pretemporada sin categoría la saca del nombre del equipo', (
       tester,
@@ -505,13 +530,14 @@ void main() {
       expect(find.text('Infantil · Pretemporada'), findsOneWidget);
     });
 
-    testWidgets('"Sin equipo esta temporada" se mantiene para quien no tiene equipo', (
-      tester,
-    ) async {
-      await pintar(tester, perfil: _perfil(), continuidad: []);
+    testWidgets(
+      '"Sin equipo esta temporada" se mantiene para quien no tiene equipo',
+      (tester) async {
+        await pintar(tester, perfil: _perfil(), continuidad: []);
 
-      expect(find.text('Sin equipo esta temporada'), findsOneWidget);
-    });
+        expect(find.text('Sin equipo esta temporada'), findsOneWidget);
+      },
+    );
 
     testWidgets('un equipo normal se muestra con su nombre', (tester) async {
       await pintar(

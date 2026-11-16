@@ -82,8 +82,10 @@ class AdminService {
 
   /// Reactiva la cuenta del autor de un reporte AUTOR_DESACTIVADO. El reporte sigue en ese
   /// estado, con una anotación de la reactivación.
-  Future<void> reactivarAutor(int reporteId, {String? nota}) =>
-      _accion('/app/moderacion/reportes/$reporteId/reactivar-autor', nota: nota);
+  Future<void> reactivarAutor(int reporteId, {String? nota}) => _accion(
+    '/app/moderacion/reportes/$reporteId/reactivar-autor',
+    nota: nota,
+  );
 
   // ---- invitar usuarios ------------------------------------------------------------------------
 

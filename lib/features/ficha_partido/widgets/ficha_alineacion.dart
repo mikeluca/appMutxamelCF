@@ -244,11 +244,7 @@ class _TitularEnCampo extends StatelessWidget {
                 ),
               ),
               if (titular.sustituido)
-                const Positioned(
-                  top: -2,
-                  left: 0,
-                  child: _InsigniaCambio(),
-                ),
+                const Positioned(top: -2, left: 0, child: _InsigniaCambio()),
               if (tarjeta != null)
                 Positioned(
                   top: -2,

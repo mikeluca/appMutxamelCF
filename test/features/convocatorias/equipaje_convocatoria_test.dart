@@ -190,7 +190,9 @@ ConvocatoriaModel _convocatoria({
   horaConvocatoria: '09:30',
   lugarConvocatoria: 'Vestuarios',
   usuarioEntrenadorId: 1,
-  jugadores: [ConvocatoriaJugadorModel(jugadorId: 100, jugador: 'Pablo Garcia')],
+  jugadores: [
+    ConvocatoriaJugadorModel(jugadorId: 100, jugador: 'Pablo Garcia'),
+  ],
   equipacion: equipacion,
   equipacionMochila: mochila,
 );
@@ -288,75 +290,91 @@ void main() {
 
     test('un colorHex no válido o ausente no da color', () {
       expect(
-        EquipacionModel.fromJson({'id': 1, 'nombre': 'A', 'colorHex': 'azul'}).color,
+        EquipacionModel.fromJson({
+          'id': 1,
+          'nombre': 'A',
+          'colorHex': 'azul',
+        }).color,
         isNull,
       );
       expect(EquipacionModel.fromJson({'id': 1, 'nombre': 'A'}).color, isNull);
       expect(_entreno.tieneDetalle, isFalse);
     });
 
-    test('la convocatoria del entrenador lee equipacion y equipacionMochila o null', () {
-      Map<String, dynamic> json(Map<String, dynamic> extra) => {
-        'id': 20,
-        'equipoId': 5,
-        'partidoId': 30,
-        'fechaPartido': '2026-10-24',
-        'usuarioEntrenadorId': 1,
-        'jugadores': [],
-        ...extra,
-      };
+    test(
+      'la convocatoria del entrenador lee equipacion y equipacionMochila o null',
+      () {
+        Map<String, dynamic> json(Map<String, dynamic> extra) => {
+          'id': 20,
+          'equipoId': 5,
+          'partidoId': 30,
+          'fechaPartido': '2026-10-24',
+          'usuarioEntrenadorId': 1,
+          'jugadores': [],
+          ...extra,
+        };
 
-      final con = ConvocatoriaModel.fromJson(
-        json({
-          'equipacion': {'id': 2, 'nombre': 'Segunda', 'colorHex': '#1E40AF'},
+        final con = ConvocatoriaModel.fromJson(
+          json({
+            'equipacion': {'id': 2, 'nombre': 'Segunda', 'colorHex': '#1E40AF'},
+            'equipacionMochila': {'id': 1, 'nombre': 'Primera'},
+          }),
+        );
+
+        expect(con.equipacion?.nombre, 'Segunda');
+        expect(con.equipacionMochila?.nombre, 'Primera');
+
+        final sin = ConvocatoriaModel.fromJson(
+          json({'equipacion': null, 'equipacionMochila': null}),
+        );
+
+        expect(sin.equipacion, isNull);
+        expect(sin.equipacionMochila, isNull);
+        expect(ConvocatoriaModel.fromJson(json({})).equipacion, isNull);
+      },
+    );
+
+    test(
+      'el detalle de jugador y familia lee equipacion y equipacionMochila',
+      () {
+        final con = ConvocatoriaPartidoModel.fromJson({
+          'convocatoriaId': 20,
+          'rival': 'Pego',
+          'convocado': true,
+          'convocados': [],
+          'equipacion': {'id': 2, 'nombre': 'Segunda'},
           'equipacionMochila': {'id': 1, 'nombre': 'Primera'},
-        }),
-      );
+        });
 
-      expect(con.equipacion?.nombre, 'Segunda');
-      expect(con.equipacionMochila?.nombre, 'Primera');
+        expect(con.equipacion?.id, 2);
+        expect(con.equipacionMochila?.id, 1);
 
-      final sin = ConvocatoriaModel.fromJson(
-        json({'equipacion': null, 'equipacionMochila': null}),
-      );
+        final sin = ConvocatoriaPartidoModel.fromJson({
+          'convocatoriaId': 20,
+          'rival': 'Pego',
+          'convocado': true,
+          'equipacion': null,
+          'equipacionMochila': null,
+        });
 
-      expect(sin.equipacion, isNull);
-      expect(sin.equipacionMochila, isNull);
-      expect(ConvocatoriaModel.fromJson(json({})).equipacion, isNull);
-    });
-
-    test('el detalle de jugador y familia lee equipacion y equipacionMochila', () {
-      final con = ConvocatoriaPartidoModel.fromJson({
-        'convocatoriaId': 20,
-        'rival': 'Pego',
-        'convocado': true,
-        'convocados': [],
-        'equipacion': {'id': 2, 'nombre': 'Segunda'},
-        'equipacionMochila': {'id': 1, 'nombre': 'Primera'},
-      });
-
-      expect(con.equipacion?.id, 2);
-      expect(con.equipacionMochila?.id, 1);
-
-      final sin = ConvocatoriaPartidoModel.fromJson({
-        'convocatoriaId': 20,
-        'rival': 'Pego',
-        'convocado': true,
-        'equipacion': null,
-        'equipacionMochila': null,
-      });
-
-      expect(sin.equipacion, isNull);
-      expect(sin.equipacionMochila, isNull);
-    });
+        expect(sin.equipacion, isNull);
+        expect(sin.equipacionMochila, isNull);
+      },
+    );
   });
 
   group('servicios', () {
     setUp(() async {
-      FlutterSecureStoragePlatform.instance =
-          TestFlutterSecureStoragePlatform(<String, String>{});
+      FlutterSecureStoragePlatform.instance = TestFlutterSecureStoragePlatform(
+        <String, String>{},
+      );
       await AuthSession.guardarSesion(
-        LoginResponse(token: 'tok', usuarioId: 1, email: 'a@a.com', roles: const []),
+        LoginResponse(
+          token: 'tok',
+          usuarioId: 1,
+          email: 'a@a.com',
+          roles: const [],
+        ),
       );
     });
 
@@ -394,88 +412,111 @@ void main() {
       expect(lista.single.color, const Color(0xFFFFFFFF));
     });
 
-    test('crear envía siempre equipacionId, equipacionMochilaId y equipajeIndicado', () async {
-      Map<String, dynamic>? cuerpo;
+    test(
+      'crear envía siempre equipacionId, equipacionMochilaId y equipajeIndicado',
+      () async {
+        Map<String, dynamic>? cuerpo;
 
-      await conMockHttp((request) async {
-        cuerpo = jsonDecode(request.body) as Map<String, dynamic>;
-        return http.Response(respuesta, 201);
-      }, () => ConvocatoriaService().crear(
-        partidoId: 30,
-        horaConvocatoria: '09:30',
-        lugarConvocatoria: 'Vestuarios',
-        jugadoresIds: [100],
-        equipacionId: 2,
-        equipacionMochilaId: 1,
-      ));
+        await conMockHttp(
+          (request) async {
+            cuerpo = jsonDecode(request.body) as Map<String, dynamic>;
+            return http.Response(respuesta, 201);
+          },
+          () => ConvocatoriaService().crear(
+            partidoId: 30,
+            horaConvocatoria: '09:30',
+            lugarConvocatoria: 'Vestuarios',
+            jugadoresIds: [100],
+            equipacionId: 2,
+            equipacionMochilaId: 1,
+          ),
+        );
 
-      expect(cuerpo!['equipacionId'], 2);
-      expect(cuerpo!['equipacionMochilaId'], 1);
-      expect(cuerpo!['equipajeIndicado'], isTrue);
+        expect(cuerpo!['equipacionId'], 2);
+        expect(cuerpo!['equipacionMochilaId'], 1);
+        expect(cuerpo!['equipajeIndicado'], isTrue);
 
-      // Sin equipaje: los dos a null, pero siempre presentes y con la marca.
-      await conMockHttp((request) async {
-        cuerpo = jsonDecode(request.body) as Map<String, dynamic>;
-        return http.Response(respuesta, 201);
-      }, () => ConvocatoriaService().crear(
-        partidoId: 30,
-        horaConvocatoria: '09:30',
-        lugarConvocatoria: 'Vestuarios',
-        jugadoresIds: [100],
-      ));
+        // Sin equipaje: los dos a null, pero siempre presentes y con la marca.
+        await conMockHttp(
+          (request) async {
+            cuerpo = jsonDecode(request.body) as Map<String, dynamic>;
+            return http.Response(respuesta, 201);
+          },
+          () => ConvocatoriaService().crear(
+            partidoId: 30,
+            horaConvocatoria: '09:30',
+            lugarConvocatoria: 'Vestuarios',
+            jugadoresIds: [100],
+          ),
+        );
 
-      expect(cuerpo!.containsKey('equipacionId'), isTrue);
-      expect(cuerpo!['equipacionId'], isNull);
-      expect(cuerpo!['equipacionMochilaId'], isNull);
-      expect(cuerpo!['equipajeIndicado'], isTrue);
-    });
+        expect(cuerpo!.containsKey('equipacionId'), isTrue);
+        expect(cuerpo!['equipacionId'], isNull);
+        expect(cuerpo!['equipacionMochilaId'], isNull);
+        expect(cuerpo!['equipajeIndicado'], isTrue);
+      },
+    );
 
-    test('actualizar con indicarEquipaje envía los ids (null = quitar) y la marca', () async {
-      Map<String, dynamic>? cuerpo;
+    test(
+      'actualizar con indicarEquipaje envía los ids (null = quitar) y la marca',
+      () async {
+        Map<String, dynamic>? cuerpo;
 
-      await conMockHttp((request) async {
-        expect(request.method, 'PUT');
-        cuerpo = jsonDecode(request.body) as Map<String, dynamic>;
-        return http.Response(respuesta, 200);
-      }, () => ConvocatoriaService().actualizar(
-        convocatoriaId: 20,
-        partidoId: 30,
-        horaConvocatoria: '09:30',
-        lugarConvocatoria: 'Vestuarios',
-        indicarEquipaje: true,
-        equipacionId: 2,
-      ));
+        await conMockHttp(
+          (request) async {
+            expect(request.method, 'PUT');
+            cuerpo = jsonDecode(request.body) as Map<String, dynamic>;
+            return http.Response(respuesta, 200);
+          },
+          () => ConvocatoriaService().actualizar(
+            convocatoriaId: 20,
+            partidoId: 30,
+            horaConvocatoria: '09:30',
+            lugarConvocatoria: 'Vestuarios',
+            indicarEquipaje: true,
+            equipacionId: 2,
+          ),
+        );
 
-      expect(cuerpo!['equipacionId'], 2);
-      expect(cuerpo!.containsKey('equipacionMochilaId'), isTrue);
-      expect(cuerpo!['equipacionMochilaId'], isNull);
-      expect(cuerpo!['equipajeIndicado'], isTrue);
-    });
+        expect(cuerpo!['equipacionId'], 2);
+        expect(cuerpo!.containsKey('equipacionMochilaId'), isTrue);
+        expect(cuerpo!['equipacionMochilaId'], isNull);
+        expect(cuerpo!['equipajeIndicado'], isTrue);
+      },
+    );
 
-    test('actualizar sin indicarEquipaje no toca el equipaje (el servidor lo conserva)', () async {
-      Map<String, dynamic>? cuerpo;
+    test(
+      'actualizar sin indicarEquipaje no toca el equipaje (el servidor lo conserva)',
+      () async {
+        Map<String, dynamic>? cuerpo;
 
-      await conMockHttp((request) async {
-        cuerpo = jsonDecode(request.body) as Map<String, dynamic>;
-        return http.Response(respuesta, 200);
-      }, () => ConvocatoriaService().actualizar(
-        convocatoriaId: 20,
-        partidoId: 30,
-        horaConvocatoria: '09:30',
-        lugarConvocatoria: 'Vestuarios',
-        invitadosIds: [],
-      ));
+        await conMockHttp(
+          (request) async {
+            cuerpo = jsonDecode(request.body) as Map<String, dynamic>;
+            return http.Response(respuesta, 200);
+          },
+          () => ConvocatoriaService().actualizar(
+            convocatoriaId: 20,
+            partidoId: 30,
+            horaConvocatoria: '09:30',
+            lugarConvocatoria: 'Vestuarios',
+            invitadosIds: [],
+          ),
+        );
 
-      expect(cuerpo!.containsKey('equipajeIndicado'), isFalse);
-      expect(cuerpo!.containsKey('equipacionId'), isFalse);
-      expect(cuerpo!.containsKey('equipacionMochilaId'), isFalse);
-    });
+        expect(cuerpo!.containsKey('equipajeIndicado'), isFalse);
+        expect(cuerpo!.containsKey('equipacionId'), isFalse);
+        expect(cuerpo!.containsKey('equipacionMochilaId'), isFalse);
+      },
+    );
   });
 
   // ---- formulario ---------------------------------------------------------------------
 
   group('formulario', () {
-    testWidgets('con la lista vacía oculta la sección y explica por qué', (tester) async {
+    testWidgets('con la lista vacía oculta la sección y explica por qué', (
+      tester,
+    ) async {
       await _pintar(
         tester,
         _formulario(
@@ -485,63 +526,81 @@ void main() {
       );
 
       expect(find.byKey(const ValueKey('equipaje-seccion')), findsNothing);
-      expect(find.text('El club aún no ha dado de alta los equipajes'), findsOneWidget);
-    });
-
-    testWidgets('sale debajo de hora y lugar, con "Sin indicar" y la mochila desactivada', (
-      tester,
-    ) async {
-      await _pintar(
-        tester,
-        _formulario(
-          convocatorias: _FakeConvocatorias(),
-          equipaciones: _FakeEquipaciones([_primera, _segunda]),
-        ),
-      );
-
-      expect(find.byKey(const ValueKey('equipaje-seccion')), findsOneWidget);
-      expect(find.text('Sin indicar'), findsOneWidget);
       expect(
-        tester.getTopLeft(find.byKey(const ValueKey('equipaje-seccion'))).dy,
-        greaterThan(tester.getBottomLeft(find.text('Lugar de convocatoria')).dy),
-      );
-      expect(
-        tester
-            .widget<CheckboxListTile>(
-              find.byKey(const ValueKey('equipaje-mochila-casilla')),
-            )
-            .onChanged,
-        isNull,
-      );
-    });
-
-    testWidgets('al elegir equipaje se ve el detalle y se puede marcar la mochila', (
-      tester,
-    ) async {
-      await _pintar(
-        tester,
-        _formulario(
-          convocatorias: _FakeConvocatorias(),
-          equipaciones: _FakeEquipaciones([_primera, _segunda]),
-        ),
-      );
-
-      await _elegir(tester, const ValueKey('equipaje-selector-null'), 'Primera');
-
-      expect(
-        find.text('Camiseta Blanca · Pantalón Blanco · Medias Blancas'),
+        find.text('El club aún no ha dado de alta los equipajes'),
         findsOneWidget,
       );
-
-      await tester.tap(find.byKey(const ValueKey('equipaje-mochila-casilla')));
-      await tester.pumpAndSettle();
-
-      // El selector de la mochila no ofrece el equipaje principal.
-      await tester.tap(find.byKey(const ValueKey('equipaje-mochila-selector-null-1')));
-      await tester.pumpAndSettle();
-      expect(find.text('Primera'), findsOneWidget); // solo el del selector principal
-      expect(find.text('Segunda'), findsOneWidget);
     });
+
+    testWidgets(
+      'sale debajo de hora y lugar, con "Sin indicar" y la mochila desactivada',
+      (tester) async {
+        await _pintar(
+          tester,
+          _formulario(
+            convocatorias: _FakeConvocatorias(),
+            equipaciones: _FakeEquipaciones([_primera, _segunda]),
+          ),
+        );
+
+        expect(find.byKey(const ValueKey('equipaje-seccion')), findsOneWidget);
+        expect(find.text('Sin indicar'), findsOneWidget);
+        expect(
+          tester.getTopLeft(find.byKey(const ValueKey('equipaje-seccion'))).dy,
+          greaterThan(
+            tester.getBottomLeft(find.text('Lugar de convocatoria')).dy,
+          ),
+        );
+        expect(
+          tester
+              .widget<CheckboxListTile>(
+                find.byKey(const ValueKey('equipaje-mochila-casilla')),
+              )
+              .onChanged,
+          isNull,
+        );
+      },
+    );
+
+    testWidgets(
+      'al elegir equipaje se ve el detalle y se puede marcar la mochila',
+      (tester) async {
+        await _pintar(
+          tester,
+          _formulario(
+            convocatorias: _FakeConvocatorias(),
+            equipaciones: _FakeEquipaciones([_primera, _segunda]),
+          ),
+        );
+
+        await _elegir(
+          tester,
+          const ValueKey('equipaje-selector-null'),
+          'Primera',
+        );
+
+        expect(
+          find.text('Camiseta Blanca · Pantalón Blanco · Medias Blancas'),
+          findsOneWidget,
+        );
+
+        await tester.tap(
+          find.byKey(const ValueKey('equipaje-mochila-casilla')),
+        );
+        await tester.pumpAndSettle();
+
+        // El selector de la mochila no ofrece el equipaje principal.
+        await tester.tap(
+          find.byKey(const ValueKey('equipaje-mochila-selector-null-1')),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.text('Primera'),
+          findsOneWidget,
+        ); // solo el del selector principal
+        expect(find.text('Segunda'), findsOneWidget);
+      },
+    );
 
     testWidgets('guardar al crear envía equipaje y mochila', (tester) async {
       final convocatorias = _FakeConvocatorias();
@@ -558,7 +617,11 @@ void main() {
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField).first, 'Vestuarios');
 
-      await _elegir(tester, const ValueKey('equipaje-selector-null'), 'Segunda');
+      await _elegir(
+        tester,
+        const ValueKey('equipaje-selector-null'),
+        'Segunda',
+      );
       await tester.tap(find.byKey(const ValueKey('equipaje-mochila-casilla')));
       await tester.pumpAndSettle();
       await _elegir(
@@ -574,7 +637,9 @@ void main() {
       expect(convocatorias.guardados.single.mochilaId, 1);
     });
 
-    testWidgets('sin tocar nada se guarda sin equipaje (null, null)', (tester) async {
+    testWidgets('sin tocar nada se guarda sin equipaje (null, null)', (
+      tester,
+    ) async {
       final convocatorias = _FakeConvocatorias();
 
       await _pintar(
@@ -594,7 +659,43 @@ void main() {
       expect(convocatorias.guardados.single.mochilaId, isNull);
     });
 
-    testWidgets('al editar carga el equipaje y envía equipajeIndicado con los ids', (
+    testWidgets(
+      'al editar carga el equipaje y envía equipajeIndicado con los ids',
+      (tester) async {
+        final convocatorias = _FakeConvocatorias();
+
+        await _pintar(
+          tester,
+          _formulario(
+            convocatoria: _convocatoria(
+              equipacion: _segunda,
+              mochila: _primera,
+            ),
+            convocatorias: convocatorias,
+            equipaciones: _FakeEquipaciones([_primera, _segunda]),
+          ),
+        );
+
+        expect(
+          tester
+              .widget<CheckboxListTile>(
+                find.byKey(const ValueKey('equipaje-mochila-casilla')),
+              )
+              .value,
+          isTrue,
+        );
+
+        await _guardar(tester);
+
+        final guardado = convocatorias.guardados.single;
+        expect(guardado.metodo, 'actualizar');
+        expect(guardado.indicado, isTrue);
+        expect(guardado.equipacionId, 2);
+        expect(guardado.mochilaId, 1);
+      },
+    );
+
+    testWidgets('al editar, "Sin indicar" quita el equipaje y la mochila', (
       tester,
     ) async {
       final convocatorias = _FakeConvocatorias();
@@ -608,37 +709,11 @@ void main() {
         ),
       );
 
-      expect(
-        tester
-            .widget<CheckboxListTile>(
-              find.byKey(const ValueKey('equipaje-mochila-casilla')),
-            )
-            .value,
-        isTrue,
-      );
-
-      await _guardar(tester);
-
-      final guardado = convocatorias.guardados.single;
-      expect(guardado.metodo, 'actualizar');
-      expect(guardado.indicado, isTrue);
-      expect(guardado.equipacionId, 2);
-      expect(guardado.mochilaId, 1);
-    });
-
-    testWidgets('al editar, "Sin indicar" quita el equipaje y la mochila', (tester) async {
-      final convocatorias = _FakeConvocatorias();
-
-      await _pintar(
+      await _elegir(
         tester,
-        _formulario(
-          convocatoria: _convocatoria(equipacion: _segunda, mochila: _primera),
-          convocatorias: convocatorias,
-          equipaciones: _FakeEquipaciones([_primera, _segunda]),
-        ),
+        const ValueKey('equipaje-selector-2'),
+        'Sin indicar',
       );
-
-      await _elegir(tester, const ValueKey('equipaje-selector-2'), 'Sin indicar');
 
       expect(
         tester
@@ -677,81 +752,94 @@ void main() {
       expect(convocatorias.guardados.single.mochilaId, isNull);
     });
 
-    testWidgets('con la mochila marcada sin equipaje elegido avisa y no guarda', (
-      tester,
-    ) async {
-      final convocatorias = _FakeConvocatorias();
+    testWidgets(
+      'con la mochila marcada sin equipaje elegido avisa y no guarda',
+      (tester) async {
+        final convocatorias = _FakeConvocatorias();
 
-      await _pintar(
-        tester,
-        _formulario(
-          convocatorias: convocatorias,
-          equipaciones: _FakeEquipaciones([_primera, _segunda]),
-        ),
-      );
-
-      await tester.tap(find.byKey(const ValueKey('jugador-convocatoria-100')));
-      await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField).first, 'Vestuarios');
-      await _elegir(tester, const ValueKey('equipaje-selector-null'), 'Segunda');
-      await tester.tap(find.byKey(const ValueKey('equipaje-mochila-casilla')));
-      await tester.pumpAndSettle();
-      await _guardar(tester);
-
-      expect(convocatorias.guardados, isEmpty);
-      expect(
-        find.text('Elige el equipaje de la mochila o desmarca la casilla.'),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets('un equipaje ya desactivado de la convocatoria sigue en el selector', (
-      tester,
-    ) async {
-      final convocatorias = _FakeConvocatorias();
-
-      // La lista de activos ya no incluye "Entrenamiento", pero la convocatoria lo tiene.
-      await _pintar(
-        tester,
-        _formulario(
-          convocatoria: _convocatoria(equipacion: _entreno),
-          convocatorias: convocatorias,
-          equipaciones: _FakeEquipaciones([_primera]),
-        ),
-      );
-
-      expect(find.text('Entrenamiento'), findsOneWidget);
-
-      await _guardar(tester);
-
-      expect(convocatorias.guardados.single.equipacionId, 3);
-    });
-
-    testWidgets('si la lista no carga, al editar se conserva el equipaje que tenía', (
-      tester,
-    ) async {
-      final convocatorias = _FakeConvocatorias();
-
-      await _pintar(
-        tester,
-        _formulario(
-          convocatoria: _convocatoria(equipacion: _segunda),
-          convocatorias: convocatorias,
-          equipaciones: _FakeEquipaciones(
-            [],
-            fallo: const ApiException('sin red'),
+        await _pintar(
+          tester,
+          _formulario(
+            convocatorias: convocatorias,
+            equipaciones: _FakeEquipaciones([_primera, _segunda]),
           ),
-        ),
-      );
+        );
 
-      expect(find.byKey(const ValueKey('equipaje-seccion')), findsNothing);
+        await tester.tap(
+          find.byKey(const ValueKey('jugador-convocatoria-100')),
+        );
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextField).first, 'Vestuarios');
+        await _elegir(
+          tester,
+          const ValueKey('equipaje-selector-null'),
+          'Segunda',
+        );
+        await tester.tap(
+          find.byKey(const ValueKey('equipaje-mochila-casilla')),
+        );
+        await tester.pumpAndSettle();
+        await _guardar(tester);
 
-      await _guardar(tester);
+        expect(convocatorias.guardados, isEmpty);
+        expect(
+          find.text('Elige el equipaje de la mochila o desmarca la casilla.'),
+          findsOneWidget,
+        );
+      },
+    );
 
-      expect(convocatorias.guardados.single.equipacionId, 2);
-    });
+    testWidgets(
+      'un equipaje ya desactivado de la convocatoria sigue en el selector',
+      (tester) async {
+        final convocatorias = _FakeConvocatorias();
 
-    testWidgets('un 400 del servidor se muestra en texto claro', (tester) async {
+        // La lista de activos ya no incluye "Entrenamiento", pero la convocatoria lo tiene.
+        await _pintar(
+          tester,
+          _formulario(
+            convocatoria: _convocatoria(equipacion: _entreno),
+            convocatorias: convocatorias,
+            equipaciones: _FakeEquipaciones([_primera]),
+          ),
+        );
+
+        expect(find.text('Entrenamiento'), findsOneWidget);
+
+        await _guardar(tester);
+
+        expect(convocatorias.guardados.single.equipacionId, 3);
+      },
+    );
+
+    testWidgets(
+      'si la lista no carga, al editar se conserva el equipaje que tenía',
+      (tester) async {
+        final convocatorias = _FakeConvocatorias();
+
+        await _pintar(
+          tester,
+          _formulario(
+            convocatoria: _convocatoria(equipacion: _segunda),
+            convocatorias: convocatorias,
+            equipaciones: _FakeEquipaciones(
+              [],
+              fallo: const ApiException('sin red'),
+            ),
+          ),
+        );
+
+        expect(find.byKey(const ValueKey('equipaje-seccion')), findsNothing);
+
+        await _guardar(tester);
+
+        expect(convocatorias.guardados.single.equipacionId, 2);
+      },
+    );
+
+    testWidgets('un 400 del servidor se muestra en texto claro', (
+      tester,
+    ) async {
       final convocatorias = _FakeConvocatorias()
         ..fallo = const ApiException(
           'El equipaje Vieja está desactivado y no se puede elegir',
@@ -770,7 +858,9 @@ void main() {
       await _guardar(tester);
 
       expect(
-        find.textContaining('El equipaje Vieja está desactivado y no se puede elegir'),
+        find.textContaining(
+          'El equipaje Vieja está desactivado y no se puede elegir',
+        ),
         findsOneWidget,
       );
     });
@@ -779,7 +869,9 @@ void main() {
   // ---- detalle ------------------------------------------------------------------------
 
   group('detalle del entrenador', () {
-    testWidgets('con equipaje y mochila los muestra con su detalle', (tester) async {
+    testWidgets('con equipaje y mochila los muestra con su detalle', (
+      tester,
+    ) async {
       await _pintar(
         tester,
         ConvocatoriaDetallePage(
@@ -820,7 +912,10 @@ void main() {
     testWidgets('con equipaje y mochila los muestra, con la muestra de color', (
       tester,
     ) async {
-      await _pintar(tester, pagina(_paraFamilia(equipacion: _segunda, mochila: _primera)));
+      await _pintar(
+        tester,
+        pagina(_paraFamilia(equipacion: _segunda, mochila: _primera)),
+      );
 
       expect(find.text('Equipaje: Segunda'), findsOneWidget);
       expect(find.text('En la mochila: Primera'), findsOneWidget);
@@ -841,21 +936,37 @@ void main() {
       expect(muestra.color, const Color(0xFF1E40AF));
     });
 
-    testWidgets('sin equipaje no muestra nada de equipaje, pero sí la ducha', (tester) async {
+    testWidgets('sin equipaje no muestra nada de equipaje, pero sí la ducha', (
+      tester,
+    ) async {
       await _pintar(tester, pagina(_paraFamilia()));
 
       expect(find.textContaining('Equipaje:'), findsNothing);
       expect(find.byKey(const ValueKey('equipaje-principal')), findsNothing);
-      expect(find.text('🚿 Ducha recomendable después del partido'), findsOneWidget);
+      expect(
+        find.text('🚿 Ducha recomendable después del partido'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('la ducha va siempre al final, también con equipaje', (tester) async {
+    testWidgets('la ducha va siempre al final, también con equipaje', (
+      tester,
+    ) async {
       await _pintar(tester, pagina(_paraFamilia(equipacion: _segunda)));
 
-      expect(find.text('🚿 Ducha recomendable después del partido'), findsOneWidget);
+      expect(
+        find.text('🚿 Ducha recomendable después del partido'),
+        findsOneWidget,
+      );
       expect(
         tester.getTopLeft(find.byKey(const ValueKey('ducha-recomendable'))).dy,
-        greaterThan(tester.getBottomLeft(find.byKey(const ValueKey('convocatoria-citacion'))).dy),
+        greaterThan(
+          tester
+              .getBottomLeft(
+                find.byKey(const ValueKey('convocatoria-citacion')),
+              )
+              .dy,
+        ),
       );
     });
 
@@ -903,52 +1014,67 @@ void main() {
 
     tearDown(AuthManager.olvidarUsuario);
 
-    test('se trata como el de cambio de hora: jugador y familia abren el detalle', () async {
-      for (final rol in ['JUGADOR', 'FAMILIAR']) {
+    test(
+      'se trata como el de cambio de hora: jugador y familia abren el detalle',
+      () async {
+        for (final rol in ['JUGADOR', 'FAMILIAR']) {
+          await AuthManager.establecerUsuario(
+            AuthUser(usuarioId: 1, email: 'a@b.c', roles: [rol]),
+          );
+
+          final equipaje = destinoDeAvisoConvocatoria(
+            tipo: 'CONVOCATORIA',
+            titulo: 'Cambio de equipaje',
+            datos: datos,
+          );
+          final hora = destinoDeAvisoConvocatoria(
+            tipo: 'CONVOCATORIA',
+            titulo: 'Cambio en la convocatoria',
+            datos: datos,
+          );
+
+          expect(
+            equipaje,
+            AbrirDetalleConvocatoria(30, DateTime(2026, 10, 24)),
+          );
+          expect(equipaje, hora);
+        }
+      },
+    );
+
+    test(
+      'y es un aviso de convocatoria que espera a la sesión al abrir en frío',
+      () {
+        expect(
+          esAvisoDeConvocatoria(
+            tipo: 'CONVOCATORIA',
+            titulo: 'Cambio de equipaje',
+          ),
+          isTrue,
+        );
+      },
+    );
+
+    test(
+      'para el entrenador se comporta igual que el cambio de hora',
+      () async {
         await AuthManager.establecerUsuario(
-          AuthUser(usuarioId: 1, email: 'a@b.c', roles: [rol]),
+          AuthUser(usuarioId: 1, email: 'a@b.c', roles: const ['ENTRENADOR']),
         );
 
-        final equipaje = destinoDeAvisoConvocatoria(
-          tipo: 'CONVOCATORIA',
-          titulo: 'Cambio de equipaje',
-          datos: datos,
+        expect(
+          destinoDeAvisoConvocatoria(
+            tipo: 'CONVOCATORIA',
+            titulo: 'Cambio de equipaje',
+            datos: datos,
+          ),
+          destinoDeAvisoConvocatoria(
+            tipo: 'CONVOCATORIA',
+            titulo: 'Cambio en la convocatoria',
+            datos: datos,
+          ),
         );
-        final hora = destinoDeAvisoConvocatoria(
-          tipo: 'CONVOCATORIA',
-          titulo: 'Cambio en la convocatoria',
-          datos: datos,
-        );
-
-        expect(equipaje, AbrirDetalleConvocatoria(30, DateTime(2026, 10, 24)));
-        expect(equipaje, hora);
-      }
-    });
-
-    test('y es un aviso de convocatoria que espera a la sesión al abrir en frío', () {
-      expect(
-        esAvisoDeConvocatoria(tipo: 'CONVOCATORIA', titulo: 'Cambio de equipaje'),
-        isTrue,
-      );
-    });
-
-    test('para el entrenador se comporta igual que el cambio de hora', () async {
-      await AuthManager.establecerUsuario(
-        AuthUser(usuarioId: 1, email: 'a@b.c', roles: const ['ENTRENADOR']),
-      );
-
-      expect(
-        destinoDeAvisoConvocatoria(
-          tipo: 'CONVOCATORIA',
-          titulo: 'Cambio de equipaje',
-          datos: datos,
-        ),
-        destinoDeAvisoConvocatoria(
-          tipo: 'CONVOCATORIA',
-          titulo: 'Cambio en la convocatoria',
-          datos: datos,
-        ),
-      );
-    });
+      },
+    );
   });
 }

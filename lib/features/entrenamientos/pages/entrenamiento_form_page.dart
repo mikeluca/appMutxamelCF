@@ -93,9 +93,9 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
     if (_guardando) return;
 
     if (jugadores.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_t.noPlayersForTraining)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_t.noPlayersForTraining)));
       return;
     }
 
@@ -108,9 +108,9 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
     final fechaSeleccionada = DateTime(_fecha.year, _fecha.month, _fecha.day);
 
     if (fechaSeleccionada.isAfter(fechaHoy)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_t.trainingDateFutureError)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_t.trainingDateFutureError)));
       return;
     }
 
@@ -141,9 +141,7 @@ class _EntrenamientoFormPageState extends State<EntrenamientoFormPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _esEdicion
-                ? _t.trainingUpdatedSuccess
-                : _t.trainingSavedSuccess,
+            _esEdicion ? _t.trainingUpdatedSuccess : _t.trainingSavedSuccess,
           ),
         ),
       );

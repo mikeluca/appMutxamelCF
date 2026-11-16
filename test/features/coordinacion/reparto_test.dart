@@ -82,7 +82,9 @@ class _FakeReparto extends RepartoService {
   List<String> avisos = [];
 
   final List<String> repartosPedidos = [];
-  final List<({int equipoId, List<AsignacionJugador> jugadores, bool confirmar})>
+  final List<
+    ({int equipoId, List<AsignacionJugador> jugadores, bool confirmar})
+  >
   asignaciones = [];
   final List<List<int>> devoluciones = [];
   final List<String> equiposCreados = [];
@@ -202,8 +204,9 @@ Future<void> _dorsal(WidgetTester tester, int jugadorId, String texto) async {
 
 void main() {
   setUp(() {
-    FlutterSecureStoragePlatform.instance =
-        TestFlutterSecureStoragePlatform(<String, String>{});
+    FlutterSecureStoragePlatform.instance = TestFlutterSecureStoragePlatform(
+      <String, String>{},
+    );
   });
 
   group('modelo', () {
@@ -315,65 +318,79 @@ void main() {
 
   group('servicio', () {
     Future<void> iniciarSesion() => AuthSession.guardarSesion(
-      LoginResponse(token: 't', usuarioId: 1, email: 'a@a.com', roles: const []),
+      LoginResponse(
+        token: 't',
+        usuarioId: 1,
+        email: 'a@a.com',
+        roles: const [],
+      ),
     );
 
-    test('categorías y reparto con la categoría codificada en la URL', () async {
-      await iniciarSesion();
+    test(
+      'categorías y reparto con la categoría codificada en la URL',
+      () async {
+        await iniciarSesion();
 
-      final categorias = await conMockHttp((request) async {
-        expect(request.url.path, endsWith('/app/reparto/categorias'));
-        expect(request.headers['Authorization'], 'Bearer t');
-        return http.Response(jsonEncode(['Alevín', 'Cadete']), 200);
-      }, () => RepartoService().obtenerCategorias());
+        final categorias = await conMockHttp((request) async {
+          expect(request.url.path, endsWith('/app/reparto/categorias'));
+          expect(request.headers['Authorization'], 'Bearer t');
+          return http.Response(jsonEncode(['Alevín', 'Cadete']), 200);
+        }, () => RepartoService().obtenerCategorias());
 
-      expect(categorias, ['Alevín', 'Cadete']);
+        expect(categorias, ['Alevín', 'Cadete']);
 
-      final reparto = await conMockHttp((request) async {
-        expect(request.url.path, endsWith('/app/reparto'));
-        expect(request.url.queryParameters['categoria'], 'Alevín');
-        return http.Response(
-          jsonEncode({
-            'categoria': 'Alevín',
-            'pretemporada': null,
-            'porAsignar': [],
-            'equipos': [],
-          }),
-          200,
-        );
-      }, () => RepartoService().obtenerReparto('Alevín'));
+        final reparto = await conMockHttp((request) async {
+          expect(request.url.path, endsWith('/app/reparto'));
+          expect(request.url.queryParameters['categoria'], 'Alevín');
+          return http.Response(
+            jsonEncode({
+              'categoria': 'Alevín',
+              'pretemporada': null,
+              'porAsignar': [],
+              'equipos': [],
+            }),
+            200,
+          );
+        }, () => RepartoService().obtenerReparto('Alevín'));
 
-      expect(reparto.categoria, 'Alevín');
-    });
+        expect(reparto.categoria, 'Alevín');
+      },
+    );
 
     test('asignar envía el cuerpo del contrato', () async {
       await iniciarSesion();
 
-      final resultado = await conMockHttp((request) async {
-        expect(request.method, 'POST');
-        expect(request.url.path, endsWith('/app/reparto/asignar'));
-        expect(jsonDecode(request.body), {
-          'equipoId': 11,
-          'jugadores': [
-            {'jugadorId': 1, 'dorsal': 7},
-            {'jugadorId': 2, 'dorsal': null},
+      final resultado = await conMockHttp(
+        (request) async {
+          expect(request.method, 'POST');
+          expect(request.url.path, endsWith('/app/reparto/asignar'));
+          expect(jsonDecode(request.body), {
+            'equipoId': 11,
+            'jugadores': [
+              {'jugadorId': 1, 'dorsal': 7},
+              {'jugadorId': 2, 'dorsal': null},
+            ],
+            'confirmarPruebas': false,
+          });
+          return http.Response(
+            jsonEncode({
+              'asignados': 2,
+              'avisos': [],
+              'equipoActivado': true,
+              'pretemporadaVaciada': false,
+              'pruebasConfirmadas': [],
+            }),
+            200,
+          );
+        },
+        () => RepartoService().asignar(
+          equipoId: 11,
+          jugadores: const [
+            AsignacionJugador(1, 7),
+            AsignacionJugador(2, null),
           ],
-          'confirmarPruebas': false,
-        });
-        return http.Response(
-          jsonEncode({
-            'asignados': 2,
-            'avisos': [],
-            'equipoActivado': true,
-            'pretemporadaVaciada': false,
-            'pruebasConfirmadas': [],
-          }),
-          200,
-        );
-      }, () => RepartoService().asignar(
-        equipoId: 11,
-        jugadores: const [AsignacionJugador(1, 7), AsignacionJugador(2, null)],
-      ));
+        ),
+      );
 
       expect(resultado.asignados, 2);
     });
@@ -457,52 +474,59 @@ void main() {
       expect(equipo.nombre, 'Alevín C');
       expect(equipo.activo, isFalse);
 
-      final prueba = await conMockHttp((request) async {
-        expect(request.url.path, endsWith('/app/pruebas'));
-        expect(jsonDecode(request.body), {
-          'nombre': 'Luis',
-          'apellidos': 'Gil',
-          'anioNacimiento': 2016,
-        });
-        return http.Response(
-          jsonEncode({
-            'jugadorId': 99,
-            'categoria': 'Alevín',
-            'temporadaId': 7,
-            'estado': 'PRUEBA',
-          }),
-          201,
-        );
-      }, () => RepartoService().altaPrueba(
-        nombre: 'Luis',
-        apellidos: 'Gil',
-        anioNacimiento: 2016,
-      ));
+      final prueba = await conMockHttp(
+        (request) async {
+          expect(request.url.path, endsWith('/app/pruebas'));
+          expect(jsonDecode(request.body), {
+            'nombre': 'Luis',
+            'apellidos': 'Gil',
+            'anioNacimiento': 2016,
+          });
+          return http.Response(
+            jsonEncode({
+              'jugadorId': 99,
+              'categoria': 'Alevín',
+              'temporadaId': 7,
+              'estado': 'PRUEBA',
+            }),
+            201,
+          );
+        },
+        () => RepartoService().altaPrueba(
+          nombre: 'Luis',
+          apellidos: 'Gil',
+          anioNacimiento: 2016,
+        ),
+      );
       expect(prueba.jugadorId, 99);
       expect(prueba.categoria, 'Alevín');
     });
   });
 
   group('pantalla de reparto', () {
-    testWidgets('muestra la categoría, los jugadores por asignar y los equipos', (
-      tester,
-    ) async {
-      _pantallaGrande(tester);
-      final servicio = _FakeReparto();
+    testWidgets(
+      'muestra la categoría, los jugadores por asignar y los equipos',
+      (tester) async {
+        _pantallaGrande(tester);
+        final servicio = _FakeReparto();
 
-      await tester.pumpWidget(_app(RepartoPage(servicio: servicio)));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(_app(RepartoPage(servicio: servicio)));
+        await tester.pumpAndSettle();
 
-      expect(servicio.repartosPedidos, ['Alevín']);
-      expect(find.text('Por asignar (3)'), findsOneWidget);
-      expect(find.text('Equipo de pretemporada: Alevín (Pretemporada)'), findsOneWidget);
-      expect(find.text('Ana Pérez'), findsOneWidget);
-      expect(find.text('Prueba'), findsOneWidget);
-      expect(find.text('Eva Ruiz'), findsOneWidget);
-      expect(find.text('#9'), findsOneWidget);
-      expect(find.text('Activo'), findsOneWidget);
-      expect(find.text('Inactivo'), findsOneWidget);
-    });
+        expect(servicio.repartosPedidos, ['Alevín']);
+        expect(find.text('Por asignar (3)'), findsOneWidget);
+        expect(
+          find.text('Equipo de pretemporada: Alevín (Pretemporada)'),
+          findsOneWidget,
+        );
+        expect(find.text('Ana Pérez'), findsOneWidget);
+        expect(find.text('Prueba'), findsOneWidget);
+        expect(find.text('Eva Ruiz'), findsOneWidget);
+        expect(find.text('#9'), findsOneWidget);
+        expect(find.text('Activo'), findsOneWidget);
+        expect(find.text('Inactivo'), findsOneWidget);
+      },
+    );
 
     testWidgets('sin categorías lo dice con un texto claro', (tester) async {
       final servicio = _FakeReparto()..categorias = [];
@@ -516,20 +540,23 @@ void main() {
       );
     });
 
-    testWidgets('un 403 al cargar dice que no hay permiso y ofrece reintentar', (
+    testWidgets(
+      'un 403 al cargar dice que no hay permiso y ofrece reintentar',
+      (tester) async {
+        final servicio = _FakeReparto()
+          ..falloAlPedirCategorias = const ApiException('no', statusCode: 403);
+
+        await tester.pumpWidget(_app(RepartoPage(servicio: servicio)));
+        await tester.pumpAndSettle();
+
+        expect(find.text('No tienes permiso'), findsOneWidget);
+        expect(find.text('Reintentar'), findsOneWidget);
+      },
+    );
+
+    testWidgets('un 409 al cargar explica que falta la temporada', (
       tester,
     ) async {
-      final servicio = _FakeReparto()
-        ..falloAlPedirCategorias = const ApiException('no', statusCode: 403);
-
-      await tester.pumpWidget(_app(RepartoPage(servicio: servicio)));
-      await tester.pumpAndSettle();
-
-      expect(find.text('No tienes permiso'), findsOneWidget);
-      expect(find.text('Reintentar'), findsOneWidget);
-    });
-
-    testWidgets('un 409 al cargar explica que falta la temporada', (tester) async {
       final servicio = _FakeReparto()
         ..falloAlPedirCategorias = const ApiException('x', statusCode: 409);
 
@@ -557,67 +584,71 @@ void main() {
       expect(servicio.repartosPedidos, ['Alevín', 'Cadete']);
     });
 
-    testWidgets('asigna varios jugadores a un equipo con el dorsal de cada uno', (
+    testWidgets(
+      'asigna varios jugadores a un equipo con el dorsal de cada uno',
+      (tester) async {
+        _pantallaGrande(tester);
+        final servicio = _FakeReparto();
+
+        await tester.pumpWidget(_app(RepartoPage(servicio: servicio)));
+        await tester.pumpAndSettle();
+
+        await _marcar(tester, 1);
+        await _marcar(tester, 4);
+        await _dorsal(tester, 1, '7');
+        await _dorsal(tester, 4, '10');
+        await _elegirEquipo(tester, 'Alevín B');
+
+        expect(find.text('Asignar seleccionados (2)'), findsOneWidget);
+
+        await tester.tap(find.byKey(const ValueKey('reparto-asignar')));
+        await tester.pumpAndSettle();
+
+        final asignacion = servicio.asignaciones.single;
+        expect(asignacion.equipoId, 12);
+        expect(asignacion.confirmar, isFalse);
+        expect(
+          asignacion.jugadores.map((j) => (j.jugadorId, j.dorsal)).toList(),
+          containsAll([(1, 7), (4, 10)]),
+        );
+        expect(find.text('2 jugadores asignados'), findsOneWidget);
+        // Después de asignar se vuelve a pedir el reparto.
+        expect(servicio.repartosPedidos, hasLength(2));
+      },
+    );
+
+    testWidgets(
+      'avisa si el dorsal se repite entre los elegidos o con el equipo',
+      (tester) async {
+        _pantallaGrande(tester);
+
+        await tester.pumpWidget(_app(RepartoPage(servicio: _FakeReparto())));
+        await tester.pumpAndSettle();
+
+        await _marcar(tester, 1);
+        await _marcar(tester, 4);
+        await _elegirEquipo(tester, 'Alevín A');
+
+        // 9 es el dorsal de Eva Ruiz en el Alevín A.
+        await _dorsal(tester, 1, '9');
+        await _dorsal(tester, 4, '8');
+
+        expect(find.text('Dorsal repetido'), findsOneWidget);
+
+        // Entre ellos.
+        await _dorsal(tester, 1, '8');
+
+        expect(find.text('Dorsal repetido'), findsNWidgets(2));
+
+        await _dorsal(tester, 1, '5');
+
+        expect(find.text('Dorsal repetido'), findsNothing);
+      },
+    );
+
+    testWidgets('sin jugadores o sin equipo elegido no asigna y lo dice', (
       tester,
     ) async {
-      _pantallaGrande(tester);
-      final servicio = _FakeReparto();
-
-      await tester.pumpWidget(_app(RepartoPage(servicio: servicio)));
-      await tester.pumpAndSettle();
-
-      await _marcar(tester, 1);
-      await _marcar(tester, 4);
-      await _dorsal(tester, 1, '7');
-      await _dorsal(tester, 4, '10');
-      await _elegirEquipo(tester, 'Alevín B');
-
-      expect(find.text('Asignar seleccionados (2)'), findsOneWidget);
-
-      await tester.tap(find.byKey(const ValueKey('reparto-asignar')));
-      await tester.pumpAndSettle();
-
-      final asignacion = servicio.asignaciones.single;
-      expect(asignacion.equipoId, 12);
-      expect(asignacion.confirmar, isFalse);
-      expect(
-        asignacion.jugadores.map((j) => (j.jugadorId, j.dorsal)).toList(),
-        containsAll([(1, 7), (4, 10)]),
-      );
-      expect(find.text('2 jugadores asignados'), findsOneWidget);
-      // Después de asignar se vuelve a pedir el reparto.
-      expect(servicio.repartosPedidos, hasLength(2));
-    });
-
-    testWidgets('avisa si el dorsal se repite entre los elegidos o con el equipo', (
-      tester,
-    ) async {
-      _pantallaGrande(tester);
-
-      await tester.pumpWidget(_app(RepartoPage(servicio: _FakeReparto())));
-      await tester.pumpAndSettle();
-
-      await _marcar(tester, 1);
-      await _marcar(tester, 4);
-      await _elegirEquipo(tester, 'Alevín A');
-
-      // 9 es el dorsal de Eva Ruiz en el Alevín A.
-      await _dorsal(tester, 1, '9');
-      await _dorsal(tester, 4, '8');
-
-      expect(find.text('Dorsal repetido'), findsOneWidget);
-
-      // Entre ellos.
-      await _dorsal(tester, 1, '8');
-
-      expect(find.text('Dorsal repetido'), findsNWidgets(2));
-
-      await _dorsal(tester, 1, '5');
-
-      expect(find.text('Dorsal repetido'), findsNothing);
-    });
-
-    testWidgets('sin jugadores o sin equipo elegido no asigna y lo dice', (tester) async {
       _pantallaGrande(tester);
       final servicio = _FakeReparto();
 
@@ -650,7 +681,10 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('reparto-asignar')));
       await tester.pump();
 
-      expect(find.text('El dorsal tiene que estar entre 0 y 99.'), findsOneWidget);
+      expect(
+        find.text('El dorsal tiene que estar entre 0 y 99.'),
+        findsOneWidget,
+      );
       expect(servicio.asignaciones, isEmpty);
     });
 
@@ -668,7 +702,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Jugadores de prueba'), findsOneWidget);
-      expect(find.text('Biel Gil pasarán a CONFIRMADO. ¿Continuar?'), findsOneWidget);
+      expect(
+        find.text('Biel Gil pasarán a CONFIRMADO. ¿Continuar?'),
+        findsOneWidget,
+      );
       expect(servicio.asignaciones.single.confirmar, isFalse);
 
       await tester.tap(find.byKey(const ValueKey('reparto-confirmar')));
@@ -679,7 +716,9 @@ void main() {
       expect(find.text('1 jugador asignado'), findsOneWidget);
     });
 
-    testWidgets('si no se confirma la prueba, no se repite la petición', (tester) async {
+    testWidgets('si no se confirma la prueba, no se repite la petición', (
+      tester,
+    ) async {
       _pantallaGrande(tester);
       final servicio = _FakeReparto();
 
@@ -700,7 +739,9 @@ void main() {
     testWidgets('muestra los avisos de dorsal de la respuesta', (tester) async {
       _pantallaGrande(tester);
       final servicio = _FakeReparto()
-        ..avisos = ['El dorsal 9 está repetido en Alevín A: Ana Pérez, Eva Ruiz'];
+        ..avisos = [
+          'El dorsal 9 está repetido en Alevín A: Ana Pérez, Eva Ruiz',
+        ];
 
       await tester.pumpWidget(_app(RepartoPage(servicio: servicio)));
       await tester.pumpAndSettle();
@@ -718,7 +759,9 @@ void main() {
       );
     });
 
-    testWidgets('un 400 al asignar enseña el motivo del servidor', (tester) async {
+    testWidgets('un 400 al asignar enseña el motivo del servidor', (
+      tester,
+    ) async {
       _pantallaGrande(tester);
       final servicio = _FakeReparto()
         ..falloAlAsignar = const ApiException(
@@ -788,7 +831,9 @@ void main() {
       expect(servicio.devoluciones, isEmpty);
     });
 
-    testWidgets('crea un equipo nuevo de la categoría tras confirmar', (tester) async {
+    testWidgets('crea un equipo nuevo de la categoría tras confirmar', (
+      tester,
+    ) async {
       _pantallaGrande(tester);
       final servicio = _FakeReparto();
 
@@ -810,29 +855,36 @@ void main() {
 
       expect(servicio.equiposCreados, ['Alevín']);
       expect(
-        find.text('Equipo Alevín C creado. Se activará al asignarle el primer jugador.'),
+        find.text(
+          'Equipo Alevín C creado. Se activará al asignarle el primer jugador.',
+        ),
         findsOneWidget,
       );
     });
 
-    testWidgets('sin jugadores por asignar lo dice y sin equipos invita a crear el '
-        'primero', (tester) async {
-      _pantallaGrande(tester);
-      final servicio = _FakeReparto()
-        ..reparto = const RepartoCategoriaModel(categoria: 'Alevín');
+    testWidgets(
+      'sin jugadores por asignar lo dice y sin equipos invita a crear el '
+      'primero',
+      (tester) async {
+        _pantallaGrande(tester);
+        final servicio = _FakeReparto()
+          ..reparto = const RepartoCategoriaModel(categoria: 'Alevín');
 
-      await tester.pumpWidget(_app(RepartoPage(servicio: servicio)));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(_app(RepartoPage(servicio: servicio)));
+        await tester.pumpAndSettle();
 
-      expect(
-        find.text('No queda ningún jugador por asignar en esta categoría.'),
-        findsOneWidget,
-      );
-      expect(
-        find.text('Esta categoría no tiene equipos definitivos: crea el primero.'),
-        findsOneWidget,
-      );
-    });
+        expect(
+          find.text('No queda ningún jugador por asignar en esta categoría.'),
+          findsOneWidget,
+        );
+        expect(
+          find.text(
+            'Esta categoría no tiene equipos definitivos: crea el primero.',
+          ),
+          findsOneWidget,
+        );
+      },
+    );
   });
 
   group('alta de prueba', () {
@@ -845,17 +897,28 @@ void main() {
       await tester.pump();
 
       expect(find.text('Campo obligatorio'), findsNWidgets(2));
-      expect(find.text('Escribe un año válido (por ejemplo, 2016)'), findsOneWidget);
+      expect(
+        find.text('Escribe un año válido (por ejemplo, 2016)'),
+        findsOneWidget,
+      );
       expect(servicio.altas, isEmpty);
     });
 
-    testWidgets('da de alta y dice en qué categoría ha quedado', (tester) async {
+    testWidgets('da de alta y dice en qué categoría ha quedado', (
+      tester,
+    ) async {
       final servicio = _FakeAlta();
 
       await tester.pumpWidget(_app(AltaPruebaPage(servicio: servicio)));
 
-      await tester.enterText(find.byKey(const ValueKey('prueba-nombre')), ' Luis ');
-      await tester.enterText(find.byKey(const ValueKey('prueba-apellidos')), 'Gil');
+      await tester.enterText(
+        find.byKey(const ValueKey('prueba-nombre')),
+        ' Luis ',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('prueba-apellidos')),
+        'Gil',
+      );
       await tester.enterText(find.byKey(const ValueKey('prueba-anio')), '2016');
       await tester.tap(find.byKey(const ValueKey('prueba-guardar')));
       await tester.pumpAndSettle();
@@ -878,14 +941,22 @@ void main() {
 
       await tester.pumpWidget(_app(AltaPruebaPage(servicio: servicio)));
 
-      await tester.enterText(find.byKey(const ValueKey('prueba-nombre')), 'Luis');
-      await tester.enterText(find.byKey(const ValueKey('prueba-apellidos')), 'Gil');
+      await tester.enterText(
+        find.byKey(const ValueKey('prueba-nombre')),
+        'Luis',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('prueba-apellidos')),
+        'Gil',
+      );
       await tester.enterText(find.byKey(const ValueKey('prueba-anio')), '1996');
       await tester.tap(find.byKey(const ValueKey('prueba-guardar')));
       await tester.pumpAndSettle();
 
       expect(
-        find.text('Ninguna categoría formativa cubre su edad (30 años) en 2027/2028.'),
+        find.text(
+          'Ninguna categoría formativa cubre su edad (30 años) en 2027/2028.',
+        ),
         findsOneWidget,
       );
 
@@ -906,8 +977,14 @@ void main() {
 
       await tester.pumpWidget(_app(AltaPruebaPage(servicio: servicio)));
 
-      await tester.enterText(find.byKey(const ValueKey('prueba-nombre')), 'Luis');
-      await tester.enterText(find.byKey(const ValueKey('prueba-apellidos')), 'Gil');
+      await tester.enterText(
+        find.byKey(const ValueKey('prueba-nombre')),
+        'Luis',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('prueba-apellidos')),
+        'Gil',
+      );
       await tester.enterText(find.byKey(const ValueKey('prueba-anio')), '2016');
       await tester.tap(find.byKey(const ValueKey('prueba-guardar')));
       await tester.pumpAndSettle();

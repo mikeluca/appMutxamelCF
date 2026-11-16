@@ -55,42 +55,63 @@ void main() {
       expect(esConvocatoriaNueva(), isFalse);
     });
 
-    test('un aviso antiguo de tipo COMUNICACION con acción NUEVA es de convocatoria', () {
-      expect(
-        esAvisoDeConvocatoria(tipo: 'COMUNICACION', titulo: 'Anything', accion: 'NUEVA'),
-        isTrue,
-      );
-      expect(
-        esAvisoDeConvocatoria(tipo: 'COMUNICACION', titulo: 'Anything'),
-        isFalse,
-      );
-      expect(
-        esAvisoDeConvocatoria(tipo: 'COMUNICACION', titulo: 'New call-up', accion: 'CAMBIO'),
-        isFalse,
-      );
-    });
+    test(
+      'un aviso antiguo de tipo COMUNICACION con acción NUEVA es de convocatoria',
+      () {
+        expect(
+          esAvisoDeConvocatoria(
+            tipo: 'COMUNICACION',
+            titulo: 'Anything',
+            accion: 'NUEVA',
+          ),
+          isTrue,
+        );
+        expect(
+          esAvisoDeConvocatoria(tipo: 'COMUNICACION', titulo: 'Anything'),
+          isFalse,
+        );
+        expect(
+          esAvisoDeConvocatoria(
+            tipo: 'COMUNICACION',
+            titulo: 'New call-up',
+            accion: 'CAMBIO',
+          ),
+          isFalse,
+        );
+      },
+    );
   });
 
   group('el tipo decide el destino, no el idioma del texto', () {
-    test('los tipos de convocatoria siguen siendo avisos de convocatoria con cualquier título', () {
-      for (final titulo in ['Cambio en la convocatoria', 'Canvi en la convocatòria', 'Call-up updated']) {
-        expect(
-          esAvisoDeConvocatoria(tipo: tipoPushConvocatoria, titulo: titulo),
-          isTrue,
-          reason: titulo,
-        );
-        expect(
-          esAvisoDeConvocatoria(tipo: tipoPushConvocatoriaEditar, titulo: titulo),
-          isTrue,
-          reason: titulo,
-        );
-        expect(
-          esAvisoDeConvocatoria(tipo: tipoPushPasarLista, titulo: titulo),
-          isTrue,
-          reason: titulo,
-        );
-      }
-    });
+    test(
+      'los tipos de convocatoria siguen siendo avisos de convocatoria con cualquier título',
+      () {
+        for (final titulo in [
+          'Cambio en la convocatoria',
+          'Canvi en la convocatòria',
+          'Call-up updated',
+        ]) {
+          expect(
+            esAvisoDeConvocatoria(tipo: tipoPushConvocatoria, titulo: titulo),
+            isTrue,
+            reason: titulo,
+          );
+          expect(
+            esAvisoDeConvocatoria(
+              tipo: tipoPushConvocatoriaEditar,
+              titulo: titulo,
+            ),
+            isTrue,
+            reason: titulo,
+          );
+          expect(
+            esAvisoDeConvocatoria(tipo: tipoPushPasarLista, titulo: titulo),
+            isTrue,
+            reason: titulo,
+          );
+        }
+      },
+    );
 
     test('pasar lista abre la asistencia aunque el título esté en inglés', () {
       final destino = destinoDeAvisoConvocatoria(
@@ -103,19 +124,25 @@ void main() {
       expect((destino as PasarLista).entrenamientoId, 9);
     });
 
-    test('editar convocatoria abre la edición aunque el título esté en valenciano', () {
-      final destino = destinoDeAvisoConvocatoria(
-        tipo: tipoPushConvocatoriaEditar,
-        titulo: 'Convocat amb absència justificada',
-        datos: {'convocatoriaId': '4'},
-      );
+    test(
+      'editar convocatoria abre la edición aunque el título esté en valenciano',
+      () {
+        final destino = destinoDeAvisoConvocatoria(
+          tipo: tipoPushConvocatoriaEditar,
+          titulo: 'Convocat amb absència justificada',
+          datos: {'convocatoriaId': '4'},
+        );
 
-      expect(destino, isA<EditarConvocatoria>());
-    });
+        expect(destino, isA<EditarConvocatoria>());
+      },
+    );
 
     test('continuidad abre la pantalla de continuidad en cualquier idioma', () {
       expect(
-        destinoDeAvisoConvocatoria(tipo: tipoPushContinuidad, titulo: 'Next season: 2027/2028'),
+        destinoDeAvisoConvocatoria(
+          tipo: tipoPushContinuidad,
+          titulo: 'Next season: 2027/2028',
+        ),
         isA<AbrirContinuidad>(),
       );
     });

@@ -73,9 +73,7 @@ Future<void> _pintarApp(WidgetTester tester) async {
 void main() {
   late List<({int partidoId, PerfilEquipo equipo})> formulariosConvocatoria;
   late List<MatchModel> formulariosResultado;
-  late List<
-    ({int comunicacionId, String titulo, Map<String, dynamic> datos})
-  >
+  late List<({int comunicacionId, String titulo, Map<String, dynamic> datos})>
   mostradas;
 
   setUp(() {
@@ -297,20 +295,23 @@ void main() {
       expect(formulariosResultado.single.id, 31);
     });
 
-    testWidgets('sin los datos del partido no se abre ningún formulario: se abre '
-        'como una comunicación', (tester) async {
-      await _conUsuario(['ENTRENADOR']);
-      await _pintarApp(tester);
+    testWidgets(
+      'sin los datos del partido no se abre ningún formulario: se abre '
+      'como una comunicación',
+      (tester) async {
+        await _conUsuario(['ENTRENADOR']);
+        await _pintarApp(tester);
 
-      _tocar(_push({'tipo': 'CONVOCATORIA_PENDIENTE', 'referenciaId': '90'}));
-      // La comunicación se pide a la red: no termina de animar.
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
+        _tocar(_push({'tipo': 'CONVOCATORIA_PENDIENTE', 'referenciaId': '90'}));
+        // La comunicación se pide a la red: no termina de animar.
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.byType(ComunicacionDetallePage), findsOneWidget);
-      expect(find.text('FORM CONVOCATORIA'), findsNothing);
-      expect(formulariosConvocatoria, isEmpty);
-    });
+        expect(find.byType(ComunicacionDetallePage), findsOneWidget);
+        expect(find.text('FORM CONVOCATORIA'), findsNothing);
+        expect(formulariosConvocatoria, isEmpty);
+      },
+    );
   });
 
   group('arranque en frío', () {

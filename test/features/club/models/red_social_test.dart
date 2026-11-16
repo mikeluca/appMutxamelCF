@@ -5,10 +5,12 @@ void main() {
   group('kRedesSociales', () {
     test('contiene las 4 redes sociales de la cabecera de la web', () {
       expect(kRedesSociales.length, 4);
-      expect(
-        kRedesSociales.map((red) => red.nombre),
-        ['X (Twitter)', 'Facebook', 'Instagram', 'YouTube'],
-      );
+      expect(kRedesSociales.map((red) => red.nombre), [
+        'X (Twitter)',
+        'Facebook',
+        'Instagram',
+        'YouTube',
+      ]);
     });
 
     test('cada red social tiene su enlace externo correcto', () {
@@ -22,10 +24,7 @@ void main() {
         urlsPorNombre['Instagram'],
         'https://instagram.com/mutxamelcf.oficial/',
       );
-      expect(
-        urlsPorNombre['YouTube'],
-        'https://youtube.com/@mutxamelcf355',
-      );
+      expect(urlsPorNombre['YouTube'], 'https://youtube.com/@mutxamelcf355');
     });
   });
 }

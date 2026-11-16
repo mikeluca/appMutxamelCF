@@ -245,10 +245,7 @@ void main() {
       rutaDeOpcionClub(OpcionClub.seguimientoJugadores),
       '/coordination/player-tracking',
     );
-    expect(
-      rutaDeOpcionClub(OpcionClub.repartoEquipos),
-      '/coordination/roster',
-    );
+    expect(rutaDeOpcionClub(OpcionClub.repartoEquipos), '/coordination/roster');
     expect(
       rutaDeOpcionClub(OpcionClub.altaPrueba),
       '/coordination/trial-player',

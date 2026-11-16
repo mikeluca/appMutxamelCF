@@ -8,10 +8,9 @@ class ComunicacionService {
   ComunicacionService._();
 
   static Future<List<ComunicacionModel>> obtenerComunicaciones() async {
-    final data = await ApiClient.get(
-      '/app/comunicaciones',
-      autenticado: true,
-    ) as List<dynamic>;
+    final data =
+        await ApiClient.get('/app/comunicaciones', autenticado: true)
+            as List<dynamic>;
 
     return data
         .map((json) => ComunicacionModel.fromJson(json as Map<String, dynamic>))
@@ -19,10 +18,12 @@ class ComunicacionService {
   }
 
   static Future<List<ComunicacionModel>> obtenerConversacionesPrivadas() async {
-    final data = await ApiClient.get(
-      '/app/comunicaciones/conversaciones',
-      autenticado: true,
-    ) as List<dynamic>;
+    final data =
+        await ApiClient.get(
+              '/app/comunicaciones/conversaciones',
+              autenticado: true,
+            )
+            as List<dynamic>;
 
     return data
         .map((json) => ComunicacionModel.fromJson(json as Map<String, dynamic>))
@@ -30,10 +31,9 @@ class ComunicacionService {
   }
 
   static Future<List<ComunicacionModel>> obtenerComunicacionesEnviadas() async {
-    final data = await ApiClient.get(
-      '/app/comunicaciones/enviadas',
-      autenticado: true,
-    ) as List<dynamic>;
+    final data =
+        await ApiClient.get('/app/comunicaciones/enviadas', autenticado: true)
+            as List<dynamic>;
 
     return data
         .map((json) => ComunicacionModel.fromJson(json as Map<String, dynamic>))
@@ -91,10 +91,12 @@ class ComunicacionService {
 
   static Future<List<DestinatarioComunicacionModel>>
   obtenerDestinatariosDirectos() async {
-    final data = await ApiClient.get(
-      '/app/comunicaciones/destinatarios',
-      autenticado: true,
-    ) as List<dynamic>;
+    final data =
+        await ApiClient.get(
+              '/app/comunicaciones/destinatarios',
+              autenticado: true,
+            )
+            as List<dynamic>;
 
     return data
         .map(
@@ -115,10 +117,9 @@ class ComunicacionService {
   }
 
   static Future<List<NotificacionModel>> obtenerNotificaciones() async {
-    final data = await ApiClient.get(
-      '/app/notificaciones',
-      autenticado: true,
-    ) as List<dynamic>;
+    final data =
+        await ApiClient.get('/app/notificaciones', autenticado: true)
+            as List<dynamic>;
 
     return data
         .map((json) => NotificacionModel.fromJson(json as Map<String, dynamic>))

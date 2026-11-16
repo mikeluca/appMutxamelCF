@@ -146,7 +146,8 @@ class ConvocatoriaJugadorModel {
       estadoInvitacion == EstadoInvitacion.pendienteEntrenador;
 
   /// Juega: del propio equipo o invitado ya autorizado.
-  bool get juega => !invitado || estadoInvitacion == EstadoInvitacion.autorizado;
+  bool get juega =>
+      !invitado || estadoInvitacion == EstadoInvitacion.autorizado;
 
   factory ConvocatoriaJugadorModel.fromJson(Map<String, dynamic> json) {
     return ConvocatoriaJugadorModel(

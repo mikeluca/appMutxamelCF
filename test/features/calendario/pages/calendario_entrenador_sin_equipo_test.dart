@@ -55,44 +55,50 @@ void main() {
     await initializeDateFormatting('es');
   });
 
-  testWidgets('el calendario del entrenador sin equipos dice que no tiene equipos '
-      'y no pide nada', (tester) async {
-    final servicio = _CalendarioQueNoDebeLlamarse();
+  testWidgets(
+    'el calendario del entrenador sin equipos dice que no tiene equipos '
+    'y no pide nada',
+    (tester) async {
+      final servicio = _CalendarioQueNoDebeLlamarse();
 
-    await tester.pumpWidget(
-      MaterialApp(
-        locale: const Locale('es'),
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: CalendarioPage(
-          calendarioService: servicio,
-          teamService: _FakeTeamService(),
-          cargarPerfil: () async => _entrenadorSinEquipo(),
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('es'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: CalendarioPage(
+            calendarioService: servicio,
+            teamService: _FakeTeamService(),
+            cargarPerfil: () async => _entrenadorSinEquipo(),
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('No tienes equipos asociados.'), findsOneWidget);
-    expect(servicio.llamadas, 0);
-    expect(tester.takeException(), isNull);
-  });
+      expect(find.text('No tienes equipos asociados.'), findsOneWidget);
+      expect(servicio.llamadas, 0);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
-  test('el menú del entrenador sin equipos sigue teniendo "Mis equipos" (con su '
-      'mensaje vacío) y el resto del Club', () {
-    final secciones = construirSeccionesClub(
-      AuthUser(usuarioId: 1, email: 'e@b.c', roles: const ['ENTRENADOR']),
-      cuotasDisponibles: false,
-    );
-    final opciones = secciones.expand((s) => s.opciones).toList();
+  test(
+    'el menú del entrenador sin equipos sigue teniendo "Mis equipos" (con su '
+    'mensaje vacío) y el resto del Club',
+    () {
+      final secciones = construirSeccionesClub(
+        AuthUser(usuarioId: 1, email: 'e@b.c', roles: const ['ENTRENADOR']),
+        cuotasDisponibles: false,
+      );
+      final opciones = secciones.expand((s) => s.opciones).toList();
 
-    expect(opciones, contains(OpcionClub.misEquipos));
-    expect(opciones, contains(OpcionClub.comunicaciones));
-    expect(opciones, contains(OpcionClub.miPerfil));
-  });
+      expect(opciones, contains(OpcionClub.misEquipos));
+      expect(opciones, contains(OpcionClub.comunicaciones));
+      expect(opciones, contains(OpcionClub.miPerfil));
+    },
+  );
 }

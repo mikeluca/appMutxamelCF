@@ -4,10 +4,9 @@ import 'auth_session.dart';
 
 class NotificacionService {
   static Future<List<NotificacionModel>> obtenerNotificaciones() async {
-    final data = await ApiClient.get(
-      '/app/notificaciones',
-      autenticado: true,
-    ) as List<dynamic>;
+    final data =
+        await ApiClient.get('/app/notificaciones', autenticado: true)
+            as List<dynamic>;
 
     return data
         .map((json) => NotificacionModel.fromJson(json as Map<String, dynamic>))
@@ -15,10 +14,9 @@ class NotificacionService {
   }
 
   static Future<List<NotificacionModel>> obtenerNoLeidas() async {
-    final data = await ApiClient.get(
-      '/app/notificaciones/no-leidas',
-      autenticado: true,
-    ) as List<dynamic>;
+    final data =
+        await ApiClient.get('/app/notificaciones/no-leidas', autenticado: true)
+            as List<dynamic>;
 
     return data
         .map((json) => NotificacionModel.fromJson(json as Map<String, dynamic>))
@@ -31,10 +29,12 @@ class NotificacionService {
       return 0;
     }
 
-    final data = await ApiClient.get(
-      '/app/notificaciones/no-leidas/count',
-      autenticado: true,
-    ) as Map<String, dynamic>;
+    final data =
+        await ApiClient.get(
+              '/app/notificaciones/no-leidas/count',
+              autenticado: true,
+            )
+            as Map<String, dynamic>;
 
     return (data['cantidad'] as num?)?.toInt() ?? 0;
   }

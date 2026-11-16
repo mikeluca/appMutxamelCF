@@ -63,7 +63,8 @@ class ContinuidadListaState extends State<ContinuidadLista> {
 
       setState(() {
         _jugadores = [
-          for (final j in _jugadores) j.jugadorId == nuevo.jugadorId ? nuevo : j,
+          for (final j in _jugadores)
+            j.jugadorId == nuevo.jugadorId ? nuevo : j,
         ];
       });
 

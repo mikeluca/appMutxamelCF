@@ -944,9 +944,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
           onPressed: () => _justificarAusencia(evento, partido),
           icon: const Icon(Icons.event_busy_outlined, size: 18),
           label: Text(
-            partido.invitado
-                ? _t.invCannotGo
-                : _t.matchAbsenceJustifyButton,
+            partido.invitado ? _t.invCannotGo : _t.matchAbsenceJustifyButton,
           ),
         ),
       );
@@ -1021,9 +1019,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
     );
 
     if (resultado == true && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             partido.invitado

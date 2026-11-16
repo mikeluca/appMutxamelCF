@@ -78,14 +78,17 @@ void main() {
         expect(partido.convocado, isFalse);
       });
 
-      test('null cuando el partido todavia no tiene convocatoria (ausente)', () {
-        final partido = MatchModel.fromJson({
-          'equipo': 'Senior A',
-          'rival': 'Rival CF',
-        });
+      test(
+        'null cuando el partido todavia no tiene convocatoria (ausente)',
+        () {
+          final partido = MatchModel.fromJson({
+            'equipo': 'Senior A',
+            'rival': 'Rival CF',
+          });
 
-        expect(partido.convocado, isNull);
-      });
+          expect(partido.convocado, isNull);
+        },
+      );
     });
   });
 
@@ -125,18 +128,21 @@ void main() {
       expect(partido.esProximoPartido, isFalse);
     });
 
-    test('descansa: true marca descanso aunque el rival sea el último jugado', () {
-      final partido = MatchModel.fromJson({
-        'categoria': 'Senior',
-        'equipo': 'Senior A',
-        'rival': 'Rival CF',
-        'resultado': '2-1',
-        'descansa': true,
-      });
+    test(
+      'descansa: true marca descanso aunque el rival sea el último jugado',
+      () {
+        final partido = MatchModel.fromJson({
+          'categoria': 'Senior',
+          'equipo': 'Senior A',
+          'rival': 'Rival CF',
+          'resultado': '2-1',
+          'descansa': true,
+        });
 
-      expect(partido.descansa, isTrue);
-      expect(partido.estaDescansando, isTrue);
-    });
+        expect(partido.descansa, isTrue);
+        expect(partido.estaDescansando, isTrue);
+      },
+    );
 
     test('local: false se lee del JSON y por defecto es true', () {
       final visitante = MatchModel.fromJson({
@@ -155,16 +161,19 @@ void main() {
       expect(sinCampo.local, isTrue);
     });
 
-    test('sin el campo descansa (backend antiguo) se mantiene el comportamiento', () {
-      final partido = MatchModel.fromJson({
-        'categoria': 'Senior',
-        'equipo': 'Senior A',
-        'rival': 'Rival CF',
-      });
+    test(
+      'sin el campo descansa (backend antiguo) se mantiene el comportamiento',
+      () {
+        final partido = MatchModel.fromJson({
+          'categoria': 'Senior',
+          'equipo': 'Senior A',
+          'rival': 'Rival CF',
+        });
 
-      expect(partido.descansa, isFalse);
-      expect(partido.estaDescansando, isFalse);
-    });
+        expect(partido.descansa, isFalse);
+        expect(partido.estaDescansando, isFalse);
+      },
+    );
   });
 
   group('MatchModel.esPartidoPasado', () {
@@ -206,8 +215,7 @@ void main() {
       expect(partido.esPartidoPasado, isTrue);
     });
 
-    test(
-        'sin hora conocida, el mismo día del partido todavía no se '
+    test('sin hora conocida, el mismo día del partido todavía no se '
         'considera pasado (para no bloquear introducir el resultado el '
         'mismo día)', () {
       final hoy = DateTime.now();

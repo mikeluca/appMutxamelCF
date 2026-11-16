@@ -883,5 +883,8 @@ Future<void> _tirarParaRecargar(WidgetTester tester) async {
       .first;
 
   // Desde la cabecera: el centro de la lista cae sobre el calendario (otro Scrollable) y se come el gesto.
-  await tester.dragFrom(tester.getTopLeft(lista) + const Offset(400, 20), const Offset(0, 600));
+  await tester.dragFrom(
+    tester.getTopLeft(lista) + const Offset(400, 20),
+    const Offset(0, 600),
+  );
 }

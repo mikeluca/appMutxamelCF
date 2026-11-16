@@ -288,10 +288,7 @@ void main() {
         findsNWidgets(2),
       );
       expect(find.byKey(const ValueKey('resumen-JUGADOR')), findsOneWidget);
-      expect(
-        find.byKey(const ValueKey('resumen-COORDINADOR')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const ValueKey('resumen-COORDINADOR')), findsOneWidget);
     });
 
     testWidgets('los roles adicionales son los que manda el servidor', (
@@ -323,7 +320,9 @@ void main() {
     ) async {
       final servicio = await abrir(tester);
 
-      await tester.ensureVisible(find.byKey(const ValueKey('rol-RETRANSMISION')));
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('rol-RETRANSMISION')),
+      );
       await tester.tap(find.byKey(const ValueKey('rol-RETRANSMISION')));
       await tester.pumpAndSettle();
       await tester.ensureVisible(enviar);
@@ -443,7 +442,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text('Ya existe una cuenta con ese email. Revisa Cuentas pendientes.'),
+        find.text(
+          'Ya existe una cuenta con ese email. Revisa Cuentas pendientes.',
+        ),
         findsOneWidget,
       );
       expect(find.byType(InvitarUsuarioPage), findsOneWidget);
@@ -547,13 +548,15 @@ void main() {
       minimaIos: '1.0.7',
     );
 
-    String total(String clave) => tester0.widget<Text>(
-      find.byKey(ValueKey('total-$clave')),
-    ).data!;
+    String total(String clave) =>
+        tester0.widget<Text>(find.byKey(ValueKey('total-$clave'))).data!;
 
     testWidgets('tarjetas con los totales', (tester) async {
       tester0 = tester;
-      await _pintar(tester, EstadoAppPage(servicio: _FakeAdmin()..estado = estado));
+      await _pintar(
+        tester,
+        EstadoAppPage(servicio: _FakeAdmin()..estado = estado),
+      );
 
       expect(total('activas'), '40');
       expect(total('pendientes'), '3');
@@ -570,7 +573,10 @@ void main() {
 
     testWidgets('la tabla de versiones resalta en rojo las inferiores a la '
         'mínima', (tester) async {
-      await _pintar(tester, EstadoAppPage(servicio: _FakeAdmin()..estado = estado));
+      await _pintar(
+        tester,
+        EstadoAppPage(servicio: _FakeAdmin()..estado = estado),
+      );
 
       expect(
         find.text('Versión mínima: Android 1.0.5 · iOS 1.0.7'),
@@ -648,7 +654,9 @@ void main() {
 
       expect(servicio.filtrosPedidos, isEmpty);
 
-      await tester.tap(find.byKey(const ValueKey('tarjeta-SIN_NOTIFICACIONES')));
+      await tester.tap(
+        find.byKey(const ValueKey('tarjeta-SIN_NOTIFICACIONES')),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('No hay cuentas en esta lista.'), findsOneWidget);
@@ -664,7 +672,10 @@ void main() {
   // ---- reactivar desde moderación ------------------------------------------------------------
 
   group('reactivar una cuenta desde Moderación', () {
-    Future<_FakeAdmin> abrir(WidgetTester tester, List<ReporteModel> resueltos) async {
+    Future<_FakeAdmin> abrir(
+      WidgetTester tester,
+      List<ReporteModel> resueltos,
+    ) async {
       final servicio = _FakeAdmin()..resueltos = resueltos;
 
       await _pintar(tester, ModeracionPage(servicio: servicio));
@@ -786,8 +797,9 @@ void main() {
 
   group('AdminService', () {
     setUp(() async {
-      FlutterSecureStoragePlatform.instance =
-          TestFlutterSecureStoragePlatform(<String, String>{});
+      FlutterSecureStoragePlatform.instance = TestFlutterSecureStoragePlatform(
+        <String, String>{},
+      );
       await AuthSession.guardarSesion(
         LoginResponse(
           token: 'tok',
@@ -798,50 +810,60 @@ void main() {
       );
     });
 
-    test('invitar hace POST /app/admin/invitaciones con vínculos y roles', () async {
-      final r = await conMockHttp((request) async {
-        expect(request.method, 'POST');
-        expect(request.url.path, endsWith('/app/admin/invitaciones'));
-        expect(request.headers['Authorization'], 'Bearer tok');
-        expect(jsonDecode(request.body), {
-          'email': 'a@x.es',
-          'nombre': 'Ana',
-          'vinculos': [
-            {'tipo': 'JUGADOR', 'personaId': 1},
-            {'tipo': 'FAMILIAR', 'personaId': 3},
-          ],
-          'roles': ['COORDINADOR'],
-        });
+    test(
+      'invitar hace POST /app/admin/invitaciones con vínculos y roles',
+      () async {
+        final r = await conMockHttp(
+          (request) async {
+            expect(request.method, 'POST');
+            expect(request.url.path, endsWith('/app/admin/invitaciones'));
+            expect(request.headers['Authorization'], 'Bearer tok');
+            expect(jsonDecode(request.body), {
+              'email': 'a@x.es',
+              'nombre': 'Ana',
+              'vinculos': [
+                {'tipo': 'JUGADOR', 'personaId': 1},
+                {'tipo': 'FAMILIAR', 'personaId': 3},
+              ],
+              'roles': ['COORDINADOR'],
+            });
 
-        return http.Response(
-          jsonEncode({'email': 'a@x.es', 'emailEnviado': false}),
-          201,
+            return http.Response(
+              jsonEncode({'email': 'a@x.es', 'emailEnviado': false}),
+              201,
+            );
+          },
+          () => AdminService().invitar(
+            email: ' a@x.es ',
+            nombre: 'Ana',
+            apellidos: '  ',
+            vinculos: const [_pablo, _marta],
+            roles: const ['COORDINADOR'],
+          ),
         );
-      }, () => AdminService().invitar(
-        email: ' a@x.es ',
-        nombre: 'Ana',
-        apellidos: '  ',
-        vinculos: const [_pablo, _marta],
-        roles: const ['COORDINADOR'],
-      ));
 
-      expect(r.email, 'a@x.es');
-      expect(r.emailEnviado, isFalse);
-    });
+        expect(r.email, 'a@x.es');
+        expect(r.emailEnviado, isFalse);
+      },
+    );
 
-    test('el 409 de un email repetido conserva el mensaje del servidor', () async {
-      await expectLater(
-        conMockHttp(
-          (request) async => http.Response('Ya existe una cuenta con ese email.', 409),
-          () => AdminService().invitar(email: 'a@x.es', vinculos: const []),
-        ),
-        throwsA(
-          isA<ApiException>()
-              .having((e) => e.statusCode, 'statusCode', 409)
-              .having((e) => e.message, 'message', contains('Ya existe')),
-        ),
-      );
-    });
+    test(
+      'el 409 de un email repetido conserva el mensaje del servidor',
+      () async {
+        await expectLater(
+          conMockHttp(
+            (request) async =>
+                http.Response('Ya existe una cuenta con ese email.', 409),
+            () => AdminService().invitar(email: 'a@x.es', vinculos: const []),
+          ),
+          throwsA(
+            isA<ApiException>()
+                .having((e) => e.statusCode, 'statusCode', 409)
+                .having((e) => e.message, 'message', contains('Ya existe')),
+          ),
+        );
+      },
+    );
 
     test('estado, usuarios y reactivar piden las rutas del backend', () async {
       await conMockHttp((request) async {
@@ -851,17 +873,25 @@ void main() {
         return http.Response(jsonEncode({'cuentas': {}}), 200);
       }, () => AdminService().obtenerEstado());
 
-      final usuarios = await conMockHttp((request) async {
-        expect(request.url.path, endsWith('/app/admin/estado/usuarios'));
-        expect(request.url.queryParameters['filtro'], 'VERSION_ANTIGUA');
+      final usuarios = await conMockHttp(
+        (request) async {
+          expect(request.url.path, endsWith('/app/admin/estado/usuarios'));
+          expect(request.url.queryParameters['filtro'], 'VERSION_ANTIGUA');
 
-        return http.Response(
-          jsonEncode([
-            {'id': 1, 'nombre': 'Ana', 'email': 'a@x.es', 'roles': ['JUGADOR']},
-          ]),
-          200,
-        );
-      }, () => AdminService().obtenerUsuariosEstado(FiltroEstado.versionAntigua));
+          return http.Response(
+            jsonEncode([
+              {
+                'id': 1,
+                'nombre': 'Ana',
+                'email': 'a@x.es',
+                'roles': ['JUGADOR'],
+              },
+            ]),
+            200,
+          );
+        },
+        () => AdminService().obtenerUsuariosEstado(FiltroEstado.versionAntigua),
+      );
 
       expect(usuarios.single.roles, ['JUGADOR']);
 

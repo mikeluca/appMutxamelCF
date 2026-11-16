@@ -113,7 +113,8 @@ class _ClubPageState extends State<ClubPage> {
         children: [
           _construirCabecera(context, usuario),
 
-          for (final seccion in secciones) ..._construirSeccion(context, seccion),
+          for (final seccion in secciones)
+            ..._construirSeccion(context, seccion),
 
           const SizedBox(height: 20),
         ],
@@ -200,9 +201,7 @@ class _ClubPageState extends State<ClubPage> {
         return _construirOpcion(
           context,
           icono: Icons.leaderboard_outlined,
-          titulo: esGestionGlobal
-              ? t.allStandingsTitle
-              : t.clubPageMyStandings,
+          titulo: esGestionGlobal ? t.allStandingsTitle : t.clubPageMyStandings,
           descripcion: esGestionGlobal
               ? t.clubPageAllStandingsDesc
               : t.clubPageMyStandingsDesc,

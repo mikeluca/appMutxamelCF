@@ -5,8 +5,8 @@ class CuotaFamiliarService {
   CuotaFamiliarService._();
 
   static Future<List<CuotaFamiliarModel>> obtenerMisCuotas() async {
-    final data = await ApiClient.get('/app/cuotas', autenticado: true)
-        as List<dynamic>;
+    final data =
+        await ApiClient.get('/app/cuotas', autenticado: true) as List<dynamic>;
 
     return data
         .map(

@@ -96,9 +96,7 @@ void main() {
   final recordarConvocatoria = find.byKey(
     const ValueKey('recordar-CONVOCATORIA:20'),
   );
-  final recordarResultado = find.byKey(
-    const ValueKey('recordar-RESULTADO:10'),
-  );
+  final recordarResultado = find.byKey(const ValueKey('recordar-RESULTADO:10'));
 
   group('botón Recordar del panel', () {
     testWidgets('hay uno en cada partido sin convocatoria y en cada resultado '
@@ -124,7 +122,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(servicio.enviados.single, (partido: 20, tipo: 'CONVOCATORIA'));
-      expect(find.text('Recordatorio enviado a 2 entrenadores'), findsOneWidget);
+      expect(
+        find.text('Recordatorio enviado a 2 entrenadores'),
+        findsOneWidget,
+      );
       expect(find.text('Recordado'), findsOneWidget);
 
       // El otro sigue disponible, y el recordado ya no se puede pulsar.
@@ -270,8 +271,9 @@ void main() {
 
   group('CoordinacionService.recordar', () {
     setUp(() async {
-      FlutterSecureStoragePlatform.instance =
-          TestFlutterSecureStoragePlatform(<String, String>{});
+      FlutterSecureStoragePlatform.instance = TestFlutterSecureStoragePlatform(
+        <String, String>{},
+      );
       await AuthSession.guardarSesion(
         LoginResponse(
           token: 'tok',
@@ -282,52 +284,67 @@ void main() {
       );
     });
 
-    test('hace POST /app/coordinacion/recordatorios y lee la respuesta', () async {
-      final enviado = await conMockHttp((request) async {
-        expect(request.method, 'POST');
-        expect(request.url.path, endsWith('/app/coordinacion/recordatorios'));
-        expect(request.headers['Authorization'], 'Bearer tok');
-        expect(jsonDecode(request.body), {
-          'partidoId': 30,
-          'tipo': 'CONVOCATORIA',
-        });
+    test(
+      'hace POST /app/coordinacion/recordatorios y lee la respuesta',
+      () async {
+        final enviado = await conMockHttp(
+          (request) async {
+            expect(request.method, 'POST');
+            expect(
+              request.url.path,
+              endsWith('/app/coordinacion/recordatorios'),
+            );
+            expect(request.headers['Authorization'], 'Bearer tok');
+            expect(jsonDecode(request.body), {
+              'partidoId': 30,
+              'tipo': 'CONVOCATORIA',
+            });
 
-        return http.Response(
-          jsonEncode({'destinatarios': 3, 'fecha': '2026-10-23T10:00:00'}),
-          200,
-        );
-      }, () => CoordinacionService().recordar(partidoId: 30, tipo: 'CONVOCATORIA'));
-
-      expect(enviado.destinatarios, 3);
-      expect(enviado.fecha, DateTime(2026, 10, 23, 10));
-    });
-
-    test('el 429 conserva el cuerpo con el código y la hora del último', () async {
-      await expectLater(
-        conMockHttp(
-          (request) async => http.Response(
-            jsonEncode({
-              'codigo': 'RECORDATORIO_REPETIDO',
-              'mensaje': 'Ya se recordó esto hace poco',
-              'ultimo': '2026-10-23T09:05:00',
-            }),
-            429,
-          ),
+            return http.Response(
+              jsonEncode({'destinatarios': 3, 'fecha': '2026-10-23T10:00:00'}),
+              200,
+            );
+          },
           () => CoordinacionService().recordar(
             partidoId: 30,
-            tipo: 'RESULTADO',
+            tipo: 'CONVOCATORIA',
           ),
-        ),
-        throwsA(
-          isA<ApiException>()
-              .having((e) => e.statusCode, 'statusCode', 429)
-              .having(
-                (e) => (e.datos as Map)['ultimo'],
-                'ultimo',
-                '2026-10-23T09:05:00',
-              ),
-        ),
-      );
-    });
+        );
+
+        expect(enviado.destinatarios, 3);
+        expect(enviado.fecha, DateTime(2026, 10, 23, 10));
+      },
+    );
+
+    test(
+      'el 429 conserva el cuerpo con el código y la hora del último',
+      () async {
+        await expectLater(
+          conMockHttp(
+            (request) async => http.Response(
+              jsonEncode({
+                'codigo': 'RECORDATORIO_REPETIDO',
+                'mensaje': 'Ya se recordó esto hace poco',
+                'ultimo': '2026-10-23T09:05:00',
+              }),
+              429,
+            ),
+            () => CoordinacionService().recordar(
+              partidoId: 30,
+              tipo: 'RESULTADO',
+            ),
+          ),
+          throwsA(
+            isA<ApiException>()
+                .having((e) => e.statusCode, 'statusCode', 429)
+                .having(
+                  (e) => (e.datos as Map)['ultimo'],
+                  'ultimo',
+                  '2026-10-23T09:05:00',
+                ),
+          ),
+        );
+      },
+    );
   });
 }

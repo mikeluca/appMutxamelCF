@@ -142,7 +142,8 @@ class _RepartoPageState extends State<RepartoPage> {
       setState(() {
         _reparto = reparto;
         _seleccionados.clear();
-        _equipoDestinoId = reparto.equipos.any((e) => e.equipoId == _equipoDestinoId)
+        _equipoDestinoId =
+            reparto.equipos.any((e) => e.equipoId == _equipoDestinoId)
             ? _equipoDestinoId
             : null;
         _cargando = false;
@@ -159,9 +160,9 @@ class _RepartoPageState extends State<RepartoPage> {
   }
 
   void _mostrar(String texto) {
-    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-      SnackBar(content: Text(texto)),
-    );
+    ScaffoldMessenger.maybeOf(
+      context,
+    )?.showSnackBar(SnackBar(content: Text(texto)));
   }
 
   Map<int, int?> _dorsalesSeleccionados() {
@@ -606,7 +607,9 @@ class _RepartoPageState extends State<RepartoPage> {
                   ),
                 ),
                 Chip(
-                  label: Text(equipo.activo ? t.rosterActive : t.rosterInactive),
+                  label: Text(
+                    equipo.activo ? t.rosterActive : t.rosterInactive,
+                  ),
                   visualDensity: VisualDensity.compact,
                 ),
               ],

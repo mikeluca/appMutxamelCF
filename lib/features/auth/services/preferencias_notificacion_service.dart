@@ -8,9 +8,7 @@ class PreferenciasNotificacionService {
       autenticado: true,
     );
 
-    return PreferenciasNotificacionModel.fromJson(
-      data as Map<String, dynamic>,
-    );
+    return PreferenciasNotificacionModel.fromJson(data as Map<String, dynamic>);
   }
 
   static Future<PreferenciasNotificacionModel> actualizarPreferencias(
@@ -22,8 +20,6 @@ class PreferenciasNotificacionService {
       body: preferencias.toJson(),
     );
 
-    return PreferenciasNotificacionModel.fromJson(
-      data as Map<String, dynamic>,
-    );
+    return PreferenciasNotificacionModel.fromJson(data as Map<String, dynamic>);
   }
 }

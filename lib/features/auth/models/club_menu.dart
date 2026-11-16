@@ -120,9 +120,7 @@ List<SeccionClub> construirSeccionesClub(
       OpcionClub.partidos,
       if (veClasificaciones) OpcionClub.clasificaciones,
     ]),
-    SeccionClub(SeccionClubId.jugador, [
-      if (soloJugador) OpcionClub.miFicha,
-    ]),
+    SeccionClub(SeccionClubId.jugador, [if (soloJugador) OpcionClub.miFicha]),
     SeccionClub(SeccionClubId.familia, [
       if (esFamiliar) OpcionClub.misJugadores,
       if (esFamiliar && cuotasDisponibles) OpcionClub.cuotas,

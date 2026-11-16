@@ -208,8 +208,10 @@ void main() {
       await tester.tap(find.widgetWithText(FilledButton, 'Retirar'));
       await tester.pumpAndSettle();
 
-      expect(find.text('No se ha podido retirar la justificación.'),
-          findsOneWidget);
+      expect(
+        find.text('No se ha podido retirar la justificación.'),
+        findsOneWidget,
+      );
       expect(find.textContaining('fuera de plazo'), findsNothing);
     });
   });

@@ -234,9 +234,9 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
     final modo = _modoSeleccionado;
 
     if (modo == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_t.commSelectRecipientError)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_t.commSelectRecipientError)));
 
       return;
     }
@@ -244,18 +244,18 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
     switch (modo) {
       case _ModoDestinatario.equipos:
         if (_equiposSeleccionados.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(_t.commSelectTeamError)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(_t.commSelectTeamError)));
           return;
         }
         break;
 
       case _ModoDestinatario.categorias:
         if (_categoriasSeleccionadas.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(_t.commSelectCategoryError)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(_t.commSelectCategoryError)));
           return;
         }
         break;
@@ -293,9 +293,9 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_t.commCreatedSuccess)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_t.commCreatedSuccess)));
 
       Navigator.pop(context, true);
     } catch (e) {
@@ -320,9 +320,7 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: ClubAppBarTitle(titulo: _t.commNewTitle),
-      ),
+      appBar: AppBar(title: ClubAppBarTitle(titulo: _t.commNewTitle)),
       body: _construirContenido(),
     );
   }
@@ -359,7 +357,8 @@ class _ComunicacionFormPageState extends State<ComunicacionFormPage> {
                 switch (_modoSeleccionado) {
                   _ModoDestinatario.equipos => _construirEquipos(),
                   _ModoDestinatario.categorias => _construirCategorias(),
-                  _ModoDestinatario.privado => _construirDestinatariosDirectos(),
+                  _ModoDestinatario.privado =>
+                    _construirDestinatariosDirectos(),
                   null => _construirSinModosDisponibles(),
                 },
               ],

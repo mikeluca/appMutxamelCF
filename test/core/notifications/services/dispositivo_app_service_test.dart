@@ -17,15 +17,21 @@ import '../../../support/http_test_helpers.dart';
 
 void main() {
   setUp(() {
-    FlutterSecureStoragePlatform.instance =
-        TestFlutterSecureStoragePlatform(<String, String>{});
+    FlutterSecureStoragePlatform.instance = TestFlutterSecureStoragePlatform(
+      <String, String>{},
+    );
     // El idioma que la app muestra: viaja con el registro del dispositivo.
     SharedPreferences.setMockInitialValues({'idioma_aplicacion': 'ca'});
   });
 
   Future<void> iniciarSesion() {
     return AuthSession.guardarSesion(
-      LoginResponse(token: 'tok-sesion', usuarioId: 1, email: 'a@a.com', roles: const []),
+      LoginResponse(
+        token: 'tok-sesion',
+        usuarioId: 1,
+        email: 'a@a.com',
+        roles: const [],
+      ),
     );
   }
 
@@ -39,47 +45,53 @@ void main() {
       );
     });
 
-    test('con sesion iniciada, hace POST /app/dispositivos con el token y la plataforma', () async {
-      await iniciarSesion();
+    test(
+      'con sesion iniciada, hace POST /app/dispositivos con el token y la plataforma',
+      () async {
+        await iniciarSesion();
 
-      await conMockHttp(
-        (request) async {
-          expect(request.method, 'POST');
-          expect(request.url.path, contains('/app/dispositivos'));
-          expect(request.headers['Authorization'], 'Bearer tok-sesion');
-          expect(jsonDecode(request.body), {
-            'tokenFcm': 'fcm-token',
-            'plataforma': 'ANDROID',
-            'idioma': 'ca',
-          });
+        await conMockHttp(
+          (request) async {
+            expect(request.method, 'POST');
+            expect(request.url.path, contains('/app/dispositivos'));
+            expect(request.headers['Authorization'], 'Bearer tok-sesion');
+            expect(jsonDecode(request.body), {
+              'tokenFcm': 'fcm-token',
+              'plataforma': 'ANDROID',
+              'idioma': 'ca',
+            });
 
-          return http.Response('', 200);
-        },
-        () => DispositivoAppService.registrar(
-          tokenFcm: 'fcm-token',
-          plataforma: 'ANDROID',
-        ),
-      );
-    });
+            return http.Response('', 200);
+          },
+          () => DispositivoAppService.registrar(
+            tokenFcm: 'fcm-token',
+            plataforma: 'ANDROID',
+          ),
+        );
+      },
+    );
 
-    test('envía el idioma que muestra la app y lo anota como último enviado', () async {
-      await iniciarSesion();
-      await AppPreferences.guardarIdioma('en');
+    test(
+      'envía el idioma que muestra la app y lo anota como último enviado',
+      () async {
+        await iniciarSesion();
+        await AppPreferences.guardarIdioma('en');
 
-      await conMockHttp(
-        (request) async {
-          expect(jsonDecode(request.body)['idioma'], 'en');
+        await conMockHttp(
+          (request) async {
+            expect(jsonDecode(request.body)['idioma'], 'en');
 
-          return http.Response('', 200);
-        },
-        () => DispositivoAppService.registrar(
-          tokenFcm: 'fcm-token',
-          plataforma: 'ANDROID',
-        ),
-      );
+            return http.Response('', 200);
+          },
+          () => DispositivoAppService.registrar(
+            tokenFcm: 'fcm-token',
+            plataforma: 'ANDROID',
+          ),
+        );
 
-      expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), 'en');
-    });
+        expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), 'en');
+      },
+    );
 
     test('si el registro falla, no anota el idioma como enviado', () async {
       await iniciarSesion();
@@ -101,7 +113,8 @@ void main() {
 
   group('DispositivoAppService.registrar con la versión de la app', () {
     tearDown(() {
-      ControlVersion.obtenerInstalada = () async => throw Exception('sin plugin');
+      ControlVersion.obtenerInstalada = () async =>
+          throw Exception('sin plugin');
     });
 
     test('envía versionApp con la versión instalada', () async {
@@ -126,26 +139,29 @@ void main() {
       );
     });
 
-    test('si no se puede leer la versión, no la envía y registra igual', () async {
-      await iniciarSesion();
-      ControlVersion.obtenerInstalada = () async => throw Exception('plugin');
+    test(
+      'si no se puede leer la versión, no la envía y registra igual',
+      () async {
+        await iniciarSesion();
+        ControlVersion.obtenerInstalada = () async => throw Exception('plugin');
 
-      await conMockHttp(
-        (request) async {
-          expect(jsonDecode(request.body), {
-            'tokenFcm': 'fcm-token',
-            'plataforma': 'ANDROID',
-            'idioma': 'ca',
-          });
+        await conMockHttp(
+          (request) async {
+            expect(jsonDecode(request.body), {
+              'tokenFcm': 'fcm-token',
+              'plataforma': 'ANDROID',
+              'idioma': 'ca',
+            });
 
-          return http.Response('', 200);
-        },
-        () => DispositivoAppService.registrar(
-          tokenFcm: 'fcm-token',
-          plataforma: 'ANDROID',
-        ),
-      );
-    });
+            return http.Response('', 200);
+          },
+          () => DispositivoAppService.registrar(
+            tokenFcm: 'fcm-token',
+            plataforma: 'ANDROID',
+          ),
+        );
+      },
+    );
   });
 
   group('DispositivoAppService.desactivar', () {
@@ -155,20 +171,27 @@ void main() {
       );
     });
 
-    test('con sesion iniciada, hace DELETE con el token codificado en la URL', () async {
-      await iniciarSesion();
+    test(
+      'con sesion iniciada, hace DELETE con el token codificado en la URL',
+      () async {
+        await iniciarSesion();
 
-      await conMockHttp(
-        (request) async {
-          expect(request.method, 'DELETE');
-          expect(request.url.path, contains('/app/dispositivos'));
-          expect(request.url.queryParameters['tokenFcm'], 'token con espacios/y+símbolos');
-          expect(request.headers['Authorization'], 'Bearer tok-sesion');
+        await conMockHttp(
+          (request) async {
+            expect(request.method, 'DELETE');
+            expect(request.url.path, contains('/app/dispositivos'));
+            expect(
+              request.url.queryParameters['tokenFcm'],
+              'token con espacios/y+símbolos',
+            );
+            expect(request.headers['Authorization'], 'Bearer tok-sesion');
 
-          return http.Response('', 204);
-        },
-        () => DispositivoAppService.desactivar('token con espacios/y+símbolos'),
-      );
-    });
+            return http.Response('', 204);
+          },
+          () =>
+              DispositivoAppService.desactivar('token con espacios/y+símbolos'),
+        );
+      },
+    );
   });
 }

@@ -100,7 +100,9 @@ class _FamiliaresJugadorPageState extends State<FamiliaresJugadorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: ClubAppBarTitle(titulo: AppLocalizations.of(context).familiesTitle),
+        title: ClubAppBarTitle(
+          titulo: AppLocalizations.of(context).familiesTitle,
+        ),
       ),
       body: FutureBuilder<List<FamiliarJugadorModel>>(
         future: _familiaresFuture,

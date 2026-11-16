@@ -15,8 +15,9 @@ import '../../../support/http_test_helpers.dart';
 
 void main() {
   setUp(() {
-    FlutterSecureStoragePlatform.instance =
-        TestFlutterSecureStoragePlatform(<String, String>{});
+    FlutterSecureStoragePlatform.instance = TestFlutterSecureStoragePlatform(
+      <String, String>{},
+    );
     SharedPreferences.setMockInitialValues({});
   });
 
@@ -38,36 +39,39 @@ void main() {
       expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), isNull);
     });
 
-    test('con sesión hace PUT /app/preferencias/idioma y anota el idioma enviado', () async {
-      await iniciarSesion();
+    test(
+      'con sesión hace PUT /app/preferencias/idioma y anota el idioma enviado',
+      () async {
+        await iniciarSesion();
 
-      await conMockHttp(
-        (request) async {
+        await conMockHttp((request) async {
           expect(request.method, 'PUT');
           expect(request.url.path, contains('/app/preferencias/idioma'));
           expect(request.headers['Authorization'], 'Bearer tok-sesion');
           expect(jsonDecode(request.body), {'idioma': 'ca'});
 
           return http.Response(jsonEncode({'idioma': 'ca'}), 200);
-        },
-        () => IdiomaService.enviar('ca'),
-      );
+        }, () => IdiomaService.enviar('ca'));
 
-      expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), 'ca');
-    });
+        expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), 'ca');
+      },
+    );
   });
 
   group('IdiomaService.alCambiarIdioma', () {
-    test('si la llamada falla no lanza y no anota el idioma como enviado', () async {
-      await iniciarSesion();
+    test(
+      'si la llamada falla no lanza y no anota el idioma como enviado',
+      () async {
+        await iniciarSesion();
 
-      await conMockHttp(
-        (request) async => http.Response('', 500),
-        () => IdiomaService.alCambiarIdioma('en'),
-      );
+        await conMockHttp(
+          (request) async => http.Response('', 500),
+          () => IdiomaService.alCambiarIdioma('en'),
+        );
 
-      expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), isNull);
-    });
+        expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), isNull);
+      },
+    );
 
     test('si no hay red tampoco lanza', () async {
       await iniciarSesion();
@@ -86,34 +90,37 @@ void main() {
       await conMockHttpQueNoDebeLlamarse(IdiomaService.sincronizarAlArrancar);
     });
 
-    test('si el idioma no ha cambiado desde el último envío, no repite la llamada', () async {
-      await iniciarSesion();
-      await AppPreferences.guardarIdioma('ca');
-      await AppPreferences.guardarUltimoIdiomaEnviado('ca');
+    test(
+      'si el idioma no ha cambiado desde el último envío, no repite la llamada',
+      () async {
+        await iniciarSesion();
+        await AppPreferences.guardarIdioma('ca');
+        await AppPreferences.guardarUltimoIdiomaEnviado('ca');
 
-      await conMockHttpQueNoDebeLlamarse(IdiomaService.sincronizarAlArrancar);
-    });
+        await conMockHttpQueNoDebeLlamarse(IdiomaService.sincronizarAlArrancar);
+      },
+    );
 
-    test('si ha cambiado (p. ej. el idioma del móvil), lo envía y lo anota', () async {
-      await iniciarSesion();
-      await AppPreferences.guardarIdioma('en');
-      await AppPreferences.guardarUltimoIdiomaEnviado('es');
+    test(
+      'si ha cambiado (p. ej. el idioma del móvil), lo envía y lo anota',
+      () async {
+        await iniciarSesion();
+        await AppPreferences.guardarIdioma('en');
+        await AppPreferences.guardarUltimoIdiomaEnviado('es');
 
-      var llamadas = 0;
+        var llamadas = 0;
 
-      await conMockHttp(
-        (request) async {
+        await conMockHttp((request) async {
           llamadas++;
           expect(jsonDecode(request.body), {'idioma': 'en'});
 
           return http.Response(jsonEncode({'idioma': 'en'}), 200);
-        },
-        IdiomaService.sincronizarAlArrancar,
-      );
+        }, IdiomaService.sincronizarAlArrancar);
 
-      expect(llamadas, 1);
-      expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), 'en');
-    });
+        expect(llamadas, 1);
+        expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), 'en');
+      },
+    );
 
     test('si nunca se ha enviado, lo envía', () async {
       await iniciarSesion();
@@ -128,27 +135,30 @@ void main() {
       expect(llamadas, 1);
     });
 
-    test('si falla no bloquea y se reintenta en el siguiente arranque', () async {
-      await iniciarSesion();
-      await AppPreferences.guardarIdioma('ca');
-      await AppPreferences.guardarUltimoIdiomaEnviado('es');
+    test(
+      'si falla no bloquea y se reintenta en el siguiente arranque',
+      () async {
+        await iniciarSesion();
+        await AppPreferences.guardarIdioma('ca');
+        await AppPreferences.guardarUltimoIdiomaEnviado('es');
 
-      await conMockHttp(
-        (request) async => http.Response('', 503),
-        IdiomaService.sincronizarAlArrancar,
-      );
+        await conMockHttp(
+          (request) async => http.Response('', 503),
+          IdiomaService.sincronizarAlArrancar,
+        );
 
-      expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), 'es');
+        expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), 'es');
 
-      var reintento = 0;
+        var reintento = 0;
 
-      await conMockHttp((request) async {
-        reintento++;
-        return http.Response('{}', 200);
-      }, IdiomaService.sincronizarAlArrancar);
+        await conMockHttp((request) async {
+          reintento++;
+          return http.Response('{}', 200);
+        }, IdiomaService.sincronizarAlArrancar);
 
-      expect(reintento, 1);
-      expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), 'ca');
-    });
+        expect(reintento, 1);
+        expect(await AppPreferences.obtenerUltimoIdiomaEnviado(), 'ca');
+      },
+    );
   });
 }

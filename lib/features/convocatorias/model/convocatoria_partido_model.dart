@@ -89,7 +89,9 @@ class ConvocatoriaPartidoModel {
           )
           .toList(),
       equipacion: EquipacionModel.fromJsonOrNull(json['equipacion']),
-      equipacionMochila: EquipacionModel.fromJsonOrNull(json['equipacionMochila']),
+      equipacionMochila: EquipacionModel.fromJsonOrNull(
+        json['equipacionMochila'],
+      ),
     );
   }
 }

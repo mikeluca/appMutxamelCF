@@ -198,13 +198,10 @@ void main() {
       testWidgets(caso.key, (tester) async {
         await _pintar(tester, ['COORDINADOR', 'ADMIN_APP', 'RETRANSMISION']);
 
-        await conMockHttp(
-          (request) async => http.Response('0', 200),
-          () async {
-            await tester.tap(find.text(caso.key).last);
-            await tester.pumpAndSettle();
-          },
-        );
+        await conMockHttp((request) async => http.Response('0', 200), () async {
+          await tester.tap(find.text(caso.key).last);
+          await tester.pumpAndSettle();
+        });
 
         expect(_rutas, [caso.value.first]);
       });
@@ -221,13 +218,10 @@ void main() {
       testWidgets('${caso.key} (${caso.value[0]})', (tester) async {
         await _pintar(tester, [caso.value[0]]);
 
-        await conMockHttp(
-          (request) async => http.Response('0', 200),
-          () async {
-            await tester.tap(find.text(caso.key));
-            await tester.pumpAndSettle();
-          },
-        );
+        await conMockHttp((request) async => http.Response('0', 200), () async {
+          await tester.tap(find.text(caso.key));
+          await tester.pumpAndSettle();
+        });
 
         expect(_rutas, [caso.value[1]]);
       });

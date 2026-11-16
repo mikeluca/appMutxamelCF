@@ -56,10 +56,7 @@ class NewsDetailPage extends StatelessWidget {
                     height: 220,
                     width: double.infinity,
                     child: Center(
-                      child: Icon(
-                        Icons.image_not_supported_outlined,
-                        size: 48,
-                      ),
+                      child: Icon(Icons.image_not_supported_outlined, size: 48),
                     ),
                   );
                 },

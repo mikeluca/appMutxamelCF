@@ -266,11 +266,7 @@ class _AcercaDePageState extends State<AcercaDePage> {
       ),
       child: Text(
         texto,
-        style: TextStyle(
-          color: _colors.onSurface,
-          fontSize: 14,
-          height: 1.4,
-        ),
+        style: TextStyle(color: _colors.onSurface, fontSize: 14, height: 1.4),
       ),
     );
   }

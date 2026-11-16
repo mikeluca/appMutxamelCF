@@ -182,10 +182,8 @@ class _CalendarioGestionPageState extends State<CalendarioGestionPage> {
   Future<void> _abrirFormularioSesion(SesionEntrenamientoModel sesion) async {
     final guardado = await showDialog<bool>(
       context: context,
-      builder: (_) => _SesionEditDialog(
-        calendarioService: _service,
-        sesion: sesion,
-      ),
+      builder: (_) =>
+          _SesionEditDialog(calendarioService: _service, sesion: sesion),
     );
 
     if (guardado == true && mounted) {
@@ -194,9 +192,7 @@ class _CalendarioGestionPageState extends State<CalendarioGestionPage> {
     }
   }
 
-  Future<void> _confirmarCancelarSesion(
-    SesionEntrenamientoModel sesion,
-  ) async {
+  Future<void> _confirmarCancelarSesion(SesionEntrenamientoModel sesion) async {
     final motivo = await showDialog<String>(
       context: context,
       builder: (_) => _MotivoCancelacionDialog(
@@ -385,10 +381,7 @@ class _CalendarioGestionPageState extends State<CalendarioGestionPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: Padding(
         padding: const EdgeInsets.all(18),
-        child: Text(
-          mensaje,
-          style: TextStyle(color: _colors.onSurfaceVariant),
-        ),
+        child: Text(mensaje, style: TextStyle(color: _colors.onSurfaceVariant)),
       ),
     );
   }
@@ -1099,8 +1092,7 @@ class _JustificacionesDialog extends StatefulWidget {
   });
 
   @override
-  State<_JustificacionesDialog> createState() =>
-      _JustificacionesDialogState();
+  State<_JustificacionesDialog> createState() => _JustificacionesDialogState();
 }
 
 class _JustificacionesDialogState extends State<_JustificacionesDialog> {
@@ -1112,9 +1104,7 @@ class _JustificacionesDialogState extends State<_JustificacionesDialog> {
   void initState() {
     super.initState();
 
-    _future = widget.calendarioService.obtenerJustificaciones(
-      widget.sesionId,
-    );
+    _future = widget.calendarioService.obtenerJustificaciones(widget.sesionId);
   }
 
   @override

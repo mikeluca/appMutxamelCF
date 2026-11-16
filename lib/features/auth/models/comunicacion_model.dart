@@ -41,8 +41,9 @@ class ComunicacionModel {
       tipo: json['tipo'] as String? ?? 'GRUPAL',
       titulo: json['titulo'] as String?,
       contenido: json['contenido'] as String? ?? '',
-      usuarioAutorId: (json['usuarioAutorId'] as num? ?? json['autorId'] as num? ?? 0)
-          .toInt(),
+      usuarioAutorId:
+          (json['usuarioAutorId'] as num? ?? json['autorId'] as num? ?? 0)
+              .toInt(),
       fechaCreacion: _parseFecha(json['fechaCreacion']),
       fechaPublicacion: _parseFecha(json['fechaPublicacion'] ?? json['fecha']),
       activa: (json['activa'] as num?)?.toInt() ?? 1,

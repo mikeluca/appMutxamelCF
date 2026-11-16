@@ -58,9 +58,7 @@ class CalendarioService {
   // HORARIOS SEMANALES DE ENTRENAMIENTO
   // ============================================================
 
-  Future<List<HorarioEntrenamientoModel>> obtenerHorarios(
-    int equipoId,
-  ) async {
+  Future<List<HorarioEntrenamientoModel>> obtenerHorarios(int equipoId) async {
     final data =
         await ApiClient.get(
               '/app/horarios-entrenamiento?equipoId=$equipoId',
@@ -70,9 +68,8 @@ class CalendarioService {
 
     return data
         .map(
-          (item) => HorarioEntrenamientoModel.fromJson(
-            item as Map<String, dynamic>,
-          ),
+          (item) =>
+              HorarioEntrenamientoModel.fromJson(item as Map<String, dynamic>),
         )
         .toList();
   }
@@ -145,9 +142,8 @@ class CalendarioService {
 
     return data
         .map(
-          (item) => SesionEntrenamientoModel.fromJson(
-            item as Map<String, dynamic>,
-          ),
+          (item) =>
+              SesionEntrenamientoModel.fromJson(item as Map<String, dynamic>),
         )
         .toList();
   }
@@ -238,9 +234,8 @@ class CalendarioService {
 
     return data
         .map(
-          (item) => JustificacionFaltaModel.fromJson(
-            item as Map<String, dynamic>,
-          ),
+          (item) =>
+              JustificacionFaltaModel.fromJson(item as Map<String, dynamic>),
         )
         .toList();
   }
@@ -250,6 +245,9 @@ class CalendarioService {
   // ============================================================
 
   Future<void> cancelarPartido(int partidoId) async {
-    await ApiClient.post('/app/partidos/$partidoId/cancelar', autenticado: true);
+    await ApiClient.post(
+      '/app/partidos/$partidoId/cancelar',
+      autenticado: true,
+    );
   }
 }

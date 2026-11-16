@@ -497,8 +497,8 @@ class PartidoListaCard extends StatelessWidget {
     final texto = partido.descansa
         ? t.matchTeamRests
         : descansaExplicitamente
-            ? t.matchesRestsThisRound
-            : t.matchTeamHasNoMatch;
+        ? t.matchesRestsThisRound
+        : t.matchTeamHasNoMatch;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
