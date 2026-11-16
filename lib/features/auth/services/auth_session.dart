@@ -7,9 +7,9 @@ import '../models/login_response.dart';
 class AuthSession {
   AuthSession._();
 
-  static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-  );
+  // Sin opciones de Android: el paquete migra solo lo guardado con EncryptedSharedPreferences la primera vez que
+  // lo lee (migrateOnAlgorithmChange es true por defecto), así que nadie pierde la sesión al actualizar.
+  static const _storage = FlutterSecureStorage();
 
   static const String _tokenKey = 'auth_token';
   static const String _usuarioIdKey = 'auth_usuario_id';

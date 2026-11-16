@@ -297,6 +297,7 @@ class PushNotificationService {
 
     String? token;
     try {
+      // ignore: deprecated_member_use
       token = await _messaging.getToken();
     } catch (e) {
       debugPrint('NO SE PUDO OBTENER EL TOKEN FCM: $e');
@@ -315,6 +316,7 @@ class PushNotificationService {
       }
     }
 
+    // ignore: deprecated_member_use
     _messaging.onTokenRefresh.listen((nuevoToken) async {
       debugPrint('TOKEN FCM ACTUALIZADO');
 
@@ -341,8 +343,14 @@ class PushNotificationService {
     }
   }
 
+  // NOTA: getToken/onTokenRefresh/deleteToken están marcados como obsoletos en firebase_messaging 17, pero sus
+  // sustitutos (register/onRegistered/unregister/onUnregistered) entregan el Firebase Installation ID (FID), no el
+  // token FCM que guarda y usa el backend (DISPOSITIVOS_APP.TOKEN_FCM, envío por token y topics). Migrar sin que el
+  // backend acepte FID dejaría a todos sin avisos personales, así que se mantiene la API actual (avisos silenciados
+  // con ignore) hasta que el backend lo soporte.
   static Future<void> registrarDispositivoActual() async {
     try {
+      // ignore: deprecated_member_use
       final token = await _messaging.getToken();
 
       if (token == null || token.isEmpty) {
@@ -368,6 +376,7 @@ class PushNotificationService {
   /// dispositivo y el token de sesión ya no es válido.
   static Future<void> borrarTokenFcmLocal() async {
     try {
+      // ignore: deprecated_member_use
       await _messaging.deleteToken();
     } catch (e) {
       debugPrint('ERROR AL BORRAR EL TOKEN FCM LOCAL: $e');
@@ -380,6 +389,7 @@ class PushNotificationService {
   /// acaba de salir.
   static Future<void> desregistrarDispositivoActual() async {
     try {
+      // ignore: deprecated_member_use
       final token = await _messaging.getToken();
 
       if (token != null && token.isNotEmpty) {
@@ -390,6 +400,7 @@ class PushNotificationService {
         ).timeout(const Duration(seconds: 5));
       }
 
+      // ignore: deprecated_member_use
       await _messaging.deleteToken();
 
       debugPrint('DISPOSITIVO FCM DESREGISTRADO CORRECTAMENTE');
