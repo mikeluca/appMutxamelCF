@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/escudo_rival.dart';
 import '../../../core/utils/como_llegar.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
@@ -725,8 +726,21 @@ class _CalendarioPageState extends State<CalendarioPage> {
                     ),
                     if (subtitulo.trim().isNotEmpty) ...[
                       const SizedBox(height: 2),
-                      Text(
-                        subtitulo,
+                      Row(
+                        children: [
+                          if (!item.esEntrenamiento) ...[
+                            // Un partido: el escudo pequeño del rival delante de su nombre.
+                            EscudoRival(
+                              url: item.partido?.escudoRivalUrl,
+                              esPropio: item.partido?.rivalEsPropio ?? false,
+                              tamano: 20,
+                              colorGenerico: _colors.outline,
+                            ),
+                            const SizedBox(width: 6),
+                          ],
+                          Flexible(
+                            child: Text(
+                              subtitulo,
                         style: TextStyle(
                           fontSize: 13,
                           color: _colors.onSurfaceVariant,
@@ -734,6 +748,9 @@ class _CalendarioPageState extends State<CalendarioPage> {
                               ? TextDecoration.lineThrough
                               : null,
                         ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                     if (campoPartido.isNotEmpty)

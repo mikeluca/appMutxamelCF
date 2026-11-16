@@ -84,6 +84,11 @@ class CabeceraFicha {
   /// el doble. Un backend antiguo no lo manda: 45.
   final int minutosParte;
 
+  /// Escudo del club rival (ruta relativa a la URL base del servidor; null si no tiene o el backend es antiguo) y
+  /// si el rival es un equipo de nuestro club (entonces se pinta nuestro escudo).
+  final String? escudoRivalUrl;
+  final bool rivalEsPropio;
+
   /// El club se llama siempre "Mutxamel CF" en la ficha.
   static const String nombreClub = 'Mutxamel CF';
 
@@ -99,6 +104,8 @@ class CabeceraFicha {
     this.competicion = '',
     this.reloj,
     this.minutosParte = 45,
+    this.escudoRivalUrl,
+    this.rivalEsPropio = false,
   });
 
   factory CabeceraFicha.fromJson(Map<String, dynamic> json) {
@@ -114,6 +121,8 @@ class CabeceraFicha {
       competicion: json['competicion'] as String? ?? '',
       reloj: RelojDirecto.desdeJson(json['reloj']),
       minutosParte: _minutosParte(json['minutosParte']),
+      escudoRivalUrl: json['escudoRivalUrl'] as String?,
+      rivalEsPropio: json['rivalEsPropio'] as bool? ?? false,
     );
   }
 
@@ -329,6 +338,10 @@ class FormaFicha {
   /// G, E o P.
   final String resultado;
 
+  /// Escudo del club rival (ruta relativa del backend) y si el rival es un equipo de nuestro club.
+  final String? escudoRivalUrl;
+  final bool rivalEsPropio;
+
   const FormaFicha({
     required this.partidoId,
     this.dia,
@@ -337,6 +350,8 @@ class FormaFicha {
     this.golesFavor = 0,
     this.golesContra = 0,
     this.resultado = 'E',
+    this.escudoRivalUrl,
+    this.rivalEsPropio = false,
   });
 
   factory FormaFicha.fromJson(Map<String, dynamic> json) {
@@ -348,6 +363,8 @@ class FormaFicha {
       golesFavor: (json['golesFavor'] as num?)?.toInt() ?? 0,
       golesContra: (json['golesContra'] as num?)?.toInt() ?? 0,
       resultado: json['resultado'] as String? ?? 'E',
+      escudoRivalUrl: json['escudoRivalUrl'] as String?,
+      rivalEsPropio: json['rivalEsPropio'] as bool? ?? false,
     );
   }
 

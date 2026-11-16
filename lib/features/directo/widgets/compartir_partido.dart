@@ -2,11 +2,13 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/escudo_rival.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../ficha_partido/models/ficha_partido_model.dart';
 import '../../ficha_partido/widgets/ficha_comunes.dart';
@@ -33,6 +35,10 @@ class DatosCompartir {
   /// "Mutxamel CF 2-1 Rival · Final", el texto corto con el que se comparte la imagen.
   final String texto;
 
+  /// Escudo del club rival (ruta relativa del backend) y si el rival es un equipo de nuestro club.
+  final String? escudoRivalUrl;
+  final bool rivalEsPropio;
+
   const DatosCompartir({
     required this.local,
     required this.visitante,
@@ -42,7 +48,23 @@ class DatosCompartir {
     required this.competicion,
     required this.fecha,
     required this.texto,
+    this.escudoRivalUrl,
+    this.rivalEsPropio = false,
   });
+
+  /// Los mismos datos con otro escudo del rival (sin él, el genérico).
+  DatosCompartir conEscudoRival(String? url) => DatosCompartir(
+    local: local,
+    visitante: visitante,
+    mutxamelEsLocal: mutxamelEsLocal,
+    marcador: marcador,
+    estado: estado,
+    competicion: competicion,
+    fecha: fecha,
+    texto: texto,
+    escudoRivalUrl: url,
+    rivalEsPropio: rivalEsPropio,
+  );
 
   factory DatosCompartir.desdeCabecera(
     CabeceraFicha c,
@@ -92,6 +114,8 @@ class DatosCompartir {
       competicion: c.competicion,
       fecha: fecha,
       texto: texto,
+      escudoRivalUrl: c.escudoRivalUrl,
+      rivalEsPropio: c.rivalEsPropio,
     );
   }
 }
@@ -110,10 +134,10 @@ class TarjetaCompartir extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
 
-    Widget equipo(String nombre, bool mutxamel) => Expanded(
+    Widget equipo(String nombre, bool mutxamel, {String? url}) => Expanded(
       child: Column(
         children: [
-          EscudoEquipo(mutxamel: mutxamel, tamano: 190),
+          EscudoEquipo(mutxamel: mutxamel, tamano: 190, url: url),
           const SizedBox(height: 18),
           Text(
             nombre,
@@ -152,9 +176,17 @@ class TarjetaCompartir extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  equipo(datos.local, datos.mutxamelEsLocal),
+                  equipo(
+                    datos.local,
+                    datos.mutxamelEsLocal || datos.rivalEsPropio,
+                    url: datos.mutxamelEsLocal ? null : datos.escudoRivalUrl,
+                  ),
                   const SizedBox(width: 24),
-                  equipo(datos.visitante, !datos.mutxamelEsLocal),
+                  equipo(
+                    datos.visitante,
+                    !datos.mutxamelEsLocal || datos.rivalEsPropio,
+                    url: datos.mutxamelEsLocal ? datos.escudoRivalUrl : null,
+                  ),
                 ],
               ),
               const Spacer(),
@@ -239,6 +271,28 @@ class CompartirPartido {
     await enviar(png, datos.texto);
   }
 
+  /// Cuánto se espera al escudo del rival antes de usar el genérico.
+  static const Duration esperaMaxima = Duration(seconds: 3);
+
+  /// Descarga (o lee de la caché) el escudo del rival; false si falla o tarda más de [espera]. Los tests lo sustituyen.
+  @visibleForTesting
+  static Future<bool> Function(BuildContext, String, Duration) precargarEscudo =
+      (contexto, url, espera) async {
+        var fallo = false;
+
+        try {
+          await precacheImage(
+            CachedNetworkImageProvider(url),
+            contexto,
+            onError: (_, _) => fallo = true,
+          ).timeout(espera);
+        } catch (_) {
+          return false;
+        }
+
+        return !fallo;
+      };
+
   /// La tarjeta de [datos] como PNG de 1080x1080. Se pinta en una capa fuera de la pantalla (a la izquierda del
   /// borde) con el tamaño de letra del sistema ignorado, para que siempre salga igual.
   static Future<Uint8List> generarPng(
@@ -250,6 +304,17 @@ class CompartirPartido {
 
     // Con el escudo ya en la caché de imágenes entra en el primer fotograma.
     await precacheImage(const AssetImage('assets/images/escudo.png'), context);
+
+    // El escudo del rival se espera (hasta 3 s); si falla o tarda más, la imagen sale con el genérico.
+    final urlRival = EscudoRival.urlCompleta(datos.escudoRivalUrl);
+
+    if (urlRival != null && !datos.rivalEsPropio) {
+      if (!context.mounted) throw StateError('La pantalla ya no está');
+
+      final cargado = await precargarEscudo(context, urlRival, esperaMaxima);
+
+      if (!cargado) datos = datos.conEscudoRival(null);
+    }
 
     final entrada = OverlayEntry(
       builder: (contextoCapa) => Positioned(

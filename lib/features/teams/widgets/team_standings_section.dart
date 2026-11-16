@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/widget/escudo_rival.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/standings_model.dart';
 
 /// Clasificación del grupo del equipo. Compacta (Pos, Equipo, PJ, Pts) y, si
 /// hay sitio (pantalla ancha o móvil girado), con G/E/P/GF/GC. La fila del
-/// Mutxamel se resalta con el color del club. Solo muestra el nombre de los
-/// rivales: sus escudos no son nuestros.
+/// Mutxamel se resalta con el color del club. Cada equipo lleva delante su
+/// escudo pequeño (el del club rival si lo hay, el genérico si no).
 class TeamStandingsSection extends StatelessWidget {
   final Future<StandingsModel?> future;
 
@@ -169,11 +170,25 @@ class TeamStandingsSection extends StatelessWidget {
     return _fila(
       completa: completa,
       pos: Text('${f.posicion}', style: estilo),
-      equipo: Text(
-        f.equipo,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: estilo,
+      equipo: Row(
+        children: [
+          // Un escudo pequeño delante del nombre: el del club, el nuestro en nuestra fila o el genérico.
+          EscudoRival(
+            url: f.escudoUrl,
+            esPropio: f.esNuestro,
+            tamano: 22,
+            colorGenerico: colors.outline,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              f.equipo,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: estilo,
+            ),
+          ),
+        ],
       ),
       pj: Text('${f.pj}', style: estilo),
       pg: Text('${f.pg}', style: estilo),

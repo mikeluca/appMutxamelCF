@@ -70,6 +70,11 @@ class MatchModel {
   /// parte, o en un backend antiguo.
   final RelojDirecto? reloj;
 
+  /// Escudo del club rival (ruta relativa a la URL base del servidor; null si no tiene o el backend es antiguo) y si
+  /// el rival es un equipo de nuestro club (se pinta nuestro escudo).
+  final String? escudoRivalUrl;
+  final bool rivalEsPropio;
+
   const MatchModel({
     this.id,
     this.equipoId,
@@ -99,6 +104,8 @@ class MatchModel {
     this.fase,
     this.goleadores = const [],
     this.reloj,
+    this.escudoRivalUrl,
+    this.rivalEsPropio = false,
   });
 
   factory MatchModel.fromJson(Map<String, dynamic> json) {
@@ -137,6 +144,8 @@ class MatchModel {
           .map((g) => g.toString())
           .toList(),
       reloj: RelojDirecto.desdeJson(json['reloj']),
+      escudoRivalUrl: json['escudoRivalUrl'] as String?,
+      rivalEsPropio: json['rivalEsPropio'] as bool? ?? false,
     );
   }
 

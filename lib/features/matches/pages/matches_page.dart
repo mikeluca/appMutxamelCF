@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/escudo_rival.dart';
 import '../../../core/utils/como_llegar.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
@@ -362,6 +363,39 @@ class PartidoListaCard extends StatelessWidget {
     ];
   }
 
+  /// El nombre de un equipo con su escudo pequeño delante: el del club rival (o el nuestro si el rival es un filial y
+  /// para el Mutxamel) o el genérico. Lleva el escudo pequeño: es una lista.
+  Widget _equipoConEscudo(
+    BuildContext context,
+    String nombre, {
+    required bool esRival,
+  }) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        EscudoRival(
+          url: esRival ? partido.escudoRivalUrl : null,
+          esPropio: !esRival || partido.rivalEsPropio,
+          tamano: 28,
+          colorGenerico: _colors(context).outline,
+        ),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            nombre,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: _colors(context).onSurface,
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildResultadoCard(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -378,15 +412,7 @@ class PartidoListaCard extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            Text(
-              partido.equipo,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: _colors(context).onSurface,
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            _equipoConEscudo(context, partido.equipo, esRival: false),
 
             const SizedBox(height: 8),
 
@@ -401,11 +427,7 @@ class PartidoListaCard extends StatelessWidget {
 
             const SizedBox(height: 8),
 
-            Text(
-              partido.rival,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-            ),
+            _equipoConEscudo(context, partido.rival, esRival: true),
 
             if (partido.dia != null) ...[
               const SizedBox(height: 12),
@@ -427,11 +449,6 @@ class PartidoListaCard extends StatelessWidget {
   /// y "Pendiente de resultado" en gris en lugar del marcador.
   Widget _buildPendienteCard(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final estiloEquipo = TextStyle(
-      color: _colors(context).onSurface,
-      fontSize: 17,
-      fontWeight: FontWeight.bold,
-    );
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -444,10 +461,10 @@ class PartidoListaCard extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            Text(
+            _equipoConEscudo(
+              context,
               partido.local ? partido.equipo : partido.rival,
-              textAlign: TextAlign.center,
-              style: estiloEquipo,
+              esRival: !partido.local,
             ),
 
             const SizedBox(height: 8),
@@ -464,10 +481,10 @@ class PartidoListaCard extends StatelessWidget {
 
             const SizedBox(height: 8),
 
-            Text(
+            _equipoConEscudo(
+              context,
               partido.local ? partido.rival : partido.equipo,
-              textAlign: TextAlign.center,
-              style: estiloEquipo,
+              esRival: partido.local,
             ),
 
             if (partido.dia != null) ...[
@@ -577,15 +594,7 @@ class PartidoListaCard extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: Text(
-            partido.equipo,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: _colors(context).onSurface,
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          child: _equipoConEscudo(context, partido.equipo, esRival: false),
         ),
 
         Padding(
@@ -601,15 +610,7 @@ class PartidoListaCard extends StatelessWidget {
         ),
 
         Expanded(
-          child: Text(
-            partido.rival,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: _colors(context).onSurface,
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          child: _equipoConEscudo(context, partido.rival, esRival: true),
         ),
       ],
     );

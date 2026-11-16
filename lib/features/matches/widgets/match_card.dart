@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widget/escudo_rival.dart';
 import '../../../core/utils/como_llegar.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../l10n/gen/app_localizations.dart';
@@ -616,10 +617,16 @@ class MatchCard extends StatelessWidget {
               fit: BoxFit.contain,
             )
           else
-            Icon(
-              Icons.shield_outlined,
-              size: 58,
-              color: Theme.of(context).colorScheme.primary,
+            // El rival: su escudo de la red, el nuestro si es un filial, o el genérico.
+            SizedBox(
+              height: 70,
+              child: Center(
+                child: EscudoRival(
+                  url: match.escudoRivalUrl,
+                  esPropio: match.rivalEsPropio,
+                  tamano: 58,
+                ),
+              ),
             ),
 
           const SizedBox(height: 8),

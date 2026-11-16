@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/ficha_partido_model.dart';
 import 'ficha_comunes.dart';
+import '../../../core/widget/escudo_rival.dart';
 
 /// Pestaña Últ. partidos: los últimos partidos con resultado, cada uno con el escudo local, la píldora del
 /// resultado (verde ganado, gris empatado, rojo perdido) y el escudo visitante, con el Mutxamel en casa o fuera según
@@ -91,7 +92,10 @@ class _FilaForma extends StatelessWidget {
                   Expanded(
                     child: Align(
                       alignment: Alignment.centerRight,
-                      child: _Escudo(mutxamel: partido.local),
+                      child: _Escudo(
+                        mutxamel: partido.local || partido.rivalEsPropio,
+                        url: partido.local ? null : partido.escudoRivalUrl,
+                      ),
                     ),
                   ),
                   Container(
@@ -117,7 +121,10 @@ class _FilaForma extends StatelessWidget {
                   Expanded(
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: _Escudo(mutxamel: !partido.local),
+                      child: _Escudo(
+                        mutxamel: !partido.local || partido.rivalEsPropio,
+                        url: partido.local ? partido.escudoRivalUrl : null,
+                      ),
                     ),
                   ),
                 ],
@@ -141,8 +148,9 @@ class _FilaForma extends StatelessWidget {
 /// Escudo pequeño sobre fondo claro: el del club o el genérico del rival (en gris).
 class _Escudo extends StatelessWidget {
   final bool mutxamel;
+  final String? url;
 
-  const _Escudo({required this.mutxamel});
+  const _Escudo({required this.mutxamel, this.url});
 
   @override
   Widget build(BuildContext context) {
@@ -150,11 +158,10 @@ class _Escudo extends StatelessWidget {
       return const EscudoEquipo(mutxamel: true, tamano: 36);
     }
 
-    return Icon(
-      Icons.shield_outlined,
-      key: const ValueKey('escudo-rival'),
-      size: 34,
-      color: Theme.of(context).colorScheme.outline,
+    return EscudoRival(
+      url: url,
+      tamano: 36,
+      colorGenerico: Theme.of(context).colorScheme.outline,
     );
   }
 }

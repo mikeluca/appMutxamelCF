@@ -61,7 +61,8 @@ class FichaCabecera extends StatelessWidget {
               Expanded(
                 child: _Equipo(
                   nombre: cabecera.equipoLocal,
-                  mutxamel: local,
+                  mutxamel: local || cabecera.rivalEsPropio,
+                  url: local ? null : cabecera.escudoRivalUrl,
                   clave: 'ficha-equipo-local',
                 ),
               ),
@@ -78,7 +79,8 @@ class FichaCabecera extends StatelessWidget {
               Expanded(
                 child: _Equipo(
                   nombre: cabecera.equipoVisitante,
-                  mutxamel: !local,
+                  mutxamel: !local || cabecera.rivalEsPropio,
+                  url: local ? cabecera.escudoRivalUrl : null,
                   clave: 'ficha-equipo-visitante',
                 ),
               ),
@@ -103,11 +105,13 @@ class _Equipo extends StatelessWidget {
   final String nombre;
   final bool mutxamel;
   final String clave;
+  final String? url;
 
   const _Equipo({
     required this.nombre,
     required this.mutxamel,
     required this.clave,
+    this.url,
   });
 
   @override
@@ -115,7 +119,7 @@ class _Equipo extends StatelessWidget {
     return Column(
       key: ValueKey(clave),
       children: [
-        EscudoEquipo(mutxamel: mutxamel, tamano: 56),
+        EscudoEquipo(mutxamel: mutxamel, tamano: 56, url: url),
         const SizedBox(height: 6),
         Text(
           nombre,

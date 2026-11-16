@@ -10,6 +10,9 @@ class StandingsRowModel {
   final int gf;
   final int gc;
 
+  /// Escudo del club (ruta relativa del backend); null si no tiene, en nuestra fila y con un backend antiguo.
+  final String? escudoUrl;
+
   const StandingsRowModel({
     required this.posicion,
     required this.equipo,
@@ -21,6 +24,7 @@ class StandingsRowModel {
     required this.pp,
     required this.gf,
     required this.gc,
+    this.escudoUrl,
   });
 
   factory StandingsRowModel.fromJson(Map<String, dynamic> json) {
@@ -35,6 +39,7 @@ class StandingsRowModel {
       pp: (json['pp'] as num?)?.toInt() ?? 0,
       gf: (json['gf'] as num?)?.toInt() ?? 0,
       gc: (json['gc'] as num?)?.toInt() ?? 0,
+      escudoUrl: json['escudoUrl'] as String?,
     );
   }
 }

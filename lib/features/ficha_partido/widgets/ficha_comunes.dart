@@ -3,12 +3,22 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
+import '../../../core/widget/escudo_rival.dart';
+
 /// Escudo de un equipo en la ficha: el del club (el asset de siempre) o, para el rival, un escudo genérico.
 class EscudoEquipo extends StatelessWidget {
   final bool mutxamel;
   final double tamano;
 
-  const EscudoEquipo({super.key, required this.mutxamel, this.tamano = 56});
+  /// El escudo del club rival (ruta relativa del backend); sin él, el genérico.
+  final String? url;
+
+  const EscudoEquipo({
+    super.key,
+    required this.mutxamel,
+    this.tamano = 56,
+    this.url,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,16 +32,7 @@ class EscudoEquipo extends StatelessWidget {
       );
     }
 
-    return SizedBox(
-      width: tamano,
-      height: tamano,
-      child: Icon(
-        Icons.shield_outlined,
-        key: const ValueKey('escudo-rival'),
-        size: tamano * 0.9,
-        color: Colors.white70,
-      ),
-    );
+    return EscudoRival(url: url, tamano: tamano, colorGenerico: Colors.white70);
   }
 }
 
