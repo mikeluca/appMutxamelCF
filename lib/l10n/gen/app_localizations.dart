@@ -1198,6 +1198,156 @@ abstract class AppLocalizations {
   /// **'Sin posición'**
   String get playerPositionNone;
 
+  /// No description provided for @settingsCrashReports.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar informes de errores'**
+  String get settingsCrashReports;
+
+  /// No description provided for @settingsCrashReportsSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Si la app se cierra de forma inesperada, se envía un informe técnico sin datos personales para poder corregirlo.'**
+  String get settingsCrashReportsSubtitle;
+
+  /// No description provided for @notifPromptTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'No te pierdas nada del Mutxamel C.F.'**
+  String get notifPromptTitle;
+
+  /// No description provided for @notifPromptBenefitGoals.
+  ///
+  /// In es, this message translates to:
+  /// **'Goles y resultados al momento'**
+  String get notifPromptBenefitGoals;
+
+  /// No description provided for @notifPromptBenefitCallups.
+  ///
+  /// In es, this message translates to:
+  /// **'Convocatorias y cambios de horario'**
+  String get notifPromptBenefitCallups;
+
+  /// No description provided for @notifPromptBenefitNews.
+  ///
+  /// In es, this message translates to:
+  /// **'Noticias y avisos del club'**
+  String get notifPromptBenefitNews;
+
+  /// No description provided for @notifPromptEnable.
+  ///
+  /// In es, this message translates to:
+  /// **'Activar notificaciones'**
+  String get notifPromptEnable;
+
+  /// No description provided for @notifPromptNotNow.
+  ///
+  /// In es, this message translates to:
+  /// **'Ahora no'**
+  String get notifPromptNotNow;
+
+  /// No description provided for @notifDeniedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Notificaciones desactivadas'**
+  String get notifDeniedTitle;
+
+  /// No description provided for @notifDeniedBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Para recibir los avisos del club, actívalas en los ajustes de tu dispositivo.'**
+  String get notifDeniedBody;
+
+  /// No description provided for @openSettingsAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Abrir ajustes'**
+  String get openSettingsAction;
+
+  /// No description provided for @welcomeLanguageTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige tu idioma'**
+  String get welcomeLanguageTitle;
+
+  /// No description provided for @welcomeLanguageSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Podrás cambiarlo después en Ajustes.'**
+  String get welcomeLanguageSubtitle;
+
+  /// No description provided for @welcomeContinue.
+  ///
+  /// In es, this message translates to:
+  /// **'Continuar'**
+  String get welcomeContinue;
+
+  /// No description provided for @welcomeSkip.
+  ///
+  /// In es, this message translates to:
+  /// **'Saltar'**
+  String get welcomeSkip;
+
+  /// No description provided for @welcomeStepOf.
+  ///
+  /// In es, this message translates to:
+  /// **'Paso {current} de {total}'**
+  String welcomeStepOf(int current, int total);
+
+  /// No description provided for @welcomeSwitchResults.
+  ///
+  /// In es, this message translates to:
+  /// **'Resultados'**
+  String get welcomeSwitchResults;
+
+  /// No description provided for @welcomeSwitchNews.
+  ///
+  /// In es, this message translates to:
+  /// **'Noticias'**
+  String get welcomeSwitchNews;
+
+  /// No description provided for @calendarAddButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir a mi calendario'**
+  String get calendarAddButton;
+
+  /// No description provided for @calendarAddDenied.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha añadido el evento. Si no diste permiso al calendario, puedes activarlo en los ajustes.'**
+  String get calendarAddDenied;
+
+  /// No description provided for @calendarAddError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido añadir el partido al calendario.'**
+  String get calendarAddError;
+
+  /// No description provided for @calendarNoteRound.
+  ///
+  /// In es, this message translates to:
+  /// **'Jornada {round}'**
+  String calendarNoteRound(int round);
+
+  /// No description provided for @calendarNoteMeetTime.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora de citación: {time}'**
+  String calendarNoteMeetTime(String time);
+
+  /// No description provided for @calendarNoteMeetPlace.
+  ///
+  /// In es, this message translates to:
+  /// **'Lugar de citación: {place}'**
+  String calendarNoteMeetPlace(String place);
+
+  /// No description provided for @calendarNoteKit.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipaje: {kit}'**
+  String calendarNoteKit(String kit);
+
   /// No description provided for @playerPositionLegacyHint.
   ///
   /// In es, this message translates to:

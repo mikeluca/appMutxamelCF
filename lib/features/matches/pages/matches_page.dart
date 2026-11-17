@@ -8,6 +8,8 @@ import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../ficha_partido/pages/ficha_partido_page.dart';
 import '../models/match_model.dart';
+import '../widgets/boton_anadir_calendario.dart';
+import '../../../core/utils/evento_partido.dart';
 import '../../teams/pages/team_standings_page.dart';
 import '../services/match_service.dart';
 
@@ -326,6 +328,11 @@ class PartidoListaCard extends StatelessWidget {
                 Icons.location_on_outlined,
                 partido.campo!,
                 trailing: BotonComoLlegar(lugar: partido.campo),
+              ),
+
+            if (partido.dia != null && !partido.cancelado)
+              BotonAnadirCalendario(
+                construir: (t) async => EventoPartido.desdeMatch(partido, t),
               ),
 
             ..._botonClasificacion(context),

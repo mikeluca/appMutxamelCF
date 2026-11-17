@@ -5,6 +5,8 @@ import '../../routing/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/version/control_version.dart';
 import '../../core/notifications/services/local_notification_service.dart';
+import '../../core/navigation/app_navigator.dart';
+import '../../core/notifications/services/permiso_notificaciones.dart';
 import '../../core/notifications/services/push_notification_service.dart';
 import '../../l10n/gen/app_localizations.dart';
 import '../auth/services/idioma_service.dart';
@@ -25,12 +27,21 @@ class SplashPage extends StatefulWidget {
   /// de los topics anónimos.
   final Future<void> Function()? sincronizarIdioma;
 
+  /// Instalacion nueva: en vez de la portada, la bienvenida (idioma y avisos).
+  final bool mostrarBienvenida;
+
+  /// App actualizada desde una version anterior: si el permiso de notificaciones sigue sin decidir, se ofrece la pantalla
+  /// previa una vez (ya sobre la portada).
+  final bool ofrecerAvisos;
+
   const SplashPage({
     super.key,
     this.duracion = const Duration(seconds: 3),
     this.inicializarNotificaciones,
     this.comprobarVersion,
     this.sincronizarIdioma,
+    this.mostrarBienvenida = false,
+    this.ofrecerAvisos = false,
   });
 
   @override
@@ -68,7 +79,10 @@ class _SplashPageState extends State<SplashPage> {
       // Ya bloqueada por una versión obsoleta: no se pasa a home.
       if (ControlVersion.bloqueada) return;
 
-      Navigator.pushReplacementNamed(context, AppRoutes.public);
+      Navigator.pushReplacementNamed(
+        context,
+        widget.mostrarBienvenida ? AppRoutes.welcome : AppRoutes.public,
+      );
 
       ControlVersion.splashTerminado();
 
@@ -82,6 +96,17 @@ class _SplashPageState extends State<SplashPage> {
       await (widget.sincronizarIdioma ?? _sincronizarIdioma)();
 
       await PushNotificationService.procesarAvisoPendiente();
+
+      if (widget.ofrecerAvisos) {
+        final contexto = AppNavigator.navigatorKey.currentContext;
+
+        if (contexto != null && contexto.mounted) {
+          await PermisoNotificaciones.asegurar(
+            contexto,
+            MotivoPermiso.arranque,
+          );
+        }
+      }
 
       // Hay una versión recomendada (no obligatoria): se avisa una vez al día.
       await ControlVersion.avisarSiProcede();

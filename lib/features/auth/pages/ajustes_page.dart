@@ -4,6 +4,8 @@ import '../../../core/config/app_preferences.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/notifications/services/push_notification_service.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/errores/informes_errores.dart';
+import '../../../core/notifications/services/permiso_notificaciones.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/preferencias_notificacion_model.dart';
@@ -43,6 +45,12 @@ class _AjustesPageState extends State<AjustesPage> {
   bool _notifResultadosAnonimo = false;
   bool _cargandoPreferenciasAnonimas = true;
 
+  // El permiso de notificaciones del sistema esta denegado del todo: solo se activa desde sus ajustes.
+  bool _permisoDenegado = false;
+
+  // "Enviar informes de errores" (Crashlytics): activado por defecto.
+  bool _informesErrores = true;
+
   ColorScheme get _colors => Theme.of(context).colorScheme;
   AppLocalizations get _t => AppLocalizations.of(context);
 
@@ -50,11 +58,76 @@ class _AjustesPageState extends State<AjustesPage> {
   void initState() {
     super.initState();
 
+    _cargarPermisoEInformes();
+
     if (AuthManager.estaAutenticado) {
       _cargarPreferencias();
     } else {
       _cargarPreferenciasAnonimas();
     }
+  }
+
+  Future<void> _cargarPermisoEInformes() async {
+    final estado = await PermisoNotificaciones.leerEstado();
+    final informes = await AppPreferences.obtenerInformesErrores();
+
+    if (!mounted) return;
+
+    setState(() {
+      _permisoDenegado = estado == EstadoPermisoAvisos.denegado;
+      _informesErrores = informes;
+    });
+  }
+
+  Future<void> _cambiarInformesErrores(bool valor) async {
+    setState(() => _informesErrores = valor);
+
+    await InformesErrores.cambiarPreferencia(valor);
+  }
+
+  /// Aviso (con "Abrir ajustes") si el permiso del sistema esta denegado del todo.
+  Widget _avisoPermisoDenegado() {
+    if (!_permisoDenegado) return const SizedBox.shrink();
+
+    return Container(
+      key: const ValueKey('aviso-permiso-denegado'),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: _colors.errorContainer.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            _t.notifDeniedTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 4),
+          Text(_t.notifDeniedBody),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerRight,
+            child: FilledButton(
+              key: const ValueKey('ajustes-abrir-ajustes'),
+              onPressed: () => PermisoNotificaciones.abrirAjustes(),
+              child: Text(_t.openSettingsAction),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _interruptorInformesErrores() {
+    return _construirSwitch(
+      icono: Icons.bug_report_outlined,
+      titulo: _t.settingsCrashReports,
+      subtitulo: _t.settingsCrashReportsSubtitle,
+      valor: _informesErrores,
+      onChanged: _cambiarInformesErrores,
+    );
   }
 
   Future<void> _cargarPreferenciasAnonimas() async {
@@ -198,6 +271,7 @@ class _AjustesPageState extends State<AjustesPage> {
           titulo: _t.settingsSectionNotifications,
           icono: Icons.notifications_none_outlined,
           children: [
+            _avisoPermisoDenegado(),
             if (_cargandoPreferenciasAnonimas)
               Container(
                 padding: const EdgeInsets.all(24),
@@ -236,6 +310,14 @@ class _AjustesPageState extends State<AjustesPage> {
           icono: Icons.translate_outlined,
           children: [_construirOpcionIdioma()],
         ),
+
+        const SizedBox(height: 24),
+
+        _construirSeccion(
+          titulo: _t.settingsSectionApplication,
+          icono: Icons.phone_android_outlined,
+          children: [_interruptorInformesErrores()],
+        ),
       ],
     );
   }
@@ -248,6 +330,7 @@ class _AjustesPageState extends State<AjustesPage> {
           titulo: _t.settingsSectionNotifications,
           icono: Icons.notifications_none_outlined,
           children: [
+            _avisoPermisoDenegado(),
             if (_cargandoPreferencias)
               Container(
                 padding: const EdgeInsets.all(24),
@@ -337,6 +420,10 @@ class _AjustesPageState extends State<AjustesPage> {
             const SizedBox(height: 10),
 
             _construirOpcionIdioma(),
+
+            const SizedBox(height: 10),
+
+            _interruptorInformesErrores(),
 
             const SizedBox(height: 10),
 
@@ -479,10 +566,7 @@ class _AjustesPageState extends State<AjustesPage> {
             ),
           ),
 
-          Switch(
-            value: valor,
-            onChanged: onChanged,
-          ),
+          Switch(value: valor, onChanged: onChanged),
         ],
       ),
     );

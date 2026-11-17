@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/utils/origen_compartir.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../ficha_partido/models/ficha_partido_model.dart';
 import '../widgets/compartir_partido.dart';
@@ -28,8 +29,12 @@ class _CompartirVistaPreviaPageState extends State<CompartirVistaPreviaPage> {
   OpcionesCompartir _opciones = const OpcionesCompartir();
   bool _enviando = false;
 
+  /// El botón Compartir: el menú de compartir (iPad) se ancla a él.
+  final GlobalKey _claveCompartir = GlobalKey();
+
   Future<void> _compartir(AppLocalizations t) async {
     final mensajes = ScaffoldMessenger.of(context);
+    final origen = origenDeCompartir(_claveCompartir.currentContext ?? context);
 
     setState(() => _enviando = true);
 
@@ -41,7 +46,12 @@ class _CompartirVistaPreviaPageState extends State<CompartirVistaPreviaPage> {
         ahora: widget.ahora(),
       );
 
-      await CompartirPartido.compartir(context, datos, opciones: _opciones);
+      await CompartirPartido.compartir(
+        context,
+        datos,
+        opciones: _opciones,
+        origen: origen,
+      );
     } catch (e) {
       debugPrint('NO SE PUDO COMPARTIR EL PARTIDO: $e');
 
@@ -201,6 +211,7 @@ class _CompartirVistaPreviaPageState extends State<CompartirVistaPreviaPage> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
               child: SizedBox(
+                key: _claveCompartir,
                 width: double.infinity,
                 child: FilledButton.icon(
                   key: const ValueKey('compartir-boton'),

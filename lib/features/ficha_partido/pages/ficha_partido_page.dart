@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 
 import '../../../core/network/api_client.dart';
 import '../../../core/notifications/services/push_notification_service.dart';
+import '../../../core/utils/evento_partido.dart';
 import '../../../l10n/gen/app_localizations.dart';
+import '../../matches/widgets/boton_anadir_calendario.dart';
 import '../models/ficha_partido_model.dart';
 import '../services/ficha_partido_service.dart';
 import '../widgets/ficha_alineacion.dart';
@@ -196,9 +198,7 @@ class _FichaPartidoPageState extends State<FichaPartidoPage>
       // Terminado o cancelado: ya no hay avisos que seguir.
       if (ficha.cabecera.estado == EstadoFicha.finalizado ||
           ficha.cabecera.estado == EstadoFicha.cancelado) {
-        unawaited(
-          _seguir.bajaSiTermino(widget.partidoId).catchError((_) {}),
-        );
+        unawaited(_seguir.bajaSiTermino(widget.partidoId).catchError((_) {}));
       }
     } catch (e) {
       if (!mounted || sinCargando) return;
@@ -304,6 +304,10 @@ class _FichaPartidoPageState extends State<FichaPartidoPage>
             partidoId: widget.partidoId,
             fecha: cabecera.dia,
             service: _seguir,
+          ),
+        if (!terminado)
+          BotonAnadirCalendario(
+            construir: (t) async => EventoPartido.desdeFicha(cabecera, t),
           ),
         Material(
           color: Theme.of(context).colorScheme.surface,

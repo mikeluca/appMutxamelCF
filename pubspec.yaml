@@ -28,6 +28,9 @@ dependencies:
   share_plus: ^13.3.1
   cached_network_image: ^4.0.7
   qr_flutter: ^4.1.0
+  firebase_crashlytics: ^6.1.0
+  add_2_calendar: ^3.1.1
+  app_settings: ^9.0.1
 
 dev_dependencies:
   flutter_test:

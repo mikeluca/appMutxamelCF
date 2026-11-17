@@ -4,12 +4,14 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/escudo_rival.dart';
 import '../../../core/utils/como_llegar.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
+import '../../../core/utils/evento_partido.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../ficha_partido/pages/ficha_partido_page.dart';
 import '../../ficha_partido/widgets/reloj_en_directo.dart';
 import '../../directo/widgets/cuenta_atras_texto.dart';
 import '../../directo/widgets/marcador_que_late.dart';
 import '../models/match_model.dart';
+import 'boton_anadir_calendario.dart';
 
 class MatchCard extends StatelessWidget {
   final MatchModel match;
@@ -19,12 +21,18 @@ class MatchCard extends StatelessWidget {
   final DateTime Function()? ahora;
   final CrearTemporizador? crearTemporizador;
 
+  /// Solo en Mis partidos: la convocatoria del usuario a este partido, para las notas del evento de calendario (hora y lugar de
+  /// citacion y equipaje). Sin ella, el evento no lleva esas notas.
+  final Future<NotasConvocatoria?> Function(MatchModel partido)?
+  notasConvocatoria;
+
   const MatchCard({
     super.key,
     required this.match,
     this.mostrarPrimerEquipo = false,
     this.ahora,
     this.crearTemporizador,
+    this.notasConvocatoria,
   });
 
   @override
@@ -46,6 +54,24 @@ class MatchCard extends StatelessWidget {
     final envuelta = _envolverConEtiquetaTipo(context, tarjeta);
 
     return envuelta;
+  }
+
+  /// El partido aun no se ha jugado, no esta cancelado y tiene dia: se puede anadir al calendario.
+  bool get _sePuedeAnadirAlCalendario =>
+      match.dia != null &&
+      !match.cancelado &&
+      !match.estaJugado &&
+      !match.esPartidoPasado &&
+      !match.estaDescansando;
+
+  Widget _botonCalendario() {
+    return BotonAnadirCalendario(
+      construir: (t) async {
+        final notas = await notasConvocatoria?.call(match);
+
+        return EventoPartido.desdeMatch(match, t, convocatoria: notas);
+      },
+    );
   }
 
   /// La tarjeta del Primer Equipo de la portada abre la ficha del partido.
@@ -168,74 +194,77 @@ class MatchCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: _shapeTipo,
-      child: _tocable(context, Column(
-        children: [
-          _buildHeader(
-            mostrarPrimerEquipo
-                ? t.matchUpcomingFirstTeam
-                : t.matchUpcoming,
-            color: AppColors.azul,
-          ),
+      child: _tocable(
+        context,
+        Column(
+          children: [
+            _buildHeader(
+              mostrarPrimerEquipo ? t.matchUpcomingFirstTeam : t.matchUpcoming,
+              color: AppColors.azul,
+            ),
 
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildTeam(
-                      context,
-                      match.local ? match.equipo : match.rival,
-                      isHomeTeam: match.local,
-                    ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildTeam(
+                        context,
+                        match.local ? match.equipo : match.rival,
+                        isHomeTeam: match.local,
+                      ),
 
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          t.matchVs,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.dorado,
+                          ),
+                        ),
+                      ),
+
+                      _buildTeam(
+                        context,
+                        match.local ? match.rival : match.equipo,
+                        isHomeTeam: !match.local,
+                      ),
+                    ],
+                  ),
+
+                  // La cuenta atrás de la tarjeta del Primer Equipo ("Empieza en 3 h 15 min"); sin hora, solo el día.
+                  if (mostrarPrimerEquipo &&
+                      CuentaAtrasTexto.aplica(match.dia, match.hora))
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Text(
-                        t.matchVs,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.dorado,
+                      padding: const EdgeInsets.only(top: 14),
+                      child: CuentaAtrasTexto(
+                        dia: match.dia,
+                        hora: match.hora,
+                        ahora: ahora,
+                        crearTemporizador: crearTemporizador,
+                        estilo: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                     ),
 
-                    _buildTeam(
-                      context,
-                      match.local ? match.rival : match.equipo,
-                      isHomeTeam: !match.local,
-                    ),
-                  ],
-                ),
+                  const SizedBox(height: 20),
 
-                // La cuenta atrás de la tarjeta del Primer Equipo ("Empieza en 3 h 15 min"); sin hora, solo el día.
-                if (mostrarPrimerEquipo &&
-                    CuentaAtrasTexto.aplica(match.dia, match.hora))
-                  Padding(
-                    padding: const EdgeInsets.only(top: 14),
-                    child: CuentaAtrasTexto(
-                      dia: match.dia,
-                      hora: match.hora,
-                      ahora: ahora,
-                      crearTemporizador: crearTemporizador,
-                      estilo: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ),
+                  _buildMatchInformation(context),
 
-                const SizedBox(height: 20),
-
-                _buildMatchInformation(context),
-              ],
+                  if (_sePuedeAnadirAlCalendario) _botonCalendario(),
+                ],
+              ),
             ),
-          ),
-        ],
-      )),
+          ],
+        ),
+      ),
     );
   }
 
@@ -249,92 +278,95 @@ class MatchCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: _shapeTipo,
-      child: _tocable(context, Column(
-        children: [
-          Container(
-            key: const ValueKey('letrero-en-juego'),
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            color: Colors.red.shade700,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.circle, size: 10, color: Colors.white),
-                const SizedBox(width: 8),
-                Text(
-                  t.matchLiveBanner,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
+      child: _tocable(
+        context,
+        Column(
+          children: [
+            Container(
+              key: const ValueKey('letrero-en-juego'),
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              color: Colors.red.shade700,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.circle, size: 10, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text(
+                    t.matchLiveBanner,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
 
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildTeam(
-                      context,
-                      match.local ? match.equipo : match.rival,
-                      isHomeTeam: match.local,
-                    ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildTeam(
+                        context,
+                        match.local ? match.equipo : match.rival,
+                        isHomeTeam: match.local,
+                      ),
 
-                    _marcadorEnDirecto(context),
+                      _marcadorEnDirecto(context),
 
-                    _buildTeam(
-                      context,
-                      match.local ? match.rival : match.equipo,
-                      isHomeTeam: !match.local,
-                    ),
-                  ],
-                ),
+                      _buildTeam(
+                        context,
+                        match.local ? match.rival : match.equipo,
+                        isHomeTeam: !match.local,
+                      ),
+                    ],
+                  ),
 
-                // El reloj en directo (MM:ss con el punto rojo parpadeante); en el descanso, el texto de siempre.
-                if (match.reloj case final reloj? when !reloj.enDescanso)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: RelojEnDirecto(
-                      reloj: reloj,
-                      ahora: ahora,
-                      crearTemporizador: crearTemporizador,
-                      estilo: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
+                  // El reloj en directo (MM:ss con el punto rojo parpadeante); en el descanso, el texto de siempre.
+                  if (match.reloj case final reloj? when !reloj.enDescanso)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: RelojEnDirecto(
+                        reloj: reloj,
+                        ahora: ahora,
+                        crearTemporizador: crearTemporizador,
+                        estilo: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
                     ),
-                  ),
 
-                if (match.enDescanso)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text(
-                      t.matchHalfTime,
-                      key: const ValueKey('descanso'),
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  if (match.enDescanso)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Text(
+                        t.matchHalfTime,
+                        key: const ValueKey('descanso'),
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
-                  ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                _buildMatchInformation(context),
-              ],
+                  _buildMatchInformation(context),
+                ],
+              ),
             ),
-          ),
-        ],
-      )),
+          ],
+        ),
+      ),
     );
   }
 
@@ -374,54 +406,57 @@ class MatchCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: _shapeTipo,
-      child: _tocable(context, Column(
-        children: [
-          _buildHeader(
-            mostrarPrimerEquipo
-                ? t.matchLastResultFirstTeam
-                : t.matchLastResult,
-            color: AppColors.azulOscuro,
-          ),
-
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildTeam(
-                      context,
-                      match.local ? match.equipo : match.rival,
-                      isHomeTeam: match.local,
-                    ),
-
-                    Text(
-                      match.marcadorLocalVisitante ?? '-',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-
-                    _buildTeam(
-                      context,
-                      match.local ? match.rival : match.equipo,
-                      isHomeTeam: !match.local,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-
-                // Fecha, hora y campo
-                _buildMatchInformation(context),
-              ],
+      child: _tocable(
+        context,
+        Column(
+          children: [
+            _buildHeader(
+              mostrarPrimerEquipo
+                  ? t.matchLastResultFirstTeam
+                  : t.matchLastResult,
+              color: AppColors.azulOscuro,
             ),
-          ),
-        ],
-      )),
+
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildTeam(
+                        context,
+                        match.local ? match.equipo : match.rival,
+                        isHomeTeam: match.local,
+                      ),
+
+                      Text(
+                        match.marcadorLocalVisitante ?? '-',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+
+                      _buildTeam(
+                        context,
+                        match.local ? match.rival : match.equipo,
+                        isHomeTeam: !match.local,
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Fecha, hora y campo
+                  _buildMatchInformation(context),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -435,61 +470,64 @@ class MatchCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: _shapeTipo,
-      child: _tocable(context, Column(
-        children: [
-          _buildHeader(
-            mostrarPrimerEquipo
-                ? t.matchLastResultFirstTeam
-                : t.matchLastResult,
-            color: AppColors.azulOscuro,
-          ),
+      child: _tocable(
+        context,
+        Column(
+          children: [
+            _buildHeader(
+              mostrarPrimerEquipo
+                  ? t.matchLastResultFirstTeam
+                  : t.matchLastResult,
+              color: AppColors.azulOscuro,
+            ),
 
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildTeam(
-                      context,
-                      match.local ? match.equipo : match.rival,
-                      isHomeTeam: match.local,
-                    ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildTeam(
+                        context,
+                        match.local ? match.equipo : match.rival,
+                        isHomeTeam: match.local,
+                      ),
 
-                    Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Text(
-                          t.matchResultPending,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Text(
+                            t.matchResultPending,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
                           ),
                         ),
                       ),
-                    ),
 
-                    _buildTeam(
-                      context,
-                      match.local ? match.rival : match.equipo,
-                      isHomeTeam: !match.local,
-                    ),
-                  ],
-                ),
+                      _buildTeam(
+                        context,
+                        match.local ? match.rival : match.equipo,
+                        isHomeTeam: !match.local,
+                      ),
+                    ],
+                  ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                _buildMatchInformation(context),
-              ],
+                  _buildMatchInformation(context),
+                ],
+              ),
             ),
-          ),
-        ],
-      )),
+          ],
+        ),
+      ),
     );
   }
 
@@ -509,68 +547,71 @@ class MatchCard extends StatelessWidget {
     final textoCuerpo = match.descansa
         ? t.matchTeamRests
         : descansaExplicitamente
-            ? t.matchNoMatchThisRound
-            : t.matchTeamHasNoMatch;
+        ? t.matchNoMatchThisRound
+        : t.matchTeamHasNoMatch;
 
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: _shapeTipo,
-      child: _tocable(context, Column(
-        children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            color: AppColors.dorado,
-            child: Text(
-              mostrarPrimerEquipo ? t.matchNoMatchFirstTeam : t.matchNoMatch,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSecondary,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1,
+      child: _tocable(
+        context,
+        Column(
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              color: AppColors.dorado,
+              child: Text(
+                mostrarPrimerEquipo ? t.matchNoMatchFirstTeam : t.matchNoMatch,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
               ),
             ),
-          ),
 
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                if (match.descansa)
-                  const Icon(
-                    Icons.bedtime_outlined,
-                    size: 70,
-                    color: AppColors.azulOscuro,
-                  )
-                else
-                  Image.asset(
-                    'assets/images/escudo.png',
-                    width: 70,
-                    height: 85,
-                    fit: BoxFit.contain,
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  if (match.descansa)
+                    const Icon(
+                      Icons.bedtime_outlined,
+                      size: 70,
+                      color: AppColors.azulOscuro,
+                    )
+                  else
+                    Image.asset(
+                      'assets/images/escudo.png',
+                      width: 70,
+                      height: 85,
+                      fit: BoxFit.contain,
+                    ),
+
+                  const SizedBox(height: 10),
+
+                  Text(
+                    match.equipo,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
 
-                const SizedBox(height: 10),
+                  const SizedBox(height: 6),
 
-                Text(
-                  match.equipo,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-
-                const SizedBox(height: 6),
-
-                Text(textoCuerpo, style: const TextStyle(fontSize: 15)),
-              ],
+                  Text(textoCuerpo, style: const TextStyle(fontSize: 15)),
+                ],
+              ),
             ),
-          ),
-        ],
-      )),
+          ],
+        ),
+      ),
     );
   }
 
@@ -662,11 +703,7 @@ class MatchCard extends StatelessWidget {
     return Column(
       children: [
         if (fechaVisible?.isNotEmpty == true)
-          _buildInfoRow(
-            context,
-            Icons.calendar_today_outlined,
-            fechaVisible!,
-          ),
+          _buildInfoRow(context, Icons.calendar_today_outlined, fechaVisible!),
 
         if (match.hora?.isNotEmpty == true)
           _buildInfoRow(context, Icons.schedule_outlined, match.hora!),

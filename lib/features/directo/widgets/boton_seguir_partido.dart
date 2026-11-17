@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/notifications/services/permiso_notificaciones.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../services/seguir_partido_service.dart';
 
@@ -16,11 +17,16 @@ class BotonSeguirPartido extends StatefulWidget {
   final DateTime? fecha;
   final SeguirPartidoService service;
 
+  /// Asegura el permiso de notificaciones antes de seguir (pantalla propia, la peticion del sistema y, si esta denegado
+  /// del todo, el aviso con "Abrir ajustes"). Los tests lo sustituyen.
+  final Future<bool> Function(BuildContext context)? asegurarPermiso;
+
   const BotonSeguirPartido({
     super.key,
     required this.partidoId,
     required this.fecha,
     required this.service,
+    this.asegurarPermiso,
   });
 
   @override
@@ -86,10 +92,16 @@ class _BotonSeguirPartidoState extends State<BotonSeguirPartido> {
         _sigue = false;
         mensaje = t.followStopped;
       } else {
-        final resultado = await widget.service.seguir(
-          widget.partidoId,
-          widget.fecha,
-        );
+        final concedido =
+            await (widget.asegurarPermiso ??
+                (c) => PermisoNotificaciones.asegurar(
+                  c,
+                  MotivoPermiso.seguirPartido,
+                ))(context);
+
+        final resultado = concedido
+            ? await widget.service.seguir(widget.partidoId, widget.fecha)
+            : ResultadoSeguir.permisoDenegado;
 
         if (resultado == ResultadoSeguir.seguido) {
           _sigue = true;

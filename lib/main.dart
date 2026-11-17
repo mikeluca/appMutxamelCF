@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'core/config/app_preferences.dart';
+import 'core/errores/informes_errores.dart';
 import 'core/theme/app_theme.dart';
 import 'core/version/control_version.dart';
 import 'l10n/gen/app_localizations.dart';
 
+import 'features/bienvenida/pages/bienvenida_page.dart';
 import 'features/public/public_shell_page.dart';
 import 'features/splash/splash_page.dart';
 
@@ -45,12 +47,18 @@ Future<void> main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  // Informes de errores (Crashlytics): sin envío en debug ni si el usuario los ha desactivado en Ajustes.
+  await InformesErrores.iniciar();
+
   // Necesario para que el calendario visual (table_calendar) pueda
   // pintar nombres de mes/día de la semana en es/en/ca sin lanzar
   // LocaleDataException.
   await initializeDateFormatting();
 
   final temaGuardado = await AppPreferences.obtenerTema();
+
+  // Instalacion nueva: aun no hay idioma guardado (toda version anterior lo guardaba en el primer arranque).
+  final instalacionNueva = !await AppPreferences.existeIdiomaGuardado();
 
   String idiomaInicial;
 
@@ -78,9 +86,18 @@ Future<void> main() async {
     await AppPreferences.guardarIdioma(idiomaInicial);
   }
 
+  // Quien actualiza desde una version anterior no ve la bienvenida.
+  if (!instalacionNueva) {
+    await AppPreferences.guardarBienvenidaHecha();
+  }
+
   // El resto de la inicialización (notificaciones) se hace en SplashPage para no retrasar el primer frame.
   runApp(
-    MutxamelCfApp(temaInicial: temaGuardado, idiomaInicial: idiomaInicial),
+    MutxamelCfApp(
+      temaInicial: temaGuardado,
+      idiomaInicial: idiomaInicial,
+      instalacionNueva: instalacionNueva,
+    ),
   );
 }
 
@@ -88,10 +105,14 @@ class MutxamelCfApp extends StatefulWidget {
   final String temaInicial;
   final String idiomaInicial;
 
+  /// Primer arranque de una instalacion nueva: se ve la bienvenida (y no la pantalla de avisos al arrancar).
+  final bool instalacionNueva;
+
   const MutxamelCfApp({
     super.key,
     required this.temaInicial,
     required this.idiomaInicial,
+    this.instalacionNueva = false,
   });
 
   @override
@@ -168,6 +189,7 @@ class _MutxamelCfAppState extends State<MutxamelCfApp>
     // en el siguiente arranque.
     unawaited(IdiomaService.alCambiarIdioma(idioma));
     unawaited(PushNotificationService.alCambiarIdioma(anterior, idioma));
+    unawaited(InformesErrores.actualizarClaves());
   }
 
   @override
@@ -190,7 +212,14 @@ class _MutxamelCfAppState extends State<MutxamelCfApp>
       initialRoute: AppRoutes.splash,
 
       routes: {
-        AppRoutes.splash: (context) => const SplashPage(),
+        AppRoutes.splash: (context) => SplashPage(
+          mostrarBienvenida: widget.instalacionNueva,
+          ofrecerAvisos: !widget.instalacionNueva,
+        ),
+        AppRoutes.welcome: (context) => BienvenidaPage(
+          idiomaActual: _idiomaActual,
+          onIdiomaChanged: _cambiarIdioma,
+        ),
         AppRoutes.public: (context) => const PublicShellPage(),
 
         AppRoutes.login: (context) => const LoginPage(),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../../core/config/app_preferences.dart';
+import '../../../core/errores/informes_errores.dart';
 import '../../../core/notifications/services/push_notification_service.dart';
 import '../models/auth_user.dart';
 import '../models/login_response.dart';
@@ -45,6 +46,7 @@ class AuthManager {
     // Ya con la sesión: si la cuenta recibe los resultados, se baja de los partidos seguidos (evita avisos
     // duplicados). Sin esperar, y sin que un fallo afecte al acceso (sincronizarPartidosSeguidos nunca lanza).
     unawaited(PushNotificationService.sincronizarPartidosSeguidos());
+    unawaited(InformesErrores.actualizarClaves());
 
     return usuario;
   }
@@ -98,5 +100,6 @@ class AuthManager {
     // Sin sesión cuenta el ajuste anónimo de resultados: se sincronizan de nuevo los partidos seguidos. Sin esperar y
     // sin que un fallo rompa el cierre de sesión.
     unawaited(PushNotificationService.sincronizarPartidosSeguidos());
+    unawaited(InformesErrores.actualizarClaves());
   }
 }

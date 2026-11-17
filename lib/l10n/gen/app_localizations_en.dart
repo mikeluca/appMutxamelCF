@@ -592,6 +592,95 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playerPositionNone => 'No position';
 
   @override
+  String get settingsCrashReports => 'Send crash reports';
+
+  @override
+  String get settingsCrashReportsSubtitle =>
+      'If the app closes unexpectedly, a technical report without personal data is sent so we can fix it.';
+
+  @override
+  String get notifPromptTitle => 'Don\'t miss anything from Mutxamel C.F.';
+
+  @override
+  String get notifPromptBenefitGoals => 'Goals and results as they happen';
+
+  @override
+  String get notifPromptBenefitCallups => 'Call-ups and schedule changes';
+
+  @override
+  String get notifPromptBenefitNews => 'Club news and notices';
+
+  @override
+  String get notifPromptEnable => 'Turn on notifications';
+
+  @override
+  String get notifPromptNotNow => 'Not now';
+
+  @override
+  String get notifDeniedTitle => 'Notifications are off';
+
+  @override
+  String get notifDeniedBody =>
+      'To receive the club\'s alerts, turn them on in your device settings.';
+
+  @override
+  String get openSettingsAction => 'Open settings';
+
+  @override
+  String get welcomeLanguageTitle => 'Choose your language';
+
+  @override
+  String get welcomeLanguageSubtitle => 'You can change it later in Settings.';
+
+  @override
+  String get welcomeContinue => 'Continue';
+
+  @override
+  String get welcomeSkip => 'Skip';
+
+  @override
+  String welcomeStepOf(int current, int total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get welcomeSwitchResults => 'Results';
+
+  @override
+  String get welcomeSwitchNews => 'News';
+
+  @override
+  String get calendarAddButton => 'Add to my calendar';
+
+  @override
+  String get calendarAddDenied =>
+      'The event was not added. If you did not allow calendar access, you can turn it on in settings.';
+
+  @override
+  String get calendarAddError =>
+      'The match could not be added to the calendar.';
+
+  @override
+  String calendarNoteRound(int round) {
+    return 'Round $round';
+  }
+
+  @override
+  String calendarNoteMeetTime(String time) {
+    return 'Meeting time: $time';
+  }
+
+  @override
+  String calendarNoteMeetPlace(String place) {
+    return 'Meeting place: $place';
+  }
+
+  @override
+  String calendarNoteKit(String kit) {
+    return 'Kit: $kit';
+  }
+
+  @override
   String get playerPositionLegacyHint =>
       'This text is not in the list: it will be removed when saving unless you pick a position.';
 

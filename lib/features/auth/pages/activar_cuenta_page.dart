@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../../routing/app_routes.dart';
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../core/notifications/services/permiso_notificaciones.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../services/auth_manager.dart';
 import '../services/auth_service.dart';
@@ -60,6 +61,11 @@ class _ActivarCuentaPageState extends State<ActivarCuentaPage> {
       );
 
       await AuthManager.completarAcceso(loginResponse);
+
+      if (!mounted) return;
+
+      // Avisos: pantalla propia antes de la peticion del sistema (si el permiso sigue sin decidir).
+      await PermisoNotificaciones.asegurar(context, MotivoPermiso.inicioSesion);
 
       if (!mounted) return;
 

@@ -1,4 +1,5 @@
 import 'package:app_mutxamel_cf/core/config/app_preferences.dart';
+import 'package:app_mutxamel_cf/core/notifications/services/permiso_notificaciones.dart';
 import 'package:app_mutxamel_cf/core/notifications/services/push_notification_service.dart';
 import 'package:app_mutxamel_cf/core/notifications/services/topics_anonimos.dart';
 import 'package:app_mutxamel_cf/features/directo/services/seguir_partido_service.dart';
@@ -96,6 +97,13 @@ const _siguiendo = ValueKey('boton-siguiendo');
 const _yaRecibe = ValueKey('seguir-ya-recibe');
 
 void main() {
+  // El permiso de notificaciones del sistema: concedido (lo del permiso se prueba en permiso_notificaciones_test).
+  setUp(() {
+    final estadoOriginal = PermisoNotificaciones.leerEstado;
+    PermisoNotificaciones.leerEstado = () async => EstadoPermisoAvisos.concedido;
+    addTearDown(() => PermisoNotificaciones.leerEstado = estadoOriginal);
+  });
+
   group('SeguirPartidoService', () {
     test('el topic es partido_{id}_{idioma}', () {
       expect(SeguirPartidoService.topicDe(30, 'es'), 'partido_30_es');

@@ -8,6 +8,8 @@ import '../../matches/models/match_model.dart';
 import '../../matches/pages/resultado_partido_form_page.dart';
 import '../../matches/services/match_service.dart';
 import '../../matches/widgets/match_card.dart';
+import '../../../core/utils/evento_partido.dart';
+import '../../convocatorias/services/convocatoria_partido_service.dart';
 import '../models/perfil_app.dart';
 import '../services/perfil_service.dart';
 
@@ -18,15 +20,22 @@ class MisPartidosPage extends StatefulWidget {
   State<MisPartidosPage> createState() => _MisPartidosPageState();
 }
 
+/// Solo para tests: sustituye al servicio real de la convocatoria (notas del evento de calendario).
+@visibleForTesting
+ConvocatoriaPartidoService Function() fabricaConvocatoriaMisPartidos =
+    ConvocatoriaPartidoService.new;
+
 class _EquipoJugador {
   final String equipo;
   final String? jugador;
+  final int? jugadorId;
   final int? equipoId;
   final bool puedeGestionar;
 
   const _EquipoJugador({
     required this.equipo,
     this.jugador,
+    this.jugadorId,
     this.equipoId,
     required this.puedeGestionar,
   });
@@ -167,6 +176,7 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
             titulo: _tituloTexto(equipoJugador),
             equipoNombre: equipoJugador.equipo,
             equipoId: equipoJugador.equipoId,
+            jugadorId: equipoJugador.jugadorId,
             puedeGestionar: equipoJugador.puedeGestionar,
           );
         },
@@ -236,6 +246,7 @@ class _MisPartidosPageState extends State<MisPartidosPage> {
           _EquipoJugador(
             equipo: equipo.trim(),
             jugador: jugador.nombreCompleto,
+            jugadorId: jugador.id,
             equipoId: equipoId,
             // Solo puede gestionar este equipo si aparece entre
             // los equipos que entrena (perfil.equipos).
@@ -346,6 +357,9 @@ class _EquipoSeccion extends StatefulWidget {
   final String titulo;
   final String equipoNombre;
   final int? equipoId;
+
+  /// El jugador del usuario en este equipo (si lo hay): su convocatoria da las notas del evento de calendario.
+  final int? jugadorId;
   final bool puedeGestionar;
 
   const _EquipoSeccion({
@@ -354,6 +368,7 @@ class _EquipoSeccion extends StatefulWidget {
     required this.titulo,
     required this.equipoNombre,
     required this.equipoId,
+    this.jugadorId,
     required this.puedeGestionar,
   });
 
@@ -582,9 +597,30 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
     );
   }
 
+  /// Si el usuario tiene convocatoria a este partido, su hora y lugar de citacion y el equipaje (nunca datos de otros
+  /// jugadores). Sin convocatoria o sin permiso (404, 403), null: el evento va sin esas notas.
+  Future<NotasConvocatoria?> _notasConvocatoria(MatchModel partido) async {
+    final jugadorId = widget.jugadorId;
+
+    if (jugadorId == null || partido.id == null) return null;
+
+    try {
+      final convocatoria = await fabricaConvocatoriaMisPartidos().obtener(
+        partidoId: partido.id!,
+        jugadorId: jugadorId,
+      );
+
+      return convocatoria.convocado
+          ? NotasConvocatoria.desde(convocatoria)
+          : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Widget _construirTarjetaPartido(MatchModel partido) {
     if (!widget.puedeGestionar || partido.id == null) {
-      return MatchCard(match: partido);
+      return MatchCard(match: partido, notasConvocatoria: _notasConvocatoria);
     }
 
     // Un partido ya jugado (y no cancelado) introduce/edita su resultado
@@ -595,7 +631,7 @@ class _EquipoSeccionState extends State<_EquipoSeccion> {
 
     return Stack(
       children: [
-        MatchCard(match: partido),
+        MatchCard(match: partido, notasConvocatoria: _notasConvocatoria),
         Positioned(
           top: 4,
           right: 4,

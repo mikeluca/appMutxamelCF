@@ -999,7 +999,7 @@ void main() {
 
         final compartidos = <(Uint8List, String)>[];
         final original = CompartirPartido.enviar;
-        CompartirPartido.enviar = (png, texto) async =>
+        CompartirPartido.enviar = (png, texto, origen) async =>
             compartidos.add((png, texto));
         addTearDown(() => CompartirPartido.enviar = original);
 
@@ -1183,9 +1183,12 @@ void main() {
       tester,
     ) async {
       final compartidos = <(Uint8List, String)>[];
+      final origenes = <Rect>[];
       final original = CompartirPartido.enviar;
-      CompartirPartido.enviar = (png, texto) async =>
-          compartidos.add((png, texto));
+      CompartirPartido.enviar = (png, texto, origen) async {
+        origenes.add(origen);
+        compartidos.add((png, texto));
+      };
       addTearDown(() => CompartirPartido.enviar = original);
 
       await abrir(
@@ -1213,6 +1216,10 @@ void main() {
       });
       await tester.pump();
 
+      // El menú de compartir (iPad) se ancla al botón: su rectángulo, no la pantalla entera
+      expect(origenes, hasLength(1));
+      expect(origenes.single.isEmpty, isFalse);
+      expect(origenes.single.height, lessThan(120)); // el botón, no la pantalla entera
       expect(compartidos, hasLength(1));
       // Sin goleadores porque se apagó el interruptor.
       expect(
@@ -1230,7 +1237,7 @@ void main() {
 
     testWidgets('si falla, avisa y no se rompe nada', (tester) async {
       final original = CompartirPartido.enviar;
-      CompartirPartido.enviar = (png, texto) async =>
+      CompartirPartido.enviar = (png, texto, origen) async =>
           throw Exception('sin menú');
       addTearDown(() => CompartirPartido.enviar = original);
 

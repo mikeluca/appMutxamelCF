@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import '../../../features/auth/services/notificacion_service.dart';
 import '../../../features/auth/services/auth_session.dart';
 import '../../config/app_preferences.dart';
+import 'permiso_notificaciones.dart';
 import 'topics_anonimos.dart';
 import '../../../features/directo/services/seguir_partido_service.dart';
 import '../../../features/directo/widgets/partido_visible.dart';
@@ -118,26 +119,9 @@ class PushNotificationService {
     obtenerIdioma: AppPreferences.obtenerIdioma,
     leer: AppPreferences.obtenerPartidosSeguidos,
     guardar: AppPreferences.guardarPartidosSeguidos,
-    pedirPermiso: pedirPermisoDeNotificaciones,
+    pedirPermiso: PermisoNotificaciones.estaConcedido,
     recibeResultados: recibeAvisosDeResultados,
   );
-
-  /// Pide el permiso de notificaciones (como al arrancar la app); true si se tiene (también el provisional de iOS).
-  static Future<bool> pedirPermisoDeNotificaciones() async {
-    try {
-      final ajustes = await _messaging.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
-
-      return ajustes.authorizationStatus == AuthorizationStatus.authorized ||
-          ajustes.authorizationStatus == AuthorizationStatus.provisional;
-    } catch (e) {
-      debugPrint('NO SE PUDO PEDIR EL PERMISO DE NOTIFICACIONES: $e');
-      return false;
-    }
-  }
 
   /// true si este dispositivo ya recibe los avisos de resultados: sin cuenta, su interruptor anónimo; con cuenta, su
   /// preferencia de avisos de resultados (con las notificaciones activadas). null si no se puede saber (error de red).
@@ -285,15 +269,13 @@ class PushNotificationService {
   }
 
   static Future<void> inicializar() async {
-    final settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+    // El permiso NO se pide aqui: lo pide PermisoNotificaciones, siempre tras la pantalla propia (bienvenida, iniciar sesion
+    // o seguir un partido). Al concederlo se registra el dispositivo.
+    PermisoNotificaciones.alConceder = registrarDispositivoActual;
 
     debugPrint(
       'Permiso de notificaciones: '
-      '${settings.authorizationStatus}',
+      '${(await _messaging.getNotificationSettings()).authorizationStatus}',
     );
 
     String? token;

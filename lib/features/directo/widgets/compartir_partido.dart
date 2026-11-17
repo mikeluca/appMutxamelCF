@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../core/utils/origen_compartir.dart';
 import '../../../core/widget/escudo_rival.dart';
 import 'datos_compartir.dart';
 import 'tarjeta_compartir.dart';
@@ -14,7 +15,8 @@ export 'datos_compartir.dart';
 export 'tarjeta_compartir.dart';
 
 /// Envía la imagen y el texto al menú de compartir del sistema. Los tests lo sustituyen.
-typedef EnviarACompartir = Future<void> Function(Uint8List png, String texto);
+typedef EnviarACompartir =
+    Future<void> Function(Uint8List png, String texto, Rect origen);
 
 /// Genera la imagen del partido con un widget fuera de pantalla (RepaintBoundary → PNG) y la comparte. No guarda en la
 /// galería ni pide permisos: el menú de compartir del sistema ya permite guardarla.
@@ -22,10 +24,11 @@ class CompartirPartido {
   CompartirPartido._();
 
   @visibleForTesting
-  static EnviarACompartir enviar = (png, texto) async {
+  static EnviarACompartir enviar = (png, texto, origen) async {
     await SharePlus.instance.share(
       ShareParams(
         text: texto,
+        sharePositionOrigin: origen,
         files: [
           XFile.fromData(png, mimeType: 'image/png', name: 'partido.png'),
         ],
@@ -40,10 +43,19 @@ class CompartirPartido {
     BuildContext context,
     DatosCompartir datos, {
     OpcionesCompartir opciones = const OpcionesCompartir(),
+
+    /// Desde dónde se abre el menú (iPad lo necesita): el rectángulo del botón. Sin él, el de [context].
+    Rect? origen,
   }) async {
+    // Se mide antes de generar la imagen: después ya podría no estar la pantalla.
+    final ancla = origen ?? origenDeCompartir(context);
     final png = await generarPng(context, datos, opciones: opciones);
 
-    await enviar(png, datos.textoCompartir(conGoleadores: opciones.goleadores));
+    await enviar(
+      png,
+      datos.textoCompartir(conGoleadores: opciones.goleadores),
+      ancla,
+    );
   }
 
   /// Cuánto se espera al escudo del rival antes de usar el genérico.

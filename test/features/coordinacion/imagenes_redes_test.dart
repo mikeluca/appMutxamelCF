@@ -117,13 +117,20 @@ Widget _seccion(_Servicio servicio) {
 }
 
 void main() {
-  late List<({List<Uint8List> pngs, List<String> nombres, String texto})>
+  late List<
+    ({List<Uint8List> pngs, List<String> nombres, String texto, Rect origen})
+  >
   compartidos;
 
   setUp(() {
     compartidos = [];
-    CompartirImagenesRedes.enviar = (pngs, nombres, texto) async {
-      compartidos.add((pngs: pngs, nombres: nombres, texto: texto));
+    CompartirImagenesRedes.enviar = (pngs, nombres, texto, origen) async {
+      compartidos.add((
+        pngs: pngs,
+        nombres: nombres,
+        texto: texto,
+        origen: origen,
+      ));
     };
   });
 
@@ -298,6 +305,12 @@ void main() {
 
       expect(compartidos, hasLength(1));
       expect(compartidos.single.pngs, hasLength(3));
+      // El menú de compartir (iPad) se ancla al botón que lo lanza
+      expect(compartidos.single.origen.isEmpty, isFalse);
+      expect(
+        compartidos.single.origen,
+        tester.getRect(find.byKey(const ValueKey('imagenes-compartir'))),
+      );
       expect(compartidos.single.nombres, [
         'previa_f11_1.png',
         'previa_f11_2.png',
@@ -310,7 +323,7 @@ void main() {
     });
 
     testWidgets('si falla el menú de compartir, avisa', (tester) async {
-      CompartirImagenesRedes.enviar = (_, _, _) async => throw Exception('x');
+      CompartirImagenesRedes.enviar = (_, _, _, _) async => throw Exception('x');
 
       await abrir(tester, _Servicio(_modelo(imagenes)));
 

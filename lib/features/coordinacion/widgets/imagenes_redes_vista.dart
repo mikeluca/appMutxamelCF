@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/utils/mensaje_error.dart';
+import '../../../core/utils/origen_compartir.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/imagenes_redes_model.dart';
 import '../services/imagenes_redes_service.dart';
@@ -14,16 +15,18 @@ typedef EnviarImagenesRedes =
       List<Uint8List> pngs,
       List<String> nombres,
       String texto,
+      Rect origen,
     );
 
 class CompartirImagenesRedes {
   CompartirImagenesRedes._();
 
   @visibleForTesting
-  static EnviarImagenesRedes enviar = (pngs, nombres, texto) async {
+  static EnviarImagenesRedes enviar = (pngs, nombres, texto, origen) async {
     await SharePlus.instance.share(
       ShareParams(
         text: texto,
+        sharePositionOrigin: origen,
         files: [
           for (var i = 0; i < pngs.length; i++)
             XFile.fromData(pngs[i], mimeType: 'image/png', name: nombres[i]),
@@ -78,6 +81,9 @@ class _ImagenesRedesVistaPageState extends State<ImagenesRedesVistaPage> {
 
   bool _ocupado = false;
 
+  /// El botón Compartir: el menú de compartir (iPad) se ancla a él.
+  final GlobalKey _claveCompartir = GlobalKey();
+
   AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
@@ -112,6 +118,7 @@ class _ImagenesRedesVistaPageState extends State<ImagenesRedesVistaPage> {
     if (_ocupado) return;
 
     final t = _t;
+    final origen = origenDeCompartir(_claveCompartir.currentContext ?? context);
 
     setState(() => _ocupado = true);
 
@@ -127,7 +134,7 @@ class _ImagenesRedesVistaPageState extends State<ImagenesRedesVistaPage> {
         );
       }
 
-      await CompartirImagenesRedes.enviar(pngs, nombres, _texto);
+      await CompartirImagenesRedes.enviar(pngs, nombres, _texto, origen);
     } catch (_) {
       if (mounted) _avisar(t.socialImagesShareError);
     } finally {
@@ -217,6 +224,7 @@ class _ImagenesRedesVistaPageState extends State<ImagenesRedesVistaPage> {
               child: Row(
                 children: [
                   Expanded(
+                    key: _claveCompartir,
                     child: FilledButton.icon(
                       key: const ValueKey('imagenes-compartir'),
                       onPressed: _ocupado || _imagenes.isEmpty

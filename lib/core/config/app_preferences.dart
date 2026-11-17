@@ -39,6 +39,64 @@ class AppPreferences {
     await prefs.setString(_claveMapaPreferido, mapa);
   }
 
+  // Informes de errores (Firebase Crashlytics): "Enviar informes de errores" en Ajustes. Activado por defecto.
+  static const String _claveInformesErrores = 'informes_errores';
+
+  // Bienvenida del primer arranque (idioma y avisos): true cuando ya se ha hecho o se ha saltado, o cuando la app se
+  // actualiza desde una versión anterior (que no la tenía).
+  static const String _claveBienvenidaHecha = 'bienvenida_hecha';
+
+  // Pantalla previa al permiso de notificaciones: cuántas veces se ha ofrecido y cuándo fue la última.
+  static const String _claveOfertaAvisosVeces = 'oferta_avisos_veces';
+  static const String _claveOfertaAvisosUltima = 'oferta_avisos_ultima';
+
+  static Future<bool> obtenerInformesErrores() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getBool(_claveInformesErrores) ?? true;
+  }
+
+  static Future<void> guardarInformesErrores(bool activo) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setBool(_claveInformesErrores, activo);
+  }
+
+  static Future<bool> obtenerBienvenidaHecha() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getBool(_claveBienvenidaHecha) ?? false;
+  }
+
+  static Future<void> guardarBienvenidaHecha() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setBool(_claveBienvenidaHecha, true);
+  }
+
+  static Future<int> obtenerOfertaAvisosVeces() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getInt(_claveOfertaAvisosVeces) ?? 0;
+  }
+
+  static Future<DateTime?> obtenerOfertaAvisosUltima() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return DateTime.tryParse(prefs.getString(_claveOfertaAvisosUltima) ?? '');
+  }
+
+  /// Anota que se ha ofrecido la pantalla previa al permiso de notificaciones (una vez más, ahora).
+  static Future<void> registrarOfertaAvisos(DateTime ahora) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setInt(
+      _claveOfertaAvisosVeces,
+      (prefs.getInt(_claveOfertaAvisosVeces) ?? 0) + 1,
+    );
+    await prefs.setString(_claveOfertaAvisosUltima, ahora.toIso8601String());
+  }
+
   static Future<String> obtenerTema() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -111,7 +169,8 @@ class AppPreferences {
     final prefs = await SharedPreferences.getInstance();
     final seguidos = <int, DateTime>{};
 
-    for (final texto in prefs.getStringList(_clavePartidosSeguidos) ?? const <String>[]) {
+    for (final texto
+        in prefs.getStringList(_clavePartidosSeguidos) ?? const <String>[]) {
       final partes = texto.split('|');
       final id = int.tryParse(partes.first);
       final fecha = partes.length > 1 ? DateTime.tryParse(partes[1]) : null;
@@ -124,7 +183,9 @@ class AppPreferences {
     return seguidos;
   }
 
-  static Future<void> guardarPartidosSeguidos(Map<int, DateTime> seguidos) async {
+  static Future<void> guardarPartidosSeguidos(
+    Map<int, DateTime> seguidos,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
 
     String dia(DateTime f) =>
