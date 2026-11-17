@@ -902,6 +902,8 @@
 
   "directionsButton": "Get directions",
   "directionsOpenError": "The map could not be opened.",
+  "directionsGoogleMaps": "Google Maps",
+  "directionsAppleMaps": "Apple Maps",
 
   "calendarWithdrawJustificationTitle": "Withdraw the justification?",
   "calendarWithdrawJustificationBody": "The coaching staff will know the player will attend the training.",

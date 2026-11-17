@@ -2377,6 +2377,12 @@ class AppLocalizationsCa extends AppLocalizations {
   String get directionsOpenError => 'No s\'ha pogut obrir el mapa.';
 
   @override
+  String get directionsGoogleMaps => 'Google Maps';
+
+  @override
+  String get directionsAppleMaps => 'Apple Maps';
+
+  @override
   String get calendarWithdrawJustificationTitle => 'Retirar la justificació?';
 
   @override

@@ -2356,6 +2356,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get directionsOpenError => 'The map could not be opened.';
 
   @override
+  String get directionsGoogleMaps => 'Google Maps';
+
+  @override
+  String get directionsAppleMaps => 'Apple Maps';
+
+  @override
   String get calendarWithdrawJustificationTitle =>
       'Withdraw the justification?';
 

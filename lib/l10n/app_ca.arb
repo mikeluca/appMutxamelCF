@@ -902,6 +902,8 @@
 
   "directionsButton": "Com arribar",
   "directionsOpenError": "No s'ha pogut obrir el mapa.",
+  "directionsGoogleMaps": "Google Maps",
+  "directionsAppleMaps": "Apple Maps",
 
   "calendarWithdrawJustificationTitle": "Retirar la justificació?",
   "calendarWithdrawJustificationBody": "El cos tècnic sabrà que el jugador assistirà a l'entrenament.",

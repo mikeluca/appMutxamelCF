@@ -24,6 +24,21 @@ class AppPreferences {
   // Partidos que el usuario sigue ("Seguir este partido"): "id|yyyy-MM-dd" (el día del partido).
   static const String _clavePartidosSeguidos = 'partidos_seguidos';
 
+  // Última app de mapas elegida en iOS para "Cómo llegar" ('google' o 'apple').
+  static const String _claveMapaPreferido = 'mapa_como_llegar';
+
+  static Future<String?> obtenerMapaPreferido() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString(_claveMapaPreferido);
+  }
+
+  static Future<void> guardarMapaPreferido(String mapa) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString(_claveMapaPreferido, mapa);
+  }
+
   static Future<String> obtenerTema() async {
     final prefs = await SharedPreferences.getInstance();
 

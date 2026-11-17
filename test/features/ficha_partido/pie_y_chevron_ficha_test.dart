@@ -248,7 +248,7 @@ void main() {
       '"Cómo llegar" sigue abriendo el mapa por su cuenta, sin abrir la ficha',
       (tester) async {
         final abiertas = <Uri>[];
-        ComoLlegar.esIos = () => true;
+        ComoLlegar.esIos = () => false;
         ComoLlegar.abrirUrl = (url) async {
           abiertas.add(url);
           return true;
@@ -273,7 +273,7 @@ void main() {
         await tester.pump();
 
         expect(
-          abiertas.single.queryParameters['q'],
+          abiertas.single.queryParameters['query'],
           'Camp Municipal de Mutxamel',
         );
         expect(find.byType(FichaPartidoPage), findsNothing);
@@ -391,7 +391,7 @@ void main() {
       tester,
     ) async {
       final abiertas = <Uri>[];
-      ComoLlegar.esIos = () => true;
+      ComoLlegar.esIos = () => false;
       ComoLlegar.abrirUrl = (url) async {
         abiertas.add(url);
         return true;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../support/marcador_helpers.dart';
 import 'package:app_mutxamel_cf/core/utils/como_llegar.dart';
 import 'package:app_mutxamel_cf/features/matches/models/match_model.dart';
@@ -26,6 +27,7 @@ Future<void> _pintar(WidgetTester tester, MatchModel match) {
 void main() {
   testWidgets('con campo, la tarjeta tiene "Cómo llegar" con ese campo', (tester) async {
     final abiertas = <Uri>[];
+    SharedPreferences.setMockInitialValues({});
     ComoLlegar.esIos = () => true;
     ComoLlegar.abrirUrl = (url) async {
       abiertas.add(url);
@@ -44,7 +46,9 @@ void main() {
     );
 
     await tester.tap(find.byIcon(Icons.directions));
-    await tester.pump();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Apple Maps'));
+    await tester.pumpAndSettle();
 
     expect(abiertas.single.host, 'maps.apple.com');
     expect(abiertas.single.queryParameters['q'], 'Camp Municipal de Mutxamel');

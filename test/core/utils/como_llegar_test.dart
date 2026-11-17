@@ -1,8 +1,11 @@
+import 'package:app_mutxamel_cf/core/config/app_preferences.dart';
 import 'package:app_mutxamel_cf/core/utils/como_llegar.dart';
 import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> _pintar(WidgetTester tester, Widget hijo) {
   return tester.pumpWidget(
@@ -51,62 +54,176 @@ void main() {
     });
   });
 
+  group('consultaAppleMaps', () {
+    test('quita los identificadores de campo', () {
+      expect(
+        consultaAppleMaps('Polideportivo Mpal. El Vincle F-11 El Campello'),
+        'Polideportivo Mpal. El Vincle El Campello',
+      );
+      expect(consultaAppleMaps('Campo X F11'), 'Campo X');
+      expect(
+        consultaAppleMaps('Ciudad Deportiva f-8 Alicante'),
+        'Ciudad Deportiva Alicante',
+      );
+      expect(consultaAppleMaps('Estadio F-7'), 'Estadio');
+      expect(consultaAppleMaps('Estadio F5 Norte'), 'Estadio Norte');
+      expect(consultaAppleMaps('Municipal Campo 2 Pego'), 'Municipal Pego');
+      expect(consultaAppleMaps('Municipal campo3 Pego'), 'Municipal Pego');
+      expect(consultaAppleMaps('Municipal CAMPO 1'), 'Municipal');
+    });
+
+    test('no toca textos sin identificadores ni números de portal', () {
+      expect(consultaAppleMaps('Calle Mayor 3, Pego'), 'Calle Mayor 3, Pego');
+      expect(consultaAppleMaps('Avinguda F-110'), 'Avinguda F-110');
+      expect(consultaAppleMaps('  Campo Municipal  '), 'Campo Municipal');
+    });
+
+    test('si al limpiar queda vacío, usa el texto original', () {
+      expect(consultaAppleMaps('F-11'), 'F-11');
+      expect(consultaAppleMaps(' Campo 2 '), 'Campo 2');
+    });
+  });
+
   group('urlComoLlegar', () {
-    test('iOS abre Apple Maps con el nombre exacto codificado', () {
+    test('Google Maps recibe el texto completo codificado', () {
       expect(
-        urlComoLlegar('Campo Municipal', esIos: true).toString(),
-        'https://maps.apple.com/?q=Campo%20Municipal',
-      );
-    });
-
-    test('Android abre Google Maps con el nombre exacto codificado', () {
-      expect(
-        urlComoLlegar('Camp d\'Esports & Co', esIos: false).toString(),
+        urlComoLlegar(
+          'Camp d\'Esports & Co F-11',
+          mapa: MapaComoLlegar.google,
+        ).toString(),
         'https://www.google.com/maps/search/?api=1&query='
-        'Camp%20d\'Esports%20%26%20Co',
+        'Camp%20d\'Esports%20%26%20Co%20F-11',
       );
-    });
-
-    test('con coma no se añade nada y la coma se codifica', () {
       expect(
-        urlComoLlegar('Calle Mayor 3, Pego', esIos: false).toString(),
+        urlComoLlegar(
+          'Calle Mayor 3, Pego',
+          mapa: MapaComoLlegar.google,
+        ).toString(),
         'https://www.google.com/maps/search/?api=1&query='
         'Calle%20Mayor%203%2C%20Pego',
       );
     });
 
-    test('con Mutxamel no se añade nada', () {
+    test('Apple Maps recibe el texto limpio codificado', () {
       expect(
-        urlComoLlegar('Campo de Mutxamel', esIos: true).toString(),
-        'https://maps.apple.com/?q=Campo%20de%20Mutxamel',
+        urlComoLlegar(
+          'Polideportivo Mpal. El Vincle F-11 El Campello',
+          mapa: MapaComoLlegar.apple,
+        ).toString(),
+        'https://maps.apple.com/?q='
+        'Polideportivo%20Mpal.%20El%20Vincle%20El%20Campello',
       );
-    });
-
-    test('codifica acentos, "&" y paréntesis', () {
       expect(
-        urlComoLlegar(' Pabellón Camí (B) & Co ', esIos: true).toString(),
+        urlComoLlegar(
+          ' Pabellón Camí (B) & Co ',
+          mapa: MapaComoLlegar.apple,
+        ).toString(),
         'https://maps.apple.com/?q=Pabell%C3%B3n%20Cam%C3%AD%20(B)%20%26%20Co',
       );
     });
   });
 
   group('abrirComoLlegar y BotonComoLlegar', () {
-    testWidgets('abre la URL de la plataforma en una aplicación externa', (
-      tester,
-    ) async {
-      final abiertas = <Uri>[];
-      ComoLlegar.esIos = () => true;
+    final abiertas = <Uri>[];
+
+    setUp(() {
+      abiertas.clear();
+      SharedPreferences.setMockInitialValues({});
       ComoLlegar.abrirUrl = (url) async {
         abiertas.add(url);
         return true;
       };
+    });
 
-      await _pintar(tester, const BotonComoLlegar(lugar: 'Campo Municipal'));
+    List<String> textosHoja(WidgetTester tester) => [
+      for (final t in tester.widgetList<CupertinoActionSheetAction>(
+        find.byType(CupertinoActionSheetAction),
+      ))
+        (t.child as Text).data!,
+    ];
 
+    testWidgets('en iOS muestra la hoja con Google, Apple y Cancelar', (
+      tester,
+    ) async {
+      ComoLlegar.esIos = () => true;
+
+      await _pintar(tester, const BotonComoLlegar(lugar: 'Campo F-11 Pego'));
+      await tester.tap(find.byIcon(Icons.directions));
+      await tester.pumpAndSettle();
+
+      expect(textosHoja(tester), ['Google Maps', 'Apple Maps', 'Cancelar']);
+      expect(abiertas, isEmpty);
+    });
+
+    testWidgets('en iOS, Google abre el texto completo y se recuerda', (
+      tester,
+    ) async {
+      ComoLlegar.esIos = () => true;
+
+      await _pintar(tester, const BotonComoLlegar(lugar: 'Campo F-11 Pego'));
+      await tester.tap(find.byIcon(Icons.directions));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Google Maps'));
+      await tester.pumpAndSettle();
+
+      expect(
+        abiertas.single.toString(),
+        'https://www.google.com/maps/search/?api=1&query=Campo%20F-11%20Pego',
+      );
+      expect(await AppPreferences.obtenerMapaPreferido(), 'google');
+    });
+
+    testWidgets('en iOS, Apple abre la URL limpia y pasa a ir primero', (
+      tester,
+    ) async {
+      ComoLlegar.esIos = () => true;
+
+      await _pintar(tester, const BotonComoLlegar(lugar: 'Campo F-11 Pego'));
+      await tester.tap(find.byIcon(Icons.directions));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Apple Maps'));
+      await tester.pumpAndSettle();
+
+      expect(
+        abiertas.single.toString(),
+        'https://maps.apple.com/?q=Campo%20Pego',
+      );
+      expect(await AppPreferences.obtenerMapaPreferido(), 'apple');
+
+      await tester.tap(find.byIcon(Icons.directions));
+      await tester.pumpAndSettle();
+
+      expect(textosHoja(tester), ['Apple Maps', 'Google Maps', 'Cancelar']);
+    });
+
+    testWidgets('en iOS, Cancelar no abre nada ni guarda nada', (tester) async {
+      ComoLlegar.esIos = () => true;
+
+      await _pintar(tester, const BotonComoLlegar(lugar: 'Campo'));
+      await tester.tap(find.byIcon(Icons.directions));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Cancelar'));
+      await tester.pumpAndSettle();
+
+      expect(abiertas, isEmpty);
+      expect(find.byType(SnackBar), findsNothing);
+      expect(await AppPreferences.obtenerMapaPreferido(), isNull);
+    });
+
+    testWidgets('en Android abre Google Maps directamente, sin hoja', (
+      tester,
+    ) async {
+      ComoLlegar.esIos = () => false;
+
+      await _pintar(tester, const BotonComoLlegar(lugar: 'Campo F-11 Pego'));
       await tester.tap(find.byIcon(Icons.directions));
       await tester.pump();
 
-      expect(abiertas.single.host, 'maps.apple.com');
+      expect(find.byType(CupertinoActionSheet), findsNothing);
+      expect(
+        abiertas.single.toString(),
+        'https://www.google.com/maps/search/?api=1&query=Campo%20F-11%20Pego',
+      );
       expect(find.byType(SnackBar), findsNothing);
     });
 

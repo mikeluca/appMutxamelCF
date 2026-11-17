@@ -4192,6 +4192,18 @@ abstract class AppLocalizations {
   /// **'No se ha podido abrir el mapa.'**
   String get directionsOpenError;
 
+  /// No description provided for @directionsGoogleMaps.
+  ///
+  /// In es, this message translates to:
+  /// **'Google Maps'**
+  String get directionsGoogleMaps;
+
+  /// No description provided for @directionsAppleMaps.
+  ///
+  /// In es, this message translates to:
+  /// **'Apple Maps'**
+  String get directionsAppleMaps;
+
   /// No description provided for @calendarWithdrawJustificationTitle.
   ///
   /// In es, this message translates to:
