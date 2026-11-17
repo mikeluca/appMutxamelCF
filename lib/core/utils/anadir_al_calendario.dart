@@ -2,7 +2,7 @@ import 'dart:io' show Platform;
 
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:app_settings/app_settings.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../l10n/gen/app_localizations.dart';
 import 'evento_partido.dart';

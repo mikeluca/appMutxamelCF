@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Cuerpo de una hoja inferior con teclado: el contenido se desplaza y el botón de [pie] (Enviar) queda fijo abajo,
 /// fuera de la lista. La hoja sube con el teclado (relleno con `viewInsets.bottom`; el `isScrollControlled` lo pone

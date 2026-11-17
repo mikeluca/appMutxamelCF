@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:app_mutxamel_cf/features/directo/models/cuenta_atras.dart';
 import 'package:app_mutxamel_cf/features/directo/widgets/cuenta_atras_texto.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'harness.dart';

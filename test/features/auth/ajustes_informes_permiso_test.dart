@@ -4,8 +4,9 @@ import 'package:app_mutxamel_cf/core/notifications/services/permiso_notificacion
 import 'package:app_mutxamel_cf/features/auth/pages/ajustes_page.dart';
 import 'package:app_mutxamel_cf/features/auth/services/auth_manager.dart';
 import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flutter_localizations/flutter_localizations.dart' show GlobalWidgetsLocalizations;
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

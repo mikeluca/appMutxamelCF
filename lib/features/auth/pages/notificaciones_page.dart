@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../core/network/api_client.dart';
 import '../../../core/notifications/utils/convocatoria_notificacion.dart';

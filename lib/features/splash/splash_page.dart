@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import '../../routing/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/version/control_version.dart';

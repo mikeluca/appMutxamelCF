@@ -1,4 +1,7 @@
-import 'package:flutter/material.dart';
+// table_calendar aún usa package:flutter/material.dart: necesita su Material.
+// ignore: deprecated_member_use
+import 'package:flutter/material.dart' as legacy show Material, MaterialType;
+import 'package:material_ui/material_ui.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 /// Vista visual del calendario (mes o semana, con marcadores por día
@@ -93,81 +96,89 @@ class _CalendarioMensualState<T> extends State<CalendarioMensual<T>> {
           clipBehavior: Clip.antiAlias,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: TableCalendar<T>(
-              locale: widget.locale,
-              firstDay:
-                  widget.primerDia ??
-                  DateTime.now().subtract(const Duration(days: 365)),
-              lastDay:
-                  widget.ultimoDia ??
-                  DateTime.now().add(const Duration(days: 365)),
-              focusedDay: _focusedDay,
-              currentDay: _soloFecha(DateTime.now()),
-              selectedDayPredicate: (dia) => _soloFecha(dia) == _selectedDay,
-              calendarFormat: _formato,
-              availableCalendarFormats: const {
-                CalendarFormat.month: 'Mes',
-                CalendarFormat.week: 'Semana',
-              },
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              eventLoader: _eventosDelDia,
-              onFormatChanged: (formato) {
-                setState(() => _formato = formato);
-              },
-              onPageChanged: (focusedDay) {
-                _focusedDay = focusedDay;
-              },
-              onDaySelected: (selectedDay, focusedDay) {
-                setState(() {
-                  _selectedDay = _soloFecha(selectedDay);
-                  _focusedDay = focusedDay;
-                });
-              },
-              headerStyle: HeaderStyle(
-                formatButtonShowsNext: false,
-                titleCentered: true,
-                formatButtonDecoration: BoxDecoration(
-                  border: Border.all(color: colors.outlineVariant),
-                  borderRadius: BorderRadius.circular(8),
+            // table_calendar aún importa package:flutter/material.dart: puente temporal.
+            // ignore: deprecated_member_use
+            child: MaterialUiCompatibilityBridge(
+              child: legacy.Material(
+                type: legacy.MaterialType.transparency,
+                child: TableCalendar<T>(
+                  locale: widget.locale,
+                  firstDay:
+                      widget.primerDia ??
+                      DateTime.now().subtract(const Duration(days: 365)),
+                  lastDay:
+                      widget.ultimoDia ??
+                      DateTime.now().add(const Duration(days: 365)),
+                  focusedDay: _focusedDay,
+                  currentDay: _soloFecha(DateTime.now()),
+                  selectedDayPredicate: (dia) =>
+                      _soloFecha(dia) == _selectedDay,
+                  calendarFormat: _formato,
+                  availableCalendarFormats: const {
+                    CalendarFormat.month: 'Mes',
+                    CalendarFormat.week: 'Semana',
+                  },
+                  startingDayOfWeek: StartingDayOfWeek.monday,
+                  eventLoader: _eventosDelDia,
+                  onFormatChanged: (formato) {
+                    setState(() => _formato = formato);
+                  },
+                  onPageChanged: (focusedDay) {
+                    _focusedDay = focusedDay;
+                  },
+                  onDaySelected: (selectedDay, focusedDay) {
+                    setState(() {
+                      _selectedDay = _soloFecha(selectedDay);
+                      _focusedDay = focusedDay;
+                    });
+                  },
+                  headerStyle: HeaderStyle(
+                    formatButtonShowsNext: false,
+                    titleCentered: true,
+                    formatButtonDecoration: BoxDecoration(
+                      border: Border.all(color: colors.outlineVariant),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    formatButtonTextStyle: TextStyle(color: colors.onSurface),
+                    titleTextStyle: TextStyle(
+                      color: colors.onSurface,
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    leftChevronIcon: Icon(
+                      Icons.chevron_left,
+                      color: colors.onSurface,
+                    ),
+                    rightChevronIcon: Icon(
+                      Icons.chevron_right,
+                      color: colors.onSurface,
+                    ),
+                  ),
+                  daysOfWeekStyle: DaysOfWeekStyle(
+                    weekdayStyle: TextStyle(color: colors.onSurfaceVariant),
+                    weekendStyle: TextStyle(color: colors.onSurfaceVariant),
+                  ),
+                  calendarStyle: CalendarStyle(
+                    outsideDaysVisible: false,
+                    defaultTextStyle: TextStyle(color: colors.onSurface),
+                    weekendTextStyle: TextStyle(color: colors.onSurface),
+                    todayDecoration: BoxDecoration(
+                      color: colors.primaryContainer,
+                      shape: BoxShape.circle,
+                    ),
+                    todayTextStyle: TextStyle(color: colors.onPrimaryContainer),
+                    selectedDecoration: BoxDecoration(
+                      color: colors.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    selectedTextStyle: TextStyle(color: colors.onPrimary),
+                    markerDecoration: BoxDecoration(
+                      color: colors.secondary,
+                      shape: BoxShape.circle,
+                    ),
+                    markersMaxCount: 3,
+                  ),
                 ),
-                formatButtonTextStyle: TextStyle(color: colors.onSurface),
-                titleTextStyle: TextStyle(
-                  color: colors.onSurface,
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                ),
-                leftChevronIcon: Icon(
-                  Icons.chevron_left,
-                  color: colors.onSurface,
-                ),
-                rightChevronIcon: Icon(
-                  Icons.chevron_right,
-                  color: colors.onSurface,
-                ),
-              ),
-              daysOfWeekStyle: DaysOfWeekStyle(
-                weekdayStyle: TextStyle(color: colors.onSurfaceVariant),
-                weekendStyle: TextStyle(color: colors.onSurfaceVariant),
-              ),
-              calendarStyle: CalendarStyle(
-                outsideDaysVisible: false,
-                defaultTextStyle: TextStyle(color: colors.onSurface),
-                weekendTextStyle: TextStyle(color: colors.onSurface),
-                todayDecoration: BoxDecoration(
-                  color: colors.primaryContainer,
-                  shape: BoxShape.circle,
-                ),
-                todayTextStyle: TextStyle(color: colors.onPrimaryContainer),
-                selectedDecoration: BoxDecoration(
-                  color: colors.primary,
-                  shape: BoxShape.circle,
-                ),
-                selectedTextStyle: TextStyle(color: colors.onPrimary),
-                markerDecoration: BoxDecoration(
-                  color: colors.secondary,
-                  shape: BoxShape.circle,
-                ),
-                markersMaxCount: 3,
               ),
             ),
           ),

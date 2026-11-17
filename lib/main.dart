@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'core/config/app_preferences.dart';
@@ -207,7 +208,11 @@ class _MutxamelCfAppState extends State<MutxamelCfApp>
 
       locale: Locale(_idiomaActual),
       supportedLocales: AppLocalizations.supportedLocales,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
+        GlobalCupertinoLocalizations.delegate,
+      ],
 
       initialRoute: AppRoutes.splash,
 

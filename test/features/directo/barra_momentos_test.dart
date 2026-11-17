@@ -4,7 +4,7 @@ import 'package:app_mutxamel_cf/features/directo/models/momentos_partido.dart';
 import 'package:app_mutxamel_cf/features/directo/widgets/barra_momentos.dart';
 import 'package:app_mutxamel_cf/features/ficha_partido/models/ficha_partido_model.dart';
 import 'package:app_mutxamel_cf/features/ficha_partido/models/reloj_directo.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'harness.dart';

@@ -8,7 +8,7 @@ import 'package:app_mutxamel_cf/features/ficha_partido/models/ficha_partido_mode
 import 'package:app_mutxamel_cf/features/ficha_partido/pages/ficha_partido_page.dart';
 import 'package:app_mutxamel_cf/features/ficha_partido/services/ficha_partido_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

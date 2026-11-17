@@ -14,7 +14,7 @@ import 'package:app_mutxamel_cf/features/matches/pages/matches_page.dart';
 import 'package:app_mutxamel_cf/features/matches/widgets/match_card.dart';
 import 'package:app_mutxamel_cf/features/teams/models/standings_model.dart';
 import 'package:app_mutxamel_cf/features/teams/widgets/team_standings_section.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'harness.dart';

@@ -9,9 +9,10 @@ import 'package:app_mutxamel_cf/features/coordinacion/services/imagenes_redes_se
 import 'package:app_mutxamel_cf/features/coordinacion/widgets/imagenes_redes_vista.dart';
 import 'package:app_mutxamel_cf/features/coordinacion/widgets/seccion_imagenes_redes.dart';
 import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flutter_localizations/flutter_localizations.dart' show GlobalWidgetsLocalizations;
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Un PNG de 1x1 píxel.

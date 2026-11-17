@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:app_mutxamel_cf/features/directo/widgets/celebra_goles.dart';
 import 'package:app_mutxamel_cf/features/directo/widgets/partido_visible.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'harness.dart';

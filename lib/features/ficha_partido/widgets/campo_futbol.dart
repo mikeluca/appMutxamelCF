@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Un jugador colocado en el campo: su fila (1 = portero, después las líneas de atrás adelante), su columna
 /// (de izquierda a derecha dentro de la fila) y lo que se pinta en esa posición.

@@ -4,7 +4,7 @@ import 'package:app_mutxamel_cf/features/ficha_partido/widgets/ficha_cabecera.da
 import 'package:app_mutxamel_cf/features/ficha_partido/widgets/ficha_detalle.dart';
 import 'package:app_mutxamel_cf/features/matches/models/match_model.dart';
 import 'package:app_mutxamel_cf/features/matches/widgets/match_card.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'harness.dart';

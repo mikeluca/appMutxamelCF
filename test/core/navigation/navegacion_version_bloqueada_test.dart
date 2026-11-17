@@ -12,8 +12,9 @@ import 'package:app_mutxamel_cf/features/convocatorias/model/convocatoria_partid
 import 'package:app_mutxamel_cf/features/convocatorias/services/convocatoria_partido_service.dart';
 import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flutter_localizations/flutter_localizations.dart' show GlobalWidgetsLocalizations;
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../models/cambio_marcador.dart';
 import 'visibilidad_en_pantalla.dart';

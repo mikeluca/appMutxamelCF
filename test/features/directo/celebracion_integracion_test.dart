@@ -8,7 +8,7 @@ import 'package:app_mutxamel_cf/features/matches/models/match_model.dart';
 import 'package:app_mutxamel_cf/features/matches/services/match_service.dart';
 import 'package:app_mutxamel_cf/features/news/models/news_model.dart';
 import 'package:app_mutxamel_cf/features/news/services/news_services.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'harness.dart';

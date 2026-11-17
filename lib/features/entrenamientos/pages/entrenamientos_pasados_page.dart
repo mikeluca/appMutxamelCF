@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'entrenamiento_form_page.dart';
 
 import '../../../core/utils/backend_date.dart';

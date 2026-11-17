@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../core/utils/anadir_al_calendario.dart';
 import '../../../core/utils/evento_partido.dart';

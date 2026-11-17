@@ -6,8 +6,9 @@ import 'package:app_mutxamel_cf/features/ficha_partido/pages/ficha_partido_page.
 import 'package:app_mutxamel_cf/features/ficha_partido/services/ficha_partido_service.dart';
 import 'package:app_mutxamel_cf/features/ficha_partido/widgets/ficha_forma.dart';
 import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:flutter_localizations/flutter_localizations.dart' show GlobalWidgetsLocalizations;
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../../support/marcador_helpers.dart';
 import 'package:http/http.dart' as http;

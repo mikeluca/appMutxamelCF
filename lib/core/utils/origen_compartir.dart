@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// El rectángulo (en coordenadas globales) desde el que se abre el menú de compartir. En iPad, share_plus lo necesita
 /// para anclar el menú: sin él falla. Es el del botón que lo lanza ([contexto] es el de ese botón); si no se puede
