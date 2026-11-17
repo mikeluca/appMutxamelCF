@@ -586,6 +586,42 @@ class AppLocalizationsCa extends AppLocalizations {
   String get fieldPosition => 'Posició';
 
   @override
+  String get playerEditTooltip => 'Editar dorsal i posició';
+
+  @override
+  String get playerDorsalInvalid => 'El dorsal ha d\'estar entre 1 i 99';
+
+  @override
+  String get playerDataUpdated => 'Dades del jugador actualitzades';
+
+  @override
+  String get playerPositionNone => 'Sense posició';
+
+  @override
+  String get playerPositionLegacyHint =>
+      'Aquest text no és de la llista: en guardar s\'eliminarà si no tries una posició.';
+
+  @override
+  String playerPositionCurrent(String text) {
+    return '$text (actual)';
+  }
+
+  @override
+  String get positionPORTERO => 'Porter';
+
+  @override
+  String get positionDEFENSA => 'Defensa';
+
+  @override
+  String get positionCENTROCAMPISTA => 'Centrecampista';
+
+  @override
+  String get positionEXTREMO => 'Extrem';
+
+  @override
+  String get positionDELANTERO => 'Davanter';
+
+  @override
   String get allTeamsTitle => 'Tots els equips';
 
   @override

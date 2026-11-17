@@ -61,6 +61,23 @@ class TeamService {
     }
   }
 
+  /// Guarda el dorsal (1-99) y la posición (código de la lista) del jugador; null los deja vacíos. Devuelve el jugador
+  /// actualizado. Errores del servidor: 400 valor no válido, 403 sin permiso sobre el equipo, 404 jugador inexistente o de
+  /// baja y 409 dorsal repetido (con el mensaje "El dorsal 7 ya lo tiene ...").
+  Future<PlayerModel> actualizarDorsalPosicion({
+    required int jugadorId,
+    required int? dorsal,
+    required String? posicionCodigo,
+  }) async {
+    final data = await ApiClient.put(
+      '/app/jugadores/$jugadorId/dorsal-posicion',
+      autenticado: true,
+      body: {'dorsal': dorsal, 'posicion': posicionCodigo},
+    );
+
+    return PlayerModel.fromJson(data as Map<String, dynamic>);
+  }
+
   Future<List<FamiliarJugadorModel>> obtenerFamiliaresJugador({
     required int equipoId,
     required int jugadorId,

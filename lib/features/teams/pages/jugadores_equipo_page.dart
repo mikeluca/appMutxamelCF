@@ -7,21 +7,29 @@ import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/models/perfil_app.dart';
 import '../../teams/models/player_model.dart';
 import '../../teams/services/team_services.dart';
+import '../utils/posicion_jugador.dart';
+import '../widgets/editar_jugador_sheet.dart';
 import 'familiares_jugador_page.dart';
 
 class JugadoresEquipoPage extends StatefulWidget {
   final PerfilEquipo equipo;
 
-  const JugadoresEquipoPage({super.key, required this.equipo});
+  /// Solo para tests: sustituye al servicio real.
+  final TeamService? servicio;
+
+  const JugadoresEquipoPage({super.key, required this.equipo, this.servicio});
 
   @override
   State<JugadoresEquipoPage> createState() => _JugadoresEquipoPageState();
 }
 
 class _JugadoresEquipoPageState extends State<JugadoresEquipoPage> {
-  final TeamService _teamService = TeamService();
+  late final TeamService _teamService = widget.servicio ?? TeamService();
 
   late Future<List<PlayerModel>> _futureJugadores;
+
+  /// La última lista cargada, para actualizarla al editar un jugador sin volver a pedirla.
+  List<PlayerModel> _ultimaLista = const [];
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
   AppLocalizations get _t => AppLocalizations.of(context);
@@ -58,6 +66,7 @@ class _JugadoresEquipoPageState extends State<JugadoresEquipoPage> {
             }
 
             final jugadores = snapshot.data ?? [];
+            _ultimaLista = jugadores;
 
             if (jugadores.isEmpty) {
               return ListView(
@@ -95,7 +104,49 @@ class _JugadoresEquipoPageState extends State<JugadoresEquipoPage> {
     );
   }
 
+  Future<void> _editar(PlayerModel jugador) async {
+    final actualizado = await mostrarEditarJugador(
+      context,
+      jugador: jugador,
+      servicio: _teamService,
+    );
+
+    if (actualizado == null || !mounted) return;
+
+    // Sin recargar la pantalla: se cambia el jugador en la lista y se reordena por dorsal (como la entrega el
+    // servidor: de menor a mayor, los que no tienen al final; a igualdad, el orden que ya había).
+    final lista = [
+      for (final j in _ultimaLista) j.id == actualizado.id ? actualizado : j,
+    ];
+    final orden = {for (var i = 0; i < lista.length; i++) lista[i].id: i};
+
+    lista.sort((a, b) {
+      final da = a.dorsal;
+      final db = b.dorsal;
+
+      if (da == db) return orden[a.id]!.compareTo(orden[b.id]!);
+      if (da == null) return 1;
+      if (db == null) return -1;
+
+      return da.compareTo(db);
+    });
+
+    setState(() {
+      _futureJugadores = Future.value(lista);
+    });
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(_t.playerDataUpdated)));
+  }
+
   Widget _construirJugador(PlayerModel jugador) {
+    final posicion = textoPosicion(
+      _t,
+      codigo: jugador.posicionCodigo,
+      texto: jugador.posicion,
+    );
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -134,10 +185,10 @@ class _JugadoresEquipoPageState extends State<JugadoresEquipoPage> {
                       ),
                     ),
 
-                    if (jugador.posicion?.trim().isNotEmpty == true) ...[
+                    if (posicion != null) ...[
                       const SizedBox(height: 5),
                       Text(
-                        jugador.posicion!,
+                        posicion,
                         style: TextStyle(
                           fontSize: 14,
                           color: _colors.onSurfaceVariant,
@@ -148,7 +199,16 @@ class _JugadoresEquipoPageState extends State<JugadoresEquipoPage> {
                 ),
               ),
 
-              const SizedBox(width: 10),
+              if (jugador.editable)
+                IconButton(
+                  key: ValueKey('editar-jugador-${jugador.id}'),
+                  tooltip: _t.playerEditTooltip,
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(Icons.edit_outlined),
+                  onPressed: () => _editar(jugador),
+                ),
+
+              const SizedBox(width: 6),
 
               if (jugador.dorsal != null)
                 Container(

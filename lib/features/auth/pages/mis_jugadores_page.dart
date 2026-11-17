@@ -9,6 +9,7 @@ import '../../../l10n/gen/app_localizations.dart';
 import '../../continuidad/services/continuidad_service.dart';
 import '../../continuidad/widgets/continuidad_lista.dart';
 import '../../teams/models/player_model.dart';
+import '../../teams/utils/posicion_jugador.dart';
 import '../../teams/models/team_model.dart';
 import '../../teams/services/team_services.dart';
 import '../models/perfil_app.dart';
@@ -337,7 +338,11 @@ class _MisJugadoresPageState extends State<MisJugadoresPage> {
                 _construirDato(
                   icono: Icons.accessibility_new_outlined,
                   titulo: _t.fieldPosition,
-                  valor: jugador.posicion,
+                  valor: textoPosicion(
+                    _t,
+                    codigo: _jugadoresConFoto[jugador.id]?.posicionCodigo,
+                    texto: jugador.posicion,
+                  ),
                 ),
 
                 const Divider(height: 32),

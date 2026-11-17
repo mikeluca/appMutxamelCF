@@ -580,6 +580,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldPosition => 'Position';
 
   @override
+  String get playerEditTooltip => 'Edit number and position';
+
+  @override
+  String get playerDorsalInvalid => 'The number must be between 1 and 99';
+
+  @override
+  String get playerDataUpdated => 'Player details updated';
+
+  @override
+  String get playerPositionNone => 'No position';
+
+  @override
+  String get playerPositionLegacyHint =>
+      'This text is not in the list: it will be removed when saving unless you pick a position.';
+
+  @override
+  String playerPositionCurrent(String text) {
+    return '$text (current)';
+  }
+
+  @override
+  String get positionPORTERO => 'Goalkeeper';
+
+  @override
+  String get positionDEFENSA => 'Defender';
+
+  @override
+  String get positionCENTROCAMPISTA => 'Midfielder';
+
+  @override
+  String get positionEXTREMO => 'Winger';
+
+  @override
+  String get positionDELANTERO => 'Forward';
+
+  @override
   String get allTeamsTitle => 'All teams';
 
   @override

@@ -1174,6 +1174,72 @@ abstract class AppLocalizations {
   /// **'Posición'**
   String get fieldPosition;
 
+  /// No description provided for @playerEditTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar dorsal y posición'**
+  String get playerEditTooltip;
+
+  /// No description provided for @playerDorsalInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'El dorsal debe estar entre 1 y 99'**
+  String get playerDorsalInvalid;
+
+  /// No description provided for @playerDataUpdated.
+  ///
+  /// In es, this message translates to:
+  /// **'Datos del jugador actualizados'**
+  String get playerDataUpdated;
+
+  /// No description provided for @playerPositionNone.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin posición'**
+  String get playerPositionNone;
+
+  /// No description provided for @playerPositionLegacyHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Este texto no es de la lista: al guardar se quitará si no eliges una posición.'**
+  String get playerPositionLegacyHint;
+
+  /// No description provided for @playerPositionCurrent.
+  ///
+  /// In es, this message translates to:
+  /// **'{text} (actual)'**
+  String playerPositionCurrent(String text);
+
+  /// No description provided for @positionPORTERO.
+  ///
+  /// In es, this message translates to:
+  /// **'Portero'**
+  String get positionPORTERO;
+
+  /// No description provided for @positionDEFENSA.
+  ///
+  /// In es, this message translates to:
+  /// **'Defensa'**
+  String get positionDEFENSA;
+
+  /// No description provided for @positionCENTROCAMPISTA.
+  ///
+  /// In es, this message translates to:
+  /// **'Centrocampista'**
+  String get positionCENTROCAMPISTA;
+
+  /// No description provided for @positionEXTREMO.
+  ///
+  /// In es, this message translates to:
+  /// **'Extremo'**
+  String get positionEXTREMO;
+
+  /// No description provided for @positionDELANTERO.
+  ///
+  /// In es, this message translates to:
+  /// **'Delantero'**
+  String get positionDELANTERO;
+
   /// No description provided for @allTeamsTitle.
   ///
   /// In es, this message translates to:

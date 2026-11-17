@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/widget/club_app_bar_title.dart';
+import '../../../core/widget/hoja_con_teclado.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../ficha_partido/widgets/reloj_en_directo.dart';
 import '../models/partido_en_vivo_models.dart';
@@ -58,61 +59,6 @@ class _AutorGol {
   }
 
   return (valido: true, dorsal: dorsal);
-}
-
-/// Cuerpo de una hoja inferior con teclado: el contenido se desplaza y el botón de [pie] (Enviar) queda fijo abajo,
-/// fuera de la lista. La hoja sube con el teclado (relleno con `viewInsets.bottom`; el `isScrollControlled` lo pone
-/// quien abre la hoja) y tocar un hueco cierra el teclado, que en iOS no tiene tecla "Hecho" en el numérico.
-class _HojaConTeclado extends StatelessWidget {
-  final List<Widget> children;
-  final Widget? pie;
-  final double alturaMaxima;
-
-  const _HojaConTeclado({
-    required this.children,
-    this.pie,
-    this.alturaMaxima = 0.85,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final teclado = MediaQuery.viewInsetsOf(context).bottom;
-    final alto = MediaQuery.sizeOf(context).height;
-
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Padding(
-        padding: EdgeInsets.only(bottom: teclado),
-        child: SafeArea(
-          // Con el teclado abierto ya no hay barra de gestos debajo.
-          bottom: teclado == 0,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: alto * alturaMaxima),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  child: ListView(
-                    shrinkWrap: true,
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                    children: children,
-                  ),
-                ),
-                if (pie != null)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 4, 24, 12),
-                    child: SizedBox(width: double.infinity, child: pie),
-                  ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 /// Lee el campo "Minuto": vacío es válido (sin minuto); si no, un entero entre 0 y 150.
@@ -1458,7 +1404,7 @@ class _SelectorCambioState extends State<_SelectorCambio> {
 
     final entran = widget.entran.where((j) => j.jugadorId != _sale).toList();
 
-    return _HojaConTeclado(
+    return HojaConTeclado(
       pie: FilledButton(
         key: const ValueKey('confirmar-cambio'),
         onPressed: _sale == null || _entra == null ? null : _confirmar,
@@ -1644,7 +1590,7 @@ class _SelectorTarjetaState extends State<_SelectorTarjeta> {
     final t = AppLocalizations.of(context);
     final colors = Theme.of(context).colorScheme;
 
-    return _HojaConTeclado(
+    return HojaConTeclado(
       pie: FilledButton(
         key: const ValueKey('confirmar-tarjeta'),
         onPressed: _puedeEnviar ? _confirmar : null,
@@ -1839,7 +1785,7 @@ class _SelectorAutorGolState extends State<_SelectorAutorGol> {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
-    return _HojaConTeclado(
+    return HojaConTeclado(
       alturaMaxima: 0.8,
       children: [
         Padding(
