@@ -10,11 +10,21 @@ import '../../matches/models/match_model.dart';
 import '../../matches/pages/resultado_partido_form_page.dart';
 import '../models/coordinacion_model.dart';
 import '../services/coordinacion_service.dart';
+import '../services/imagenes_redes_service.dart';
+import '../widgets/seccion_imagenes_redes.dart';
 
 /// Panel del fin de semana para coordinación: partidos sin convocatoria,
-/// resultados pendientes, equipos que descansan y equipos sin partido.
+/// resultados pendientes, equipos que descansan y equipos sin partido, y las
+/// imágenes para redes sociales del fin de semana.
 class FinDeSemanaPage extends StatefulWidget {
   final CoordinacionService? servicio;
+  final ImagenesRedesService? imagenesServicio;
+
+  /// El fin de semana con el que se abre (un día cualquiera de él); sin él, el de hoy.
+  final DateTime? fechaInicial;
+
+  /// Baja directamente a "Imágenes para redes" al cargar (el aviso de que ya están listas).
+  final bool irAImagenes;
 
   /// Solo para tests: sustituyen a los formularios reales (que piden datos a
   /// la red al abrirse).
@@ -24,6 +34,9 @@ class FinDeSemanaPage extends StatefulWidget {
   const FinDeSemanaPage({
     super.key,
     this.servicio,
+    this.imagenesServicio,
+    this.fechaInicial,
+    this.irAImagenes = false,
     this.constructorConvocatoria,
     this.constructorResultado,
   });
@@ -40,8 +53,14 @@ class _FinDeSemanaPageState extends State<FinDeSemanaPage> {
 
   late final CoordinacionService _servicio =
       widget.servicio ?? CoordinacionService();
+  late final ImagenesRedesService _imagenesServicio =
+      widget.imagenesServicio ?? ImagenesRedesService();
 
   late Future<FinDeSemanaModel> _futuro;
+
+  /// Para bajar a "Imágenes para redes" una sola vez (al abrir desde el aviso).
+  final GlobalKey _claveImagenes = GlobalKey();
+  bool _yaBajado = false;
 
   /// Viernes del fin de semana que se está viendo; null hasta la primera carga
   /// (entonces manda el del servidor, que es el de hoy).
@@ -62,7 +81,24 @@ class _FinDeSemanaPageState extends State<FinDeSemanaPage> {
   @override
   void initState() {
     super.initState();
-    _futuro = _cargar(null);
+    _futuro = _cargar(widget.fechaInicial);
+  }
+
+  void _bajarAImagenes() {
+    if (!widget.irAImagenes || _yaBajado) return;
+
+    _yaBajado = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final contexto = _claveImagenes.currentContext;
+
+      if (contexto != null) {
+        Scrollable.ensureVisible(
+          contexto,
+          duration: const Duration(milliseconds: 300),
+        );
+      }
+    });
   }
 
   Future<FinDeSemanaModel> _cargar(DateTime? fecha) async {
@@ -215,6 +251,8 @@ class _FinDeSemanaPageState extends State<FinDeSemanaPage> {
   }
 
   Widget _construirContenido(FinDeSemanaModel datos) {
+    _bajarAImagenes();
+
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -278,6 +316,15 @@ class _FinDeSemanaPageState extends State<FinDeSemanaPage> {
               for (final e in datos.sinPartido) ListTile(title: Text(e.equipo)),
             ],
           ),
+        KeyedSubtree(
+          key: _claveImagenes,
+          child: SeccionImagenesRedes(
+            // Otro fin de semana, otra sección (vuelve a pedir sus imágenes).
+            key: ValueKey('imagenes-redes-${datos.desde}'),
+            servicio: _imagenesServicio,
+            viernes: datos.desde,
+          ),
+        ),
         if (datos.ultimaImportacionFfcv != null)
           Padding(
             padding: const EdgeInsets.only(top: 12),

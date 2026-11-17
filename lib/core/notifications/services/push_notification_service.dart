@@ -78,6 +78,7 @@ class PushNotificationService {
       tipo == tipoPushReporte ||
       tipo == tipoPushContinuidad ||
       tipo == tipoPushContinuidadRespuesta ||
+      tipo == tipoPushImagenesRedes ||
       esTipoPushInvitacion(tipo);
 
   /// Solo para tests: sustituyen a las llamadas a la red, a las notificaciones

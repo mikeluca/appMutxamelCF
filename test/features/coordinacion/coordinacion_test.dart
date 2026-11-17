@@ -19,6 +19,7 @@ import '../../support/equipacion_fakes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../../support/imagenes_redes_fakes.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 class _FakeCoordinacion extends CoordinacionService {
@@ -180,7 +181,12 @@ void main() {
       _pantallaGrande(tester);
 
       await tester.pumpWidget(
-        _app(FinDeSemanaPage(servicio: _FakeCoordinacion())),
+        _app(
+          FinDeSemanaPage(
+            imagenesServicio: FakeImagenesRedesService(),
+            servicio: _FakeCoordinacion(),
+          ),
+        ),
       );
       await tester.pumpAndSettle();
 
@@ -211,7 +217,12 @@ void main() {
       _pantallaGrande(tester);
 
       await tester.pumpWidget(
-        _app(FinDeSemanaPage(servicio: _FakeCoordinacion())),
+        _app(
+          FinDeSemanaPage(
+            imagenesServicio: FakeImagenesRedesService(),
+            servicio: _FakeCoordinacion(),
+          ),
+        ),
       );
       await tester.pumpAndSettle();
 
@@ -229,7 +240,14 @@ void main() {
 
       final servicio = _FakeCoordinacion()..finDeSemana = _panel(vacio: true);
 
-      await tester.pumpWidget(_app(FinDeSemanaPage(servicio: servicio)));
+      await tester.pumpWidget(
+        _app(
+          FinDeSemanaPage(
+            imagenesServicio: FakeImagenesRedesService(),
+            servicio: servicio,
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Todo al día'), findsOneWidget);
@@ -249,7 +267,14 @@ void main() {
 
       final servicio = _FakeCoordinacion();
 
-      await tester.pumpWidget(_app(FinDeSemanaPage(servicio: servicio)));
+      await tester.pumpWidget(
+        _app(
+          FinDeSemanaPage(
+            imagenesServicio: FakeImagenesRedesService(),
+            servicio: servicio,
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.byTooltip('Fin de semana anterior'));
@@ -282,6 +307,7 @@ void main() {
         await tester.pumpWidget(
           _app(
             FinDeSemanaPage(
+              imagenesServicio: FakeImagenesRedesService(),
               servicio: _FakeCoordinacion(),
               constructorConvocatoria: (partido) {
                 abierto = partido;
@@ -310,6 +336,7 @@ void main() {
       await tester.pumpWidget(
         _app(
           FinDeSemanaPage(
+            imagenesServicio: FakeImagenesRedesService(),
             servicio: _FakeCoordinacion(),
             constructorResultado: (partido) {
               abierto = partido;
@@ -335,6 +362,7 @@ void main() {
       await tester.pumpWidget(
         _app(
           FinDeSemanaPage(
+            imagenesServicio: FakeImagenesRedesService(),
             servicio: servicio,
             constructorConvocatoria: (_) => Scaffold(
               body: Builder(
@@ -362,7 +390,14 @@ void main() {
 
       final servicio = _FakeCoordinacion()..fallo = Exception('sin red');
 
-      await tester.pumpWidget(_app(FinDeSemanaPage(servicio: servicio)));
+      await tester.pumpWidget(
+        _app(
+          FinDeSemanaPage(
+            imagenesServicio: FakeImagenesRedesService(),
+            servicio: servicio,
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.textContaining('No se ha podido conectar'), findsOneWidget);
@@ -564,7 +599,14 @@ void main() {
       final servicio = _FakeCoordinacion()
         ..fallo = const ApiException('prohibido', statusCode: 403);
 
-      await tester.pumpWidget(_app(FinDeSemanaPage(servicio: servicio)));
+      await tester.pumpWidget(
+        _app(
+          FinDeSemanaPage(
+            imagenesServicio: FakeImagenesRedesService(),
+            servicio: servicio,
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('No tienes permiso'), findsOneWidget);

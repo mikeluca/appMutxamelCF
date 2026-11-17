@@ -41,6 +41,25 @@ const String tipoPushContinuidad = 'CONTINUIDAD';
 /// solo abre la bandeja de notificaciones.
 const String tipoPushContinuidadRespuesta = 'CONTINUIDAD_RESPUESTA';
 
+/// Valor de data["tipo"] del push a coordinación cuando ya están listas las imágenes para redes sociales
+/// (previa o resultados): lleva a "Imágenes para redes" del panel Fin de semana. data["desde"] es el viernes de ese
+/// fin de semana (yyyy-MM-dd) y la referencia de la notificación, ese mismo día como yyyyMMdd.
+const String tipoPushImagenesRedes = 'IMAGENES_REDES';
+
+/// El viernes (sin hora) que lleva la referencia de la notificación de las imágenes (yyyyMMdd), o null.
+DateTime? diaDeReferenciaImagenes(int? referencia) {
+  if (referencia == null || referencia < 10000101 || referencia > 99991231) {
+    return null;
+  }
+
+  final mes = referencia ~/ 100 % 100;
+  final dia = referencia % 100;
+
+  if (mes < 1 || mes > 12 || dia < 1 || dia > 31) return null;
+
+  return DateTime(referencia ~/ 10000, mes, dia);
+}
+
 /// Tipos de push de los jugadores de otros equipos invitados a una convocatoria
 /// (docs/api-app-convocatoria-invitados.md del backend, §8). Todos empiezan por
 /// INVITACION_ y llevan en data["invitacionId"], ["convocatoriaId"], ["partidoId"],
@@ -327,6 +346,21 @@ class AbrirBandeja extends DestinoConvocatoria {
   int get hashCode => 'AbrirBandeja'.hashCode;
 }
 
+/// COORDINADOR/ADMIN_APP: "Imágenes para redes" del panel Fin de semana de ese fin de semana ([desde] es su
+/// viernes; sin él, el de hoy).
+class AbrirImagenesRedes extends DestinoConvocatoria {
+  final DateTime? desde;
+
+  const AbrirImagenesRedes([this.desde]);
+
+  @override
+  bool operator ==(Object other) =>
+      other is AbrirImagenesRedes && other.desde == desde;
+
+  @override
+  int get hashCode => Object.hash('AbrirImagenesRedes', desde);
+}
+
 /// El destino del aviso de una convocatoria o de pasar lista, o null si no lo
 /// es (se mantiene el comportamiento de siempre).
 ///
@@ -349,6 +383,10 @@ DestinoConvocatoria? destinoDeAvisoConvocatoria({
 
   if (tipo == tipoPushContinuidadRespuesta) {
     return const AbrirBandeja();
+  }
+
+  if (tipo == tipoPushImagenesRedes) {
+    return AbrirImagenesRedes(diaDeFechaPartido(datos['desde']?.toString()));
   }
 
   if (tipo == tipoPushReporte) {
@@ -491,7 +529,9 @@ DestinoConvocatoria? _destinoDeInvitacion(
       return _esGestionGlobal ? const AbrirInvitaciones() : null;
 
     default:
-      return AbrirCalendario(diaDeFechaPartido(datos['fechaPartido']?.toString()));
+      return AbrirCalendario(
+        diaDeFechaPartido(datos['fechaPartido']?.toString()),
+      );
   }
 }
 
@@ -555,6 +595,8 @@ String payloadDeDestino(DestinoConvocatoria destino) {
       'LIBERAR_INVITACION:${_campos([convocatoriaId, invitacionId, jugadorId ?? ''])}',
     AbrirContinuidad() => 'CONTINUIDAD',
     AbrirBandeja() => 'CONTINUIDAD_RESPUESTA',
+    AbrirImagenesRedes(:final desde) =>
+      desde == null ? 'IMAGENES_REDES' : 'IMAGENES_REDES:${_diaTexto(desde)}',
   };
 }
 
@@ -649,9 +691,7 @@ DestinoConvocatoria? destinoDePayload(String payload) {
   }
 
   if (payload.startsWith('LIBERAR_INVITACION:')) {
-    final campos = _leerCampos(
-      payload.substring('LIBERAR_INVITACION:'.length),
-    );
+    final campos = _leerCampos(payload.substring('LIBERAR_INVITACION:'.length));
     final convocatoriaId = int.tryParse(campos.elementAtOrNull(0) ?? '');
     final invitacionId = int.tryParse(campos.elementAtOrNull(1) ?? '');
 
@@ -675,6 +715,16 @@ DestinoConvocatoria? destinoDePayload(String payload) {
 
   if (payload == 'CONTINUIDAD_RESPUESTA') {
     return const AbrirBandeja();
+  }
+
+  if (payload == 'IMAGENES_REDES') {
+    return const AbrirImagenesRedes();
+  }
+
+  if (payload.startsWith('IMAGENES_REDES:')) {
+    return AbrirImagenesRedes(
+      diaDeFechaPartido(payload.substring('IMAGENES_REDES:'.length)),
+    );
   }
 
   if (payload.startsWith('PASAR_LISTA:')) {

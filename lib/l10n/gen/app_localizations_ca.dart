@@ -2444,6 +2444,65 @@ class AppLocalizationsCa extends AppLocalizations {
   String get weekendReminded => 'Recordat';
 
   @override
+  String get socialImagesTitle => 'Imatges per a xarxes';
+
+  @override
+  String get socialImagesPreview => 'Prèvia';
+
+  @override
+  String get socialImagesResults => 'Resultats';
+
+  @override
+  String get socialImagesEmptyPreview =>
+      'Encara no s\'han generat. Es generen soles els divendres a les 12:00.';
+
+  @override
+  String get socialImagesEmptyResults =>
+      'Encara no s\'han generat. Es generen soles els dilluns a les 09:00.';
+
+  @override
+  String get socialImagesGenerateNow => 'Generar ara';
+
+  @override
+  String get socialImagesRegenerate => 'Regenerar';
+
+  @override
+  String get socialImagesShare => 'Compartir';
+
+  @override
+  String get socialImagesCopyText => 'Copiar text';
+
+  @override
+  String get socialImagesTextCopied => 'Text copiat';
+
+  @override
+  String get socialImagesGenerated => 'Imatges generades';
+
+  @override
+  String get socialImagesNothing =>
+      'No hi ha partits que mostrar en este cap de setmana.';
+
+  @override
+  String get socialImagesLoadError => 'No s\'han pogut carregar les imatges.';
+
+  @override
+  String get socialImagesShareError => 'No s\'han pogut compartir les imatges.';
+
+  @override
+  String get socialImagesF11 => 'Futbol 11';
+
+  @override
+  String get socialImagesF8 => 'Futbol 8';
+
+  @override
+  String get socialImagesF5 => 'Futbol 5';
+
+  @override
+  String socialImagesPageOf(int page, int total) {
+    return '$page de $total';
+  }
+
+  @override
   String weekendReminderSent(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

@@ -2424,6 +2424,65 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weekendReminded => 'Reminded';
 
   @override
+  String get socialImagesTitle => 'Social media images';
+
+  @override
+  String get socialImagesPreview => 'Preview';
+
+  @override
+  String get socialImagesResults => 'Results';
+
+  @override
+  String get socialImagesEmptyPreview =>
+      'Not generated yet. They are generated automatically on Fridays at 12:00.';
+
+  @override
+  String get socialImagesEmptyResults =>
+      'Not generated yet. They are generated automatically on Mondays at 09:00.';
+
+  @override
+  String get socialImagesGenerateNow => 'Generate now';
+
+  @override
+  String get socialImagesRegenerate => 'Regenerate';
+
+  @override
+  String get socialImagesShare => 'Share';
+
+  @override
+  String get socialImagesCopyText => 'Copy text';
+
+  @override
+  String get socialImagesTextCopied => 'Text copied';
+
+  @override
+  String get socialImagesGenerated => 'Images generated';
+
+  @override
+  String get socialImagesNothing =>
+      'There are no matches to show this weekend.';
+
+  @override
+  String get socialImagesLoadError => 'The images could not be loaded.';
+
+  @override
+  String get socialImagesShareError => 'The images could not be shared.';
+
+  @override
+  String get socialImagesF11 => 'Football 11';
+
+  @override
+  String get socialImagesF8 => 'Football 8';
+
+  @override
+  String get socialImagesF5 => 'Football 5';
+
+  @override
+  String socialImagesPageOf(int page, int total) {
+    return '$page of $total';
+  }
+
+  @override
   String weekendReminderSent(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
@@ -49,6 +50,54 @@ class ApiClient {
       path,
       autenticado: autenticado,
       headers: headers,
+    );
+  }
+
+  /// GET que devuelve el cuerpo tal cual (una imagen, por ejemplo) en vez de
+  /// decodificar JSON. Los errores se traducen igual que en [get].
+  static Future<Uint8List> getBytes(
+    String path, {
+    bool autenticado = false,
+  }) async {
+    final cabeceras = <String, String>{};
+
+    if (autenticado) {
+      final token = await AuthSession.obtenerToken();
+
+      if (token == null || token.isEmpty) {
+        throw const ApiException('No hay una sesión activa.');
+      }
+
+      cabeceras['Authorization'] = 'Bearer $token';
+    }
+
+    http.Response response;
+
+    try {
+      response = await http
+          .get(Uri.parse('$baseUrl$path'), headers: cabeceras)
+          .timeout(_timeout);
+    } on TimeoutException {
+      throw const ApiException('El servidor no responde. Inténtalo de nuevo.');
+    } on SocketException {
+      throw const ApiException('No hay conexión a internet.');
+    } on http.ClientException catch (e) {
+      throw ApiException('Error de red: ${e.message}');
+    }
+
+    if (response.statusCode == 401 && autenticado) {
+      await AuthManager.cerrarSesion(desregistrarDispositivo: false);
+    }
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return response.bodyBytes;
+    }
+
+    throw ApiException(
+      _extraerMensaje(response.body) ??
+          'Error en la petición (${response.statusCode}).',
+      statusCode: response.statusCode,
+      datos: _decodificar(response.body),
     );
   }
 

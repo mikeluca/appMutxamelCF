@@ -4312,6 +4312,114 @@ abstract class AppLocalizations {
   /// **'Recordado'**
   String get weekendReminded;
 
+  /// No description provided for @socialImagesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Imágenes para redes'**
+  String get socialImagesTitle;
+
+  /// No description provided for @socialImagesPreview.
+  ///
+  /// In es, this message translates to:
+  /// **'Previa'**
+  String get socialImagesPreview;
+
+  /// No description provided for @socialImagesResults.
+  ///
+  /// In es, this message translates to:
+  /// **'Resultados'**
+  String get socialImagesResults;
+
+  /// No description provided for @socialImagesEmptyPreview.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no se han generado. Se generan solas los viernes a las 12:00.'**
+  String get socialImagesEmptyPreview;
+
+  /// No description provided for @socialImagesEmptyResults.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no se han generado. Se generan solas los lunes a las 09:00.'**
+  String get socialImagesEmptyResults;
+
+  /// No description provided for @socialImagesGenerateNow.
+  ///
+  /// In es, this message translates to:
+  /// **'Generar ahora'**
+  String get socialImagesGenerateNow;
+
+  /// No description provided for @socialImagesRegenerate.
+  ///
+  /// In es, this message translates to:
+  /// **'Regenerar'**
+  String get socialImagesRegenerate;
+
+  /// No description provided for @socialImagesShare.
+  ///
+  /// In es, this message translates to:
+  /// **'Compartir'**
+  String get socialImagesShare;
+
+  /// No description provided for @socialImagesCopyText.
+  ///
+  /// In es, this message translates to:
+  /// **'Copiar texto'**
+  String get socialImagesCopyText;
+
+  /// No description provided for @socialImagesTextCopied.
+  ///
+  /// In es, this message translates to:
+  /// **'Texto copiado'**
+  String get socialImagesTextCopied;
+
+  /// No description provided for @socialImagesGenerated.
+  ///
+  /// In es, this message translates to:
+  /// **'Imágenes generadas'**
+  String get socialImagesGenerated;
+
+  /// No description provided for @socialImagesNothing.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay partidos que mostrar en este fin de semana.'**
+  String get socialImagesNothing;
+
+  /// No description provided for @socialImagesLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se han podido cargar las imágenes.'**
+  String get socialImagesLoadError;
+
+  /// No description provided for @socialImagesShareError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se han podido compartir las imágenes.'**
+  String get socialImagesShareError;
+
+  /// No description provided for @socialImagesF11.
+  ///
+  /// In es, this message translates to:
+  /// **'Fútbol 11'**
+  String get socialImagesF11;
+
+  /// No description provided for @socialImagesF8.
+  ///
+  /// In es, this message translates to:
+  /// **'Fútbol 8'**
+  String get socialImagesF8;
+
+  /// No description provided for @socialImagesF5.
+  ///
+  /// In es, this message translates to:
+  /// **'Fútbol 5'**
+  String get socialImagesF5;
+
+  /// No description provided for @socialImagesPageOf.
+  ///
+  /// In es, this message translates to:
+  /// **'{page} de {total}'**
+  String socialImagesPageOf(int page, int total);
+
   /// No description provided for @weekendReminderSent.
   ///
   /// In es, this message translates to:

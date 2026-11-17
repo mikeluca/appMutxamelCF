@@ -10,6 +10,7 @@ import '../../features/auth/models/perfil_app.dart';
 import '../../features/admin/pages/moderacion_page.dart';
 import '../../features/auth/pages/notificaciones_page.dart';
 import '../../features/continuidad/pages/continuidad_page.dart';
+import '../../features/coordinacion/pages/fin_de_semana_page.dart';
 import '../../features/calendario/pages/calendario_page.dart';
 import '../../features/convocatorias/model/convocatoria_model.dart';
 import '../../features/auth/services/perfil_service.dart';
@@ -107,7 +108,11 @@ class AppNavigator {
         await abrirCalendario(dia);
       case AbrirDetalleConvocatoria(:final partidoId, :final dia):
         await abrirDetalleConvocatoria(partidoId, dia);
-      case AbrirFormularioConvocatoria(:final partidoId, :final equipoId, :final equipo):
+      case AbrirFormularioConvocatoria(
+        :final partidoId,
+        :final equipoId,
+        :final equipo,
+      ):
         await abrirFormularioConvocatoria(partidoId, equipoId, equipo);
       case AbrirFormularioResultado():
         await abrirFormularioResultado(destino);
@@ -121,6 +126,8 @@ class AppNavigator {
         await abrirContinuidad();
       case AbrirBandeja():
         await abrirBandeja();
+      case AbrirImagenesRedes(:final desde):
+        await abrirImagenesRedes(desde);
       case AbrirInvitaciones():
         await abrirInvitaciones();
       case AbrirLiberarInvitacion(
@@ -141,7 +148,10 @@ class AppNavigator {
 
   /// Solo para tests: sustituye a la convocatoria de origen con su aviso de liberar.
   @visibleForTesting
-  static Widget Function(ConvocatoriaModel convocatoria, LiberarInvitacion liberar)?
+  static Widget Function(
+    ConvocatoriaModel convocatoria,
+    LiberarInvitacion liberar,
+  )?
   constructorLiberarInvitacion;
 
   /// La lista de invitaciones de jugadores de otros equipos (coordinación).
@@ -226,7 +236,8 @@ class AppNavigator {
 
   /// Solo para tests: sustituyen al servicio, al perfil y a la pantalla reales.
   @visibleForTesting
-  static ConvocatoriaPartidoService Function()? fabricaConvocatoriaPartidoService;
+  static ConvocatoriaPartidoService Function()?
+  fabricaConvocatoriaPartidoService;
 
   @visibleForTesting
   static Future<PerfilApp> Function()? cargarPerfilParaAviso;
@@ -292,7 +303,9 @@ class AppNavigator {
         unico = convocados.first;
       }
     } catch (e) {
-      debugPrint('No se pudo resolver la convocatoria del partido $partidoId: $e');
+      debugPrint(
+        'No se pudo resolver la convocatoria del partido $partidoId: $e',
+      );
     } finally {
       if (carga.isActive && navigatorState.mounted) {
         navigatorState.removeRoute(carga);
@@ -408,6 +421,27 @@ class AppNavigator {
       MaterialPageRoute(
         builder: (_) =>
             (constructorContinuidad ?? () => const ContinuidadPage())(),
+      ),
+    );
+  }
+
+  /// Solo para tests: sustituye al panel Fin de semana (que pide datos a la red al abrirse).
+  @visibleForTesting
+  static Widget Function(DateTime? desde)? constructorImagenesRedes;
+
+  /// "Imágenes para redes" del panel Fin de semana del fin de semana [desde] (push IMAGENES_REDES).
+  static Future<void> abrirImagenesRedes(DateTime? desde) async {
+    final navigatorState = navigator;
+
+    if (navigatorState == null || ControlVersion.bloqueada) {
+      return;
+    }
+
+    await navigatorState.push(
+      MaterialPageRoute(
+        builder: (_) =>
+            constructorImagenesRedes?.call(desde) ??
+            FinDeSemanaPage(fechaInicial: desde, irAImagenes: true),
       ),
     );
   }
