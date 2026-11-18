@@ -1349,7 +1349,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get callupTimeLabel => 'Hora de convocatoria';
 
   @override
-  String get callupPlaceLabel => 'Lugar de convocatoria';
+  String get callupMeetingPlaceLabel => 'Lugar de citación';
+
+  @override
+  String get callupMeetingPlaceOther => 'Otro…';
+
+  @override
+  String get callupMeetingPlaceOtherHint => 'Escribe el lugar de citación';
 
   @override
   String get matchDateLabel => 'Fecha del partido';
@@ -1377,9 +1383,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get saveCallupButton => 'Guardar convocatoria';
-
-  @override
-  String get enterCallupPlaceError => 'Introduce el lugar de convocatoria.';
 
   @override
   String get selectAtLeastOnePlayerError => 'Selecciona al menos un jugador.';
@@ -2599,6 +2602,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get socialImagesRegenerate => 'Regenerar';
+
+  @override
+  String get socialImagesRegenerateAgain => 'Volver a generar';
+
+  @override
+  String get socialImagesRegenerateConfirm =>
+      'Se sustituirán las imágenes actuales de este fin de semana por unas nuevas.';
 
   @override
   String get socialImagesShare => 'Compartir';

@@ -505,7 +505,10 @@ class _ConvocatoriaDetallePageState extends State<ConvocatoriaDetallePage> {
                     style: TextStyle(color: _colors.onSurfaceVariant),
                   ),
                 ),
-                BotonComoLlegar(lugar: _convocatoria.campo),
+                BotonComoLlegar(
+                  lugar: _convocatoria.campo,
+                  local: _convocatoria.local,
+                ),
               ],
             ),
             Row(
@@ -519,7 +522,11 @@ class _ConvocatoriaDetallePageState extends State<ConvocatoriaDetallePage> {
                     style: TextStyle(color: _colors.onSurfaceVariant),
                   ),
                 ),
-                BotonComoLlegar(lugar: _convocatoria.lugarConvocatoria),
+                BotonComoLlegar.citacion(
+                  lugar: _convocatoria.lugarConvocatoria,
+                  campo: _convocatoria.campo,
+                  local: _convocatoria.local,
+                ),
               ],
             ),
             BloqueEquipaje(

@@ -11,7 +11,8 @@ import 'package:app_mutxamel_cf/features/teams/models/team_model.dart';
 import 'package:app_mutxamel_cf/features/teams/services/team_services.dart';
 import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
-import 'package:flutter_localizations/flutter_localizations.dart' show GlobalWidgetsLocalizations;
+import 'package:flutter_localizations/flutter_localizations.dart'
+    show GlobalWidgetsLocalizations;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -78,6 +79,7 @@ CalendarioModel _calendario({
   bool puedeRetirar = true,
   String? campo = 'Campo Municipal de Pego',
   bool? convocado = true,
+  bool local = true,
 }) => CalendarioModel(
   sesiones: [
     SesionEntrenamientoModel(
@@ -104,6 +106,7 @@ CalendarioModel _calendario({
       hora: '11:00',
       campo: campo,
       convocado: convocado,
+      local: local,
     ),
   ],
 );
@@ -230,7 +233,7 @@ void main() {
         return true;
       };
 
-      await _pintar(tester, _FakeCalendarioService(_calendario()));
+      await _pintar(tester, _FakeCalendarioService(_calendario(local: false)));
 
       expect(find.text('Campo Municipal de Pego'), findsOneWidget);
 
@@ -244,6 +247,21 @@ void main() {
       );
     });
 
+    testWidgets('en casa se ve el campo pero el mapa recibe el polideportivo', (
+      tester,
+    ) async {
+      Uri? abierta;
+      ComoLlegar.esIos = () => false;
+      ComoLlegar.abrirUrl = (url) async {
+        abierta = url;
+        return true;
+      };
+      await _pintar(tester, _FakeCalendarioService(_calendario(local: true)));
+      expect(find.text('Campo Municipal de Pego'), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.directions));
+      await tester.pumpAndSettle();
+      expect(abierta.toString(), contains(Uri.encodeComponent(campoCasaMapas)));
+    });
     testWidgets('sin campo no hay botón Cómo llegar', (tester) async {
       await _pintar(tester, _FakeCalendarioService(_calendario(campo: '')));
 

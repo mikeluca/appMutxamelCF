@@ -2524,11 +2524,23 @@ abstract class AppLocalizations {
   /// **'Hora de convocatoria'**
   String get callupTimeLabel;
 
-  /// No description provided for @callupPlaceLabel.
+  /// No description provided for @callupMeetingPlaceLabel.
   ///
   /// In es, this message translates to:
-  /// **'Lugar de convocatoria'**
-  String get callupPlaceLabel;
+  /// **'Lugar de citación'**
+  String get callupMeetingPlaceLabel;
+
+  /// No description provided for @callupMeetingPlaceOther.
+  ///
+  /// In es, this message translates to:
+  /// **'Otro…'**
+  String get callupMeetingPlaceOther;
+
+  /// No description provided for @callupMeetingPlaceOtherHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe el lugar de citación'**
+  String get callupMeetingPlaceOtherHint;
 
   /// No description provided for @matchDateLabel.
   ///
@@ -2577,12 +2589,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Guardar convocatoria'**
   String get saveCallupButton;
-
-  /// No description provided for @enterCallupPlaceError.
-  ///
-  /// In es, this message translates to:
-  /// **'Introduce el lugar de convocatoria.'**
-  String get enterCallupPlaceError;
 
   /// No description provided for @selectAtLeastOnePlayerError.
   ///
@@ -4569,6 +4575,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Regenerar'**
   String get socialImagesRegenerate;
+
+  /// No description provided for @socialImagesRegenerateAgain.
+  ///
+  /// In es, this message translates to:
+  /// **'Volver a generar'**
+  String get socialImagesRegenerateAgain;
+
+  /// No description provided for @socialImagesRegenerateConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Se sustituirán las imágenes actuales de este fin de semana por unas nuevas.'**
+  String get socialImagesRegenerateConfirm;
 
   /// No description provided for @socialImagesShare.
   ///

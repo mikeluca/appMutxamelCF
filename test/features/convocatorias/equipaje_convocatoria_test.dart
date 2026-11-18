@@ -549,7 +549,7 @@ void main() {
         expect(
           tester.getTopLeft(find.byKey(const ValueKey('equipaje-seccion'))).dy,
           greaterThan(
-            tester.getBottomLeft(find.text('Lugar de convocatoria')).dy,
+            tester.getBottomLeft(find.text('Lugar de citación')).dy,
           ),
         );
         expect(
@@ -616,7 +616,6 @@ void main() {
 
       await tester.tap(find.byKey(const ValueKey('jugador-convocatoria-100')));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField).first, 'Vestuarios');
 
       await _elegir(
         tester,
@@ -653,7 +652,6 @@ void main() {
 
       await tester.tap(find.byKey(const ValueKey('jugador-convocatoria-100')));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField).first, 'Vestuarios');
       await _guardar(tester);
 
       expect(convocatorias.guardados.single.equipacionId, isNull);
@@ -770,7 +768,6 @@ void main() {
           find.byKey(const ValueKey('jugador-convocatoria-100')),
         );
         await tester.pumpAndSettle();
-        await tester.enterText(find.byType(TextField).first, 'Vestuarios');
         await _elegir(
           tester,
           const ValueKey('equipaje-selector-null'),

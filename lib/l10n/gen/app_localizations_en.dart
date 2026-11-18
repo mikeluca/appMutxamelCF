@@ -1331,7 +1331,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get callupTimeLabel => 'Call-up time';
 
   @override
-  String get callupPlaceLabel => 'Call-up place';
+  String get callupMeetingPlaceLabel => 'Meeting place';
+
+  @override
+  String get callupMeetingPlaceOther => 'Other…';
+
+  @override
+  String get callupMeetingPlaceOtherHint => 'Write the meeting place';
 
   @override
   String get matchDateLabel => 'Match date';
@@ -1359,9 +1365,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get saveCallupButton => 'Save call-up';
-
-  @override
-  String get enterCallupPlaceError => 'Enter the call-up place.';
 
   @override
   String get selectAtLeastOnePlayerError => 'Select at least one player.';
@@ -2570,6 +2573,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get socialImagesRegenerate => 'Regenerate';
+
+  @override
+  String get socialImagesRegenerateAgain => 'Generate again';
+
+  @override
+  String get socialImagesRegenerateConfirm =>
+      'The current images for this weekend will be replaced by new ones.';
 
   @override
   String get socialImagesShare => 'Share';

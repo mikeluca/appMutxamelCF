@@ -14,7 +14,8 @@ import 'package:app_mutxamel_cf/features/convocatorias/pages/convocatoria_famili
 import 'package:app_mutxamel_cf/features/convocatorias/services/convocatoria_partido_service.dart';
 import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
-import 'package:flutter_localizations/flutter_localizations.dart' show GlobalWidgetsLocalizations;
+import 'package:flutter_localizations/flutter_localizations.dart'
+    show GlobalWidgetsLocalizations;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_secure_storage/test/test_flutter_secure_storage_platform.dart';
 import 'package:flutter_secure_storage_platform_interface/flutter_secure_storage_platform_interface.dart';
@@ -258,7 +259,7 @@ void main() {
 
       await _pintar(
         tester,
-        _pagina(_FakeServicio(porJugador: {100: _convocatoria()})),
+        _pagina(_FakeServicio(porJugador: {100: _convocatoria(local: false)})),
       );
 
       expect(find.byIcon(Icons.directions), findsNWidgets(2));
@@ -274,6 +275,38 @@ void main() {
       ]);
     });
 
+    testWidgets(
+      'en casa el mapa recibe el polideportivo y la citación, también',
+      (tester) async {
+        final abiertas = <Uri>[];
+        ComoLlegar.esIos = () => false;
+        ComoLlegar.abrirUrl = (url) async {
+          abiertas.add(url);
+          return true;
+        };
+        await _pintar(
+          tester,
+          _pagina(
+            _FakeServicio(
+              porJugador: {
+                100: _convocatoria(
+                  campo: 'Camp Nou Los Olmos Mutxamel',
+                  lugarCitacion: 'camp nou los olmos mutxamel',
+                ),
+              },
+            ),
+          ),
+        );
+        await tester.tap(find.byIcon(Icons.directions).first);
+        await tester.pump();
+        await tester.tap(find.byIcon(Icons.directions).last);
+        await tester.pump();
+        expect(abiertas.map((u) => u.queryParameters['query']), [
+          campoCasaMapas,
+          campoCasaMapas,
+        ]);
+      },
+    );
     testWidgets('sin campo ni lugar de citación no hay "Cómo llegar"', (
       tester,
     ) async {

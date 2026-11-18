@@ -270,7 +270,7 @@ class _ConvocatoriaFamiliaPageState extends State<ConvocatoriaFamiliaPage> {
                     style: TextStyle(color: _colors.onSurfaceVariant),
                   ),
                 ),
-                BotonComoLlegar(lugar: campo),
+                BotonComoLlegar(lugar: campo, local: convocatoria.local),
               ],
             ),
         ],
@@ -311,7 +311,11 @@ class _ConvocatoriaFamiliaPageState extends State<ConvocatoriaFamiliaPage> {
                     style: TextStyle(color: _colors.onSurfaceVariant),
                   ),
                 ),
-                BotonComoLlegar(lugar: lugar),
+                BotonComoLlegar.citacion(
+                  lugar: lugar,
+                  campo: convocatoria.campo,
+                  local: convocatoria.local,
+                ),
               ],
             ),
           BloqueEquipaje(

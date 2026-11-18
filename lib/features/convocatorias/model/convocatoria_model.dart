@@ -12,6 +12,9 @@ class ConvocatoriaModel {
   /// y los expone aquí igual que antes para no romper la UI existente.
   final String rival;
   final String campo;
+
+  /// true si el Mutxamel juega en casa; null si el backend no lo manda.
+  final bool? local;
   final String fechaPartido;
   final String horaPartido;
 
@@ -72,6 +75,7 @@ class ConvocatoriaModel {
     required this.partidoId,
     required this.rival,
     required this.campo,
+    this.local,
     required this.fechaPartido,
     required this.horaPartido,
     required this.horaConvocatoria,
@@ -91,6 +95,7 @@ class ConvocatoriaModel {
       partidoId: json['partidoId'],
       rival: json['rival'] ?? '',
       campo: json['campo'] ?? '',
+      local: json['local'] as bool?,
       fechaPartido: json['fechaPartido'].toString(),
       horaPartido: json['horaPartido'] ?? '',
       horaConvocatoria: json['horaConvocatoria'] ?? '',

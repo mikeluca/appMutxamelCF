@@ -741,13 +741,13 @@ class _CalendarioPageState extends State<CalendarioPage> {
                           Flexible(
                             child: Text(
                               subtitulo,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: _colors.onSurfaceVariant,
-                          decoration: item.cancelado
-                              ? TextDecoration.lineThrough
-                              : null,
-                        ),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: _colors.onSurfaceVariant,
+                                decoration: item.cancelado
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                              ),
                             ),
                           ),
                         ],
@@ -771,7 +771,10 @@ class _CalendarioPageState extends State<CalendarioPage> {
                               ),
                             ),
                           ),
-                          BotonComoLlegar(lugar: campoPartido),
+                          BotonComoLlegar(
+                            lugar: campoPartido,
+                            local: item.partido?.local,
+                          ),
                         ],
                       ),
                     if (convocatoriaAbrible) ...[

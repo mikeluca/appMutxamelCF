@@ -13,7 +13,6 @@ import '../../../routing/app_routes.dart';
 import '../services/auth_manager.dart';
 import '../services/auth_service.dart';
 import '../services/preferencias_notificacion_service.dart';
-import 'acerca_de_page.dart';
 
 class AjustesPage extends StatefulWidget {
   final String temaActual;
@@ -424,18 +423,6 @@ class _AjustesPageState extends State<AjustesPage> {
             const SizedBox(height: 10),
 
             _interruptorInformesErrores(),
-
-            const SizedBox(height: 10),
-
-            _construirOpcion(
-              icono: Icons.info_outline,
-              titulo: _t.settingsAboutApp,
-              subtitulo: _t.settingsAboutAppSubtitle,
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AcercaDePage()),
-              ),
-            ),
           ],
         ),
 

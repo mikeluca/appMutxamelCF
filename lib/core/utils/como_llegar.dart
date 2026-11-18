@@ -1,6 +1,10 @@
 import 'dart:io' show Platform;
 
-import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoActionSheet, CupertinoActionSheetAction, showCupertinoModalPopup;
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show
+        CupertinoActionSheet,
+        CupertinoActionSheetAction,
+        showCupertinoModalPopup;
 import 'package:material_ui/material_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,6 +21,59 @@ class ComoLlegar {
   @visibleForTesting
   static Future<bool> Function(Uri url) abrirUrl = (url) =>
       launchUrl(url, mode: LaunchMode.externalApplication);
+}
+
+/// El campo de casa tal como se ve y se guarda (campo del partido, lugar de citación).
+const String campoCasaTexto = 'Camp Nou Los Olmos Mutxamel';
+
+/// El campo de casa tal como se envía a Google Maps y Apple Maps.
+const String campoCasaMapas = 'Poliesportiu Municipal de Mutxamel';
+
+/// El texto en minúsculas, sin acentos y con los espacios normalizados, para comparar lugares.
+String normalizarLugar(String? texto) {
+  const origen = 'áàäâãéèëêíìïîóòöôõúùüûñç';
+  const destino = 'aaaaaeeeeiiiiooooouuuunc';
+
+  var salida = (texto ?? '').toLowerCase();
+
+  for (var i = 0; i < origen.length; i++) {
+    salida = salida.replaceAll(origen[i], destino[i]);
+  }
+
+  return salida.replaceAll(RegExp(r'\s+'), ' ').trim();
+}
+
+/// Si [a] y [b] son el mismo lugar sin contar mayúsculas, acentos ni espacios de más.
+bool mismoLugar(String? a, String? b) =>
+    normalizarLugar(a) == normalizarLugar(b);
+
+/// Lo que se envía al mapa para el campo de un partido: en casa ([local] true), siempre
+/// [campoCasaMapas]; fuera (o si no se sabe), el campo tal cual. No cambia lo que se muestra.
+String destinoCampoPartido(String? campo, {bool? local}) {
+  final texto = campo?.trim() ?? '';
+
+  if (texto.isEmpty) {
+    return '';
+  }
+
+  return local == true ? campoCasaMapas : texto;
+}
+
+/// Lo que se envía al mapa para el lugar de citación de una convocatoria: [campoCasaMapas] si el
+/// lugar es [campoCasaTexto] o si el partido es de local y el lugar está vacío o es el campo del
+/// partido; en cualquier otro caso, el lugar tal cual.
+String destinoLugarCitacion(String? lugar, {String? campo, bool? local}) {
+  final texto = lugar?.trim() ?? '';
+
+  if (mismoLugar(texto, campoCasaTexto)) {
+    return campoCasaMapas;
+  }
+
+  if (local == true && (texto.isEmpty || mismoLugar(texto, campo))) {
+    return campoCasaMapas;
+  }
+
+  return texto;
 }
 
 /// El texto que se busca en el mapa: exactamente [lugar] (el campo o el lugar de
@@ -151,17 +208,35 @@ Future<void> abrirComoLlegar(BuildContext context, String lugar) async {
 }
 
 /// Botón "Cómo llegar" (icono de direcciones) para el campo de un partido o el
-/// lugar de una citación. No se pinta si el texto está vacío.
+/// lugar de una citación. No se pinta si no hay nada que buscar.
+///
+/// [local] (true si el Mutxamel juega en casa; null si el backend no lo manda) decide el destino en
+/// casa: [campoCasaMapas]. Con [BotonComoLlegar.citacion] el texto es el lugar de citación y
+/// [campo] el campo del partido.
 class BotonComoLlegar extends StatelessWidget {
   final String? lugar;
+  final bool? local;
+  final String? campo;
+  final bool _esCitacion;
 
-  const BotonComoLlegar({super.key, required this.lugar});
+  const BotonComoLlegar({super.key, required this.lugar, this.local})
+    : campo = null,
+      _esCitacion = false;
+
+  const BotonComoLlegar.citacion({
+    super.key,
+    required this.lugar,
+    this.campo,
+    this.local,
+  }) : _esCitacion = true;
 
   @override
   Widget build(BuildContext context) {
-    final texto = lugar?.trim() ?? '';
+    final destino = _esCitacion
+        ? destinoLugarCitacion(lugar, campo: campo, local: local)
+        : destinoCampoPartido(lugar, local: local);
 
-    if (texto.isEmpty) {
+    if (destino.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -172,7 +247,7 @@ class BotonComoLlegar extends StatelessWidget {
       padding: EdgeInsets.zero,
       icon: const Icon(Icons.directions),
       color: Theme.of(context).colorScheme.primary,
-      onPressed: () => abrirComoLlegar(context, texto),
+      onPressed: () => abrirComoLlegar(context, destino),
     );
   }
 }

@@ -7,6 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../routing/app_routes.dart';
+import '../../auth/pages/acerca_de_page.dart';
 import '../models/red_social.dart';
 
 /// Ficha pública de contacto del club (dirección, teléfono, email y
@@ -17,7 +18,10 @@ import '../models/red_social.dart';
 /// No confundir con `ClubPage` (lib/features/auth/pages/club_page.dart),
 /// que es el menú PRIVADO "Área Club" (requiere login).
 class ClubInfoPage extends StatelessWidget {
-  const ClubInfoPage({super.key});
+  /// false solo en los tests: el WebView del mapa no arranca fuera de un dispositivo.
+  final bool mostrarMapa;
+
+  const ClubInfoPage({super.key, this.mostrarMapa = true});
 
   static const String _direccion = 'Calle los Olmos S/N, Mutxamel, Alicante';
   static const String _telefonoVisible = '+34 623 17 68 18';
@@ -97,8 +101,10 @@ class ClubInfoPage extends StatelessWidget {
                 onTap: () => _abrirMapa(context),
               ),
               const SizedBox(height: 10),
-              _construirMapa(context),
-              const SizedBox(height: 10),
+              if (mostrarMapa) ...[
+                _construirMapa(context),
+                const SizedBox(height: 10),
+              ],
               _construirOpcion(
                 context,
                 icono: Icons.language,
@@ -139,6 +145,19 @@ class ClubInfoPage extends StatelessWidget {
                     .toList(),
               ),
             ],
+          ),
+
+          const SizedBox(height: 24),
+
+          _construirOpcion(
+            context,
+            icono: Icons.info_outline,
+            titulo: t.settingsAboutApp,
+            subtitulo: t.settingsAboutAppSubtitle,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AcercaDePage()),
+            ),
           ),
 
           const SizedBox(height: 16),

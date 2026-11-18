@@ -2,7 +2,8 @@ import 'package:app_mutxamel_cf/core/config/app_preferences.dart';
 import 'package:app_mutxamel_cf/core/utils/como_llegar.dart';
 import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
-import 'package:flutter_localizations/flutter_localizations.dart' show GlobalWidgetsLocalizations;
+import 'package:flutter_localizations/flutter_localizations.dart'
+    show GlobalWidgetsLocalizations;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -265,6 +266,275 @@ void main() {
       await _pintar(tester, const BotonComoLlegar(lugar: 'Campo'));
 
       expect(find.byTooltip('Cómo llegar'), findsOneWidget);
+    });
+  });
+
+  group('campo de casa', () {
+    test('las constantes son únicas', () {
+      expect(campoCasaTexto, 'Camp Nou Los Olmos Mutxamel');
+      expect(campoCasaMapas, 'Poliesportiu Municipal de Mutxamel');
+    });
+
+    test('destinoCampoPartido: en casa siempre el campo de mapas', () {
+      expect(
+        destinoCampoPartido('Camp Nou Los Olmos Mutxamel', local: true),
+        campoCasaMapas,
+      );
+      expect(destinoCampoPartido('Otro campo', local: true), campoCasaMapas);
+      expect(
+        destinoCampoPartido('Campo Pego F-11', local: false),
+        'Campo Pego F-11',
+      );
+      expect(destinoCampoPartido('Campo Pego', local: null), 'Campo Pego');
+      expect(destinoCampoPartido('  ', local: true), '');
+      expect(destinoCampoPartido(null, local: true), '');
+    });
+
+    test('destinoLugarCitacion: Camp Nou Los Olmos, en casa y fuera', () {
+      expect(
+        destinoLugarCitacion(
+          'Camp Nou Los Olmos Mutxamel',
+          campo: 'Pego',
+          local: true,
+        ),
+        campoCasaMapas,
+      );
+      expect(
+        destinoLugarCitacion(
+          '  CAMP NOU  los olmos   mutxamel ',
+          campo: 'Pego',
+          local: false,
+        ),
+        campoCasaMapas,
+      );
+      expect(
+        destinoLugarCitacion(
+          'Camp Nou Los Olmos Mutxamel',
+          campo: null,
+          local: null,
+        ),
+        campoCasaMapas,
+      );
+    });
+
+    test(
+      'destinoLugarCitacion: igual al campo o vacío, solo si es de local',
+      () {
+        expect(
+          destinoLugarCitacion(
+            'Camp Municipal Pégo',
+            campo: 'camp municipal pego',
+            local: true,
+          ),
+          campoCasaMapas,
+        );
+        expect(
+          destinoLugarCitacion(
+            'Camp Municipal Pego',
+            campo: 'Camp Municipal Pego',
+            local: false,
+          ),
+          'Camp Municipal Pego',
+        );
+        expect(
+          destinoLugarCitacion(
+            'Camp Municipal Pego',
+            campo: 'Camp Municipal Pego',
+          ),
+          'Camp Municipal Pego',
+        );
+        expect(
+          destinoLugarCitacion('', campo: 'Pego', local: true),
+          campoCasaMapas,
+        );
+        expect(
+          destinoLugarCitacion(null, campo: 'Pego', local: true),
+          campoCasaMapas,
+        );
+        expect(destinoLugarCitacion('', campo: 'Pego', local: false), '');
+        expect(destinoLugarCitacion(null, campo: 'Pego'), '');
+      },
+    );
+
+    test('destinoLugarCitacion: otro sitio, tal cual', () {
+      expect(
+        destinoLugarCitacion(' Bar Manolo ', campo: 'Camp Nou', local: true),
+        'Bar Manolo',
+      );
+    });
+  });
+
+  group('BotonComoLlegar con local', () {
+    final abiertas = <Uri>[];
+
+    setUp(() {
+      abiertas.clear();
+      SharedPreferences.setMockInitialValues({});
+      ComoLlegar.abrirUrl = (url) async {
+        abiertas.add(url);
+        return true;
+      };
+    });
+
+    Future<void> tocar(
+      WidgetTester tester,
+      Widget boton, {
+      String? apple,
+    }) async {
+      ComoLlegar.esIos = () => apple != null;
+      await _pintar(tester, boton);
+      await tester.tap(find.byIcon(Icons.directions));
+      await tester.pumpAndSettle();
+
+      if (apple != null) {
+        await tester.tap(find.text(apple));
+        await tester.pumpAndSettle();
+      }
+    }
+
+    final casaMapas = Uri.encodeComponent(campoCasaMapas);
+
+    testWidgets('local, Google: el campo de mapas', (tester) async {
+      await tocar(
+        tester,
+        const BotonComoLlegar(
+          lugar: 'Camp Nou Los Olmos Mutxamel',
+          local: true,
+        ),
+      );
+
+      expect(
+        abiertas.single.toString(),
+        contains('google.com/maps/search/?api=1&query=$casaMapas'),
+      );
+    });
+
+    testWidgets('local, Apple: el campo de mapas', (tester) async {
+      await tocar(
+        tester,
+        const BotonComoLlegar(
+          lugar: 'Camp Nou Los Olmos Mutxamel',
+          local: true,
+        ),
+        apple: 'Apple Maps',
+      );
+
+      expect(
+        abiertas.single.toString(),
+        'https://maps.apple.com/?q=$casaMapas',
+      );
+    });
+
+    testWidgets('visitante, Google: el texto completo', (tester) async {
+      await tocar(
+        tester,
+        const BotonComoLlegar(lugar: 'Campo Pego F-11', local: false),
+      );
+
+      expect(
+        abiertas.single.toString(),
+        contains('query=${Uri.encodeComponent('Campo Pego F-11')}'),
+      );
+    });
+
+    testWidgets('visitante, Apple: el texto limpio', (tester) async {
+      await tocar(
+        tester,
+        const BotonComoLlegar(lugar: 'Campo Pego F-11', local: false),
+        apple: 'Apple Maps',
+      );
+
+      expect(
+        abiertas.single.toString(),
+        'https://maps.apple.com/?q=${Uri.encodeComponent('Campo Pego')}',
+      );
+    });
+
+    testWidgets('sin "local", como siempre', (tester) async {
+      await tocar(
+        tester,
+        const BotonComoLlegar(lugar: 'Camp Nou Los Olmos Mutxamel'),
+      );
+
+      expect(
+        abiertas.single.toString(),
+        contains('query=${Uri.encodeComponent('Camp Nou Los Olmos Mutxamel')}'),
+      );
+    });
+
+    testWidgets('citación: Camp Nou Los Olmos va a mapas, en casa y fuera', (
+      tester,
+    ) async {
+      await tocar(
+        tester,
+        const BotonComoLlegar.citacion(
+          lugar: 'Camp Nou Los Olmos Mutxamel',
+          campo: 'Pego',
+          local: false,
+        ),
+      );
+
+      expect(abiertas.single.toString(), contains('query=$casaMapas'));
+    });
+
+    testWidgets('citación igual al campo y en casa: a mapas; fuera, tal cual', (
+      tester,
+    ) async {
+      await tocar(
+        tester,
+        const BotonComoLlegar.citacion(
+          lugar: 'Camp de Pego',
+          campo: 'camp de pego',
+          local: true,
+        ),
+      );
+      expect(abiertas.single.toString(), contains('query=$casaMapas'));
+
+      abiertas.clear();
+      await tocar(
+        tester,
+        const BotonComoLlegar.citacion(
+          lugar: 'Camp de Pego',
+          campo: 'Camp de Pego',
+          local: false,
+        ),
+      );
+      expect(
+        abiertas.single.toString(),
+        contains('query=${Uri.encodeComponent('Camp de Pego')}'),
+      );
+    });
+
+    testWidgets('citación vacía y en casa: botón a mapas; fuera, sin botón', (
+      tester,
+    ) async {
+      await tocar(
+        tester,
+        const BotonComoLlegar.citacion(lugar: '', campo: 'Pego', local: true),
+      );
+      expect(abiertas.single.toString(), contains('query=$casaMapas'));
+
+      await _pintar(
+        tester,
+        const BotonComoLlegar.citacion(lugar: '', campo: 'Pego', local: false),
+      );
+      expect(find.byIcon(Icons.directions), findsNothing);
+    });
+
+    testWidgets('citación en otro sitio: tal cual', (tester) async {
+      await tocar(
+        tester,
+        const BotonComoLlegar.citacion(
+          lugar: 'Bar Manolo',
+          campo: 'Pego',
+          local: true,
+        ),
+      );
+
+      expect(
+        abiertas.single.toString(),
+        contains('query=${Uri.encodeComponent('Bar Manolo')}'),
+      );
     });
   });
 }

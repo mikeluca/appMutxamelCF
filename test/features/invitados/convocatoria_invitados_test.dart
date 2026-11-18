@@ -391,7 +391,6 @@ void main() {
       expect(find.text('Máximo 3 invitados por convocatoria'), findsOneWidget);
 
       await tester.tap(find.byKey(const ValueKey('jugador-convocatoria-100')));
-      await tester.enterText(find.byType(TextField), 'Vestuarios');
       await tester.pumpAndSettle();
       await tester.tap(find.text('Guardar convocatoria'));
       await tester.pumpAndSettle();

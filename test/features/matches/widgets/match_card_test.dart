@@ -43,6 +43,7 @@ void main() {
         equipo: 'Primer Equipo',
         rival: 'Pego C.F.',
         campo: 'Camp Municipal de Mutxamel',
+        local: false,
       ),
     );
 

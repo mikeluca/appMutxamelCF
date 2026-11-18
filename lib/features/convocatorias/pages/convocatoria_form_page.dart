@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../core/utils/como_llegar.dart';
 import '../../../core/utils/backend_date.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
 import '../../../core/widget/club_app_bar_title.dart';
@@ -64,6 +65,9 @@ class _DatosFormulario {
   _DatosFormulario(this.jugadores, this.partidos);
 }
 
+/// Las opciones del desplegable "Lugar de citación".
+enum _OpcionLugar { campo, casa, otro }
+
 class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
   late final TeamService _teamService = widget.teamService ?? TeamService();
   late final MatchService _matchService = widget.matchService ?? MatchService();
@@ -74,7 +78,12 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
   late final EquipacionService _equipacionService =
       widget.equipacionService ?? EquipacionService();
 
-  final TextEditingController _lugarController = TextEditingController();
+  /// Lugar de citación: una de las tres opciones del desplegable; con [_OpcionLugar.otro] el texto lo escribe
+  /// el entrenador. Lo que se guarda en el backend sigue siendo el texto ([_lugarTexto]).
+  final TextEditingController _lugarOtroController = TextEditingController();
+  _OpcionLugar _opcionLugar = _OpcionLugar.casa;
+  bool _lugarTocado = false;
+  bool _lugarOtroVacio = false;
 
   late Future<_DatosFormulario> _futureDatos;
 
@@ -196,7 +205,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
   void _cargarConvocatoria(List<MatchModel> partidos) {
     final convocatoria = widget.convocatoria!;
 
-    _lugarController.text = convocatoria.lugarConvocatoria;
+
 
     _horaConvocatoria = _parsearHora(convocatoria.horaConvocatoria);
 
@@ -238,6 +247,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
     );
 
     _partidoSeleccionado = partido;
+    _preseleccionarLugar(convocatoria.lugarConvocatoria);
 
     _cargarAusencias(partido.id);
   }
@@ -255,6 +265,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       if (partido.id == id) {
         if (_admiteConvocatoria(partido)) {
           _partidoSeleccionado = partido;
+          _ajustarLugarAlPartido();
           _cargarAusencias(partido.id);
           return;
         }
@@ -318,7 +329,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
 
   @override
   void dispose() {
-    _lugarController.dispose();
+    _lugarOtroController.dispose();
     super.dispose();
   }
 
@@ -500,14 +511,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
               onTap: _seleccionarHoraConvocatoria,
             ),
             const SizedBox(height: 14),
-            TextField(
-              controller: _lugarController,
-              decoration: InputDecoration(
-                labelText: _t.callupPlaceLabel,
-                border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.location_on_outlined),
-              ),
-            ),
+            _construirLugarCitacion(),
             const SizedBox(height: 18),
             _construirEquipaje(),
           ],
@@ -712,6 +716,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
             (partido) => partido.id == id,
           );
           _ausencias = {};
+          _ajustarLugarAlPartido();
         });
 
         _cargarAusencias(id);
@@ -936,6 +941,122 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
     );
   }
 
+  // ---- lugar de citación ---------------------------------------------------------------
+
+  String get _campoPartido => _partidoSeleccionado?.campo?.trim() ?? '';
+
+  bool get _hayOpcionCampo => _campoPartido.isNotEmpty;
+
+  /// "Camp Nou Los Olmos Mutxamel" no se repite si el campo del partido ya es ese mismo texto.
+  bool get _hayOpcionCasa => !mismoLugar(_campoPartido, campoCasaTexto);
+
+  _OpcionLugar get _opcionLugarPorDefecto =>
+      _hayOpcionCampo ? _OpcionLugar.campo : _OpcionLugar.casa;
+
+  /// El texto que se guarda y se envía a los mapas.
+  String get _lugarTexto => switch (_opcionLugar) {
+    _OpcionLugar.campo => _campoPartido,
+    _OpcionLugar.casa => campoCasaTexto,
+    _OpcionLugar.otro => _lugarOtroController.text.trim(),
+  };
+
+  /// Tras elegir otro partido: sin elección propia vale el defecto; si la opción elegida ya no existe
+  /// (el partido no tiene campo, o su campo ya es el de casa), la que la sustituye.
+  void _ajustarLugarAlPartido() {
+    if (!_lugarTocado) {
+      _opcionLugar = _opcionLugarPorDefecto;
+      return;
+    }
+
+    if (_opcionLugar == _OpcionLugar.campo && !_hayOpcionCampo) {
+      _opcionLugar = _opcionLugarPorDefecto;
+    } else if (_opcionLugar == _OpcionLugar.casa && !_hayOpcionCasa) {
+      _opcionLugar = _OpcionLugar.campo;
+    }
+  }
+
+  /// Al editar: la opción que corresponde al texto guardado.
+  void _preseleccionarLugar(String guardado) {
+    final texto = guardado.trim();
+
+    _lugarTocado = true;
+
+    if (texto.isEmpty) {
+      _lugarTocado = false;
+      _opcionLugar = _opcionLugarPorDefecto;
+    } else if (_hayOpcionCampo && mismoLugar(texto, _campoPartido)) {
+      _opcionLugar = _OpcionLugar.campo;
+    } else if (mismoLugar(texto, campoCasaTexto)) {
+      _opcionLugar = _OpcionLugar.casa;
+    } else {
+      _opcionLugar = _OpcionLugar.otro;
+      _lugarOtroController.text = texto;
+    }
+  }
+
+  Widget _construirLugarCitacion() {
+    final opciones = <_OpcionLugar, String>{
+      if (_hayOpcionCampo) _OpcionLugar.campo: _campoPartido,
+      if (_hayOpcionCasa) _OpcionLugar.casa: campoCasaTexto,
+      _OpcionLugar.otro: _t.callupMeetingPlaceOther,
+    };
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        DropdownButtonFormField<_OpcionLugar>(
+          key: ValueKey(
+            'lugar-citacion-$_opcionLugar-$_hayOpcionCampo-$_hayOpcionCasa-$_campoPartido',
+          ),
+          initialValue: opciones.containsKey(_opcionLugar)
+              ? _opcionLugar
+              : _opcionLugarPorDefecto,
+          decoration: InputDecoration(
+            labelText: _t.callupMeetingPlaceLabel,
+            border: const OutlineInputBorder(),
+            prefixIcon: const Icon(Icons.location_on_outlined),
+          ),
+          isExpanded: true,
+          items: [
+            for (final entrada in opciones.entries)
+              DropdownMenuItem<_OpcionLugar>(
+                value: entrada.key,
+                child: Text(entrada.value, overflow: TextOverflow.ellipsis),
+              ),
+          ],
+          onChanged: (opcion) {
+            if (opcion == null) return;
+
+            setState(() {
+              _opcionLugar = opcion;
+              _lugarTocado = true;
+              _lugarOtroVacio = false;
+            });
+          },
+        ),
+        if (_opcionLugar == _OpcionLugar.otro) ...[
+          const SizedBox(height: 12),
+          TextField(
+            key: const ValueKey('lugar-citacion-otro'),
+            controller: _lugarOtroController,
+            textCapitalization: TextCapitalization.sentences,
+            onChanged: (_) {
+              if (_lugarOtroVacio) {
+                setState(() => _lugarOtroVacio = false);
+              }
+            },
+            decoration: InputDecoration(
+              labelText: _t.callupMeetingPlaceOtherHint,
+              errorText: _lugarOtroVacio ? _t.callupMeetingPlaceOtherHint : null,
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.edit_location_alt_outlined),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
   Future<void> _guardar() async {
     final partido = _partidoSeleccionado;
 
@@ -944,8 +1065,9 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
       return;
     }
 
-    if (_lugarController.text.trim().isEmpty) {
-      _mostrarMensaje(_t.enterCallupPlaceError);
+    if (_lugarTexto.isEmpty) {
+      setState(() => _lugarOtroVacio = true);
+      _mostrarMensaje(_t.callupMeetingPlaceOtherHint);
       return;
     }
 
@@ -973,7 +1095,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
           convocatoriaId: widget.convocatoria!.id,
           partidoId: partido.id!,
           horaConvocatoria: horaConvocatoria,
-          lugarConvocatoria: _lugarController.text.trim(),
+          lugarConvocatoria: _lugarTexto,
           jugadoresIds: _jugadoresSeleccionados.toList(),
           invitadosIds: _invitadosIds,
           equipacionId: equipacionId,
@@ -984,7 +1106,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
         await _convocatoriaService.crear(
           partidoId: partido.id!,
           horaConvocatoria: horaConvocatoria,
-          lugarConvocatoria: _lugarController.text.trim(),
+          lugarConvocatoria: _lugarTexto,
           jugadoresIds: _jugadoresSeleccionados.toList(),
           invitadosIds: _invitadosIds,
           equipacionId: equipacionId,

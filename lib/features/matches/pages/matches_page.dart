@@ -327,7 +327,10 @@ class PartidoListaCard extends StatelessWidget {
                 context,
                 Icons.location_on_outlined,
                 partido.campo!,
-                trailing: BotonComoLlegar(lugar: partido.campo),
+                trailing: BotonComoLlegar(
+                  lugar: partido.campo,
+                  local: partido.local,
+                ),
               ),
 
             if (partido.dia != null && !partido.cancelado)

@@ -186,11 +186,61 @@ class _SeccionImagenesRedesState extends State<SeccionImagenesRedes> {
     );
   }
 
+  /// Con imágenes ya hechas pide confirmar antes de sustituirlas.
+  Future<void> _volverAGenerar(String tipo) async {
+    final t = _t;
+
+    final confirmado = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        key: const ValueKey('confirmar-regenerar-imagenes'),
+        content: Text(t.socialImagesRegenerateConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(t.cancel),
+          ),
+          FilledButton(
+            key: const ValueKey('confirmar-regenerar-si'),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(t.socialImagesRegenerateAgain),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmado == true && mounted) {
+      await _generar(tipo);
+    }
+  }
+
+  Widget _construirBotonGenerar(String tipo, {required bool conImagenes}) {
+    final generando = _generando == tipo;
+
+    return FilledButton.tonalIcon(
+      key: ValueKey('generar-$tipo'),
+      onPressed: _generando != null
+          ? null
+          : () => conImagenes ? _volverAGenerar(tipo) : _generar(tipo),
+      icon: generando
+          ? const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : Icon(conImagenes ? Icons.refresh : Icons.auto_awesome),
+      label: Text(
+        conImagenes
+            ? _t.socialImagesRegenerateAgain
+            : _t.socialImagesGenerateNow,
+      ),
+    );
+  }
+
   Widget _construirTipo(ImagenesRedesModel datos, String tipo) {
     final t = _t;
     final imagenes = datos.deTipo(tipo);
     final esPrevia = tipo == tipoImagenPrevia;
-    final generando = _generando == tipo;
 
     return Padding(
       padding: const EdgeInsets.only(top: 12),
@@ -212,19 +262,8 @@ class _SeccionImagenesRedesState extends State<SeccionImagenesRedes> {
               ),
             ),
             const SizedBox(height: 8),
-            FilledButton.tonalIcon(
-              key: ValueKey('generar-$tipo'),
-              onPressed: _generando != null ? null : () => _generar(tipo),
-              icon: generando
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.auto_awesome),
-              label: Text(t.socialImagesGenerateNow),
-            ),
-          ] else
+            _construirBotonGenerar(tipo, conImagenes: false),
+          ] else ...[
             SizedBox(
               height: 190,
               child: ListView.separated(
@@ -239,6 +278,9 @@ class _SeccionImagenesRedesState extends State<SeccionImagenesRedes> {
                 ),
               ),
             ),
+            const SizedBox(height: 8),
+            _construirBotonGenerar(tipo, conImagenes: true),
+          ],
         ],
       ),
     );
@@ -280,6 +322,7 @@ class _Miniatura extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: FutureBuilder<Uint8List>(
+                  key: ValueKey('png-${imagen.id}-${imagen.version}'),
                   future: servicio.descargarPng(imagen),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {

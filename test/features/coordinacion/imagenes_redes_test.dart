@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:app_mutxamel_cf/core/notifications/utils/convocatoria_notificacion.dart';
@@ -10,7 +11,8 @@ import 'package:app_mutxamel_cf/features/coordinacion/widgets/imagenes_redes_vis
 import 'package:app_mutxamel_cf/features/coordinacion/widgets/seccion_imagenes_redes.dart';
 import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
-import 'package:flutter_localizations/flutter_localizations.dart' show GlobalWidgetsLocalizations;
+import 'package:flutter_localizations/flutter_localizations.dart'
+    show GlobalWidgetsLocalizations;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,15 +29,16 @@ ImagenRedesModel _imagen(
   String tipo,
   String modalidad,
   int pagina,
-  int total,
-) {
+  int total, {
+  int version = 1,
+}) {
   return ImagenRedesModel(
     id: id,
     tipo: tipo,
     modalidad: modalidad,
     pagina: pagina,
     totalPaginas: total,
-    version: 1,
+    version: version,
   );
 }
 
@@ -55,13 +58,20 @@ class _Servicio extends ImagenesRedesService {
   final List<({String tipo, DateTime? fecha})> regeneradas = [];
   Object? fallo;
 
+  final List<String> descargadas = [];
+  Completer<void>? espera;
+
   _Servicio(this.actual);
 
   @override
   Future<ImagenesRedesModel> obtener({DateTime? fecha}) async => actual;
 
   @override
-  Future<Uint8List> descargarPng(ImagenRedesModel imagen) async => _png;
+  Future<Uint8List> descargarPng(ImagenRedesModel imagen) async {
+    descargadas.add("${imagen.id}:${imagen.version}");
+
+    return _png;
+  }
 
   @override
   Future<ImagenesRedesModel> regenerar({
@@ -69,6 +79,8 @@ class _Servicio extends ImagenesRedesService {
     DateTime? fecha,
   }) async {
     regeneradas.add((tipo: tipo, fecha: fecha));
+
+    await espera?.future;
 
     if (fallo != null) throw fallo!;
 
@@ -270,6 +282,204 @@ void main() {
       expect(find.text('Imatges per a xarxes'), findsOneWidget);
       expect(find.text('Generar ara'), findsNWidgets(2));
     });
+
+    testWidgets('con imágenes el botón se ve igual: "Volver a generar"', (
+      tester,
+    ) async {
+      final servicio = _Servicio(
+        _modelo([
+          _imagen(1, 'PREVIA', 'F11', 1, 1),
+          _imagen(2, 'RESULTADOS', 'F11', 1, 1),
+        ]),
+      );
+
+      await tester.pumpWidget(_seccion(servicio));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('generar-PREVIA')), findsOneWidget);
+      expect(find.byKey(const ValueKey('generar-RESULTADOS')), findsOneWidget);
+      expect(find.text('Volver a generar'), findsNWidgets(2));
+      expect(find.text('Generar ahora'), findsNothing);
+    });
+
+    testWidgets('con una sola previa: previa "Volver a generar" y resultados '
+        '"Generar ahora"', (tester) async {
+      final servicio = _Servicio(_modelo([_imagen(1, 'PREVIA', 'F11', 1, 1)]));
+
+      await tester.pumpWidget(_seccion(servicio));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Volver a generar'), findsOneWidget);
+      expect(find.text('Generar ahora'), findsOneWidget);
+    });
+
+    testWidgets('pide confirmación y, al cancelar, no genera nada', (
+      tester,
+    ) async {
+      final servicio = _Servicio(_modelo([_imagen(1, 'PREVIA', 'F11', 1, 1)]));
+
+      await tester.pumpWidget(_seccion(servicio));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const ValueKey('generar-PREVIA')));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          'Se sustituirán las imágenes actuales de este fin de semana por '
+          'unas nuevas.',
+        ),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.text('Cancelar'));
+      await tester.pumpAndSettle();
+
+      expect(servicio.regeneradas, isEmpty);
+      expect(find.byKey(const ValueKey('imagen-redes-1')), findsOneWidget);
+    });
+
+    testWidgets('al confirmar regenera ese tipo y las miniaturas son las '
+        'nuevas', (tester) async {
+      final servicio = _Servicio(_modelo([_imagen(1, 'PREVIA', 'F11', 1, 1)]))
+        ..trasRegenerar = _modelo([
+          _imagen(7, 'PREVIA', 'F11', 1, 2, version: 2),
+          _imagen(8, 'PREVIA', 'F11', 2, 2, version: 2),
+        ]);
+
+      await tester.pumpWidget(_seccion(servicio));
+      await tester.pumpAndSettle();
+
+      expect(servicio.descargadas, ['1:1']);
+
+      await tester.tap(find.byKey(const ValueKey('generar-PREVIA')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('confirmar-regenerar-si')));
+      await tester.pumpAndSettle();
+
+      expect(servicio.regeneradas.single.tipo, 'PREVIA');
+      expect(servicio.regeneradas.single.fecha, _viernes);
+      expect(find.byKey(const ValueKey('imagen-redes-1')), findsNothing);
+      expect(find.byKey(const ValueKey('imagen-redes-7')), findsOneWidget);
+      expect(find.byKey(const ValueKey('imagen-redes-8')), findsOneWidget);
+      expect(servicio.descargadas, containsAll(['7:2', '8:2']));
+      expect(find.text('Imágenes generadas'), findsOneWidget);
+    });
+
+    testWidgets('mismo id con otra versión: se vuelve a descargar el PNG', (
+      tester,
+    ) async {
+      final servicio = _Servicio(_modelo([_imagen(1, 'PREVIA', 'F11', 1, 1)]))
+        ..trasRegenerar = _modelo([
+          _imagen(1, 'PREVIA', 'F11', 1, 1, version: 2),
+        ]);
+
+      await tester.pumpWidget(_seccion(servicio));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const ValueKey('generar-PREVIA')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('confirmar-regenerar-si')));
+      await tester.pumpAndSettle();
+
+      expect(servicio.descargadas, ['1:1', '1:2']);
+    });
+
+    testWidgets('mientras genera, los dos botones están desactivados', (
+      tester,
+    ) async {
+      final servicio = _Servicio(
+        _modelo([
+          _imagen(1, 'PREVIA', 'F11', 1, 1),
+          _imagen(2, 'RESULTADOS', 'F11', 1, 1),
+        ]),
+      )..espera = Completer<void>();
+
+      await tester.pumpWidget(_seccion(servicio));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const ValueKey('generar-PREVIA')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('confirmar-regenerar-si')));
+      await tester.pump();
+
+      for (final tipo in ['PREVIA', 'RESULTADOS']) {
+        expect(
+          tester
+              .widget<ButtonStyleButton>(find.byKey(ValueKey('generar-$tipo')))
+              .onPressed,
+          isNull,
+        );
+      }
+
+      servicio.espera!.complete();
+      await tester.pumpAndSettle();
+
+      expect(
+        tester
+            .widget<ButtonStyleButton>(
+              find.byKey(const ValueKey('generar-PREVIA')),
+            )
+            .onPressed,
+        isNotNull,
+      );
+    });
+
+    testWidgets('un error al volver a generar se avisa con texto claro y las '
+        'imágenes se conservan', (tester) async {
+      final servicio = _Servicio(_modelo([_imagen(1, 'PREVIA', 'F11', 1, 1)]))
+        ..fallo = Exception('sin red');
+
+      await tester.pumpWidget(_seccion(servicio));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const ValueKey('generar-PREVIA')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('confirmar-regenerar-si')));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(find.byKey(const ValueKey('imagen-redes-1')), findsOneWidget);
+      expect(find.byKey(const ValueKey('generar-PREVIA')), findsOneWidget);
+    });
+
+    testWidgets('en catalán y en inglés', (tester) async {
+      final servicio = _Servicio(_modelo([_imagen(1, 'PREVIA', 'F11', 1, 1)]));
+
+      await tester.pumpWidget(
+        _app(
+          Scaffold(
+            body: SingleChildScrollView(
+              child: SeccionImagenesRedes(
+                servicio: servicio,
+                viernes: _viernes,
+              ),
+            ),
+          ),
+          idioma: 'ca',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Torna a generar'), findsOneWidget);
+
+      await tester.pumpWidget(
+        _app(
+          Scaffold(
+            body: SingleChildScrollView(
+              child: SeccionImagenesRedes(
+                servicio: servicio,
+                viernes: _viernes,
+              ),
+            ),
+          ),
+          idioma: 'en',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Generate again'), findsOneWidget);
+    });
   });
 
   group('vista previa', () {
@@ -324,7 +534,8 @@ void main() {
     });
 
     testWidgets('si falla el menú de compartir, avisa', (tester) async {
-      CompartirImagenesRedes.enviar = (_, _, _, _) async => throw Exception('x');
+      CompartirImagenesRedes.enviar = (_, _, _, _) async =>
+          throw Exception('x');
 
       await abrir(tester, _Servicio(_modelo(imagenes)));
 
