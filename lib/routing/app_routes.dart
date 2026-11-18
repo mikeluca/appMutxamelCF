@@ -26,4 +26,7 @@ class AppRoutes {
   static const String communication = '/communication';
   static const String liveMatch = '/live-match';
   static const String cuotas = '/cuotas';
+  static const String familyRequests = '/coordination/family-requests';
+  static const String myFamilyRequest = '/my-family-request';
+  static const String askAnotherPlayer = '/ask-another-player';
 }

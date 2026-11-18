@@ -3704,4 +3704,278 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get shareButton => 'Compartir';
+
+  @override
+  String get familyRegisterButton => 'Sóc familiar d\'un jugador';
+
+  @override
+  String get familyRegisterTitle => 'Sóc familiar d\'un jugador';
+
+  @override
+  String get familyRegisterIntro =>
+      'Demana accés a la informació del teu fill o filla. El club revisarà la teua sol·licitud abans de donar-te accés.';
+
+  @override
+  String familyStepOf(int n, int total) {
+    return 'Pas $n de $total';
+  }
+
+  @override
+  String get familyStepYou => 'Les teues dades';
+
+  @override
+  String get familyStepChildren => 'Els teus fills';
+
+  @override
+  String get familyStepConfirm => 'Confirmació';
+
+  @override
+  String get familyFirstName => 'Nom';
+
+  @override
+  String get familyLastName => 'Cognoms';
+
+  @override
+  String get familyPhoneOptional => 'Telèfon (opcional)';
+
+  @override
+  String get familyRelationship => 'Parentiu';
+
+  @override
+  String get familyRelMother => 'Mare';
+
+  @override
+  String get familyRelFather => 'Pare';
+
+  @override
+  String get familyRelGuardian => 'Tutor/a legal';
+
+  @override
+  String get familyRelOther => 'Un altre familiar autoritzat';
+
+  @override
+  String get familyNameRequired => 'Escriu el teu nom';
+
+  @override
+  String get familyLastNameRequired => 'Escriu els teus cognoms';
+
+  @override
+  String get familyPhoneInvalid => 'El telèfon no és vàlid';
+
+  @override
+  String get familyRelationshipRequired => 'Tria el teu parentiu';
+
+  @override
+  String get familyChildrenIntro =>
+      'Escriu les dades del teu fill o filla tal com figuren al club. Pots afegir-ne fins a 5.';
+
+  @override
+  String familyChildNumber(int n) {
+    return 'Fill o filla $n';
+  }
+
+  @override
+  String get familyChildFirstName => 'Nom del jugador';
+
+  @override
+  String get familyChildLastName => 'Cognoms del jugador';
+
+  @override
+  String get familyChildTeam => 'Equip o categoria (opcional)';
+
+  @override
+  String get familyChildTeamHint => 'Ex.: Aleví B';
+
+  @override
+  String get familyChildNameRequired => 'Escriu el nom del jugador';
+
+  @override
+  String get familyChildLastNameRequired => 'Escriu els cognoms del jugador';
+
+  @override
+  String get familyAddChild => 'Afegir un altre fill o filla';
+
+  @override
+  String get familyRemoveChild => 'Llevar';
+
+  @override
+  String get familyMaxChildren =>
+      'Pots demanar accés a un màxim de 5 jugadors per sol·licitud.';
+
+  @override
+  String get familyDeclareRepresentative =>
+      'Declare ser el seu representant legal o estar autoritzat per ell';
+
+  @override
+  String get familyAcceptPrivacy => 'Accepte la política de privacitat';
+
+  @override
+  String get familyReadPrivacy => 'Llegir la política de privacitat';
+
+  @override
+  String get familyCheckRequired => 'Marca esta casella per a continuar';
+
+  @override
+  String get familyConfirmIntro =>
+      'Revisa i confirma. Les dades del teu fill o filla només les usa el club per a comprovar la relació; fins que el club aprove la teua sol·licitud no veuràs cap dada seua.';
+
+  @override
+  String get familyNext => 'Següent';
+
+  @override
+  String get familyBack => 'Enrere';
+
+  @override
+  String get familySend => 'Enviar sol·licitud';
+
+  @override
+  String get familyCodeTitle => 'Confirma el teu email';
+
+  @override
+  String familyCodeIntro(String email) {
+    return 'T\'hem enviat un codi de 6 dígits a $email. Caduca en 5 dies. Introdueix-lo i tria la teua contrasenya.';
+  }
+
+  @override
+  String get familyResendCode => 'Reenviar codi';
+
+  @override
+  String get familyCodeResent =>
+      'Si la sol·licitud està pendent de confirmar, t\'hem enviat un codi nou.';
+
+  @override
+  String get familyConfirmAndEnter => 'Confirmar i entrar';
+
+  @override
+  String get familyAccountExists =>
+      'Ja tens un compte amb eixe email. Inicia sessió i demana l\'accés des d\'Àrea Club.';
+
+  @override
+  String get familyInvitationPending =>
+      'El club ja et va enviar un codi d\'activació. Usa «Activar compte» amb el codi que et vam enviar.';
+
+  @override
+  String get familyTooManyAttempts =>
+      'Massa intents. Torna-ho a provar d\'ací a uns minuts.';
+
+  @override
+  String get familySendFailed =>
+      'No hem pogut enviar l\'email. Prem «Reenviar codi» d\'ací a uns minuts.';
+
+  @override
+  String get familyRequestCardTitle =>
+      'Sol·licitud pendent de revisió pel club';
+
+  @override
+  String get familyRequestCardIntro =>
+      'Quan el club l\'aprove veuràs els teus jugadors, el calendari i els avisos del club. Fins llavors no tens accés a més informació.';
+
+  @override
+  String get familyRequestApprovedTitle => 'Sol·licitud aprovada';
+
+  @override
+  String get familyRequestRejectedTitle => 'Sol·licitud rebutjada';
+
+  @override
+  String get familyChildPending => 'Pendent';
+
+  @override
+  String get familyChildApproved => 'Aprovat';
+
+  @override
+  String get familyChildRejected => 'Rebutjat';
+
+  @override
+  String familyRejectedReason(String motivo) {
+    return 'Motiu: $motivo';
+  }
+
+  @override
+  String get familyRequestStatusTitle => 'La meua sol·licitud d\'accés';
+
+  @override
+  String get familyNoRequest => 'No tens cap sol·licitud d\'accés.';
+
+  @override
+  String get familyRequestAgain => 'Demanar accés a un jugador';
+
+  @override
+  String get familyAskAnotherPlayer => 'Demanar accés a un altre jugador';
+
+  @override
+  String get familyAskAnotherPlayerDesc =>
+      'Vincula un altre fill o filla al teu compte';
+
+  @override
+  String get familyAskSent => 'Sol·licitud enviada. El club la revisarà.';
+
+  @override
+  String get familyAlreadyPending =>
+      'Ja tens una sol·licitud pendent de revisar.';
+
+  @override
+  String get familyRequestsTitle => 'Sol·licituds de família';
+
+  @override
+  String get familyRequestsDesc => 'Famílies que demanen accés als seus fills';
+
+  @override
+  String get familyRequestsEmpty => 'No hi ha sol·licituds pendents.';
+
+  @override
+  String familyRequestedBy(String nombre) {
+    return 'Sol·licitat per $nombre';
+  }
+
+  @override
+  String get familyWrittenByFamily => 'Escrit per la família';
+
+  @override
+  String get familyMatchesTitle => 'Coincidències';
+
+  @override
+  String get familyNoMatches => 'Sense coincidències. Busca el jugador.';
+
+  @override
+  String get familySameTeam => 'Mateix equip';
+
+  @override
+  String familyJerseyNumber(int n) {
+    return 'Dorsal $n';
+  }
+
+  @override
+  String get familySearchOther => 'Buscar un altre jugador';
+
+  @override
+  String get familySearchHint => 'Nom o cognoms (mínim 3 lletres)';
+
+  @override
+  String get familySearchNoResults => 'Sense resultats';
+
+  @override
+  String get familyApprove => 'Aprovar';
+
+  @override
+  String get familyReject => 'Rebutjar';
+
+  @override
+  String get familyChooseMatch => 'Tria un jugador per a poder aprovar';
+
+  @override
+  String get familyRejectTitle => 'Rebutjar esta sol·licitud?';
+
+  @override
+  String familyRejectBody(String nombre) {
+    return '$nombre no tindrà accés a la informació d\'eixe jugador.';
+  }
+
+  @override
+  String get familyRejectReasonHint => 'Motiu (opcional)';
+
+  @override
+  String get familyApprovedSnack => 'Accés aprovat';
+
+  @override
+  String get familyRejectedSnack => 'Sol·licitud rebutjada';
 }

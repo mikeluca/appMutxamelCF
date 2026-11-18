@@ -109,6 +109,12 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
     // Las de las imágenes para redes llevan el viernes del fin de semana (yyyyMMdd) como referencia.
     final destino = notificacion.tipo == tipoPushContinuidad
         ? const AbrirContinuidad()
+        : notificacion.tipo == tipoPushSolicitudFamiliaRespuesta
+        ? const AbrirMiSolicitudFamilia()
+        : notificacion.tipo == tipoPushSolicitudFamilia
+        ? (puedeRevisarSolicitudesFamilia()
+              ? const AbrirSolicitudesFamilia()
+              : null)
         : notificacion.tipo == tipoPushImagenesRedes
         ? AbrirImagenesRedes(diaDeReferenciaImagenes(notificacion.referenciaId))
         : (destinoDeTipoDeInvitacion(notificacion.tipo) ??

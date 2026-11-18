@@ -3678,4 +3678,277 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shareButton => 'Share';
+
+  @override
+  String get familyRegisterButton => 'I\'m a relative of a player';
+
+  @override
+  String get familyRegisterTitle => 'I\'m a relative of a player';
+
+  @override
+  String get familyRegisterIntro =>
+      'Ask for access to your child\'s information. The club will review your request before giving you access.';
+
+  @override
+  String familyStepOf(int n, int total) {
+    return 'Step $n of $total';
+  }
+
+  @override
+  String get familyStepYou => 'Your details';
+
+  @override
+  String get familyStepChildren => 'Your children';
+
+  @override
+  String get familyStepConfirm => 'Confirmation';
+
+  @override
+  String get familyFirstName => 'First name';
+
+  @override
+  String get familyLastName => 'Surname';
+
+  @override
+  String get familyPhoneOptional => 'Phone (optional)';
+
+  @override
+  String get familyRelationship => 'Relationship';
+
+  @override
+  String get familyRelMother => 'Mother';
+
+  @override
+  String get familyRelFather => 'Father';
+
+  @override
+  String get familyRelGuardian => 'Legal guardian';
+
+  @override
+  String get familyRelOther => 'Other authorised relative';
+
+  @override
+  String get familyNameRequired => 'Enter your first name';
+
+  @override
+  String get familyLastNameRequired => 'Enter your surname';
+
+  @override
+  String get familyPhoneInvalid => 'The phone number is not valid';
+
+  @override
+  String get familyRelationshipRequired => 'Choose your relationship';
+
+  @override
+  String get familyChildrenIntro =>
+      'Enter your child\'s details as they appear at the club. You can add up to 5.';
+
+  @override
+  String familyChildNumber(int n) {
+    return 'Child $n';
+  }
+
+  @override
+  String get familyChildFirstName => 'Player\'s first name';
+
+  @override
+  String get familyChildLastName => 'Player\'s surname';
+
+  @override
+  String get familyChildTeam => 'Team or category (optional)';
+
+  @override
+  String get familyChildTeamHint => 'E.g.: Alevín B';
+
+  @override
+  String get familyChildNameRequired => 'Enter the player\'s first name';
+
+  @override
+  String get familyChildLastNameRequired => 'Enter the player\'s surname';
+
+  @override
+  String get familyAddChild => 'Add another child';
+
+  @override
+  String get familyRemoveChild => 'Remove';
+
+  @override
+  String get familyMaxChildren =>
+      'You can ask for access to a maximum of 5 players per request.';
+
+  @override
+  String get familyDeclareRepresentative =>
+      'I declare that I am their legal representative or that I am authorised by them';
+
+  @override
+  String get familyAcceptPrivacy => 'I accept the privacy policy';
+
+  @override
+  String get familyReadPrivacy => 'Read the privacy policy';
+
+  @override
+  String get familyCheckRequired => 'Tick this box to continue';
+
+  @override
+  String get familyConfirmIntro =>
+      'Review and confirm. Your child\'s details are only used by the club to check the relationship; until the club approves your request you will not see any of their data.';
+
+  @override
+  String get familyNext => 'Next';
+
+  @override
+  String get familyBack => 'Back';
+
+  @override
+  String get familySend => 'Send request';
+
+  @override
+  String get familyCodeTitle => 'Confirm your email';
+
+  @override
+  String familyCodeIntro(String email) {
+    return 'We have sent a 6-digit code to $email. It expires in 5 days. Enter it and choose your password.';
+  }
+
+  @override
+  String get familyResendCode => 'Resend code';
+
+  @override
+  String get familyCodeResent =>
+      'If the request is waiting to be confirmed, we have sent you a new code.';
+
+  @override
+  String get familyConfirmAndEnter => 'Confirm and sign in';
+
+  @override
+  String get familyAccountExists =>
+      'You already have an account with that email. Sign in and ask for access from Club Area.';
+
+  @override
+  String get familyInvitationPending =>
+      'The club has already sent you an activation code. Use \"Activate account\" with the code we sent you.';
+
+  @override
+  String get familyTooManyAttempts =>
+      'Too many attempts. Try again in a few minutes.';
+
+  @override
+  String get familySendFailed =>
+      'We could not send the email. Tap \"Resend code\" in a few minutes.';
+
+  @override
+  String get familyRequestCardTitle => 'Request pending review by the club';
+
+  @override
+  String get familyRequestCardIntro =>
+      'Once the club approves it you will see your players, the calendar and the club\'s notices. Until then you have no access to further information.';
+
+  @override
+  String get familyRequestApprovedTitle => 'Request approved';
+
+  @override
+  String get familyRequestRejectedTitle => 'Request rejected';
+
+  @override
+  String get familyChildPending => 'Pending';
+
+  @override
+  String get familyChildApproved => 'Approved';
+
+  @override
+  String get familyChildRejected => 'Rejected';
+
+  @override
+  String familyRejectedReason(String motivo) {
+    return 'Reason: $motivo';
+  }
+
+  @override
+  String get familyRequestStatusTitle => 'My access request';
+
+  @override
+  String get familyNoRequest => 'You have no access request.';
+
+  @override
+  String get familyRequestAgain => 'Ask for access to a player';
+
+  @override
+  String get familyAskAnotherPlayer => 'Ask for access to another player';
+
+  @override
+  String get familyAskAnotherPlayerDesc => 'Link another child to your account';
+
+  @override
+  String get familyAskSent => 'Request sent. The club will review it.';
+
+  @override
+  String get familyAlreadyPending =>
+      'You already have a request waiting for review.';
+
+  @override
+  String get familyRequestsTitle => 'Family requests';
+
+  @override
+  String get familyRequestsDesc =>
+      'Families asking for access to their children';
+
+  @override
+  String get familyRequestsEmpty => 'There are no pending requests.';
+
+  @override
+  String familyRequestedBy(String nombre) {
+    return 'Requested by $nombre';
+  }
+
+  @override
+  String get familyWrittenByFamily => 'Written by the family';
+
+  @override
+  String get familyMatchesTitle => 'Matches';
+
+  @override
+  String get familyNoMatches => 'No matches. Search for the player.';
+
+  @override
+  String get familySameTeam => 'Same team';
+
+  @override
+  String familyJerseyNumber(int n) {
+    return 'Shirt $n';
+  }
+
+  @override
+  String get familySearchOther => 'Search another player';
+
+  @override
+  String get familySearchHint => 'First name or surname (at least 3 letters)';
+
+  @override
+  String get familySearchNoResults => 'No results';
+
+  @override
+  String get familyApprove => 'Approve';
+
+  @override
+  String get familyReject => 'Reject';
+
+  @override
+  String get familyChooseMatch => 'Choose a player to be able to approve';
+
+  @override
+  String get familyRejectTitle => 'Reject this request?';
+
+  @override
+  String familyRejectBody(String nombre) {
+    return '$nombre will not have access to that player\'s information.';
+  }
+
+  @override
+  String get familyRejectReasonHint => 'Reason (optional)';
+
+  @override
+  String get familyApprovedSnack => 'Access approved';
+
+  @override
+  String get familyRejectedSnack => 'Request rejected';
 }

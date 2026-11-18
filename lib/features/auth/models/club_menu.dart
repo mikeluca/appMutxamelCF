@@ -34,6 +34,8 @@ enum OpcionClub {
   cuentasPendientes,
   estadoApp,
   partidoEnDirecto,
+  solicitudesFamilia,
+  pedirAccesoJugador,
   miPerfil,
   cerrarSesion,
 }
@@ -82,6 +84,10 @@ String? rutaDeOpcionClub(OpcionClub opcion) {
       return AppRoutes.appStatus;
     case OpcionClub.partidoEnDirecto:
       return AppRoutes.liveMatch;
+    case OpcionClub.solicitudesFamilia:
+      return AppRoutes.familyRequests;
+    case OpcionClub.pedirAccesoJugador:
+      return AppRoutes.askAnotherPlayer;
     case OpcionClub.miPerfil:
       return AppRoutes.profile;
     case OpcionClub.cuotas:
@@ -97,6 +103,14 @@ List<SeccionClub> construirSeccionesClub(
   AuthUser? usuario, {
   bool cuotasDisponibles = AppConfig.cuotasDisponibles,
 }) {
+  // Una cuenta SIN roles (la de una familia que aún no está aprobada) no ve nada privado: el Área Club le enseña
+  // el estado de su solicitud (tarjeta aparte) y solo puede cerrar sesión.
+  if (usuario != null && usuario.roles.isEmpty) {
+    return const [
+      SeccionClub(SeccionClubId.cuenta, [OpcionClub.cerrarSesion]),
+    ];
+  }
+
   bool tiene(String rol) => usuario?.tieneRol(rol) == true;
 
   final esFamiliar = tiene('FAMILIAR');
@@ -128,6 +142,8 @@ List<SeccionClub> construirSeccionesClub(
     SeccionClub(SeccionClubId.entrenador, [
       // Con rol de gestión global, "Todos los equipos" va en Coordinación.
       if (esEntrenador && !esGestionGlobal) OpcionClub.misEquipos,
+      // Los entrenadores revisan solo las solicitudes de sus equipos (lo filtra el backend).
+      if (esEntrenador && !esGestionGlobal) OpcionClub.solicitudesFamilia,
     ]),
     SeccionClub(SeccionClubId.coordinacion, [
       if (esGestionGlobal) OpcionClub.todosLosEquipos,
@@ -136,6 +152,7 @@ List<SeccionClub> construirSeccionesClub(
       if (esGestionGlobal) OpcionClub.repartoEquipos,
       if (esGestionGlobal) OpcionClub.altaPrueba,
       if (esGestionGlobal) OpcionClub.invitaciones,
+      if (esGestionGlobal) OpcionClub.solicitudesFamilia,
     ]),
     SeccionClub(SeccionClubId.administracion, [
       if (esAdmin) OpcionClub.moderacion,
@@ -145,7 +162,8 @@ List<SeccionClub> construirSeccionesClub(
     SeccionClub(SeccionClubId.retransmision, [
       if (esRetransmision) OpcionClub.partidoEnDirecto,
     ]),
-    const SeccionClub(SeccionClubId.cuenta, [
+    SeccionClub(SeccionClubId.cuenta, [
+      if (usuario != null) OpcionClub.pedirAccesoJugador,
       OpcionClub.miPerfil,
       OpcionClub.cerrarSesion,
     ]),

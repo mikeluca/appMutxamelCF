@@ -168,6 +168,7 @@ class LocalNotificationService {
   static const int _basePasarLista = 1100000000;
   static const int _baseContinuidad = 1200000000;
   static const int _basePartido = 1300000000;
+  static const int _baseSolicitudFamilia = 1400000000;
   static const int _tamanoEspacio = 100000000;
 
   @visibleForTesting
@@ -175,9 +176,11 @@ class LocalNotificationService {
     return switch (datos['tipo']?.toString()) {
       tipoPushReporte => _baseReporte + referenciaId % _tamanoEspacio,
       tipoPushPasarLista => _basePasarLista + referenciaId % _tamanoEspacio,
-      tipoPushContinuidad ||
-      tipoPushContinuidadRespuesta => _baseContinuidad + referenciaId % _tamanoEspacio,
+      tipoPushContinuidad || tipoPushContinuidadRespuesta =>
+        _baseContinuidad + referenciaId % _tamanoEspacio,
       'RESULTADO' => _basePartido + referenciaId % _tamanoEspacio,
+      tipoPushSolicitudFamilia || tipoPushSolicitudFamiliaRespuesta =>
+        _baseSolicitudFamilia + referenciaId % _tamanoEspacio,
       _ => referenciaId,
     };
   }

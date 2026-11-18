@@ -40,7 +40,11 @@ void main() {
     OpcionClub.calendario,
     OpcionClub.partidos,
   ];
-  const cuenta = [OpcionClub.miPerfil, OpcionClub.cerrarSesion];
+  const cuenta = [
+    OpcionClub.pedirAccesoJugador,
+    OpcionClub.miPerfil,
+    OpcionClub.cerrarSesion,
+  ];
 
   test('el orden de las secciones es el acordado', () {
     expect(SeccionClubId.values, [
@@ -98,7 +102,10 @@ void main() {
         SeccionClubId.entrenador,
         SeccionClubId.cuenta,
       ]);
-      expect(_opciones(s, SeccionClubId.entrenador), [OpcionClub.misEquipos]);
+      expect(_opciones(s, SeccionClubId.entrenador), [
+        OpcionClub.misEquipos,
+        OpcionClub.solicitudesFamilia,
+      ]);
       expect(
         _opciones(s, SeccionClubId.club),
         contains(OpcionClub.clasificaciones),
@@ -121,6 +128,7 @@ void main() {
         OpcionClub.repartoEquipos,
         OpcionClub.altaPrueba,
         OpcionClub.invitaciones,
+        OpcionClub.solicitudesFamilia,
       ]);
     });
 
@@ -264,5 +272,94 @@ void main() {
     expect(rutaDeOpcionClub(OpcionClub.miPerfil), '/profile');
     expect(rutaDeOpcionClub(OpcionClub.cuotas), isNull);
     expect(rutaDeOpcionClub(OpcionClub.cerrarSesion), isNull);
+  });
+
+  group('solicitudes de familia', () {
+    test(
+      'una cuenta sin roles solo ve cerrar sesión (la tarjeta de su solicitud va aparte)',
+      () {
+        final s = construirSeccionesClub(
+          _usuario([]),
+          cuotasDisponibles: false,
+        );
+
+        expect(_ids(s), [SeccionClubId.cuenta]);
+        expect(_todas(s), [OpcionClub.cerrarSesion]);
+
+        // Ni comunicaciones, ni calendario, ni partidos, ni perfil: nada privado.
+        expect(_todas(s), isNot(contains(OpcionClub.comunicaciones)));
+        expect(_todas(s), isNot(contains(OpcionClub.calendario)));
+        expect(_todas(s), isNot(contains(OpcionClub.pedirAccesoJugador)));
+      },
+    );
+
+    test(
+      'coordinación y administradores ven "Solicitudes de familia" en Coordinación',
+      () {
+        for (final rol in ['COORDINADOR', 'ADMIN_APP']) {
+          final s = de([rol]);
+
+          expect(
+            _opciones(s, SeccionClubId.coordinacion),
+            contains(OpcionClub.solicitudesFamilia),
+          );
+        }
+      },
+    );
+
+    test('un entrenador la ve en su sección y no en Coordinación', () {
+      final s = de(['ENTRENADOR']);
+
+      expect(
+        _opciones(s, SeccionClubId.entrenador),
+        contains(OpcionClub.solicitudesFamilia),
+      );
+      expect(_ids(s), isNot(contains(SeccionClubId.coordinacion)));
+    });
+
+    test(
+      'un entrenador que además es coordinador la ve una sola vez, en Coordinación',
+      () {
+        final s = de(['ENTRENADOR', 'COORDINADOR']);
+
+        expect(
+          _todas(s).where((o) => o == OpcionClub.solicitudesFamilia),
+          hasLength(1),
+        );
+        expect(
+          _opciones(s, SeccionClubId.coordinacion),
+          contains(OpcionClub.solicitudesFamilia),
+        );
+      },
+    );
+
+    test('jugadores y familiares no revisan nada', () {
+      for (final rol in ['JUGADOR', 'FAMILIAR', 'RETRANSMISION']) {
+        expect(
+          _todas(de([rol])),
+          isNot(contains(OpcionClub.solicitudesFamilia)),
+        );
+      }
+    });
+
+    test('cualquier cuenta con roles puede pedir acceso a otro jugador', () {
+      for (final rol in ['JUGADOR', 'FAMILIAR', 'ENTRENADOR', 'COORDINADOR']) {
+        expect(
+          _opciones(de([rol]), SeccionClubId.cuenta),
+          contains(OpcionClub.pedirAccesoJugador),
+        );
+      }
+    });
+
+    test('las rutas de las dos opciones nuevas', () {
+      expect(
+        rutaDeOpcionClub(OpcionClub.solicitudesFamilia),
+        '/coordination/family-requests',
+      );
+      expect(
+        rutaDeOpcionClub(OpcionClub.pedirAccesoJugador),
+        '/ask-another-player',
+      );
+    });
   });
 }

@@ -4,12 +4,16 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../l10n/gen/app_localizations.dart';
 import '../network/api_client.dart';
+import '../../routing/app_routes.dart';
 import '../version/control_version.dart';
 import '../notifications/utils/convocatoria_notificacion.dart';
 import '../../features/auth/models/perfil_app.dart';
 import '../../features/admin/pages/moderacion_page.dart';
 import '../../features/auth/pages/notificaciones_page.dart';
 import '../../features/continuidad/pages/continuidad_page.dart';
+import '../../features/familia/pages/mi_solicitud_familia_page.dart';
+import '../../features/familia/pages/solicitudes_familia_page.dart';
+import '../../features/auth/services/auth_manager.dart';
 import '../../features/coordinacion/pages/fin_de_semana_page.dart';
 import '../../features/calendario/pages/calendario_page.dart';
 import '../../features/convocatorias/model/convocatoria_model.dart';
@@ -124,6 +128,10 @@ class AppNavigator {
         await abrirModeracion();
       case AbrirContinuidad():
         await abrirContinuidad();
+      case AbrirSolicitudesFamilia():
+        await abrirSolicitudesFamilia();
+      case AbrirMiSolicitudFamilia():
+        await abrirMiSolicitudFamilia();
       case AbrirBandeja():
         await abrirBandeja();
       case AbrirImagenesRedes(:final desde):
@@ -442,6 +450,55 @@ class AppNavigator {
         builder: (_) =>
             constructorImagenesRedes?.call(desde) ??
             FinDeSemanaPage(fechaInicial: desde, irAImagenes: true),
+      ),
+    );
+  }
+
+  /// Solo para tests: sustituyen a las pantallas de las solicitudes de familia (que piden datos a la red).
+  @visibleForTesting
+  static Widget Function()? constructorSolicitudesFamilia;
+
+  @visibleForTesting
+  static Widget Function()? constructorMiSolicitudFamilia;
+
+  /// "Solicitudes de familia" (push SOLICITUD_FAMILIA: nueva solicitud o recordatorio).
+  static Future<void> abrirSolicitudesFamilia() async {
+    final navigatorState = navigator;
+
+    if (navigatorState == null || ControlVersion.bloqueada) {
+      return;
+    }
+
+    await navigatorState.push(
+      MaterialPageRoute(
+        builder: (_) =>
+            (constructorSolicitudesFamilia ??
+            () => const SolicitudesFamiliaPage())(),
+      ),
+    );
+  }
+
+  /// Push SOLICITUD_FAMILIA_RESPUESTA: se recargan los roles (si el club ha aprobado ya tiene los de familiar) y se
+  /// abre Mis jugadores; si todavía no tiene acceso, el estado de su solicitud.
+  static Future<void> abrirMiSolicitudFamilia() async {
+    final navigatorState = navigator;
+
+    if (navigatorState == null || ControlVersion.bloqueada) {
+      return;
+    }
+
+    await AuthManager.recargarUsuario();
+
+    if (AuthManager.usuarioActual?.tieneRol('FAMILIAR') == true) {
+      await navigatorState.pushNamed(AppRoutes.players);
+      return;
+    }
+
+    await navigatorState.push(
+      MaterialPageRoute(
+        builder: (_) =>
+            (constructorMiSolicitudFamilia ??
+            () => const MiSolicitudFamiliaPage())(),
       ),
     );
   }

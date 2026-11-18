@@ -80,6 +80,8 @@ class PushNotificationService {
       tipo == tipoPushContinuidad ||
       tipo == tipoPushContinuidadRespuesta ||
       tipo == tipoPushImagenesRedes ||
+      tipo == tipoPushSolicitudFamilia ||
+      tipo == tipoPushSolicitudFamiliaRespuesta ||
       esTipoPushInvitacion(tipo);
 
   /// Solo para tests: sustituyen a las llamadas a la red, a las notificaciones
@@ -436,7 +438,20 @@ class PushNotificationService {
       return;
     }
 
-    final referenciaId = int.tryParse(referenciaIdString?.toString() ?? '');
+    // El aviso de que el club ha aprobado (o rechazado) una solicitud de familia: se recargan los roles de la cuenta
+    // (como al iniciar sesión) y el Área Club aparece con Mis jugadores, Calendario, etc. sin cerrar sesión.
+    if (tipo == tipoPushSolicitudFamiliaRespuesta) {
+      await AuthManager.recargarUsuario();
+    }
+
+    // El recordatorio a coordinación no lleva referencia: se le da una para poder enseñar el aviso.
+    final esAvisoDeSolicitud =
+        tipo == tipoPushSolicitudFamilia ||
+        tipo == tipoPushSolicitudFamiliaRespuesta;
+
+    final referenciaId =
+        int.tryParse(referenciaIdString?.toString() ?? '') ??
+        (esAvisoDeSolicitud ? 1 : null);
 
     if (referenciaId == null || referenciaId <= 0) {
       return;

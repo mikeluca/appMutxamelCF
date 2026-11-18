@@ -6440,6 +6440,498 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Compartir'**
   String get shareButton;
+
+  /// No description provided for @familyRegisterButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Soy familiar de un jugador'**
+  String get familyRegisterButton;
+
+  /// No description provided for @familyRegisterTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Soy familiar de un jugador'**
+  String get familyRegisterTitle;
+
+  /// No description provided for @familyRegisterIntro.
+  ///
+  /// In es, this message translates to:
+  /// **'Pide acceso a la información de tu hijo o hija. El club revisará tu solicitud antes de darte acceso.'**
+  String get familyRegisterIntro;
+
+  /// No description provided for @familyStepOf.
+  ///
+  /// In es, this message translates to:
+  /// **'Paso {n} de {total}'**
+  String familyStepOf(int n, int total);
+
+  /// No description provided for @familyStepYou.
+  ///
+  /// In es, this message translates to:
+  /// **'Tus datos'**
+  String get familyStepYou;
+
+  /// No description provided for @familyStepChildren.
+  ///
+  /// In es, this message translates to:
+  /// **'Tus hijos'**
+  String get familyStepChildren;
+
+  /// No description provided for @familyStepConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmación'**
+  String get familyStepConfirm;
+
+  /// No description provided for @familyFirstName.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre'**
+  String get familyFirstName;
+
+  /// No description provided for @familyLastName.
+  ///
+  /// In es, this message translates to:
+  /// **'Apellidos'**
+  String get familyLastName;
+
+  /// No description provided for @familyPhoneOptional.
+  ///
+  /// In es, this message translates to:
+  /// **'Teléfono (opcional)'**
+  String get familyPhoneOptional;
+
+  /// No description provided for @familyRelationship.
+  ///
+  /// In es, this message translates to:
+  /// **'Parentesco'**
+  String get familyRelationship;
+
+  /// No description provided for @familyRelMother.
+  ///
+  /// In es, this message translates to:
+  /// **'Madre'**
+  String get familyRelMother;
+
+  /// No description provided for @familyRelFather.
+  ///
+  /// In es, this message translates to:
+  /// **'Padre'**
+  String get familyRelFather;
+
+  /// No description provided for @familyRelGuardian.
+  ///
+  /// In es, this message translates to:
+  /// **'Tutor/a legal'**
+  String get familyRelGuardian;
+
+  /// No description provided for @familyRelOther.
+  ///
+  /// In es, this message translates to:
+  /// **'Otro familiar autorizado'**
+  String get familyRelOther;
+
+  /// No description provided for @familyNameRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe tu nombre'**
+  String get familyNameRequired;
+
+  /// No description provided for @familyLastNameRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe tus apellidos'**
+  String get familyLastNameRequired;
+
+  /// No description provided for @familyPhoneInvalid.
+  ///
+  /// In es, this message translates to:
+  /// **'El teléfono no es válido'**
+  String get familyPhoneInvalid;
+
+  /// No description provided for @familyRelationshipRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige tu parentesco'**
+  String get familyRelationshipRequired;
+
+  /// No description provided for @familyChildrenIntro.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe los datos de tu hijo o hija tal como figuran en el club. Puedes añadir hasta 5.'**
+  String get familyChildrenIntro;
+
+  /// No description provided for @familyChildNumber.
+  ///
+  /// In es, this message translates to:
+  /// **'Hijo o hija {n}'**
+  String familyChildNumber(int n);
+
+  /// No description provided for @familyChildFirstName.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre del jugador'**
+  String get familyChildFirstName;
+
+  /// No description provided for @familyChildLastName.
+  ///
+  /// In es, this message translates to:
+  /// **'Apellidos del jugador'**
+  String get familyChildLastName;
+
+  /// No description provided for @familyChildTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipo o categoría (opcional)'**
+  String get familyChildTeam;
+
+  /// No description provided for @familyChildTeamHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej.: Alevín B'**
+  String get familyChildTeamHint;
+
+  /// No description provided for @familyChildNameRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe el nombre del jugador'**
+  String get familyChildNameRequired;
+
+  /// No description provided for @familyChildLastNameRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Escribe los apellidos del jugador'**
+  String get familyChildLastNameRequired;
+
+  /// No description provided for @familyAddChild.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir otro hijo o hija'**
+  String get familyAddChild;
+
+  /// No description provided for @familyRemoveChild.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitar'**
+  String get familyRemoveChild;
+
+  /// No description provided for @familyMaxChildren.
+  ///
+  /// In es, this message translates to:
+  /// **'Puedes pedir acceso a un máximo de 5 jugadores por solicitud.'**
+  String get familyMaxChildren;
+
+  /// No description provided for @familyDeclareRepresentative.
+  ///
+  /// In es, this message translates to:
+  /// **'Declaro ser su representante legal o estar autorizado por él'**
+  String get familyDeclareRepresentative;
+
+  /// No description provided for @familyAcceptPrivacy.
+  ///
+  /// In es, this message translates to:
+  /// **'Acepto la política de privacidad'**
+  String get familyAcceptPrivacy;
+
+  /// No description provided for @familyReadPrivacy.
+  ///
+  /// In es, this message translates to:
+  /// **'Leer la política de privacidad'**
+  String get familyReadPrivacy;
+
+  /// No description provided for @familyCheckRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Marca esta casilla para continuar'**
+  String get familyCheckRequired;
+
+  /// No description provided for @familyConfirmIntro.
+  ///
+  /// In es, this message translates to:
+  /// **'Revisa y confirma. Los datos de tu hijo o hija solo los usa el club para comprobar la relación; hasta que el club apruebe tu solicitud no verás ningún dato suyo.'**
+  String get familyConfirmIntro;
+
+  /// No description provided for @familyNext.
+  ///
+  /// In es, this message translates to:
+  /// **'Siguiente'**
+  String get familyNext;
+
+  /// No description provided for @familyBack.
+  ///
+  /// In es, this message translates to:
+  /// **'Atrás'**
+  String get familyBack;
+
+  /// No description provided for @familySend.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar solicitud'**
+  String get familySend;
+
+  /// No description provided for @familyCodeTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirma tu email'**
+  String get familyCodeTitle;
+
+  /// No description provided for @familyCodeIntro.
+  ///
+  /// In es, this message translates to:
+  /// **'Te hemos enviado un código de 6 dígitos a {email}. Caduca en 5 días. Introdúcelo y elige tu contraseña.'**
+  String familyCodeIntro(String email);
+
+  /// No description provided for @familyResendCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Reenviar código'**
+  String get familyResendCode;
+
+  /// No description provided for @familyCodeResent.
+  ///
+  /// In es, this message translates to:
+  /// **'Si la solicitud está pendiente de confirmar, te hemos enviado un código nuevo.'**
+  String get familyCodeResent;
+
+  /// No description provided for @familyConfirmAndEnter.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar y entrar'**
+  String get familyConfirmAndEnter;
+
+  /// No description provided for @familyAccountExists.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya tienes una cuenta con ese email. Inicia sesión y pide el acceso desde Área Club.'**
+  String get familyAccountExists;
+
+  /// No description provided for @familyInvitationPending.
+  ///
+  /// In es, this message translates to:
+  /// **'El club ya te envió un código de activación. Usa «Activar cuenta» con el código que te enviamos.'**
+  String get familyInvitationPending;
+
+  /// No description provided for @familyTooManyAttempts.
+  ///
+  /// In es, this message translates to:
+  /// **'Demasiados intentos. Inténtalo de nuevo en unos minutos.'**
+  String get familyTooManyAttempts;
+
+  /// No description provided for @familySendFailed.
+  ///
+  /// In es, this message translates to:
+  /// **'No hemos podido enviar el email. Pulsa «Reenviar código» en unos minutos.'**
+  String get familySendFailed;
+
+  /// No description provided for @familyRequestCardTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Solicitud pendiente de revisión por el club'**
+  String get familyRequestCardTitle;
+
+  /// No description provided for @familyRequestCardIntro.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuando el club la apruebe verás a tus jugadores, el calendario y los avisos del club. Hasta entonces no tienes acceso a más información.'**
+  String get familyRequestCardIntro;
+
+  /// No description provided for @familyRequestApprovedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Solicitud aprobada'**
+  String get familyRequestApprovedTitle;
+
+  /// No description provided for @familyRequestRejectedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Solicitud rechazada'**
+  String get familyRequestRejectedTitle;
+
+  /// No description provided for @familyChildPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendiente'**
+  String get familyChildPending;
+
+  /// No description provided for @familyChildApproved.
+  ///
+  /// In es, this message translates to:
+  /// **'Aprobado'**
+  String get familyChildApproved;
+
+  /// No description provided for @familyChildRejected.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazado'**
+  String get familyChildRejected;
+
+  /// No description provided for @familyRejectedReason.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo: {motivo}'**
+  String familyRejectedReason(String motivo);
+
+  /// No description provided for @familyRequestStatusTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi solicitud de acceso'**
+  String get familyRequestStatusTitle;
+
+  /// No description provided for @familyNoRequest.
+  ///
+  /// In es, this message translates to:
+  /// **'No tienes ninguna solicitud de acceso.'**
+  String get familyNoRequest;
+
+  /// No description provided for @familyRequestAgain.
+  ///
+  /// In es, this message translates to:
+  /// **'Pedir acceso a un jugador'**
+  String get familyRequestAgain;
+
+  /// No description provided for @familyAskAnotherPlayer.
+  ///
+  /// In es, this message translates to:
+  /// **'Pedir acceso a otro jugador'**
+  String get familyAskAnotherPlayer;
+
+  /// No description provided for @familyAskAnotherPlayerDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Vincula a otro hijo o hija a tu cuenta'**
+  String get familyAskAnotherPlayerDesc;
+
+  /// No description provided for @familyAskSent.
+  ///
+  /// In es, this message translates to:
+  /// **'Solicitud enviada. El club la revisará.'**
+  String get familyAskSent;
+
+  /// No description provided for @familyAlreadyPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya tienes una solicitud pendiente de revisar.'**
+  String get familyAlreadyPending;
+
+  /// No description provided for @familyRequestsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Solicitudes de familia'**
+  String get familyRequestsTitle;
+
+  /// No description provided for @familyRequestsDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Familias que piden acceso a sus hijos'**
+  String get familyRequestsDesc;
+
+  /// No description provided for @familyRequestsEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay solicitudes pendientes.'**
+  String get familyRequestsEmpty;
+
+  /// No description provided for @familyRequestedBy.
+  ///
+  /// In es, this message translates to:
+  /// **'Solicitado por {nombre}'**
+  String familyRequestedBy(String nombre);
+
+  /// No description provided for @familyWrittenByFamily.
+  ///
+  /// In es, this message translates to:
+  /// **'Escrito por la familia'**
+  String get familyWrittenByFamily;
+
+  /// No description provided for @familyMatchesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Coincidencias'**
+  String get familyMatchesTitle;
+
+  /// No description provided for @familyNoMatches.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin coincidencias. Busca al jugador.'**
+  String get familyNoMatches;
+
+  /// No description provided for @familySameTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'Mismo equipo'**
+  String get familySameTeam;
+
+  /// No description provided for @familyJerseyNumber.
+  ///
+  /// In es, this message translates to:
+  /// **'Dorsal {n}'**
+  String familyJerseyNumber(int n);
+
+  /// No description provided for @familySearchOther.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar otro jugador'**
+  String get familySearchOther;
+
+  /// No description provided for @familySearchHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre o apellidos (mínimo 3 letras)'**
+  String get familySearchHint;
+
+  /// No description provided for @familySearchNoResults.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin resultados'**
+  String get familySearchNoResults;
+
+  /// No description provided for @familyApprove.
+  ///
+  /// In es, this message translates to:
+  /// **'Aprobar'**
+  String get familyApprove;
+
+  /// No description provided for @familyReject.
+  ///
+  /// In es, this message translates to:
+  /// **'Rechazar'**
+  String get familyReject;
+
+  /// No description provided for @familyChooseMatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige un jugador para poder aprobar'**
+  String get familyChooseMatch;
+
+  /// No description provided for @familyRejectTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Rechazar esta solicitud?'**
+  String get familyRejectTitle;
+
+  /// No description provided for @familyRejectBody.
+  ///
+  /// In es, this message translates to:
+  /// **'{nombre} no tendrá acceso a la información de ese jugador.'**
+  String familyRejectBody(String nombre);
+
+  /// No description provided for @familyRejectReasonHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Motivo (opcional)'**
+  String get familyRejectReasonHint;
+
+  /// No description provided for @familyApprovedSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Acceso aprobado'**
+  String get familyApprovedSnack;
+
+  /// No description provided for @familyRejectedSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Solicitud rechazada'**
+  String get familyRejectedSnack;
 }
 
 class _AppLocalizationsDelegate

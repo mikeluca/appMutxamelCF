@@ -19,6 +19,10 @@ class AuthManager {
 
   static bool get estaAutenticado => _usuarioActual != null;
 
+  /// Sube cada vez que cambia el usuario (inicio de sesión, recarga de roles, cierre): las pantallas que dependen de
+  /// sus roles (el Área Club) se reconstruyen escuchándolo.
+  static final ValueNotifier<int> cambios = ValueNotifier<int>(0);
+
   /// Solo para tests: deja la app sin usuario, sin tocar el almacenamiento.
   @visibleForTesting
   static void olvidarUsuario() => _usuarioActual = null;
@@ -77,6 +81,29 @@ class AuthManager {
 
   static Future<void> establecerUsuario(AuthUser usuario) async {
     _usuarioActual = usuario;
+    cambios.value++;
+  }
+
+  /// Vuelve a pedir el usuario al backend (con sus roles actuales): la usa el aviso de que el club ha aprobado una
+  /// solicitud de familia, igual que al iniciar sesión. Devuelve true si cambiaron los roles. Un fallo de red se
+  /// ignora (el usuario actual se queda como está).
+  static Future<bool> recargarUsuario() async {
+    final antes = _usuarioActual;
+
+    if (antes == null) return false;
+
+    try {
+      final usuario = await AuthService.obtenerUsuarioActual();
+      final cambiaron =
+          usuario.roles.length != antes.roles.length ||
+          !usuario.roles.every(antes.roles.contains);
+
+      await establecerUsuario(usuario);
+
+      return cambiaron;
+    } catch (_) {
+      return false;
+    }
   }
 
   /// [desregistrarDispositivo] debe ser false cuando el cierre de sesión
@@ -96,6 +123,7 @@ class AuthManager {
 
     _usuarioActual = null;
     await AuthSession.cerrarSesion();
+    cambios.value++;
 
     // Sin sesión cuenta el ajuste anónimo de resultados: se sincronizan de nuevo los partidos seguidos. Sin esperar y
     // sin que un fallo rompa el cierre de sesión.

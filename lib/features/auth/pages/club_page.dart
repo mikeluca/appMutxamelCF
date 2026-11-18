@@ -5,6 +5,10 @@ import '../../../core/utils/nombre_rol.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../../routing/app_routes.dart';
 import '../../admin/services/admin_service.dart';
+import '../../familia/pages/pedir_acceso_jugador_page.dart';
+import '../../familia/pages/solicitudes_familia_page.dart';
+import '../../familia/services/solicitud_familia_service.dart';
+import '../../familia/widgets/tarjeta_solicitud_familia.dart';
 import '../models/club_menu.dart';
 import '../services/auth_manager.dart';
 import '../services/comunicacion_service.dart';
@@ -13,7 +17,14 @@ class ClubPage extends StatefulWidget {
   /// Solo para tests: sustituye al servicio real del contador de moderación.
   final AdminService? adminService;
 
-  const ClubPage({super.key, this.adminService});
+  /// Solo para tests: sustituye al servicio real de las solicitudes de familia.
+  final SolicitudFamiliaService solicitudFamiliaService;
+
+  const ClubPage({
+    super.key,
+    this.adminService,
+    this.solicitudFamiliaService = const SolicitudFamiliaService(),
+  });
 
   @override
   State<ClubPage> createState() => _ClubPageState();
@@ -22,15 +33,68 @@ class ClubPage extends StatefulWidget {
 class _ClubPageState extends State<ClubPage> {
   int _comunicacionesNoLeidas = 0;
   int _reportesPendientes = 0;
+  int _solicitudesFamiliaPendientes = 0;
 
   @override
   void initState() {
     super.initState();
-    _cargarContadorComunicaciones();
 
-    if (AuthManager.usuarioActual?.tieneRol('ADMIN_APP') == true) {
+    final usuario = AuthManager.usuarioActual;
+
+    // Una cuenta sin roles (familia pendiente de aprobar) no ve comunicaciones ni nada privado: el backend lo rechaza.
+    if (usuario != null && usuario.roles.isNotEmpty) {
+      _cargarContadorComunicaciones();
+    }
+
+    if (usuario?.tieneRol('ADMIN_APP') == true) {
       _cargarContadorModeracion();
     }
+
+    if (_esRevisorDeSolicitudes(usuario?.roles ?? const [])) {
+      _cargarContadorSolicitudesFamilia();
+    }
+  }
+
+  /// Quien revisa las solicitudes de familia: coordinación, administradores y entrenadores (estos, solo las suyas).
+  static bool _esRevisorDeSolicitudes(List<String> roles) =>
+      roles.contains('COORDINADOR') ||
+      roles.contains('ADMIN_APP') ||
+      roles.contains('ENTRENADOR');
+
+  Future<void> _cargarContadorSolicitudesFamilia() async {
+    try {
+      final cantidad = await widget.solicitudFamiliaService.contarPendientes();
+
+      if (!mounted) return;
+
+      setState(() => _solicitudesFamiliaPendientes = cantidad);
+    } catch (_) {
+      // Si falla el contador, la opción sigue funcionando sin él.
+    }
+  }
+
+  Future<void> _abrirSolicitudesFamilia() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            SolicitudesFamiliaPage(servicio: widget.solicitudFamiliaService),
+      ),
+    );
+
+    if (!mounted) return;
+
+    await _cargarContadorSolicitudesFamilia();
+  }
+
+  Future<void> _abrirPedirAcceso() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            PedirAccesoJugadorPage(servicio: widget.solicitudFamiliaService),
+      ),
+    );
   }
 
   Future<void> _cargarContadorModeracion() async {
@@ -102,22 +166,39 @@ class _ClubPageState extends State<ClubPage> {
 
   @override
   Widget build(BuildContext context) {
-    final usuario = AuthManager.usuarioActual;
     final t = AppLocalizations.of(context);
-    final secciones = construirSeccionesClub(usuario);
 
     return Scaffold(
       appBar: AppBar(title: Text(t.homeAreaClub), centerTitle: false),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          _construirCabecera(context, usuario),
+      // Se reconstruye cuando cambia el usuario (p. ej. al aprobar el club una solicitud se recargan los roles).
+      body: ValueListenableBuilder<int>(
+        valueListenable: AuthManager.cambios,
+        builder: (context, _, _) {
+          final usuario = AuthManager.usuarioActual;
+          final secciones = construirSeccionesClub(usuario);
+          final sinRoles = usuario != null && usuario.roles.isEmpty;
 
-          for (final seccion in secciones)
-            ..._construirSeccion(context, seccion),
+          return ListView(
+            padding: const EdgeInsets.all(20),
+            children: [
+              _construirCabecera(context, usuario),
 
-          const SizedBox(height: 20),
-        ],
+              // Una cuenta sin roles solo ve el estado de su solicitud.
+              if (sinRoles) ...[
+                const SizedBox(height: 24),
+                TarjetaSolicitudFamilia(
+                  servicio: widget.solicitudFamiliaService,
+                  onPedirAcceso: _abrirPedirAcceso,
+                ),
+              ],
+
+              for (final seccion in secciones)
+                ..._construirSeccion(context, seccion),
+
+              const SizedBox(height: 20),
+            ],
+          );
+        },
       ),
     );
   }
@@ -314,6 +395,23 @@ class _ClubPageState extends State<ClubPage> {
           titulo: t.clubPageLiveMatch,
           descripcion: t.clubPageLiveMatchDesc,
           onTap: () => _navegar(opcion),
+        );
+      case OpcionClub.solicitudesFamilia:
+        return _construirOpcion(
+          context,
+          icono: Icons.family_restroom_outlined,
+          titulo: t.familyRequestsTitle,
+          descripcion: t.familyRequestsDesc,
+          contador: _solicitudesFamiliaPendientes,
+          onTap: _abrirSolicitudesFamilia,
+        );
+      case OpcionClub.pedirAccesoJugador:
+        return _construirOpcion(
+          context,
+          icono: Icons.person_add_alt_1_outlined,
+          titulo: t.familyAskAnotherPlayer,
+          descripcion: t.familyAskAnotherPlayerDesc,
+          onTap: _abrirPedirAcceso,
         );
       case OpcionClub.miPerfil:
         return _construirOpcion(

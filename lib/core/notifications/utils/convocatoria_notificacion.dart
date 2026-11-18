@@ -46,6 +46,14 @@ const String tipoPushContinuidadRespuesta = 'CONTINUIDAD_RESPUESTA';
 /// fin de semana (yyyy-MM-dd) y la referencia de la notificación, ese mismo día como yyyyMMdd.
 const String tipoPushImagenesRedes = 'IMAGENES_REDES';
 
+/// Valor de data["tipo"] del push a quien revisa solicitudes de familia (nueva solicitud y recordatorio): abre
+/// "Solicitudes de familia". El texto no lleva datos del menor.
+const String tipoPushSolicitudFamilia = 'SOLICITUD_FAMILIA';
+
+/// Valor de data["tipo"] del push a la familia cuando el club aprueba o rechaza un hijo: abre Mis jugadores (si ya
+/// tiene acceso) o el estado de su solicitud, y recarga los roles de la cuenta.
+const String tipoPushSolicitudFamiliaRespuesta = 'SOLICITUD_FAMILIA_RESPUESTA';
+
 /// El viernes (sin hora) que lleva la referencia de la notificación de las imágenes (yyyyMMdd), o null.
 DateTime? diaDeReferenciaImagenes(int? referencia) {
   if (referencia == null || referencia < 10000101 || referencia > 99991231) {
@@ -144,6 +152,8 @@ bool esAvisoDeConvocatoria({String? tipo, String? titulo, String? accion}) {
       tipo == tipoPushReporte ||
       tipo == tipoPushContinuidad ||
       tipo == tipoPushContinuidadRespuesta ||
+      tipo == tipoPushSolicitudFamilia ||
+      tipo == tipoPushSolicitudFamiliaRespuesta ||
       esTipoPushInvitacion(tipo) ||
       esConvocatoriaNueva(accion: accion, titulo: titulo);
 }
@@ -361,6 +371,37 @@ class AbrirImagenesRedes extends DestinoConvocatoria {
   int get hashCode => Object.hash('AbrirImagenesRedes', desde);
 }
 
+/// COORDINADOR/ADMIN_APP/ENTRENADOR: la pantalla "Solicitudes de familia".
+class AbrirSolicitudesFamilia extends DestinoConvocatoria {
+  const AbrirSolicitudesFamilia();
+
+  @override
+  bool operator ==(Object other) => other is AbrirSolicitudesFamilia;
+
+  @override
+  int get hashCode => 'AbrirSolicitudesFamilia'.hashCode;
+}
+
+/// La familia que pidió el acceso: Mis jugadores si el club ya lo aprobó, y si no, el estado de su solicitud.
+class AbrirMiSolicitudFamilia extends DestinoConvocatoria {
+  const AbrirMiSolicitudFamilia();
+
+  @override
+  bool operator ==(Object other) => other is AbrirMiSolicitudFamilia;
+
+  @override
+  int get hashCode => 'AbrirMiSolicitudFamilia'.hashCode;
+}
+
+/// Quien puede revisar solicitudes de familia (el backend filtra qué ve cada uno).
+bool puedeRevisarSolicitudesFamilia() {
+  final usuario = AuthManager.usuarioActual;
+
+  return usuario?.tieneRol('COORDINADOR') == true ||
+      usuario?.tieneRol('ADMIN_APP') == true ||
+      usuario?.tieneRol('ENTRENADOR') == true;
+}
+
 /// El destino del aviso de una convocatoria o de pasar lista, o null si no lo
 /// es (se mantiene el comportamiento de siempre).
 ///
@@ -383,6 +424,16 @@ DestinoConvocatoria? destinoDeAvisoConvocatoria({
 
   if (tipo == tipoPushContinuidadRespuesta) {
     return const AbrirBandeja();
+  }
+
+  if (tipo == tipoPushSolicitudFamilia) {
+    return puedeRevisarSolicitudesFamilia()
+        ? const AbrirSolicitudesFamilia()
+        : null;
+  }
+
+  if (tipo == tipoPushSolicitudFamiliaRespuesta) {
+    return const AbrirMiSolicitudFamilia();
   }
 
   if (tipo == tipoPushImagenesRedes) {
@@ -595,6 +646,8 @@ String payloadDeDestino(DestinoConvocatoria destino) {
       'LIBERAR_INVITACION:${_campos([convocatoriaId, invitacionId, jugadorId ?? ''])}',
     AbrirContinuidad() => 'CONTINUIDAD',
     AbrirBandeja() => 'CONTINUIDAD_RESPUESTA',
+    AbrirSolicitudesFamilia() => 'SOLICITUDES_FAMILIA',
+    AbrirMiSolicitudFamilia() => 'MI_SOLICITUD_FAMILIA',
     AbrirImagenesRedes(:final desde) =>
       desde == null ? 'IMAGENES_REDES' : 'IMAGENES_REDES:${_diaTexto(desde)}',
   };
@@ -711,6 +764,14 @@ DestinoConvocatoria? destinoDePayload(String payload) {
 
   if (payload == 'CONTINUIDAD') {
     return const AbrirContinuidad();
+  }
+
+  if (payload == 'SOLICITUDES_FAMILIA') {
+    return const AbrirSolicitudesFamilia();
+  }
+
+  if (payload == 'MI_SOLICITUD_FAMILIA') {
+    return const AbrirMiSolicitudFamilia();
   }
 
   if (payload == 'CONTINUIDAD_RESPUESTA') {

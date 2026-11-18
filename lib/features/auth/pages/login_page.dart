@@ -6,6 +6,7 @@ import '../../../routing/app_routes.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../core/notifications/services/permiso_notificaciones.dart';
 import '../../../l10n/gen/app_localizations.dart';
+import '../../familia/pages/registro_familia_page.dart';
 import 'activar_cuenta_page.dart';
 import 'recuperar_password_page.dart';
 
@@ -242,6 +243,23 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                         child: Text(t.activateAccountButton),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    SizedBox(
+                      height: 52,
+                      child: OutlinedButton(
+                        key: const ValueKey('login-soy-familiar'),
+                        onPressed: _cargando
+                            ? null
+                            : () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const RegistroFamiliaPage(),
+                                ),
+                              ),
+                        child: Text(t.familyRegisterButton),
                       ),
                     ),
                   ],

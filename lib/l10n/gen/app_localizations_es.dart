@@ -3713,4 +3713,278 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get shareButton => 'Compartir';
+
+  @override
+  String get familyRegisterButton => 'Soy familiar de un jugador';
+
+  @override
+  String get familyRegisterTitle => 'Soy familiar de un jugador';
+
+  @override
+  String get familyRegisterIntro =>
+      'Pide acceso a la información de tu hijo o hija. El club revisará tu solicitud antes de darte acceso.';
+
+  @override
+  String familyStepOf(int n, int total) {
+    return 'Paso $n de $total';
+  }
+
+  @override
+  String get familyStepYou => 'Tus datos';
+
+  @override
+  String get familyStepChildren => 'Tus hijos';
+
+  @override
+  String get familyStepConfirm => 'Confirmación';
+
+  @override
+  String get familyFirstName => 'Nombre';
+
+  @override
+  String get familyLastName => 'Apellidos';
+
+  @override
+  String get familyPhoneOptional => 'Teléfono (opcional)';
+
+  @override
+  String get familyRelationship => 'Parentesco';
+
+  @override
+  String get familyRelMother => 'Madre';
+
+  @override
+  String get familyRelFather => 'Padre';
+
+  @override
+  String get familyRelGuardian => 'Tutor/a legal';
+
+  @override
+  String get familyRelOther => 'Otro familiar autorizado';
+
+  @override
+  String get familyNameRequired => 'Escribe tu nombre';
+
+  @override
+  String get familyLastNameRequired => 'Escribe tus apellidos';
+
+  @override
+  String get familyPhoneInvalid => 'El teléfono no es válido';
+
+  @override
+  String get familyRelationshipRequired => 'Elige tu parentesco';
+
+  @override
+  String get familyChildrenIntro =>
+      'Escribe los datos de tu hijo o hija tal como figuran en el club. Puedes añadir hasta 5.';
+
+  @override
+  String familyChildNumber(int n) {
+    return 'Hijo o hija $n';
+  }
+
+  @override
+  String get familyChildFirstName => 'Nombre del jugador';
+
+  @override
+  String get familyChildLastName => 'Apellidos del jugador';
+
+  @override
+  String get familyChildTeam => 'Equipo o categoría (opcional)';
+
+  @override
+  String get familyChildTeamHint => 'Ej.: Alevín B';
+
+  @override
+  String get familyChildNameRequired => 'Escribe el nombre del jugador';
+
+  @override
+  String get familyChildLastNameRequired => 'Escribe los apellidos del jugador';
+
+  @override
+  String get familyAddChild => 'Añadir otro hijo o hija';
+
+  @override
+  String get familyRemoveChild => 'Quitar';
+
+  @override
+  String get familyMaxChildren =>
+      'Puedes pedir acceso a un máximo de 5 jugadores por solicitud.';
+
+  @override
+  String get familyDeclareRepresentative =>
+      'Declaro ser su representante legal o estar autorizado por él';
+
+  @override
+  String get familyAcceptPrivacy => 'Acepto la política de privacidad';
+
+  @override
+  String get familyReadPrivacy => 'Leer la política de privacidad';
+
+  @override
+  String get familyCheckRequired => 'Marca esta casilla para continuar';
+
+  @override
+  String get familyConfirmIntro =>
+      'Revisa y confirma. Los datos de tu hijo o hija solo los usa el club para comprobar la relación; hasta que el club apruebe tu solicitud no verás ningún dato suyo.';
+
+  @override
+  String get familyNext => 'Siguiente';
+
+  @override
+  String get familyBack => 'Atrás';
+
+  @override
+  String get familySend => 'Enviar solicitud';
+
+  @override
+  String get familyCodeTitle => 'Confirma tu email';
+
+  @override
+  String familyCodeIntro(String email) {
+    return 'Te hemos enviado un código de 6 dígitos a $email. Caduca en 5 días. Introdúcelo y elige tu contraseña.';
+  }
+
+  @override
+  String get familyResendCode => 'Reenviar código';
+
+  @override
+  String get familyCodeResent =>
+      'Si la solicitud está pendiente de confirmar, te hemos enviado un código nuevo.';
+
+  @override
+  String get familyConfirmAndEnter => 'Confirmar y entrar';
+
+  @override
+  String get familyAccountExists =>
+      'Ya tienes una cuenta con ese email. Inicia sesión y pide el acceso desde Área Club.';
+
+  @override
+  String get familyInvitationPending =>
+      'El club ya te envió un código de activación. Usa «Activar cuenta» con el código que te enviamos.';
+
+  @override
+  String get familyTooManyAttempts =>
+      'Demasiados intentos. Inténtalo de nuevo en unos minutos.';
+
+  @override
+  String get familySendFailed =>
+      'No hemos podido enviar el email. Pulsa «Reenviar código» en unos minutos.';
+
+  @override
+  String get familyRequestCardTitle =>
+      'Solicitud pendiente de revisión por el club';
+
+  @override
+  String get familyRequestCardIntro =>
+      'Cuando el club la apruebe verás a tus jugadores, el calendario y los avisos del club. Hasta entonces no tienes acceso a más información.';
+
+  @override
+  String get familyRequestApprovedTitle => 'Solicitud aprobada';
+
+  @override
+  String get familyRequestRejectedTitle => 'Solicitud rechazada';
+
+  @override
+  String get familyChildPending => 'Pendiente';
+
+  @override
+  String get familyChildApproved => 'Aprobado';
+
+  @override
+  String get familyChildRejected => 'Rechazado';
+
+  @override
+  String familyRejectedReason(String motivo) {
+    return 'Motivo: $motivo';
+  }
+
+  @override
+  String get familyRequestStatusTitle => 'Mi solicitud de acceso';
+
+  @override
+  String get familyNoRequest => 'No tienes ninguna solicitud de acceso.';
+
+  @override
+  String get familyRequestAgain => 'Pedir acceso a un jugador';
+
+  @override
+  String get familyAskAnotherPlayer => 'Pedir acceso a otro jugador';
+
+  @override
+  String get familyAskAnotherPlayerDesc =>
+      'Vincula a otro hijo o hija a tu cuenta';
+
+  @override
+  String get familyAskSent => 'Solicitud enviada. El club la revisará.';
+
+  @override
+  String get familyAlreadyPending =>
+      'Ya tienes una solicitud pendiente de revisar.';
+
+  @override
+  String get familyRequestsTitle => 'Solicitudes de familia';
+
+  @override
+  String get familyRequestsDesc => 'Familias que piden acceso a sus hijos';
+
+  @override
+  String get familyRequestsEmpty => 'No hay solicitudes pendientes.';
+
+  @override
+  String familyRequestedBy(String nombre) {
+    return 'Solicitado por $nombre';
+  }
+
+  @override
+  String get familyWrittenByFamily => 'Escrito por la familia';
+
+  @override
+  String get familyMatchesTitle => 'Coincidencias';
+
+  @override
+  String get familyNoMatches => 'Sin coincidencias. Busca al jugador.';
+
+  @override
+  String get familySameTeam => 'Mismo equipo';
+
+  @override
+  String familyJerseyNumber(int n) {
+    return 'Dorsal $n';
+  }
+
+  @override
+  String get familySearchOther => 'Buscar otro jugador';
+
+  @override
+  String get familySearchHint => 'Nombre o apellidos (mínimo 3 letras)';
+
+  @override
+  String get familySearchNoResults => 'Sin resultados';
+
+  @override
+  String get familyApprove => 'Aprobar';
+
+  @override
+  String get familyReject => 'Rechazar';
+
+  @override
+  String get familyChooseMatch => 'Elige un jugador para poder aprobar';
+
+  @override
+  String get familyRejectTitle => '¿Rechazar esta solicitud?';
+
+  @override
+  String familyRejectBody(String nombre) {
+    return '$nombre no tendrá acceso a la información de ese jugador.';
+  }
+
+  @override
+  String get familyRejectReasonHint => 'Motivo (opcional)';
+
+  @override
+  String get familyApprovedSnack => 'Acceso aprobado';
+
+  @override
+  String get familyRejectedSnack => 'Solicitud rechazada';
 }
