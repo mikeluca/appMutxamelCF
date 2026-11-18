@@ -2,7 +2,7 @@ name: app_mutxamel_cf
 description: Aplicación móvil oficial del Mutxamel Club de Fútbol.
 publish_to: 'none'
 
-version: 1.0.11+19
+version: 1.0.12+20
 
 environment:
   sdk: ^3.10.0
