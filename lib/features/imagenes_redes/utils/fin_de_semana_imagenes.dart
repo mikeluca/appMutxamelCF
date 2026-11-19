@@ -1,7 +1,3 @@
-/// Si el cartel de Partido Filial se muestra en "Imágenes para redes". Preparado pero oculto: el backend aún no lo
-/// tiene. Al activarlo hará falta su pestaña, sus rutas y su servicio.
-const bool mostrarCartelFilial = false;
-
 DateTime _soloDia(DateTime fecha) =>
     DateTime(fecha.year, fecha.month, fecha.day);
 

@@ -445,7 +445,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get clubPageSocialImagesDesc =>
-      'Previa, resultados y cartel del próximo partido';
+      'Previa, resultados y carteles del Primer Equipo y del Filial';
 
   @override
   String get clubPageCommunications => 'Comunicaciones';
@@ -2665,6 +2665,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'No hay ningún próximo partido del Primer Equipo';
 
   @override
+  String get socialImagesNoMatchReserve =>
+      'No hay ningún próximo partido del Filial';
+
+  @override
   String get socialImagesMatchStarted => 'El partido ya ha empezado';
 
   @override
@@ -2692,6 +2696,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get socialImagesPosterAlt => 'Cartel del próximo partido';
+
+  @override
+  String get socialImagesPosterAltReserve =>
+      'Cartel del próximo partido del Filial';
 
   @override
   String get socialImagesNoPermissionBack =>

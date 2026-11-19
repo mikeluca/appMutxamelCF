@@ -6,12 +6,12 @@ import '../models/imagenes_redes_model.dart';
 import '../models/partido_primer_equipo_model.dart';
 import '../services/imagenes_redes_service.dart';
 import '../utils/fin_de_semana_imagenes.dart';
-import '../widgets/pestana_partido_primer_equipo.dart';
+import '../widgets/pestana_partido_cartel.dart';
 import '../widgets/selector_fin_de_semana.dart';
 import '../widgets/seccion_imagenes_redes.dart';
 
-/// "Imágenes para redes" (Directo y RRSS, solo RETRANSMISION y ADMIN_APP): Previa, Resultados y Partido Primer Equipo.
-/// Partido Filial está preparado pero oculto ([mostrarCartelFilial]).
+/// "Imágenes para redes" (Directo y RRSS, solo RETRANSMISION y ADMIN_APP): Previa, Resultados, Partido Primer Equipo y
+/// Partido Filial (los dos carteles son la misma pestaña con otro equipo).
 class ImagenesRedesPage extends StatefulWidget {
   final ImagenesRedesService? servicio;
 
@@ -54,7 +54,7 @@ class _ImagenesRedesPageState extends State<ImagenesRedesPage>
 
     _tipoAbierto = _tipoDeApertura();
     _controlador = TabController(
-      length: mostrarCartelFilial ? 4 : 3,
+      length: 4,
       vsync: this,
       initialIndex: _indiceDe(_tipoAbierto),
     );
@@ -71,7 +71,8 @@ class _ImagenesRedesPageState extends State<ImagenesRedesPage>
 
     if (tipo == tipoImagenPrevia ||
         tipo == tipoImagenResultados ||
-        tipo == tipoImagenPartidoPrimerEquipo) {
+        tipo == tipoImagenPartidoPrimerEquipo ||
+        tipo == tipoImagenPartidoFilial) {
       return tipo!;
     }
 
@@ -88,6 +89,7 @@ class _ImagenesRedesPageState extends State<ImagenesRedesPage>
   static int _indiceDe(String tipo) => switch (tipo) {
     tipoImagenResultados => 1,
     tipoImagenPartidoPrimerEquipo => 2,
+    tipoImagenPartidoFilial => 3,
     _ => 0,
   };
 
@@ -136,11 +138,10 @@ class _ImagenesRedesPageState extends State<ImagenesRedesPage>
               key: const ValueKey('pestana-primer-equipo'),
               text: t.socialImagesTabFirstTeam,
             ),
-            if (mostrarCartelFilial)
-              Tab(
-                key: const ValueKey('pestana-filial'),
-                text: t.socialImagesTabReserve,
-              ),
+            Tab(
+              key: const ValueKey('pestana-filial'),
+              text: t.socialImagesTabReserve,
+            ),
           ],
         ),
       ),
@@ -165,12 +166,12 @@ class _ImagenesRedesPageState extends State<ImagenesRedesPage>
                 : null,
             alDenegar: _alDenegar,
           ),
-          PestanaPartidoPrimerEquipo(
+          PestanaPartidoCartel(servicio: _servicio, alDenegar: _alDenegar),
+          PestanaPartidoCartel(
             servicio: _servicio,
+            equipo: CartelEquipo.filial,
             alDenegar: _alDenegar,
           ),
-          // Partido Filial: preparado, sin backend todavía.
-          if (mostrarCartelFilial) const SizedBox.shrink(),
         ],
       ),
     );

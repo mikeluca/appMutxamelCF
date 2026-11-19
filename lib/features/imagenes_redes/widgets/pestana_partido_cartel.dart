@@ -11,26 +11,30 @@ import '../services/imagenes_redes_service.dart';
 import '../utils/fin_de_semana_imagenes.dart';
 import 'imagenes_redes_vista.dart';
 
-/// Pestaña "Partido Primer Equipo": el próximo partido que devuelve el backend y el cartel que genera el servidor con
-/// las opciones elegidas. El PNG solo vive en memoria (y en lo que el menú de compartir del sistema use para enviarlo).
-class PestanaPartidoPrimerEquipo extends StatefulWidget {
+/// Pestaña del cartel del próximo partido de un equipo (Primer Equipo o Filial, según [equipo]): el partido que devuelve
+/// el backend y el cartel que genera el servidor con las opciones elegidas. Es la misma pantalla para los dos; solo
+/// cambian la ruta, los textos y el nombre del fichero. El PNG solo vive en memoria (y en lo que el menú de compartir del sistema use para enviarlo).
+class PestanaPartidoCartel extends StatefulWidget {
   final ImagenesRedesService servicio;
+
+  /// De qué equipo es el cartel.
+  final CartelEquipo equipo;
 
   /// Se llama si el servidor dice 403: la pantalla avisa y vuelve al menú.
   final VoidCallback? alDenegar;
 
-  const PestanaPartidoPrimerEquipo({
+  const PestanaPartidoCartel({
     super.key,
     required this.servicio,
+    this.equipo = CartelEquipo.primerEquipo,
     this.alDenegar,
   });
 
   @override
-  State<PestanaPartidoPrimerEquipo> createState() =>
-      _PestanaPartidoPrimerEquipoState();
+  State<PestanaPartidoCartel> createState() => _PestanaPartidoCartelState();
 }
 
-class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
+class _PestanaPartidoCartelState extends State<PestanaPartidoCartel>
     with AutomaticKeepAliveClientMixin {
   late Future<PartidoPrimerEquipoModel> _futuro;
 
@@ -51,6 +55,21 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
 
   AppLocalizations get _t => AppLocalizations.of(context);
 
+  /// Las claves de los widgets: las del Primer Equipo de siempre y las del Filial con el prefijo "filial-" (las dos
+  /// pestañas pueden estar montadas a la vez).
+  String _k(String clave) =>
+      widget.equipo == CartelEquipo.filial ? 'filial-$clave' : clave;
+
+  String _textoSinPartido(AppLocalizations t) =>
+      widget.equipo == CartelEquipo.filial
+      ? t.socialImagesNoMatchReserve
+      : t.socialImagesNoMatch;
+
+  String _textoImagen(AppLocalizations t) =>
+      widget.equipo == CartelEquipo.filial
+      ? t.socialImagesPosterAltReserve
+      : t.socialImagesPosterAlt;
+
   @override
   void initState() {
     super.initState();
@@ -62,7 +81,7 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
 
   Future<PartidoPrimerEquipoModel> _cargar() async {
     try {
-      return await widget.servicio.obtenerPartidoPrimerEquipo();
+      return await widget.servicio.obtenerPartido(widget.equipo);
     } catch (e) {
       if (_esDenegado(e)) widget.alDenegar?.call();
 
@@ -94,7 +113,7 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
     });
 
     try {
-      final png = await widget.servicio.generarCartelPrimerEquipo(pedidas);
+      final png = await widget.servicio.generarCartel(widget.equipo, pedidas);
 
       if (!mounted) return;
 
@@ -161,7 +180,9 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
     try {
       await CompartirImagenesRedes.compartir(
         [png],
-        ['cartel_primer_equipo_${generadas.formato.api.toLowerCase()}.png'],
+        [
+          '${widget.equipo.prefijoFichero}_${generadas.formato.api.toLowerCase()}.png',
+        ],
         _texto(partido, generadas),
         origen,
       );
@@ -189,7 +210,7 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
               children: [
                 Expanded(child: Text(_t.socialImagesPosterLoadError)),
                 TextButton(
-                  key: const ValueKey('cartel-reintentar-partido'),
+                  key: ValueKey(_k('cartel-reintentar-partido')),
                   onPressed: _recargar,
                   child: Text(_t.retry),
                 ),
@@ -216,7 +237,7 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
     final yaEmpezado = partido.motivo == motivoYaEmpezado;
 
     return Card(
-      key: const ValueKey('cartel-no-disponible'),
+      key: ValueKey(_k('cartel-no-disponible')),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Row(
@@ -228,7 +249,7 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                yaEmpezado ? t.socialImagesMatchStarted : t.socialImagesNoMatch,
+                yaEmpezado ? t.socialImagesMatchStarted : _textoSinPartido(t),
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -248,13 +269,13 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _TarjetaPartido(partido: partido),
+          _TarjetaPartido(partido: partido, k: _k),
           const SizedBox(height: 16),
           _titulo(t.shareFormatLabel),
           SizedBox(
             width: double.infinity,
             child: SegmentedButton<FormatoCartel>(
-              key: const ValueKey('cartel-formato'),
+              key: ValueKey(_k('cartel-formato')),
               showSelectedIcon: false,
               segments: [
                 ButtonSegment(
@@ -275,7 +296,7 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
           SizedBox(
             width: double.infinity,
             child: SegmentedButton<IdiomaCartel>(
-              key: const ValueKey('cartel-idioma'),
+              key: ValueKey(_k('cartel-idioma')),
               showSelectedIcon: false,
               segments: [
                 ButtonSegment(
@@ -298,19 +319,19 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
             runSpacing: 4,
             children: [
               FilterChip(
-                key: const ValueKey('cartel-opcion-racha'),
+                key: ValueKey(_k('cartel-opcion-racha')),
                 label: Text(t.shareToggleForm),
                 selected: _opciones.racha,
                 onSelected: (v) => _cambiar(_opciones.copiaCon(racha: v)),
               ),
               FilterChip(
-                key: const ValueKey('cartel-opcion-qr'),
+                key: ValueKey(_k('cartel-opcion-qr')),
                 label: Text(t.shareToggleQr),
                 selected: _opciones.qr,
                 onSelected: (v) => _cambiar(_opciones.copiaCon(qr: v)),
               ),
               FilterChip(
-                key: const ValueKey('cartel-opcion-hashtags'),
+                key: ValueKey(_k('cartel-opcion-hashtags')),
                 label: Text(t.shareToggleHashtags),
                 selected: _opciones.hashtags,
                 onSelected: (v) => _cambiar(_opciones.copiaCon(hashtags: v)),
@@ -319,7 +340,7 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
           ),
           const SizedBox(height: 16),
           FilledButton.icon(
-            key: const ValueKey('cartel-generar'),
+            key: ValueKey(_k('cartel-generar')),
             onPressed: _generando ? null : _generar,
             icon: _generando
                 ? const SizedBox(
@@ -333,7 +354,7 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
           if (_error != null && !_generando) ...[
             const SizedBox(height: 12),
             Row(
-              key: const ValueKey('cartel-error'),
+              key: ValueKey(_k('cartel-error')),
               children: [
                 Icon(Icons.error_outline, color: colors.error),
                 const SizedBox(width: 8),
@@ -344,7 +365,7 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
                   ),
                 ),
                 TextButton(
-                  key: const ValueKey('cartel-reintentar'),
+                  key: ValueKey(_k('cartel-reintentar')),
                   onPressed: _generar,
                   child: Text(t.retry),
                 ),
@@ -361,7 +382,7 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
               Expanded(
                 key: _claveCompartir,
                 child: FilledButton.tonalIcon(
-                  key: const ValueKey('cartel-compartir'),
+                  key: ValueKey(_k('cartel-compartir')),
                   onPressed: _png == null || _desactualizada || _generando
                       ? null
                       : () => _compartir(partido),
@@ -372,7 +393,7 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
               const SizedBox(width: 8),
               Expanded(
                 child: OutlinedButton.icon(
-                  key: const ValueKey('cartel-copiar'),
+                  key: ValueKey(_k('cartel-copiar')),
                   onPressed: () => _copiar(partido),
                   icon: const Icon(Icons.copy),
                   label: Text(t.socialImagesCopyText),
@@ -410,7 +431,7 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
       children: [
         if (_desactualizada && !_generando)
           Container(
-            key: const ValueKey('cartel-desactualizada'),
+            key: ValueKey(_k('cartel-desactualizada')),
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
@@ -434,13 +455,13 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 520),
             child: AspectRatio(
-              key: ValueKey('cartel-imagen-${formato.api}'),
+              key: ValueKey(_k('cartel-imagen-${formato.api}')),
               aspectRatio: proporcion,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: _generando
                     ? Container(
-                        key: const ValueKey('cartel-cargando'),
+                        key: ValueKey(_k('cartel-cargando')),
                         color: colors.surfaceContainerHighest,
                         alignment: Alignment.center,
                         child: const CircularProgressIndicator(),
@@ -449,9 +470,9 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
                         opacity: _desactualizada ? 0.45 : 1,
                         child: Image.memory(
                           _png!,
-                          key: const ValueKey('cartel-png'),
+                          key: ValueKey(_k('cartel-png')),
                           fit: BoxFit.contain,
-                          semanticLabel: t.socialImagesPosterAlt,
+                          semanticLabel: _textoImagen(t),
                           gaplessPlayback: true,
                         ),
                       ),
@@ -469,7 +490,10 @@ class _PestanaPartidoPrimerEquipoState extends State<PestanaPartidoPrimerEquipo>
 class _TarjetaPartido extends StatelessWidget {
   final PartidoPrimerEquipoModel partido;
 
-  const _TarjetaPartido({required this.partido});
+  /// Las claves de sus widgets (distintas en cada cartel).
+  final String Function(String) k;
+
+  const _TarjetaPartido({required this.partido, required this.k});
 
   @override
   Widget build(BuildContext context) {
@@ -493,7 +517,7 @@ class _TarjetaPartido extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           partido.rival,
-          key: const ValueKey('cartel-rival'),
+          key: ValueKey(k('cartel-rival')),
           textAlign: TextAlign.center,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
@@ -524,7 +548,7 @@ class _TarjetaPartido extends StatelessWidget {
     );
 
     return Card(
-      key: const ValueKey('cartel-tarjeta-partido'),
+      key: ValueKey(k('cartel-tarjeta-partido')),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

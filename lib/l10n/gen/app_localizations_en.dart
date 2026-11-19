@@ -434,7 +434,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clubPageSocialImagesDesc =>
-      'Preview, results and next-match poster';
+      'Preview, results and posters for the First Team and the reserve team';
 
   @override
   String get clubPageCommunications => 'Communications';
@@ -2633,6 +2633,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get socialImagesNoMatch => 'There is no upcoming First Team match';
 
   @override
+  String get socialImagesNoMatchReserve =>
+      'There is no upcoming reserve team match';
+
+  @override
   String get socialImagesMatchStarted => 'The match has already started';
 
   @override
@@ -2660,6 +2664,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get socialImagesPosterAlt => 'Next-match poster';
+
+  @override
+  String get socialImagesPosterAltReserve => 'Reserve team next-match poster';
 
   @override
   String get socialImagesNoPermissionBack =>

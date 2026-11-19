@@ -4,6 +4,7 @@ const String motivoYaEmpezado = 'YA_EMPEZADO';
 
 /// El valor de la pestaña del cartel del Primer Equipo (junto a [tipoImagenPrevia] y [tipoImagenResultados]).
 const String tipoImagenPartidoPrimerEquipo = 'PARTIDO_PRIMER_EQUIPO';
+const String tipoImagenPartidoFilial = 'PARTIDO_FILIAL';
 
 /// El próximo partido del Primer Equipo que devuelve el backend
 /// (`GET /api/app/imagenes-redes/partido-primer-equipo`). Si no está disponible solo trae [motivo].
@@ -160,4 +161,19 @@ String textoSinHashtags(String texto) {
       .where((palabra) => !palabra.startsWith('#'))
       .join(' ')
       .trim();
+}
+
+/// De qué equipo es el cartel del próximo partido: cambia la ruta del backend (`partido-primer-equipo` o
+/// `partido-filial`), los textos y el nombre del fichero que se comparte. El resto es igual.
+enum CartelEquipo {
+  primerEquipo('partido-primer-equipo', 'cartel_primer_equipo'),
+  filial('partido-filial', 'cartel_filial');
+
+  /// El tramo de la ruta tras `/app/imagenes-redes/`.
+  final String ruta;
+
+  /// El principio del nombre del PNG que se comparte.
+  final String prefijoFichero;
+
+  const CartelEquipo(this.ruta, this.prefijoFichero);
 }

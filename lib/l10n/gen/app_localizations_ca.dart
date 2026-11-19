@@ -440,7 +440,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get clubPageSocialImagesDesc =>
-      'Prèvia, resultats i cartell del pròxim partit';
+      'Prèvia, resultats i cartells del Primer Equip i del Filial';
 
   @override
   String get clubPageCommunications => 'Comunicacions';
@@ -2655,6 +2655,10 @@ class AppLocalizationsCa extends AppLocalizations {
       'No hi ha cap pròxim partit del Primer Equip';
 
   @override
+  String get socialImagesNoMatchReserve =>
+      'No hi ha cap pròxim partit del Filial';
+
+  @override
   String get socialImagesMatchStarted => 'El partit ja ha començat';
 
   @override
@@ -2682,6 +2686,10 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get socialImagesPosterAlt => 'Cartell del pròxim partit';
+
+  @override
+  String get socialImagesPosterAltReserve =>
+      'Cartell del pròxim partit del Filial';
 
   @override
   String get socialImagesNoPermissionBack =>

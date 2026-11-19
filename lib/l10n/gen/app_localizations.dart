@@ -913,7 +913,7 @@ abstract class AppLocalizations {
   /// No description provided for @clubPageSocialImagesDesc.
   ///
   /// In es, this message translates to:
-  /// **'Previa, resultados y cartel del próximo partido'**
+  /// **'Previa, resultados y carteles del Primer Equipo y del Filial'**
   String get clubPageSocialImagesDesc;
 
   /// No description provided for @clubPageCommunications.
@@ -4684,6 +4684,12 @@ abstract class AppLocalizations {
   /// **'No hay ningún próximo partido del Primer Equipo'**
   String get socialImagesNoMatch;
 
+  /// No description provided for @socialImagesNoMatchReserve.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay ningún próximo partido del Filial'**
+  String get socialImagesNoMatchReserve;
+
   /// No description provided for @socialImagesMatchStarted.
   ///
   /// In es, this message translates to:
@@ -4737,6 +4743,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Cartel del próximo partido'**
   String get socialImagesPosterAlt;
+
+  /// No description provided for @socialImagesPosterAltReserve.
+  ///
+  /// In es, this message translates to:
+  /// **'Cartel del próximo partido del Filial'**
+  String get socialImagesPosterAltReserve;
 
   /// No description provided for @socialImagesNoPermissionBack.
   ///

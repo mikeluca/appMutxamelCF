@@ -101,27 +101,30 @@ void main() {
   });
 
   group('pestañas', () {
-    testWidgets('Previa, Resultados y Partido Primer Equipo; sin Filial', (
-      tester,
-    ) async {
-      await tester.pumpWidget(_pagina(ServicioImagenesFalso()));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'las cuatro pestañas: Previa, Resultados, Primer Equipo y Filial',
+      (tester) async {
+        await tester.pumpWidget(_pagina(ServicioImagenesFalso()));
+        await tester.pumpAndSettle();
 
-      expect(find.text('Imágenes para redes'), findsOneWidget);
-      expect(find.byKey(const ValueKey('pestana-previa')), findsOneWidget);
-      expect(find.byKey(const ValueKey('pestana-resultados')), findsOneWidget);
-      expect(
-        find.byKey(const ValueKey('pestana-primer-equipo')),
-        findsOneWidget,
-      );
-      expect(find.text('Previa'), findsOneWidget);
-      expect(find.text('Resultados'), findsOneWidget);
-      expect(find.text('Partido Primer Equipo'), findsOneWidget);
-      // Partido Filial: preparado, pero oculto con una constante.
-      expect(mostrarCartelFilial, isFalse);
-      expect(find.text('Partido Filial'), findsNothing);
-      expect(find.byKey(const ValueKey('pestana-filial')), findsNothing);
-    });
+        expect(find.text('Imágenes para redes'), findsOneWidget);
+        expect(find.byKey(const ValueKey('pestana-previa')), findsOneWidget);
+        expect(
+          find.byKey(const ValueKey('pestana-resultados')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const ValueKey('pestana-primer-equipo')),
+          findsOneWidget,
+        );
+        expect(find.text('Previa'), findsOneWidget);
+        expect(find.text('Resultados'), findsOneWidget);
+        expect(find.text('Partido Primer Equipo'), findsOneWidget);
+        expect(find.byKey(const ValueKey('pestana-filial')), findsOneWidget);
+        expect(find.text('Partido Filial'), findsOneWidget);
+        expect(find.byType(Tab), findsNWidgets(4));
+      },
+    );
 
     testWidgets('abre en Previa por defecto y se pasa de pestaña', (
       tester,
@@ -196,6 +199,7 @@ void main() {
       expect(find.text('Imatges per a xarxes'), findsOneWidget);
       expect(find.text('Prèvia'), findsOneWidget);
       expect(find.text('Partit Primer Equip'), findsOneWidget);
+      expect(find.text('Partit Filial'), findsOneWidget);
 
       await tester.pumpWidget(const SizedBox());
       await tester.pumpWidget(_pagina(ServicioImagenesFalso(), idioma: 'en'));
@@ -203,6 +207,7 @@ void main() {
 
       expect(find.text('Social media images'), findsOneWidget);
       expect(find.text('First Team match'), findsOneWidget);
+      expect(find.text('Reserve team match'), findsOneWidget);
     });
   });
 
@@ -392,7 +397,11 @@ void main() {
 
       expect(tester.takeException(), isNull);
 
-      for (final pestana in ['pestana-resultados', 'pestana-primer-equipo']) {
+      for (final pestana in [
+        'pestana-resultados',
+        'pestana-primer-equipo',
+        'pestana-filial',
+      ]) {
         // Con letra grande las pestañas no caben: la barra se desliza.
         await tester.ensureVisible(find.byKey(ValueKey(pestana)));
         await tester.pumpAndSettle();

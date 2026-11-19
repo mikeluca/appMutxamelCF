@@ -53,21 +53,24 @@ class ImagenesRedesService {
     return ImagenesRedesModel.fromJson(data as Map<String, dynamic>);
   }
 
-  /// El próximo partido del Primer Equipo para el cartel (o por qué no hay).
-  Future<PartidoPrimerEquipoModel> obtenerPartidoPrimerEquipo() async {
+  /// El próximo partido del equipo del cartel (o por qué no hay).
+  Future<PartidoPrimerEquipoModel> obtenerPartido(CartelEquipo equipo) async {
     final data = await ApiClient.get(
-      '/app/imagenes-redes/partido-primer-equipo',
+      '/app/imagenes-redes/${equipo.ruta}',
       autenticado: true,
     );
 
     return PartidoPrimerEquipoModel.fromJson(data as Map<String, dynamic>);
   }
 
-  /// El PNG del cartel del próximo partido con esas opciones. El servidor lo genera al momento y no se guarda ni
+  /// El PNG del cartel del próximo partido de ese equipo con esas opciones. El servidor lo genera al momento y no se guarda ni
   /// aquí ni en ningún sitio: cada llamada pide uno nuevo.
-  Future<Uint8List> generarCartelPrimerEquipo(OpcionesCartel opciones) {
+  Future<Uint8List> generarCartel(
+    CartelEquipo equipo,
+    OpcionesCartel opciones,
+  ) {
     return ApiClient.getBytes(
-      '/app/imagenes-redes/partido-primer-equipo/png${opciones.consulta}',
+      '/app/imagenes-redes/${equipo.ruta}/png${opciones.consulta}',
       autenticado: true,
     );
   }

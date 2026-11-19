@@ -80,6 +80,16 @@ class ServicioImagenesFalso extends ImagenesRedesService {
   ImagenesRedesModel? trasRegenerar;
   PartidoPrimerEquipoModel partido;
 
+  /// Lo del cartel del Filial (lo de arriba es el del Primer Equipo).
+  PartidoPrimerEquipoModel partidoFilial = partidoDePrueba();
+  final List<OpcionesCartel> cartelesFilial = [];
+  final List<Object> fallosCartelFilial = [];
+  Object? falloPartidoFilial;
+  int partidosPedidosFilial = 0;
+
+  /// Todas las peticiones de partido y de PNG, en orden, con su equipo.
+  final List<({String que, CartelEquipo equipo})> peticiones = [];
+
   final List<DateTime?> consultadas = [];
   final List<({String tipo, DateTime? fecha})> regeneradas = [];
   final List<String> descargadas = [];
@@ -135,7 +145,17 @@ class ServicioImagenesFalso extends ImagenesRedesService {
   }
 
   @override
-  Future<PartidoPrimerEquipoModel> obtenerPartidoPrimerEquipo() async {
+  Future<PartidoPrimerEquipoModel> obtenerPartido(CartelEquipo equipo) async {
+    peticiones.add((que: 'partido', equipo: equipo));
+
+    if (equipo == CartelEquipo.filial) {
+      partidosPedidosFilial++;
+
+      if (falloPartidoFilial != null) throw falloPartidoFilial!;
+
+      return partidoFilial;
+    }
+
     partidosPedidos++;
 
     if (falloPartido != null) throw falloPartido!;
@@ -144,7 +164,20 @@ class ServicioImagenesFalso extends ImagenesRedesService {
   }
 
   @override
-  Future<Uint8List> generarCartelPrimerEquipo(OpcionesCartel opciones) async {
+  Future<Uint8List> generarCartel(
+    CartelEquipo equipo,
+    OpcionesCartel opciones,
+  ) async {
+    peticiones.add((que: 'png', equipo: equipo));
+
+    if (equipo == CartelEquipo.filial) {
+      cartelesFilial.add(opciones);
+
+      if (fallosCartelFilial.isNotEmpty) throw fallosCartelFilial.removeAt(0);
+
+      return pngDePrueba;
+    }
+
     carteles.add(opciones);
 
     await esperaCartel?.future;
