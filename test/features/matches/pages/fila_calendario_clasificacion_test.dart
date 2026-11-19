@@ -74,6 +74,14 @@ void main() {
       // Misma fila (centros a la misma altura), calendario a la izquierda.
       expect((cal.center.dy - cla.center.dy).abs(), lessThan(2));
       expect(cal.right, lessThan(cla.left));
+
+      // Pegado al borde derecho de la tarjeta (no al calendario).
+      final tarjeta = tester.getRect(find.byType(Card).first);
+      final botonCla = tester.getRect(
+        find.ancestor(of: _clasificacion, matching: find.byType(TextButton)),
+      );
+      expect(tarjeta.right - botonCla.right, lessThan(24));
+      expect(botonCla.left - cal.right, greaterThan(100));
       expect(
         find.byKey(const ValueKey('fila-calendario-clasificacion')),
         findsOneWidget,
@@ -102,6 +110,17 @@ void main() {
       final cla = tester.getRect(_clasificacion);
 
       expect(cla.top, greaterThanOrEqualTo(cal.bottom - 1));
+
+      // Clasificación debajo, alineada a la derecha de la tarjeta; calendario a la izquierda.
+      final tarjeta = tester.getRect(find.byType(Card).first);
+      final botonCla = tester.getRect(
+        find.ancestor(of: _clasificacion, matching: find.byType(TextButton)),
+      );
+      expect(tarjeta.right - botonCla.right, lessThan(24));
+      final botonCal = tester.getRect(
+        find.ancestor(of: _calendario, matching: find.byType(TextButton)),
+      );
+      expect(botonCal.left - tarjeta.left, lessThan(24));
       expect(cal.left, greaterThanOrEqualTo(0));
       expect(cal.right, lessThanOrEqualTo(360));
       expect(cla.left, greaterThanOrEqualTo(0));

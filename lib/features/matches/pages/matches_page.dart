@@ -8,6 +8,7 @@ import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../ficha_partido/pages/ficha_partido_page.dart';
 import '../models/match_model.dart';
+import '../widgets/fila_dos_botones.dart';
 import '../widgets/boton_anadir_calendario.dart';
 import '../../../core/utils/evento_partido.dart';
 import '../../teams/pages/team_standings_page.dart';
@@ -363,11 +364,10 @@ class PartidoListaCard extends StatelessWidget {
     if (clasificacion == null) return [calendario];
 
     return [
-      Wrap(
+      FilaDosBotones(
         key: const ValueKey('fila-calendario-clasificacion'),
-        alignment: WrapAlignment.spaceBetween,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [calendario, clasificacion],
+        izquierda: calendario,
+        derecha: clasificacion,
       ),
     ];
   }
