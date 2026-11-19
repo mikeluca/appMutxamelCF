@@ -202,6 +202,15 @@ class _CompartirVistaPreviaPageState extends State<CompartirVistaPreviaPage> {
                             () => _opciones = _opciones.copiaCon(qr: v),
                           ),
                         ),
+                        _interruptor(
+                          'compartir-opcion-hashtags',
+                          t.shareToggleHashtags,
+                          _opciones.hashtags,
+                          true,
+                          (v) => setState(
+                            () => _opciones = _opciones.copiaCon(hashtags: v),
+                          ),
+                        ),
                       ],
                     ),
                   ],

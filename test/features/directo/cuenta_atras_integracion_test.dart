@@ -12,23 +12,27 @@ import 'harness.dart';
 /// Faltan 3 h 15 min para las 18:00 de Madrid del 14-11-2026 (17:00 UTC).
 final DateTime _ahora = DateTime.utc(2026, 11, 14, 13, 45);
 
-CabeceraFicha _cabecera({String? hora = '18:00', EstadoFicha estado = EstadoFicha.proximo}) =>
-    CabeceraFicha(
-      partidoId: 30,
-      equipoLocal: 'Mutxamel CF',
-      equipoVisitante: 'Pego C.F.',
-      dia: DateTime(2026, 11, 14),
-      hora: hora,
-      estado: estado,
-      competicion: 'Liga',
-    );
+CabeceraFicha _cabecera({
+  String? hora = '18:00',
+  EstadoFicha estado = EstadoFicha.proximo,
+}) => CabeceraFicha(
+  partidoId: 30,
+  equipoLocal: 'Mutxamel CF',
+  equipoVisitante: 'Pego C.F.',
+  dia: DateTime(2026, 11, 14),
+  hora: hora,
+  estado: estado,
+  competicion: 'Liga',
+);
 
 String _cuenta(WidgetTester tester) =>
     tester.widget<Text>(find.byKey(const ValueKey('cuenta-atras'))).data!;
 
 void main() {
   group('la cabecera de la ficha', () {
-    testWidgets('antes del partido con día y hora: cuenta atrás', (tester) async {
+    testWidgets('antes del partido con día y hora: cuenta atrás', (
+      tester,
+    ) async {
       pantalla(tester);
 
       await tester.pumpWidget(
@@ -40,11 +44,15 @@ void main() {
       expect(find.text('14/11/2026 • 18:00'), findsOneWidget);
     });
 
-    testWidgets('sin hora: solo el día, como antes, sin cuenta atrás', (tester) async {
+    testWidgets('sin hora: solo el día, como antes, sin cuenta atrás', (
+      tester,
+    ) async {
       pantalla(tester);
 
       await tester.pumpWidget(
-        appCon(FichaCabecera(cabecera: _cabecera(hora: null), ahora: () => _ahora)),
+        appCon(
+          FichaCabecera(cabecera: _cabecera(hora: null), ahora: () => _ahora),
+        ),
       );
 
       expect(find.byKey(const ValueKey('cuenta-atras')), findsNothing);
@@ -66,7 +74,9 @@ void main() {
       expect(find.byKey(const ValueKey('cuenta-atras')), findsNothing);
     });
 
-    testWidgets('pasada la hora y sin inicio: "A punto de empezar"', (tester) async {
+    testWidgets('pasada la hora y sin inicio: "A punto de empezar"', (
+      tester,
+    ) async {
       pantalla(tester);
 
       await tester.pumpWidget(
@@ -83,15 +93,17 @@ void main() {
   });
 
   group('la tarjeta de la portada', () {
-    MatchModel partido({String equipo = 'Primer Equipo', String? hora = '18:00'}) =>
-        MatchModel(
-          id: 30,
-          categoria: equipo,
-          equipo: equipo,
-          rival: 'Pego C.F.',
-          dia: DateTime(2026, 11, 14),
-          hora: hora,
-        );
+    MatchModel partido({
+      String equipo = 'Primer Equipo',
+      String? hora = '18:00',
+    }) => MatchModel(
+      id: 30,
+      categoria: equipo,
+      equipo: equipo,
+      rival: 'Pego C.F.',
+      dia: DateTime(2026, 11, 14),
+      hora: hora,
+    );
 
     testWidgets('el Primer Equipo muestra la cuenta atrás', (tester) async {
       pantalla(tester);

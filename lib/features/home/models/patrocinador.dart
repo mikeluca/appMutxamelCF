@@ -1,77 +1,33 @@
-/// Patrocinador del club mostrado en la pantalla principal, igual
-/// que en la sección "Nuestros Patrocinadores" del footer de la web.
-/// Es una lista estática/hardcodeada (igual que en la web: no viene
-/// de ninguna API ni base de datos).
+/// Patrocinador del club mostrado en la pantalla principal. La lista viene del backend
+/// (GET /api/public/patrocinadores): la misma que pinta el pie de la web. No se guarda en el móvil.
 class Patrocinador {
   final String nombre;
 
-  /// Nombre del fichero en /images/ (mismo host que sirve la API).
-  final String imagen;
+  /// Ruta del logo relativa a la raíz de la web ("/images/frutasJuanete.jpg"); se le antepone
+  /// AppConfig.mediaBaseUrl.
+  final String imagenUrl;
 
-  /// Enlace externo a la web/red social del patrocinador. Null si no
-  /// lleva enlace (p.ej. Aresala, que en la web tampoco lo lleva).
+  /// Enlace externo a la web/red social del patrocinador. Null si no lleva enlace (p. ej. Aresala).
   final String? url;
 
-  /// true si en la web se muestra recortada en círculo
-  /// (object-fit: cover; border-radius: 50%).
+  /// true si el logo se muestra recortado en círculo.
   final bool circular;
 
   const Patrocinador({
     required this.nombre,
-    required this.imagen,
+    required this.imagenUrl,
     this.url,
     this.circular = false,
   });
-}
 
-const List<Patrocinador> kPatrocinadores = [
-  Patrocinador(
-    nombre: 'Frutas y verduras Juanete',
-    imagen: 'frutasJuanete.jpg',
-    url: 'https://www.instagram.com/frutasjuanete/',
-  ),
-  Patrocinador(
-    nombre: 'Unlimited Developments',
-    imagen: 'unlimited.jpg',
-    url: 'https://www.unlimiteddevelopments.es/',
-  ),
-  Patrocinador(
-    nombre: 'Ayto Mutxamel',
-    imagen: 'aytoMutxamel.jpg',
-    url: 'https://ayto.mutxamel.org/',
-  ),
-  Patrocinador(
-    nombre: 'Alumed Sistemas',
-    imagen: 'alumed.jpg',
-    url: 'https://alumedsistemas.com/',
-  ),
-  Patrocinador(
-    nombre: 'Asesoria Collado',
-    imagen: 'collado.jpg',
-    url: 'https://asesoriacollado.com/es',
-  ),
-  Patrocinador(
-    nombre: 'Clinica Dental NUVA',
-    imagen: 'nuva.jpg',
-    url: 'https://clinicadentalnuva.com/es',
-    circular: true,
-  ),
-  Patrocinador(
-    nombre: 'Limpieza de Tubos Costablanca',
-    imagen: 'costablanca.jpg',
-    url: 'https://www.limpiezadetuboscostablanca.net/',
-  ),
-  Patrocinador(
-    nombre: 'La bodega de Elias',
-    imagen: 'laBodega.jpg',
-    url: 'https://www.instagram.com/labodegaelias/',
-    circular: true,
-  ),
-  // Sin enlace, igual que en la web.
-  Patrocinador(nombre: 'Aresala', imagen: 'aresala.jpg'),
-  Patrocinador(
-    nombre: 'AA Energy',
-    imagen: 'aaenergy.jpeg',
-    url: 'https://www.aaenergyenriquez.es',
-  ),
-];
+  factory Patrocinador.fromJson(Map<String, dynamic> json) {
+    final url = (json['url'] as String?)?.trim();
+
+    return Patrocinador(
+      nombre: (json['nombre'] as String?) ?? '',
+      imagenUrl: (json['imagenUrl'] as String?) ?? '',
+      url: (url == null || url.isEmpty) ? null : url,
+      circular: json['circular'] == true,
+    );
+  }
+}

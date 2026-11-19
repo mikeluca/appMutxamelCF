@@ -333,44 +333,85 @@ class PartidoListaCard extends StatelessWidget {
                 ),
               ),
 
-            if (partido.dia != null && !partido.cancelado)
-              BotonAnadirCalendario(
-                construir: (t) async => EventoPartido.desdeMatch(partido, t),
-              ),
-
-            ..._botonClasificacion(context),
+            ..._filaAcciones(context),
           ],
         ),
       ),
     );
   }
 
+  static const EdgeInsets _rellenoBotonFila = EdgeInsets.symmetric(
+    horizontal: 8,
+  );
+
+  /// El pie de la tarjeta de un partido por jugar: "Añadir a mi calendario" a la izquierda y "Ver clasificación" a la
+  /// derecha en la misma fila. Si no caben (pantalla pequeña o letra grande) bajan uno debajo del otro, sin cortarse.
+  /// Sin clasificación, el del calendario queda solo en la fila.
+  List<Widget> _filaAcciones(BuildContext context) {
+    final calendario = partido.dia != null && !partido.cancelado
+        ? BotonAnadirCalendario(
+            padding: _rellenoBotonFila,
+            construir: (t) async => EventoPartido.desdeMatch(partido, t),
+          )
+        : null;
+    final clasificacion = _botonClasificacionWidget(
+      context,
+      igualAlCalendario: true,
+    );
+
+    if (calendario == null) return _botonClasificacion(context);
+    if (clasificacion == null) return [calendario];
+
+    return [
+      Wrap(
+        key: const ValueKey('fila-calendario-clasificacion'),
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [calendario, clasificacion],
+      ),
+    ];
+  }
+
   /// "Ver clasificación" al pie de la tarjeta, alineado a la derecha. Solo
   /// si el partido trae el equipo. No afecta a lo que haga la propia tarjeta.
   List<Widget> _botonClasificacion(BuildContext context) {
+    final boton = _botonClasificacionWidget(context);
+
+    if (boton == null) return const [];
+
+    return [Align(alignment: Alignment.centerRight, child: boton)];
+  }
+
+  Widget? _botonClasificacionWidget(
+    BuildContext context, {
+    bool igualAlCalendario = false,
+  }) {
     final equipoId = partido.equipoId;
 
-    if (equipoId == null) {
-      return const [];
-    }
+    if (equipoId == null) return null;
 
-    return [
-      Align(
-        alignment: Alignment.centerRight,
-        child: TextButton.icon(
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => TeamStandingsPage(
-                equipoId: equipoId,
-                nombreEquipo: partido.equipo,
-              ),
-            ),
+    return TextButton.icon(
+      onPressed: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => TeamStandingsPage(
+            equipoId: equipoId,
+            nombreEquipo: partido.equipo,
           ),
-          icon: const Icon(Icons.leaderboard_outlined),
-          label: Text(AppLocalizations.of(context).viewStandings),
         ),
       ),
-    ];
+      icon: Icon(
+        Icons.leaderboard_outlined,
+        size: igualAlCalendario ? 18 : null,
+      ),
+      style: igualAlCalendario
+          ? TextButton.styleFrom(
+              visualDensity: VisualDensity.compact,
+              padding: _rellenoBotonFila,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            )
+          : null,
+      label: Text(AppLocalizations.of(context).viewStandings),
+    );
   }
 
   /// El nombre de un equipo con su escudo pequeño delante: el del club rival (o el nuestro si el rival es un filial y

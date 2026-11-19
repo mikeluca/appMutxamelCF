@@ -61,9 +61,14 @@ void main() {
       appCon(_marcador(ValueNotifier(const _Estado(30, 2, 1)), local: false)),
     );
 
-    expect(tester.widget<Text>(find.byKey(const ValueKey('marcador-local'))).data, '1');
     expect(
-      tester.widget<Text>(find.byKey(const ValueKey('marcador-visitante'))).data,
+      tester.widget<Text>(find.byKey(const ValueKey('marcador-local'))).data,
+      '1',
+    );
+    expect(
+      tester
+          .widget<Text>(find.byKey(const ValueKey('marcador-visitante')))
+          .data,
       '2',
     );
 
@@ -167,22 +172,25 @@ void main() {
     );
   });
 
-  testWidgets('con la animación reducida el número cambia sin movimiento ni destello', (
-    tester,
-  ) async {
-    pantalla(tester);
-    final estado = ValueNotifier(const _Estado(30, 1, 0));
+  testWidgets(
+    'con la animación reducida el número cambia sin movimiento ni destello',
+    (tester) async {
+      pantalla(tester);
+      final estado = ValueNotifier(const _Estado(30, 1, 0));
 
-    await tester.pumpWidget(appCon(_marcador(estado), reducirAnimaciones: true));
-    await _cambiar(tester, estado, const _Estado(30, 2, 0));
+      await tester.pumpWidget(
+        appCon(_marcador(estado), reducirAnimaciones: true),
+      );
+      await _cambiar(tester, estado, const _Estado(30, 2, 0));
 
-    expect(find.byKey(_verde), findsNothing);
-    expect(_escala(tester, 'marcador-local'), 1);
-    expect(
-      tester.widget<Text>(find.byKey(const ValueKey('marcador-local'))).data,
-      '2',
-    );
-  });
+      expect(find.byKey(_verde), findsNothing);
+      expect(_escala(tester, 'marcador-local'), 1);
+      expect(
+        tester.widget<Text>(find.byKey(const ValueKey('marcador-local'))).data,
+        '2',
+      );
+    },
+  );
 
   testWidgets('con la app en segundo plano solo se actualiza', (tester) async {
     pantalla(tester);

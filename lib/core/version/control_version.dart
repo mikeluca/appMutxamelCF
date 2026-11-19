@@ -37,7 +37,10 @@ int compararVersiones(String a, String b) {
 List<int> _partesDeVersion(String version) {
   final base = version.trim().split(RegExp(r'[+-]')).first;
 
-  return base.split('.').map((parte) => int.tryParse(parte.trim()) ?? 0).toList();
+  return base
+      .split('.')
+      .map((parte) => int.tryParse(parte.trim()) ?? 0)
+      .toList();
 }
 
 /// Lo que publica el servidor en GET /api/public/app/version.
@@ -237,9 +240,8 @@ class ControlVersion {
     // ruta solo se completa al cerrarla (nunca), así que no se espera.
     navigatorState.pushAndRemoveUntil(
       MaterialPageRoute<void>(
-        builder: (_) => PantallaVersionObsoleta(
-          alActualizar: () => abrirTienda(remota),
-        ),
+        builder: (_) =>
+            PantallaVersionObsoleta(alActualizar: () => abrirTienda(remota)),
       ),
       (_) => false,
     );

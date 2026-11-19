@@ -183,25 +183,30 @@ void main() {
       await tester.pump(const Duration(seconds: 4));
     });
 
-    testWidgets('si el marcador baja (gol anulado) solo se actualiza, sin destello', (
-      tester,
-    ) async {
-      final vibraciones = anotarVibraciones(tester);
-      final avisos = StreamController<void>.broadcast();
-      addTearDown(avisos.close);
+    testWidgets(
+      'si el marcador baja (gol anulado) solo se actualiza, sin destello',
+      (tester) async {
+        final vibraciones = anotarVibraciones(tester);
+        final avisos = StreamController<void>.broadcast();
+        addTearDown(avisos.close);
 
-      final servicio = await _abrirFicha(tester, _ficha(2, 0), avisos: avisos);
+        final servicio = await _abrirFicha(
+          tester,
+          _ficha(2, 0),
+          avisos: avisos,
+        );
 
-      servicio.ficha = _ficha(1, 0);
-      avisos.add(null);
-      await _asentar(tester);
+        servicio.ficha = _ficha(1, 0);
+        avisos.add(null);
+        await _asentar(tester);
 
-      expect(find.byKey(_celebracion), findsNothing);
-      expect(find.byKey(_avisoRival), findsNothing);
-      expect(find.byKey(_destelloVerde), findsNothing);
-      expect(find.byKey(_destelloRojo), findsNothing);
-      expect(vibraciones, isEmpty);
-    });
+        expect(find.byKey(_celebracion), findsNothing);
+        expect(find.byKey(_avisoRival), findsNothing);
+        expect(find.byKey(_destelloVerde), findsNothing);
+        expect(find.byKey(_destelloRojo), findsNothing);
+        expect(vibraciones, isEmpty);
+      },
+    );
 
     testWidgets('con pull to refresh también se celebra', (tester) async {
       anotarVibraciones(tester);
@@ -227,48 +232,50 @@ void main() {
       await tester.pump(const Duration(seconds: 4));
     });
 
-    testWidgets('con la animación reducida: aviso y vibración, sin pantalla completa ni destello', (
-      tester,
-    ) async {
-      final vibraciones = anotarVibraciones(tester);
-      final avisos = StreamController<void>.broadcast();
-      addTearDown(avisos.close);
+    testWidgets(
+      'con la animación reducida: aviso y vibración, sin pantalla completa ni destello',
+      (tester) async {
+        final vibraciones = anotarVibraciones(tester);
+        final avisos = StreamController<void>.broadcast();
+        addTearDown(avisos.close);
 
-      final servicio = await _abrirFicha(
-        tester,
-        _ficha(0, 0),
-        avisos: avisos,
-        reducir: true,
-      );
+        final servicio = await _abrirFicha(
+          tester,
+          _ficha(0, 0),
+          avisos: avisos,
+          reducir: true,
+        );
 
-      servicio.ficha = _ficha(1, 0, eventos: [_gol('Pepe', 3)]);
-      avisos.add(null);
-      await _asentar(tester);
+        servicio.ficha = _ficha(1, 0, eventos: [_gol('Pepe', 3)]);
+        avisos.add(null);
+        await _asentar(tester);
 
-      expect(find.byKey(_celebracion), findsNothing);
-      expect(find.byKey(const ValueKey('aviso-gol-nuestro')), findsOneWidget);
-      expect(find.byKey(_destelloVerde), findsNothing);
-      expect(vibraciones, ['HapticFeedbackType.heavyImpact']);
+        expect(find.byKey(_celebracion), findsNothing);
+        expect(find.byKey(const ValueKey('aviso-gol-nuestro')), findsOneWidget);
+        expect(find.byKey(_destelloVerde), findsNothing);
+        expect(vibraciones, ['HapticFeedbackType.heavyImpact']);
 
-      await tester.pump(const Duration(seconds: 4));
-    });
+        await tester.pump(const Duration(seconds: 4));
+      },
+    );
 
-    testWidgets('si se abre la ficha de un partido ya terminado no celebra nada', (
-      tester,
-    ) async {
-      final vibraciones = anotarVibraciones(tester);
-      final avisos = StreamController<void>.broadcast();
-      addTearDown(avisos.close);
+    testWidgets(
+      'si se abre la ficha de un partido ya terminado no celebra nada',
+      (tester) async {
+        final vibraciones = anotarVibraciones(tester);
+        final avisos = StreamController<void>.broadcast();
+        addTearDown(avisos.close);
 
-      await _abrirFicha(
-        tester,
-        _ficha(3, 1, estado: EstadoFicha.finalizado),
-        avisos: avisos,
-      );
+        await _abrirFicha(
+          tester,
+          _ficha(3, 1, estado: EstadoFicha.finalizado),
+          avisos: avisos,
+        );
 
-      expect(find.byKey(_celebracion), findsNothing);
-      expect(vibraciones, isEmpty);
-    });
+        expect(find.byKey(_celebracion), findsNothing);
+        expect(vibraciones, isEmpty);
+      },
+    );
   });
 
   // -------------------------------------------------------------------------------------------------------------
@@ -313,32 +320,36 @@ void main() {
       return partidos;
     }
 
-    testWidgets('al abrirla no celebra; con el push y el marcador arriba, sí, y la tarjeta late', (
-      tester,
-    ) async {
-      final vibraciones = anotarVibraciones(tester);
-      final avisos = StreamController<void>.broadcast();
-      addTearDown(avisos.close);
+    testWidgets(
+      'al abrirla no celebra; con el push y el marcador arriba, sí, y la tarjeta late',
+      (tester) async {
+        final vibraciones = anotarVibraciones(tester);
+        final avisos = StreamController<void>.broadcast();
+        addTearDown(avisos.close);
 
-      await abrir(tester, [enJuego(0, 0), enJuego(1, 0)], avisos: avisos);
+        await abrir(tester, [enJuego(0, 0), enJuego(1, 0)], avisos: avisos);
 
-      expect(find.byKey(_celebracion), findsNothing);
-      expect(vibraciones, isEmpty);
+        expect(find.byKey(_celebracion), findsNothing);
+        expect(vibraciones, isEmpty);
 
-      avisos.add(null);
-      for (var i = 0; i < 4; i++) {
-        await tester.pump(const Duration(milliseconds: 50));
-      }
+        avisos.add(null);
+        for (var i = 0; i < 4; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
 
-      expect(find.byKey(_celebracion), findsOneWidget);
-      // En la portada no se conoce el goleador.
-      expect(find.byKey(const ValueKey('celebracion-goleador')), findsNothing);
-      expect(vibraciones, ['HapticFeedbackType.heavyImpact']);
-      expect(find.byKey(_destelloVerde), findsOneWidget);
+        expect(find.byKey(_celebracion), findsOneWidget);
+        // En la portada no se conoce el goleador.
+        expect(
+          find.byKey(const ValueKey('celebracion-goleador')),
+          findsNothing,
+        );
+        expect(vibraciones, ['HapticFeedbackType.heavyImpact']);
+        expect(find.byKey(_destelloVerde), findsOneWidget);
 
-      await tester.pump(const Duration(seconds: 4));
-      await tester.pump(const Duration(seconds: 1));
-    });
+        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(seconds: 1));
+      },
+    );
 
     testWidgets('gol del rival en la portada: aviso discreto y destello rojo', (
       tester,
@@ -370,11 +381,10 @@ void main() {
       final avisos = StreamController<void>.broadcast();
       addTearDown(avisos.close);
 
-      await abrir(
-        tester,
-        [enJuego(0, 0), enJuego(3, 2, id: 31)],
-        avisos: avisos,
-      );
+      await abrir(tester, [
+        enJuego(0, 0),
+        enJuego(3, 2, id: 31),
+      ], avisos: avisos);
 
       avisos.add(null);
       for (var i = 0; i < 4; i++) {

@@ -205,8 +205,6 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
   void _cargarConvocatoria(List<MatchModel> partidos) {
     final convocatoria = widget.convocatoria!;
 
-
-
     _horaConvocatoria = _parsearHora(convocatoria.horaConvocatoria);
 
     // Solo los del propio equipo: los invitados de otros equipos van aparte.
@@ -1047,7 +1045,9 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
             },
             decoration: InputDecoration(
               labelText: _t.callupMeetingPlaceOtherHint,
-              errorText: _lugarOtroVacio ? _t.callupMeetingPlaceOtherHint : null,
+              errorText: _lugarOtroVacio
+                  ? _t.callupMeetingPlaceOtherHint
+                  : null,
               border: const OutlineInputBorder(),
               prefixIcon: const Icon(Icons.edit_location_alt_outlined),
             ),

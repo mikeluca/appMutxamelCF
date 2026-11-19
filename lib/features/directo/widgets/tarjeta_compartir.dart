@@ -520,17 +520,6 @@ class TarjetaCompartir extends StatelessWidget {
             fontWeight: FontWeight.w900,
           ),
         ),
-        if (datos.campo != null) ...[
-          SizedBox(height: 10 * k),
-          Text(
-            datos.campo!,
-            key: const ValueKey('compartir-campo'),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: p.suave, fontSize: 40 * k),
-          ),
-        ],
       ],
     );
   }
@@ -606,19 +595,21 @@ class TarjetaCompartir extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(
-            DatosCompartir.hashtags,
-            key: const ValueKey('compartir-pie'),
-            style: TextStyle(
-              color: p.texto,
-              fontSize: 40 * k,
-              fontWeight: FontWeight.w800,
+        if (opciones.hashtags) ...[
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              DatosCompartir.hashtags,
+              key: const ValueKey('compartir-pie'),
+              style: TextStyle(
+                color: p.texto,
+                fontSize: 40 * k,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
-        ),
-        SizedBox(height: 22 * k),
+          SizedBox(height: 22 * k),
+        ],
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

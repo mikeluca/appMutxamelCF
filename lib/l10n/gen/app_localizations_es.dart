@@ -43,7 +43,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get homeSponsorsHint =>
-      'Pulsa en las imágenes para conocer más acerca de nuestros patrocinadores.';
+      'Pulsa en un patrocinador para conocer más acerca de él.';
 
   @override
   String get homeNewsLoadError => 'No se han podido cargar las noticias.';
@@ -3710,6 +3710,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get shareToggleQr => 'QR';
+
+  @override
+  String get shareToggleHashtags => 'Hashtags';
 
   @override
   String get shareButton => 'Compartir';

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/config/app_config.dart';
 import '../../core/constants/app_constants.dart';
@@ -22,6 +21,8 @@ import '../auth/services/notificacion_service.dart';
 import '../../core/notifications/services/push_notification_service.dart';
 import '../auth/pages/notificaciones_page.dart';
 import 'models/patrocinador.dart';
+import 'services/patrocinador_service.dart';
+import 'widgets/patrocinadores_seccion.dart';
 
 class HomePage extends StatefulWidget {
   /// Cada cuánto se vuelve a pedir la tarjeta del Primer Equipo mientras el partido está en juego.
@@ -30,6 +31,7 @@ class HomePage extends StatefulWidget {
   /// Solo para tests: sustituyen a los servicios reales, al aviso de push y al intervalo.
   final MatchService? matchService;
   final NewsService? newsService;
+  final PatrocinadorService? patrocinadorService;
   final Stream<void>? avisosDeResultados;
   final Duration intervalo;
 
@@ -41,6 +43,7 @@ class HomePage extends StatefulWidget {
     super.key,
     this.matchService,
     this.newsService,
+    this.patrocinadorService,
     this.avisosDeResultados,
     this.intervalo = intervaloEnDirecto,
     this.visible,
@@ -60,7 +63,14 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   late final MatchService _matchService = widget.matchService ?? MatchService();
   late final NewsService _newsService = widget.newsService ?? NewsService();
 
+  late final PatrocinadorService _patrocinadorService =
+      widget.patrocinadorService ?? PatrocinadorService();
+
   int _notificacionesNoLeidas = 0;
+
+  /// Los patrocinadores del backend (solo en memoria). Si falla o viene vacía la sección no se muestra.
+  List<Patrocinador> _patrocinadores = const [];
+  bool _cargandoPatrocinadores = true;
 
   /// La tarjeta del Primer Equipo: lo último que ha contestado el servidor.
   MatchModel? _partido;
@@ -91,15 +101,39 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     widget.visible?.addListener(_alCambiarVisibilidad);
 
     // Un push del directo con la app abierta refresca la tarjeta al momento.
-    _avisos = (widget.avisosDeResultados ??
-            PushNotificationService.avisosDeResultados)
-        .listen((_) => _refrescarPortada());
+    _avisos =
+        (widget.avisosDeResultados ??
+                PushNotificationService.avisosDeResultados)
+            .listen((_) => _refrescarPortada());
 
     _cargarPartido(inicial: true);
 
     _futureNews = _newsService.obtenerNoticias();
 
+    _cargarPatrocinadores();
+
     _cargarContadorNotificaciones();
+  }
+
+  /// Pide los patrocinadores. Un fallo no enseña ningún mensaje: simplemente no se muestra la sección.
+  Future<void> _cargarPatrocinadores() async {
+    try {
+      final lista = await _patrocinadorService.obtenerPatrocinadores();
+
+      if (!mounted) return;
+
+      setState(() {
+        _patrocinadores = lista;
+        _cargandoPatrocinadores = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _patrocinadores = const [];
+        _cargandoPatrocinadores = false;
+      });
+    }
   }
 
   @override
@@ -224,6 +258,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     await Future.wait([
       _cargarPartido(silencioso: true),
       _futureNews,
+      _cargarPatrocinadores(),
       _cargarContadorNotificaciones(),
     ]);
   }
@@ -330,13 +365,10 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
               _buildMainNews(),
 
-              const SizedBox(height: 28),
-
-              _buildSectionTitle(_t.homeOurSponsors),
-
-              const SizedBox(height: 12),
-
-              _buildPatrocinadores(),
+              PatrocinadoresSeccion(
+                cargando: _cargandoPatrocinadores,
+                patrocinadores: _patrocinadores,
+              ),
             ],
           ),
         ),
@@ -509,103 +541,6 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         child: Icon(Icons.article_outlined, size: 50, color: AppColors.azul),
       ),
     );
-  }
-
-  // ============================================================
-  // PATROCINADORES
-  // ============================================================
-
-  Widget _buildPatrocinadores() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          _t.homeSponsorsHint,
-          style: TextStyle(fontSize: 12, color: _colors.onSurfaceVariant),
-        ),
-
-        const SizedBox(height: 12),
-
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final columnas = constraints.maxWidth >= 480 ? 3 : 2;
-
-            return GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: kPatrocinadores.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: columnas,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 1,
-              ),
-              itemBuilder: (context, index) {
-                return _buildPatrocinadorTile(kPatrocinadores[index]);
-              },
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPatrocinadorTile(Patrocinador patrocinador) {
-    final imagenUrl = '${AppConfig.mediaBaseUrl}/images/${patrocinador.imagen}';
-
-    final imagen = SizedBox.expand(
-      child: Image.network(
-        imagenUrl,
-        fit: patrocinador.circular ? BoxFit.cover : BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            color: AppColors.azulOscuro.withValues(alpha: 0.08),
-            alignment: Alignment.center,
-            child: const Icon(
-              Icons.image_not_supported_outlined,
-              color: AppColors.azul,
-            ),
-          );
-        },
-      ),
-    );
-
-    final tarjeta = Card(
-      clipBehavior: Clip.antiAlias,
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(patrocinador.circular ? 100 : 8),
-          child: imagen,
-        ),
-      ),
-    );
-
-    // El patrocinador 9 (Aresala) no lleva enlace en la web:
-    // se muestra sin acción de tap.
-    if (patrocinador.url == null) {
-      return tarjeta;
-    }
-
-    return InkWell(
-      borderRadius: BorderRadius.circular(16),
-      onTap: () => _abrirUrlPatrocinador(patrocinador.url!),
-      child: tarjeta,
-    );
-  }
-
-  Future<void> _abrirUrlPatrocinador(String url) async {
-    final uri = Uri.parse(url);
-
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(_t.linkOpenError)));
-    }
   }
 }
 

@@ -31,11 +31,8 @@ const _ruta7 = '/api/public/escudos-rivales/7?v=3';
 void _marcarRed() {
   final anterior = EscudoRival.constructorDeRed;
 
-  EscudoRival.constructorDeRed = (url, tamano, generico) => SizedBox(
-    key: ValueKey('red:$url'),
-    width: tamano,
-    height: tamano,
-  );
+  EscudoRival.constructorDeRed = (url, tamano, generico) =>
+      SizedBox(key: ValueKey('red:$url'), width: tamano, height: tamano);
 
   addTearDown(() => EscudoRival.constructorDeRed = anterior);
 }
@@ -43,7 +40,9 @@ void _marcarRed() {
 Finder _red(String ruta) => find.byKey(ValueKey('red:${_completa(ruta)}'));
 
 Finder _algunaRed() => find.byWidgetPredicate(
-  (w) => w.key is ValueKey<String> && (w.key! as ValueKey<String>).value.startsWith('red:'),
+  (w) =>
+      w.key is ValueKey<String> &&
+      (w.key! as ValueKey<String>).value.startsWith('red:'),
 );
 
 void main() {
@@ -96,41 +95,43 @@ void main() {
       expect(find.byKey(_generico), findsOneWidget);
     });
 
-    testWidgets('con URL: la imagen de la red con la URL completa y el tamaño pedido', (
-      tester,
-    ) async {
-      pantalla(tester);
-      _marcarRed();
+    testWidgets(
+      'con URL: la imagen de la red con la URL completa y el tamaño pedido',
+      (tester) async {
+        pantalla(tester);
+        _marcarRed();
 
-      await tester.pumpWidget(
-        appCon(const EscudoRival(url: _ruta7, tamano: 48)),
-      );
+        await tester.pumpWidget(
+          appCon(const EscudoRival(url: _ruta7, tamano: 48)),
+        );
 
-      expect(_red(_ruta7), findsOneWidget);
-      expect(tester.getSize(_red(_ruta7)), const Size(48, 48));
-    });
+        expect(_red(_ruta7), findsOneWidget);
+        expect(tester.getSize(_red(_ruta7)), const Size(48, 48));
+      },
+    );
 
-    testWidgets('la imagen de red es cached_network_image, entera, con caché y sin fundidos', (
-      tester,
-    ) async {
-      pantalla(tester);
+    testWidgets(
+      'la imagen de red es cached_network_image, entera, con caché y sin fundidos',
+      (tester) async {
+        pantalla(tester);
 
-      await tester.pumpWidget(
-        appCon(const EscudoRival(url: _ruta7, tamano: 48)),
-      );
+        await tester.pumpWidget(
+          appCon(const EscudoRival(url: _ruta7, tamano: 48)),
+        );
 
-      final imagen = tester.widget<CachedNetworkImage>(
-        find.byType(CachedNetworkImage),
-      );
+        final imagen = tester.widget<CachedNetworkImage>(
+          find.byType(CachedNetworkImage),
+        );
 
-      expect(imagen.imageUrl, _completa(_ruta7));
-      expect(imagen.fit, BoxFit.contain);
-      expect(imagen.fadeInDuration, Duration.zero);
-      expect(imagen.fadeOutDuration, Duration.zero);
+        expect(imagen.imageUrl, _completa(_ruta7));
+        expect(imagen.fit, BoxFit.contain);
+        expect(imagen.fadeInDuration, Duration.zero);
+        expect(imagen.fadeOutDuration, Duration.zero);
 
-      // Mientras carga se ve el genérico.
-      expect(find.byKey(_generico), findsOneWidget);
-    });
+        // Mientras carga se ve el genérico.
+        expect(find.byKey(_generico), findsOneWidget);
+      },
+    );
 
     testWidgets('con error: el genérico', (tester) async {
       pantalla(tester);
@@ -148,22 +149,23 @@ void main() {
       expect(find.byKey(_nuestro), findsNothing);
     });
 
-    testWidgets('al reconstruirse con la misma URL no cambia de imagen (no parpadea)', (
-      tester,
-    ) async {
-      pantalla(tester);
+    testWidgets(
+      'al reconstruirse con la misma URL no cambia de imagen (no parpadea)',
+      (tester) async {
+        pantalla(tester);
 
-      Widget app() => appCon(const EscudoRival(url: _ruta7, tamano: 48));
+        Widget app() => appCon(const EscudoRival(url: _ruta7, tamano: 48));
 
-      await tester.pumpWidget(app());
-      final antes = tester.element(find.byType(CachedNetworkImage));
+        await tester.pumpWidget(app());
+        final antes = tester.element(find.byType(CachedNetworkImage));
 
-      await tester.pumpWidget(app());
-      final despues = tester.element(find.byType(CachedNetworkImage));
+        await tester.pumpWidget(app());
+        final despues = tester.element(find.byType(CachedNetworkImage));
 
-      // El mismo elemento: no se recrea la imagen.
-      expect(identical(antes, despues), isTrue);
-    });
+        // El mismo elemento: no se recrea la imagen.
+        expect(identical(antes, despues), isTrue);
+      },
+    );
   });
 
   group('en cada pantalla', () {
@@ -240,22 +242,25 @@ void main() {
       );
     });
 
-    testWidgets('las demás tarjetas de partido de la portada (cualquier equipo)', (
-      tester,
-    ) async {
-      pantalla(tester);
-      _marcarRed();
+    testWidgets(
+      'las demás tarjetas de partido de la portada (cualquier equipo)',
+      (tester) async {
+        pantalla(tester);
+        _marcarRed();
 
-      await tester.pumpWidget(
-        appCon(
-          SingleChildScrollView(
-            child: MatchCard(match: partido(url: _ruta7, equipo: 'Cadete A')),
+        await tester.pumpWidget(
+          appCon(
+            SingleChildScrollView(
+              child: MatchCard(
+                match: partido(url: _ruta7, equipo: 'Cadete A'),
+              ),
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(_red(_ruta7), findsOneWidget);
-    });
+        expect(_red(_ruta7), findsOneWidget);
+      },
+    );
 
     testWidgets('rival de nuestro club: nuestro escudo en los dos lados', (
       tester,
@@ -340,47 +345,52 @@ void main() {
       rivalEsPropio: propio,
     );
 
-    testWidgets('cabecera de la ficha: el escudo del rival a la derecha de local y a la izquierda de visitante', (
-      tester,
-    ) async {
-      pantalla(tester);
-      _marcarRed();
+    testWidgets(
+      'cabecera de la ficha: el escudo del rival a la derecha de local y a la izquierda de visitante',
+      (tester) async {
+        pantalla(tester);
+        _marcarRed();
 
-      await tester.pumpWidget(
-        appCon(FichaCabecera(cabecera: cabecera(url: _ruta7))),
-      );
-      final nuestro = tester.getCenter(find.byKey(_nuestro));
+        await tester.pumpWidget(
+          appCon(FichaCabecera(cabecera: cabecera(url: _ruta7))),
+        );
+        final nuestro = tester.getCenter(find.byKey(_nuestro));
 
-      expect(_red(_ruta7), findsOneWidget);
-      expect(tester.getCenter(_red(_ruta7)).dx, greaterThan(nuestro.dx));
-      // Mismo tamaño que el del Mutxamel.
-      expect(tester.getSize(_red(_ruta7)), tester.getSize(find.byKey(_nuestro)));
+        expect(_red(_ruta7), findsOneWidget);
+        expect(tester.getCenter(_red(_ruta7)).dx, greaterThan(nuestro.dx));
+        // Mismo tamaño que el del Mutxamel.
+        expect(
+          tester.getSize(_red(_ruta7)),
+          tester.getSize(find.byKey(_nuestro)),
+        );
 
-      await tester.pumpWidget(
-        appCon(FichaCabecera(cabecera: cabecera(local: false, url: _ruta7))),
-      );
+        await tester.pumpWidget(
+          appCon(FichaCabecera(cabecera: cabecera(local: false, url: _ruta7))),
+        );
 
-      expect(
-        tester.getCenter(_red(_ruta7)).dx,
-        lessThan(tester.getCenter(find.byKey(_nuestro)).dx),
-      );
-    });
+        expect(
+          tester.getCenter(_red(_ruta7)).dx,
+          lessThan(tester.getCenter(find.byKey(_nuestro)).dx),
+        );
+      },
+    );
 
-    testWidgets('cabecera: sin escudo, el genérico; contra un filial, nuestro escudo dos veces', (
-      tester,
-    ) async {
-      pantalla(tester);
-      _marcarRed();
+    testWidgets(
+      'cabecera: sin escudo, el genérico; contra un filial, nuestro escudo dos veces',
+      (tester) async {
+        pantalla(tester);
+        _marcarRed();
 
-      await tester.pumpWidget(appCon(FichaCabecera(cabecera: cabecera())));
-      expect(find.byKey(_generico), findsOneWidget);
+        await tester.pumpWidget(appCon(FichaCabecera(cabecera: cabecera())));
+        expect(find.byKey(_generico), findsOneWidget);
 
-      await tester.pumpWidget(
-        appCon(FichaCabecera(cabecera: cabecera(propio: true))),
-      );
-      expect(find.byKey(_nuestro), findsNWidgets(2));
-      expect(find.byKey(_generico), findsNothing);
-    });
+        await tester.pumpWidget(
+          appCon(FichaCabecera(cabecera: cabecera(propio: true))),
+        );
+        expect(find.byKey(_nuestro), findsNWidgets(2));
+        expect(find.byKey(_generico), findsNothing);
+      },
+    );
 
     testWidgets('cabecera: se lee del JSON de la ficha', (tester) async {
       final c = CabeceraFicha.fromJson({
@@ -396,219 +406,231 @@ void main() {
       expect(CabeceraFicha.fromJson({}).rivalEsPropio, isFalse);
     });
 
-    testWidgets('forma del equipo: el escudo del rival de cada partido, en su lado', (
-      tester,
-    ) async {
-      pantalla(tester);
-      _marcarRed();
+    testWidgets(
+      'forma del equipo: el escudo del rival de cada partido, en su lado',
+      (tester) async {
+        pantalla(tester);
+        _marcarRed();
 
-      await tester.pumpWidget(
-        appCon(
-          FichaForma(
-            alTocar: (_) {},
-            forma: [
-              FormaFicha(
-                partidoId: 1,
-                local: true,
-                rival: 'Pego C.F.',
-                golesFavor: 2,
-                resultado: 'G',
-                escudoRivalUrl: _ruta7,
+        await tester.pumpWidget(
+          appCon(
+            FichaForma(
+              alTocar: (_) {},
+              forma: [
+                FormaFicha(
+                  partidoId: 1,
+                  local: true,
+                  rival: 'Pego C.F.',
+                  golesFavor: 2,
+                  resultado: 'G',
+                  escudoRivalUrl: _ruta7,
+                ),
+                const FormaFicha(
+                  partidoId: 2,
+                  local: false,
+                  rival: 'Mutxamel C.F. B',
+                  resultado: 'E',
+                  rivalEsPropio: true,
+                ),
+                const FormaFicha(
+                  partidoId: 3,
+                  rival: 'Orba C.F.',
+                  resultado: 'P',
+                ),
+              ],
+            ),
+          ),
+        );
+
+        // 1: escudo de red; 2: nuestro en los dos lados (más el nuestro del primero y tercero); 3: genérico.
+        expect(_red(_ruta7), findsOneWidget);
+        expect(find.byKey(_generico), findsOneWidget);
+        expect(find.byKey(_nuestro), findsNWidgets(4));
+
+        final filaForma = FormaFicha.fromJson({
+          'partidoId': 9,
+          'rival': 'X',
+          'escudoRivalUrl': _ruta7,
+          'rivalEsPropio': true,
+        });
+
+        expect(filaForma.escudoRivalUrl, _ruta7);
+        expect(filaForma.rivalEsPropio, isTrue);
+      },
+    );
+
+    testWidgets(
+      'lista de partidos y resultados (cualquier equipo): escudo pequeño delante del nombre',
+      (tester) async {
+        pantalla(tester);
+        _marcarRed();
+
+        Widget lista() => appCon(
+          ListView(
+            children: [
+              PartidoListaCard(
+                partido: MatchModel(
+                  equipo: 'Cadete A',
+                  categoria: 'Cadete A',
+                  rival: 'Pego C.F.',
+                  resultado: '2-1',
+                  dia: DateTime(2026, 11, 1),
+                  escudoRivalUrl: _ruta7,
+                ),
               ),
-              const FormaFicha(
-                partidoId: 2,
-                local: false,
-                rival: 'Mutxamel C.F. B',
-                resultado: 'E',
-                rivalEsPropio: true,
+              PartidoListaCard(
+                partido: MatchModel(
+                  equipo: 'Cadete A',
+                  categoria: 'Cadete A',
+                  rival: 'Orba C.F.',
+                  dia: DateTime(2030, 11, 1),
+                ),
               ),
-              const FormaFicha(partidoId: 3, rival: 'Orba C.F.', resultado: 'P'),
+              PartidoListaCard(
+                partido: MatchModel(
+                  equipo: 'Cadete A',
+                  categoria: 'Cadete A',
+                  rival: 'Mutxamel C.F. B',
+                  dia: DateTime(2030, 11, 8),
+                  rivalEsPropio: true,
+                ),
+              ),
             ],
           ),
-        ),
-      );
+        );
 
-      // 1: escudo de red; 2: nuestro en los dos lados (más el nuestro del primero y tercero); 3: genérico.
-      expect(_red(_ruta7), findsOneWidget);
-      expect(find.byKey(_generico), findsOneWidget);
-      expect(find.byKey(_nuestro), findsNWidgets(4));
+        await tester.pumpWidget(lista());
 
-      final filaForma = FormaFicha.fromJson({
-        'partidoId': 9,
-        'rival': 'X',
-        'escudoRivalUrl': _ruta7,
-        'rivalEsPropio': true,
-      });
+        expect(_red(_ruta7), findsOneWidget);
+        // Pequeño, no el grande de las tarjetas de la portada.
+        expect(tester.getSize(_red(_ruta7)).width, lessThanOrEqualTo(32));
+        // Orba, sin escudo: genérico. El filial y los dos nuestros: el del Mutxamel.
+        expect(find.byKey(_generico), findsOneWidget);
+        expect(find.byKey(_nuestro), findsNWidgets(4));
+        // Delante del nombre.
+        expect(
+          tester.getCenter(_red(_ruta7)).dx,
+          lessThan(tester.getCenter(find.text('Pego C.F.')).dx),
+        );
+      },
+    );
 
-      expect(filaForma.escudoRivalUrl, _ruta7);
-      expect(filaForma.rivalEsPropio, isTrue);
-    });
+    testWidgets(
+      'clasificación: un escudo pequeño delante del nombre de cada equipo',
+      (tester) async {
+        pantalla(tester);
+        _marcarRed();
 
-    testWidgets('lista de partidos y resultados (cualquier equipo): escudo pequeño delante del nombre', (
-      tester,
-    ) async {
-      pantalla(tester);
-      _marcarRed();
+        StandingsRowModel fila(
+          int pos,
+          String equipo, {
+          bool nuestro = false,
+          String? url,
+        }) => StandingsRowModel(
+          posicion: pos,
+          equipo: equipo,
+          esNuestro: nuestro,
+          puntos: 10,
+          pj: 5,
+          pg: 3,
+          pe: 1,
+          pp: 1,
+          gf: 8,
+          gc: 4,
+          escudoUrl: url,
+        );
 
-      Widget lista() => appCon(
-        ListView(
-          children: [
-            PartidoListaCard(
-              partido: MatchModel(
-                equipo: 'Cadete A',
-                categoria: 'Cadete A',
-                rival: 'Pego C.F.',
-                resultado: '2-1',
-                dia: DateTime(2026, 11, 1),
-                escudoRivalUrl: _ruta7,
-              ),
-            ),
-            PartidoListaCard(
-              partido: MatchModel(
-                equipo: 'Cadete A',
-                categoria: 'Cadete A',
-                rival: 'Orba C.F.',
-                dia: DateTime(2030, 11, 1),
-              ),
-            ),
-            PartidoListaCard(
-              partido: MatchModel(
-                equipo: 'Cadete A',
-                categoria: 'Cadete A',
-                rival: 'Mutxamel C.F. B',
-                dia: DateTime(2030, 11, 8),
-                rivalEsPropio: true,
-              ),
-            ),
-          ],
-        ),
-      );
-
-      await tester.pumpWidget(lista());
-
-      expect(_red(_ruta7), findsOneWidget);
-      // Pequeño, no el grande de las tarjetas de la portada.
-      expect(tester.getSize(_red(_ruta7)).width, lessThanOrEqualTo(32));
-      // Orba, sin escudo: genérico. El filial y los dos nuestros: el del Mutxamel.
-      expect(find.byKey(_generico), findsOneWidget);
-      expect(find.byKey(_nuestro), findsNWidgets(4));
-      // Delante del nombre.
-      expect(
-        tester.getCenter(_red(_ruta7)).dx,
-        lessThan(tester.getCenter(find.text('Pego C.F.')).dx),
-      );
-    });
-
-    testWidgets('clasificación: un escudo pequeño delante del nombre de cada equipo', (
-      tester,
-    ) async {
-      pantalla(tester);
-      _marcarRed();
-
-      StandingsRowModel fila(int pos, String equipo, {bool nuestro = false, String? url}) =>
-          StandingsRowModel(
-            posicion: pos,
-            equipo: equipo,
-            esNuestro: nuestro,
-            puntos: 10,
-            pj: 5,
-            pg: 3,
-            pe: 1,
-            pp: 1,
-            gf: 8,
-            gc: 4,
-            escudoUrl: url,
-          );
-
-      await tester.pumpWidget(
-        appCon(
-          SingleChildScrollView(
-            child: TeamStandingsSection(
-              future: Future.value(
-                StandingsModel(
-                  competicion: 'Liga',
-                  jornada: 5,
-                  fechaImportacion: null,
-                  filas: [
-                    fila(1, 'Pego C.F.', url: _ruta7),
-                    fila(2, 'Mutxamel C.F.', nuestro: true),
-                    fila(3, 'Orba C.F.'),
-                  ],
+        await tester.pumpWidget(
+          appCon(
+            SingleChildScrollView(
+              child: TeamStandingsSection(
+                future: Future.value(
+                  StandingsModel(
+                    competicion: 'Liga',
+                    jornada: 5,
+                    fechaImportacion: null,
+                    filas: [
+                      fila(1, 'Pego C.F.', url: _ruta7),
+                      fila(2, 'Mutxamel C.F.', nuestro: true),
+                      fila(3, 'Orba C.F.'),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      );
-      await tester.pump();
-      await tester.pump();
+        );
+        await tester.pump();
+        await tester.pump();
 
-      expect(_red(_ruta7), findsOneWidget);
-      expect(find.byKey(_nuestro), findsOneWidget);
-      expect(find.byKey(_generico), findsOneWidget);
-      expect(tester.getSize(_red(_ruta7)).width, lessThanOrEqualTo(24));
-      expect(
-        tester.getCenter(_red(_ruta7)).dx,
-        lessThan(tester.getCenter(find.text('Pego C.F.')).dx),
-      );
-    });
+        expect(_red(_ruta7), findsOneWidget);
+        expect(find.byKey(_nuestro), findsOneWidget);
+        expect(find.byKey(_generico), findsOneWidget);
+        expect(tester.getSize(_red(_ruta7)).width, lessThanOrEqualTo(24));
+        expect(
+          tester.getCenter(_red(_ruta7)).dx,
+          lessThan(tester.getCenter(find.text('Pego C.F.')).dx),
+        );
+      },
+    );
 
-    testWidgets('clasificación: una fila con esPropio (un filial) lleva nuestro escudo aunque no sea esNuestro', (
-      tester,
-    ) async {
-      pantalla(tester);
-      _marcarRed();
+    testWidgets(
+      'clasificación: una fila con esPropio (un filial) lleva nuestro escudo aunque no sea esNuestro',
+      (tester) async {
+        pantalla(tester);
+        _marcarRed();
 
-      StandingsRowModel fila(
-        int pos,
-        String equipo, {
-        bool nuestro = false,
-        bool propio = false,
-        String? url,
-      }) => StandingsRowModel(
-        posicion: pos,
-        equipo: equipo,
-        esNuestro: nuestro,
-        puntos: 10,
-        pj: 5,
-        pg: 3,
-        pe: 1,
-        pp: 1,
-        gf: 8,
-        gc: 4,
-        escudoUrl: url,
-        esPropio: propio,
-      );
+        StandingsRowModel fila(
+          int pos,
+          String equipo, {
+          bool nuestro = false,
+          bool propio = false,
+          String? url,
+        }) => StandingsRowModel(
+          posicion: pos,
+          equipo: equipo,
+          esNuestro: nuestro,
+          puntos: 10,
+          pj: 5,
+          pg: 3,
+          pe: 1,
+          pp: 1,
+          gf: 8,
+          gc: 4,
+          escudoUrl: url,
+          esPropio: propio,
+        );
 
-      await tester.pumpWidget(
-        appCon(
-          SingleChildScrollView(
-            child: TeamStandingsSection(
-              future: Future.value(
-                StandingsModel(
-                  competicion: 'Liga',
-                  jornada: 5,
-                  fechaImportacion: null,
-                  filas: [
-                    fila(1, 'Pego C.F.', url: _ruta7),
-                    fila(2, 'Mutxamel C.F.', nuestro: true, propio: true),
-                    fila(3, "C.F. Mutxamel 'B'", propio: true),
-                    fila(4, 'Orba C.F.'),
-                  ],
+        await tester.pumpWidget(
+          appCon(
+            SingleChildScrollView(
+              child: TeamStandingsSection(
+                future: Future.value(
+                  StandingsModel(
+                    competicion: 'Liga',
+                    jornada: 5,
+                    fechaImportacion: null,
+                    filas: [
+                      fila(1, 'Pego C.F.', url: _ruta7),
+                      fila(2, 'Mutxamel C.F.', nuestro: true, propio: true),
+                      fila(3, "C.F. Mutxamel 'B'", propio: true),
+                      fila(4, 'Orba C.F.'),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      );
-      await tester.pump();
-      await tester.pump();
+        );
+        await tester.pump();
+        await tester.pump();
 
-      // Nuestro escudo en nuestra fila y en la del filial; el del rival y el genérico en las demás.
-      expect(find.byKey(_nuestro), findsNWidgets(2));
-      expect(_red(_ruta7), findsOneWidget);
-      expect(find.byKey(_generico), findsOneWidget);
-    });
+        // Nuestro escudo en nuestra fila y en la del filial; el del rival y el genérico en las demás.
+        expect(find.byKey(_nuestro), findsNWidgets(2));
+        expect(_red(_ruta7), findsOneWidget);
+        expect(find.byKey(_generico), findsOneWidget);
+      },
+    );
 
     testWidgets('clasificación: el modelo lee esPropio (false si no viene)', (
       tester,
@@ -663,7 +685,9 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
-      await tester.pumpWidget(appCon(Center(child: TarjetaCompartir(datos: d))));
+      await tester.pumpWidget(
+        appCon(Center(child: TarjetaCompartir(datos: d))),
+      );
     }
 
     testWidgets('con escudo: el del rival; sin escudo: el genérico', (
@@ -675,14 +699,19 @@ void main() {
       expect(_red(_ruta7), findsOneWidget);
       expect(find.byKey(_generico), findsNothing);
       // Del mismo tamaño que el del Mutxamel.
-      expect(tester.getSize(_red(_ruta7)), tester.getSize(find.byKey(_nuestro)));
+      expect(
+        tester.getSize(_red(_ruta7)),
+        tester.getSize(find.byKey(_nuestro)),
+      );
 
       await pintarTarjeta(tester, datos());
       expect(find.byKey(_generico), findsOneWidget);
       expect(_algunaRed(), findsNothing);
     });
 
-    testWidgets('contra un filial: nuestro escudo en los dos lados', (tester) async {
+    testWidgets('contra un filial: nuestro escudo en los dos lados', (
+      tester,
+    ) async {
       await pintarTarjeta(tester, datos(propio: true));
 
       expect(find.byKey(_nuestro), findsNWidgets(2));
@@ -763,26 +792,27 @@ void main() {
       return [rojo ? 'red' : null, generico ? 'generico' : null];
     }
 
-    testWidgets('espera al escudo antes de generarla: si se carga, sale con él', (
-      tester,
-    ) async {
-      String? urlPedida;
-      Duration? esperaPedida;
+    testWidgets(
+      'espera al escudo antes de generarla: si se carga, sale con él',
+      (tester) async {
+        String? urlPedida;
+        Duration? esperaPedida;
 
-      final pintado = await generar(
-        tester,
-        datos(url: _ruta7),
-        precarga: (contexto, url, espera) async {
-          urlPedida = url;
-          esperaPedida = espera;
-          return true;
-        },
-      );
+        final pintado = await generar(
+          tester,
+          datos(url: _ruta7),
+          precarga: (contexto, url, espera) async {
+            urlPedida = url;
+            esperaPedida = espera;
+            return true;
+          },
+        );
 
-      expect(urlPedida, _completa(_ruta7));
-      expect(esperaPedida, const Duration(seconds: 3));
-      expect(pintado, ['red', null]);
-    });
+        expect(urlPedida, _completa(_ruta7));
+        expect(esperaPedida, const Duration(seconds: 3));
+        expect(pintado, ['red', null]);
+      },
+    );
 
     testWidgets('si falla o tarda más de 3 s, usa el genérico', (tester) async {
       final pintado = await generar(
@@ -810,7 +840,9 @@ void main() {
       expect(pintado, [null, 'generico']);
     });
 
-    testWidgets('contra un filial tampoco espera: es nuestro escudo', (tester) async {
+    testWidgets('contra un filial tampoco espera: es nuestro escudo', (
+      tester,
+    ) async {
       var llamadas = 0;
 
       await generar(
@@ -825,34 +857,35 @@ void main() {
       expect(llamadas, 0);
     });
 
-    testWidgets('la espera por defecto es de 3 s y sin red cae al genérico enseguida', (
-      tester,
-    ) async {
-      expect(CompartirPartido.esperaMaxima, const Duration(seconds: 3));
+    testWidgets(
+      'la espera por defecto es de 3 s y sin red cae al genérico enseguida',
+      (tester) async {
+        expect(CompartirPartido.esperaMaxima, const Duration(seconds: 3));
 
-      pantalla(tester);
-      late BuildContext contexto;
+        pantalla(tester);
+        late BuildContext contexto;
 
-      await tester.pumpWidget(
-        appCon(
-          Builder(
-            builder: (c) {
-              contexto = c;
-              return const SizedBox();
-            },
+        await tester.pumpWidget(
+          appCon(
+            Builder(
+              builder: (c) {
+                contexto = c;
+                return const SizedBox();
+              },
+            ),
           ),
-        ),
-      );
+        );
 
-      final cargado = await tester.runAsync(
-        () => CompartirPartido.precargarEscudo(
-          contexto,
-          _completa(_ruta7),
-          const Duration(milliseconds: 500),
-        ),
-      );
+        final cargado = await tester.runAsync(
+          () => CompartirPartido.precargarEscudo(
+            contexto,
+            _completa(_ruta7),
+            const Duration(milliseconds: 500),
+          ),
+        );
 
-      expect(cargado, isFalse);
-    });
+        expect(cargado, isFalse);
+      },
+    );
   });
 }

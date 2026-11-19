@@ -133,9 +133,12 @@ class BarraMomentos extends StatelessWidget {
                       key: ValueKey('momento-${momento.indice}'),
                       left: x(momento.fraccion) - _tamanoIcono / 2,
                       top: momento.arriba
-                          ? _alturaCarril - 12 - _tamanoIcono -
+                          ? _alturaCarril -
+                                12 -
+                                _tamanoIcono -
                                 momento.fila * (_tamanoIcono - 4)
-                          : _alturaCarril + 12 +
+                          : _alturaCarril +
+                                12 +
                                 momento.fila * (_tamanoIcono - 4),
                       width: _tamanoIcono,
                       height: _tamanoIcono,
@@ -412,10 +415,7 @@ class _MarcaMinutoActualState extends State<_MarcaMinutoActual>
           ),
           Expanded(
             child: Align(
-              alignment: Alignment(
-                ((x - izquierda) / caja) * 2 - 1,
-                0,
-              ),
+              alignment: Alignment(((x - izquierda) / caja) * 2 - 1, 0),
               child: Container(width: 2, color: color),
             ),
           ),

@@ -5,7 +5,8 @@ import 'package:app_mutxamel_cf/features/auth/pages/ajustes_page.dart';
 import 'package:app_mutxamel_cf/features/auth/services/auth_manager.dart';
 import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
-import 'package:flutter_localizations/flutter_localizations.dart' show GlobalWidgetsLocalizations;
+import 'package:flutter_localizations/flutter_localizations.dart'
+    show GlobalWidgetsLocalizations;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -84,10 +85,7 @@ void main() {
       await pintar(tester);
 
       expect(find.text('Enviar informes de errores'), findsOneWidget);
-      expect(
-        tester.widget<Switch>(find.byType(Switch).last).value,
-        isTrue,
-      );
+      expect(tester.widget<Switch>(find.byType(Switch).last).value, isTrue);
     },
   );
 
@@ -114,10 +112,7 @@ void main() {
 
     await pintar(tester);
 
-    expect(
-      tester.widget<Switch>(find.byType(Switch).last).value,
-      isFalse,
-    );
+    expect(tester.widget<Switch>(find.byType(Switch).last).value, isFalse);
   });
 
   testWidgets(

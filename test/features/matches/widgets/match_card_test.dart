@@ -1,5 +1,6 @@
 import 'package:cupertino_ui/cupertino_ui.dart';
-import 'package:flutter_localizations/flutter_localizations.dart' show GlobalWidgetsLocalizations;
+import 'package:flutter_localizations/flutter_localizations.dart'
+    show GlobalWidgetsLocalizations;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,13 +21,17 @@ Future<void> _pintar(WidgetTester tester, MatchModel match) {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: SingleChildScrollView(child: MatchCard(match: match))),
+      home: Scaffold(
+        body: SingleChildScrollView(child: MatchCard(match: match)),
+      ),
     ),
   );
 }
 
 void main() {
-  testWidgets('con campo, la tarjeta tiene "Cómo llegar" con ese campo', (tester) async {
+  testWidgets('con campo, la tarjeta tiene "Cómo llegar" con ese campo', (
+    tester,
+  ) async {
     final abiertas = <Uri>[];
     SharedPreferences.setMockInitialValues({});
     ComoLlegar.esIos = () => true;
@@ -59,16 +64,27 @@ void main() {
   testWidgets('sin campo no hay "Cómo llegar"', (tester) async {
     await _pintar(
       tester,
-      const MatchModel(categoria: 'Primer Equipo', equipo: 'Primer Equipo', rival: 'Pego C.F.'),
+      const MatchModel(
+        categoria: 'Primer Equipo',
+        equipo: 'Primer Equipo',
+        rival: 'Pego C.F.',
+      ),
     );
 
     expect(find.byIcon(Icons.directions), findsNothing);
   });
 
-  testWidgets('si el Mutxamel es local, su equipo va a la izquierda', (tester) async {
+  testWidgets('si el Mutxamel es local, su equipo va a la izquierda', (
+    tester,
+  ) async {
     await _pintar(
       tester,
-      const MatchModel(categoria: 'Primer Equipo', equipo: 'Primer Equipo', rival: 'Pego C.F.', local: true),
+      const MatchModel(
+        categoria: 'Primer Equipo',
+        equipo: 'Primer Equipo',
+        rival: 'Pego C.F.',
+        local: true,
+      ),
     );
 
     final izquierda = tester.getCenter(find.text('Primer Equipo')).dx;
@@ -77,10 +93,17 @@ void main() {
     expect(izquierda, lessThan(derecha));
   });
 
-  testWidgets('si el Mutxamel es visitante, su equipo va a la derecha', (tester) async {
+  testWidgets('si el Mutxamel es visitante, su equipo va a la derecha', (
+    tester,
+  ) async {
     await _pintar(
       tester,
-      const MatchModel(categoria: 'Primer Equipo', equipo: 'Primer Equipo', rival: 'Pego C.F.', local: false),
+      const MatchModel(
+        categoria: 'Primer Equipo',
+        equipo: 'Primer Equipo',
+        rival: 'Pego C.F.',
+        local: false,
+      ),
     );
 
     final izquierda = tester.getCenter(find.text('Pego C.F.')).dx;
@@ -89,7 +112,9 @@ void main() {
     expect(izquierda, lessThan(derecha));
   });
 
-  testWidgets('visitante con resultado 1-2 muestra Pego a la izquierda y 2-1', (tester) async {
+  testWidgets('visitante con resultado 1-2 muestra Pego a la izquierda y 2-1', (
+    tester,
+  ) async {
     await _pintar(
       tester,
       const MatchModel(
@@ -123,26 +148,29 @@ void main() {
     expect(find.text('2-1'), findsOneWidget);
   });
 
-  testWidgets('pendiente de resultado: sin marcador y con "Pendiente de resultado"', (tester) async {
-    await _pintar(
-      tester,
-      const MatchModel(
-        categoria: 'Primer Equipo',
-        equipo: 'Primer Equipo',
-        rival: 'Pego C.F.',
-        pendienteResultado: true,
-        local: false,
-      ),
-    );
+  testWidgets(
+    'pendiente de resultado: sin marcador y con "Pendiente de resultado"',
+    (tester) async {
+      await _pintar(
+        tester,
+        const MatchModel(
+          categoria: 'Primer Equipo',
+          equipo: 'Primer Equipo',
+          rival: 'Pego C.F.',
+          pendienteResultado: true,
+          local: false,
+        ),
+      );
 
-    expect(find.text('Pendiente de resultado'), findsOneWidget);
-    expect(find.text('-'), findsNothing);
+      expect(find.text('Pendiente de resultado'), findsOneWidget);
+      expect(find.text('-'), findsNothing);
 
-    final izquierda = tester.getCenter(find.text('Pego C.F.')).dx;
-    final derecha = tester.getCenter(find.text('Primer Equipo')).dx;
+      final izquierda = tester.getCenter(find.text('Pego C.F.')).dx;
+      final derecha = tester.getCenter(find.text('Primer Equipo')).dx;
 
-    expect(izquierda, lessThan(derecha));
-  });
+      expect(izquierda, lessThan(derecha));
+    },
+  );
 
   group('portada en directo', () {
     const enJuego = MatchModel(
@@ -156,35 +184,46 @@ void main() {
       golesContra: 1,
     );
 
-    testWidgets('en juego: letrero destacado y marcador en directo, sin "Descanso"', (tester) async {
-      await _pintar(tester, enJuego);
+    testWidgets(
+      'en juego: letrero destacado y marcador en directo, sin "Descanso"',
+      (tester) async {
+        await _pintar(tester, enJuego);
 
-      expect(find.text('PARTIDO EN JUEGO'), findsOneWidget);
-      expect(find.byKey(const ValueKey('marcador-en-directo')), findsOneWidget);
-      expect(encuentraMarcador('2 - 1'), findsOneWidget);
-      expect(find.text('Descanso'), findsNothing);
-      expect(find.text('Pego C.F.'), findsOneWidget);
-    });
+        expect(find.text('PARTIDO EN JUEGO'), findsOneWidget);
+        expect(
+          find.byKey(const ValueKey('marcador-en-directo')),
+          findsOneWidget,
+        );
+        expect(encuentraMarcador('2 - 1'), findsOneWidget);
+        expect(find.text('Descanso'), findsNothing);
+        expect(find.text('Pego C.F.'), findsOneWidget);
+      },
+    );
 
-    testWidgets('en juego como visitante el marcador va con el local a la izquierda', (tester) async {
-      await _pintar(
-        tester,
-        const MatchModel(
-          categoria: 'Primer Equipo',
-          equipo: 'Primer Equipo',
-          rival: 'Pego C.F.',
-          local: false,
-          enJuego: true,
-          fase: 'SEGUNDA_PARTE',
-          golesFavor: 2,
-          golesContra: 1,
-        ),
-      );
+    testWidgets(
+      'en juego como visitante el marcador va con el local a la izquierda',
+      (tester) async {
+        await _pintar(
+          tester,
+          const MatchModel(
+            categoria: 'Primer Equipo',
+            equipo: 'Primer Equipo',
+            rival: 'Pego C.F.',
+            local: false,
+            enJuego: true,
+            fase: 'SEGUNDA_PARTE',
+            golesFavor: 2,
+            golesContra: 1,
+          ),
+        );
 
-      expect(encuentraMarcador('1 - 2'), findsOneWidget);
-    });
+        expect(encuentraMarcador('1 - 2'), findsOneWidget);
+      },
+    );
 
-    testWidgets('en el descanso, debajo del marcador, sale "Descanso"', (tester) async {
+    testWidgets('en el descanso, debajo del marcador, sale "Descanso"', (
+      tester,
+    ) async {
       await _pintar(
         tester,
         const MatchModel(
@@ -241,29 +280,34 @@ void main() {
       });
     }
 
-    testWidgets('finalizado con goleadores: la tarjeta ya no pinta la línea de goles', (tester) async {
-      await _pintar(
-        tester,
-        const MatchModel(
-          categoria: 'Primer Equipo',
-          equipo: 'Primer Equipo',
-          rival: 'Pego C.F.',
-          resultado: '3-1',
-          golesFavor: 3,
-          golesContra: 1,
-          fase: 'FINALIZADO',
-          goleadores: ['Pepe (2)', 'Juanma'],
-        ),
-      );
+    testWidgets(
+      'finalizado con goleadores: la tarjeta ya no pinta la línea de goles',
+      (tester) async {
+        await _pintar(
+          tester,
+          const MatchModel(
+            categoria: 'Primer Equipo',
+            equipo: 'Primer Equipo',
+            rival: 'Pego C.F.',
+            resultado: '3-1',
+            golesFavor: 3,
+            golesContra: 1,
+            fase: 'FINALIZADO',
+            goleadores: ['Pepe (2)', 'Juanma'],
+          ),
+        );
 
-      expect(find.text('3-1'), findsOneWidget);
-      expect(find.textContaining('Goles'), findsNothing);
-      expect(find.byKey(const ValueKey('goleadores')), findsNothing);
-      expect(find.textContaining('Pepe'), findsNothing);
-      expect(find.text('PARTIDO EN JUEGO'), findsNothing);
-    });
+        expect(find.text('3-1'), findsOneWidget);
+        expect(find.textContaining('Goles'), findsNothing);
+        expect(find.byKey(const ValueKey('goleadores')), findsNothing);
+        expect(find.textContaining('Pepe'), findsNothing);
+        expect(find.text('PARTIDO EN JUEGO'), findsNothing);
+      },
+    );
 
-    testWidgets('finalizado sin goleadores no enseña la línea de goles', (tester) async {
+    testWidgets('finalizado sin goleadores no enseña la línea de goles', (
+      tester,
+    ) async {
       await _pintar(
         tester,
         const MatchModel(
@@ -278,26 +322,29 @@ void main() {
       expect(find.byKey(const ValueKey('goleadores')), findsNothing);
     });
 
-    testWidgets('compatibilidad: sin los campos nuevos la tarjeta es la de siempre', (tester) async {
-      final match = MatchModel.fromJson({
-        'categoria': 'Primer Equipo',
-        'equipo': 'Primer Equipo',
-        'rival': 'Pego C.F.',
-        'resultado': '2-1',
-        'golesFavor': 2,
-        'golesContra': 1,
-      });
+    testWidgets(
+      'compatibilidad: sin los campos nuevos la tarjeta es la de siempre',
+      (tester) async {
+        final match = MatchModel.fromJson({
+          'categoria': 'Primer Equipo',
+          'equipo': 'Primer Equipo',
+          'rival': 'Pego C.F.',
+          'resultado': '2-1',
+          'golesFavor': 2,
+          'golesContra': 1,
+        });
 
-      expect(match.enJuego, isFalse);
-      expect(match.fase, isNull);
-      expect(match.goleadores, isEmpty);
+        expect(match.enJuego, isFalse);
+        expect(match.fase, isNull);
+        expect(match.goleadores, isEmpty);
 
-      await _pintar(tester, match);
+        await _pintar(tester, match);
 
-      expect(find.text('2-1'), findsOneWidget);
-      expect(find.text('PARTIDO EN JUEGO'), findsNothing);
-      expect(find.byKey(const ValueKey('goleadores')), findsNothing);
-    });
+        expect(find.text('2-1'), findsOneWidget);
+        expect(find.text('PARTIDO EN JUEGO'), findsNothing);
+        expect(find.byKey(const ValueKey('goleadores')), findsNothing);
+      },
+    );
 
     test('el modelo lee enJuego, fase y goleadores del backend', () {
       final match = MatchModel.fromJson({

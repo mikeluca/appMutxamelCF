@@ -511,7 +511,7 @@ void main() {
     });
 
     testWidgets(
-      'antes del partido (hoy): hora grande y "VS", "¡Te esperamos!" y el campo, sin marcador ni goleadores',
+      'antes del partido (hoy): hora grande y "VS", "¡Te esperamos!" sin línea de campo debajo, sin marcador ni goleadores',
       (tester) async {
         await _pintar(
           tester,
@@ -527,8 +527,9 @@ void main() {
         expect(_clave('compartir-marcador'), findsNothing);
         expect(_clave('compartir-te-esperamos'), findsOneWidget);
         expect(find.text('¡Te esperamos!'), findsOneWidget);
-        expect(_texto(tester, 'compartir-campo'), 'Camp Municipal');
-        // El campo también va junto a la fecha, arriba.
+        // La línea del campo de debajo ya no existe: el campo solo va arriba.
+        expect(_clave('compartir-campo'), findsNothing);
+        expect(find.text('Camp Municipal'), findsNothing);
         expect(
           _texto(tester, 'compartir-fecha'),
           '14/11/2026 · Camp Municipal',
@@ -675,6 +676,97 @@ void main() {
 
         await _pintar(tester, await _datos(tester, _final(2, 0)));
         expect(_clave('compartir-goleadores'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'hashtags: por defecto salen; sin ellos no hay línea y el pie se recoloca sin hueco, en publicación e historia y en los tres estilos',
+      (tester) async {
+        for (final formato in FormatoCompartir.values) {
+          for (final estilo in EstiloCompartir.values) {
+            await _pintar(
+              tester,
+              await _datos(tester, _final(2, 1)),
+              opciones: OpcionesCompartir(formato: formato, estilo: estilo),
+            );
+
+            expect(_texto(tester, 'compartir-pie'), DatosCompartir.hashtags);
+
+            final escudoCon = tester.getBottomLeft(
+              _clave('compartir-escudo-pie'),
+            );
+            final tarjetaCon = tester.getBottomLeft(
+              _clave('tarjeta-compartir'),
+            );
+
+            await _pintar(
+              tester,
+              await _datos(tester, _final(2, 1)),
+              opciones: OpcionesCompartir(
+                formato: formato,
+                estilo: estilo,
+                hashtags: false,
+              ),
+            );
+
+            expect(_clave('compartir-pie'), findsNothing);
+            expect(find.textContaining('#somMTX'), findsNothing);
+            expect(find.textContaining('#MutxamelCF'), findsNothing);
+
+            // El escudo y el QR siguen pegados al borde inferior (mismo margen) y no queda hueco debajo del centro.
+            final escudoSin = tester.getBottomLeft(
+              _clave('compartir-escudo-pie'),
+            );
+            final tarjetaSin = tester.getBottomLeft(
+              _clave('tarjeta-compartir'),
+            );
+
+            expect(
+              tarjetaSin.dy - escudoSin.dy,
+              closeTo(tarjetaCon.dy - escudoCon.dy, 0.01),
+            );
+            expect(_clave('compartir-marcador'), findsOneWidget);
+            expect(tester.takeException(), isNull);
+          }
+        }
+      },
+    );
+
+    testWidgets(
+      'sin la línea del campo debajo de "¡Te esperamos!" también en historia y con resultado o sin racha',
+      (tester) async {
+        // Antes del partido, en historia, sin racha.
+        await _pintar(
+          tester,
+          await _datos(
+            tester,
+            _ficha(campo: 'Camp Municipal', forma: const []),
+          ),
+          opciones: const OpcionesCompartir(formato: FormatoCompartir.historia),
+        );
+
+        expect(_clave('compartir-te-esperamos'), findsOneWidget);
+        expect(_clave('compartir-campo'), findsNothing);
+        expect(_clave('compartir-racha'), findsNothing);
+        // El campo solo sale arriba, junto a la fecha.
+        expect(find.textContaining('Camp Municipal'), findsOneWidget);
+
+        // Con resultado: tampoco hay línea de campo.
+        await _pintar(
+          tester,
+          await _datos(
+            tester,
+            _ficha(
+              estado: EstadoFicha.finalizado,
+              favor: 2,
+              contra: 1,
+              campo: 'Camp Municipal',
+            ),
+          ),
+        );
+
+        expect(_clave('compartir-campo'), findsNothing);
+        expect(find.textContaining('Camp Municipal'), findsOneWidget);
       },
     );
 
@@ -1127,6 +1219,46 @@ void main() {
       expect(_clave('compartir-opcion-qr'), findsOneWidget);
     });
 
+    testWidgets('el chip Hashtags empieza marcado y quita y pone la línea', (
+      tester,
+    ) async {
+      await abrir(tester, _final(2, 1));
+
+      expect(_clave('compartir-opcion-hashtags'), findsOneWidget);
+      expect(
+        tester.widget<FilterChip>(_clave('compartir-opcion-hashtags')).selected,
+        isTrue,
+      );
+      expect(_clave('compartir-pie'), findsOneWidget);
+
+      await tester.tap(_clave('compartir-opcion-hashtags'));
+      await tester.pump();
+      expect(_clave('compartir-pie'), findsNothing);
+
+      await tester.tap(find.text('Historia'));
+      await tester.pump();
+      expect(_clave('compartir-pie'), findsNothing);
+
+      await tester.tap(_clave('compartir-opcion-hashtags'));
+      await tester.pump();
+      expect(_clave('compartir-pie'), findsOneWidget);
+    });
+
+    testWidgets(
+      'la elección de Hashtags no se guarda: al volver a abrir empieza marcado',
+      (tester) async {
+        await abrir(tester, _final(2, 1));
+        await tester.tap(_clave('compartir-opcion-hashtags'));
+        await tester.pump();
+        expect(_clave('compartir-pie'), findsNothing);
+
+        await tester.pumpWidget(const SizedBox());
+        await abrir(tester, _final(2, 1));
+
+        expect(_clave('compartir-pie'), findsOneWidget);
+      },
+    );
+
     testWidgets('cambia el formato, el estilo y los interruptores en vivo', (
       tester,
     ) async {
@@ -1219,7 +1351,10 @@ void main() {
       // El menú de compartir (iPad) se ancla al botón: su rectángulo, no la pantalla entera
       expect(origenes, hasLength(1));
       expect(origenes.single.isEmpty, isFalse);
-      expect(origenes.single.height, lessThan(120)); // el botón, no la pantalla entera
+      expect(
+        origenes.single.height,
+        lessThan(120),
+      ); // el botón, no la pantalla entera
       expect(compartidos, hasLength(1));
       // Sin goleadores porque se apagó el interruptor.
       expect(

@@ -43,7 +43,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get homeSponsorsHint =>
-      'Prem a les imatges per a conéixer més sobre els nostres patrocinadors.';
+      'Prem en un patrocinador per a conéixer-ne més.';
 
   @override
   String get homeNewsLoadError => 'No s\'han pogut carregar les notícies.';
@@ -3701,6 +3701,9 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get shareToggleQr => 'QR';
+
+  @override
+  String get shareToggleHashtags => 'Hashtags';
 
   @override
   String get shareButton => 'Compartir';

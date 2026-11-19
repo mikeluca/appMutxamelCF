@@ -169,7 +169,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeSponsorsHint.
   ///
   /// In es, this message translates to:
-  /// **'Pulsa en las imágenes para conocer más acerca de nuestros patrocinadores.'**
+  /// **'Pulsa en un patrocinador para conocer más acerca de él.'**
   String get homeSponsorsHint;
 
   /// No description provided for @homeNewsLoadError.
@@ -6434,6 +6434,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'QR'**
   String get shareToggleQr;
+
+  /// No description provided for @shareToggleHashtags.
+  ///
+  /// In es, this message translates to:
+  /// **'Hashtags'**
+  String get shareToggleHashtags;
 
   /// No description provided for @shareButton.
   ///

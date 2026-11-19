@@ -62,7 +62,14 @@ void main() {
     ).reversed.toList(); // cronológico, para comparar con lo escrito
 
     test('la posición es el minuto sobre el total (0 a 2·minutosParte)', () {
-      final m = colocar([_gol(0), _gol(23), _descanso, _gol(45), _gol(67), _gol(90)]);
+      final m = colocar([
+        _gol(0),
+        _gol(23),
+        _descanso,
+        _gol(45),
+        _gol(67),
+        _gol(90),
+      ]);
 
       expect(m.map((x) => x.fraccion), [0.0, 23 / 90, 0.5, 67 / 90, 1.0]);
     });
@@ -81,19 +88,25 @@ void main() {
       expect(m.map((x) => x.fraccion), [30 / 90, 0.5, 50 / 90]);
     });
 
-    test('el añadido de la segunda parte va al final de la barra, sin salirse', () {
-      final m = colocar([_gol(10), _descanso, _gol(88), _gol(93), _gol(99)]);
+    test(
+      'el añadido de la segunda parte va al final de la barra, sin salirse',
+      () {
+        final m = colocar([_gol(10), _descanso, _gol(88), _gol(93), _gol(99)]);
 
-      expect(m.map((x) => x.fraccion).toList(), [10 / 90, 88 / 90, 1.0, 1.0]);
-      expect(m.every((x) => x.fraccion <= 1.0), isTrue);
-    });
+        expect(m.map((x) => x.fraccion).toList(), [10 / 90, 88 / 90, 1.0, 1.0]);
+        expect(m.every((x) => x.fraccion <= 1.0), isTrue);
+      },
+    );
 
-    test('un hecho de la primera parte con minuto de la segunda no se sale hacia atrás', () {
-      // El minuto 44 pero ya en la segunda parte (separador antes): se coloca en la mitad como mínimo.
-      final m = colocar([_descanso, _gol(44)]);
+    test(
+      'un hecho de la primera parte con minuto de la segunda no se sale hacia atrás',
+      () {
+        // El minuto 44 pero ya en la segunda parte (separador antes): se coloca en la mitad como mínimo.
+        final m = colocar([_descanso, _gol(44)]);
 
-      expect(m.single.fraccion, 0.5);
-    });
+        expect(m.single.fraccion, 0.5);
+      },
+    );
 
     test('sin descanso registrado: la fase del reloj o, si no, el minuto', () {
       // En la primera parte con añadido (47'), se queda al final de la primera.
@@ -107,17 +120,20 @@ void main() {
       expect(sinReloj.single.fraccion, closeTo(47 / 90, 1e-9));
     });
 
-    test('arriba el equipo local y abajo el visitante: de local, lo nuestro arriba', () {
-      final m = colocar([
-        _gol(10),
-        _golRival(20),
-        _tarjeta(30),
-        _tarjeta(35, rival: true),
-        _cambio(40),
-      ]);
+    test(
+      'arriba el equipo local y abajo el visitante: de local, lo nuestro arriba',
+      () {
+        final m = colocar([
+          _gol(10),
+          _golRival(20),
+          _tarjeta(30),
+          _tarjeta(35, rival: true),
+          _cambio(40),
+        ]);
 
-      expect(m.map((x) => x.arriba), [true, false, true, false, true]);
-    });
+        expect(m.map((x) => x.arriba), [true, false, true, false, true]);
+      },
+    );
 
     test('de visitante se invierten los lados', () {
       final m = colocar([_gol(10), _golRival(20)], local: false);
@@ -190,9 +206,8 @@ void main() {
       );
     }
 
-    double centroX(WidgetTester tester, int indice) => tester
-        .getCenter(find.byKey(ValueKey('momento-$indice')))
-        .dx;
+    double centroX(WidgetTester tester, int indice) =>
+        tester.getCenter(find.byKey(ValueKey('momento-$indice'))).dx;
 
     testWidgets('sin eventos no se muestra', (tester) async {
       await pintar(tester, ficha([]));
@@ -200,22 +215,31 @@ void main() {
       expect(find.byKey(const ValueKey('barra-momentos')), findsNothing);
     });
 
-    testWidgets('solo con separadores o hechos sin minuto, tampoco', (tester) async {
+    testWidgets('solo con separadores o hechos sin minuto, tampoco', (
+      tester,
+    ) async {
       await pintar(
         tester,
-        ficha([_descanso, const EventoFicha(tipo: EventoFicha.golFavor), _final]),
+        ficha([
+          _descanso,
+          const EventoFicha(tipo: EventoFicha.golFavor),
+          _final,
+        ]),
       );
 
       expect(find.byKey(const ValueKey('barra-momentos')), findsNothing);
     });
 
-    testWidgets('marcas en 0, la mitad con "DESC." y el final (2·minutosParte)', (tester) async {
-      await pintar(tester, ficha([_gol(10)]));
+    testWidgets(
+      'marcas en 0, la mitad con "DESC." y el final (2·minutosParte)',
+      (tester) async {
+        await pintar(tester, ficha([_gol(10)]));
 
-      expect(find.text("0'"), findsOneWidget);
-      expect(find.text('DESC.'), findsOneWidget);
-      expect(find.text("90'"), findsOneWidget);
-    });
+        expect(find.text("0'"), findsOneWidget);
+        expect(find.text('DESC.'), findsOneWidget);
+        expect(find.text("90'"), findsOneWidget);
+      },
+    );
 
     testWidgets('con minutosParte 25 el final es el 50', (tester) async {
       await pintar(tester, ficha([_gol(10)], minutosParte: 25));
@@ -231,32 +255,39 @@ void main() {
       expect(CabeceraFicha.fromJson({'minutosParte': 0}).minutosParte, 45);
     });
 
-    testWidgets('cada hecho está en su minuto y los de arriba y abajo en su lado', (
-      tester,
-    ) async {
-      // Cronológico: gol 0' (índice 3 al ir lo último primero), gol rival 45'...
-      final f = ficha([_gol(9), _golRival(45), _gol(81)]);
+    testWidgets(
+      'cada hecho está en su minuto y los de arriba y abajo en su lado',
+      (tester) async {
+        // Cronológico: gol 0' (índice 3 al ir lo último primero), gol rival 45'...
+        final f = ficha([_gol(9), _golRival(45), _gol(81)]);
 
-      await pintar(tester, f);
+        await pintar(tester, f);
 
-      final barra = tester.getRect(find.byKey(const ValueKey('barra-momentos')));
-      final eventos = f.eventos;
-      final iGol9 = eventos.indexWhere((e) => e.minuto == 9);
-      final iRival = eventos.indexWhere((e) => e.minuto == 45);
-      final iGol81 = eventos.indexWhere((e) => e.minuto == 81);
+        final barra = tester.getRect(
+          find.byKey(const ValueKey('barra-momentos')),
+        );
+        final eventos = f.eventos;
+        final iGol9 = eventos.indexWhere((e) => e.minuto == 9);
+        final iRival = eventos.indexWhere((e) => e.minuto == 45);
+        final iGol81 = eventos.indexWhere((e) => e.minuto == 81);
 
-      // De izquierda a derecha en el orden del tiempo.
-      expect(centroX(tester, iGol9), lessThan(centroX(tester, iRival)));
-      expect(centroX(tester, iRival), lessThan(centroX(tester, iGol81)));
-      // El 45' está en la mitad de la barra.
-      expect(centroX(tester, iRival), closeTo(barra.center.dx, 2));
+        // De izquierda a derecha en el orden del tiempo.
+        expect(centroX(tester, iGol9), lessThan(centroX(tester, iRival)));
+        expect(centroX(tester, iRival), lessThan(centroX(tester, iGol81)));
+        // El 45' está en la mitad de la barra.
+        expect(centroX(tester, iRival), closeTo(barra.center.dx, 2));
 
-      // Los nuestros (de local) arriba y el del rival abajo.
-      final yGol = tester.getCenter(find.byKey(ValueKey('momento-$iGol9'))).dy;
-      final yRival = tester.getCenter(find.byKey(ValueKey('momento-$iRival'))).dy;
+        // Los nuestros (de local) arriba y el del rival abajo.
+        final yGol = tester
+            .getCenter(find.byKey(ValueKey('momento-$iGol9')))
+            .dy;
+        final yRival = tester
+            .getCenter(find.byKey(ValueKey('momento-$iRival')))
+            .dy;
 
-      expect(yGol, lessThan(yRival));
-    });
+        expect(yGol, lessThan(yRival));
+      },
+    );
 
     testWidgets('el añadido se queda al final de la barra, dentro de ella', (
       tester,
@@ -265,28 +296,33 @@ void main() {
 
       await pintar(tester, f);
 
-      final barra = tester.getRect(find.byKey(const ValueKey('barra-momentos')));
+      final barra = tester.getRect(
+        find.byKey(const ValueKey('barra-momentos')),
+      );
       final i97 = f.eventos.indexWhere((e) => e.minuto == 97);
       final icono = tester.getRect(find.byKey(ValueKey('momento-$i97')));
 
       expect(icono.right, lessThanOrEqualTo(barra.right));
     });
 
-    testWidgets('iconos: balón, tarjetas amarilla y roja y flechas del cambio', (
+    testWidgets(
+      'iconos: balón, tarjetas amarilla y roja y flechas del cambio',
+      (tester) async {
+        await pintar(
+          tester,
+          ficha([_gol(5), _tarjeta(20), _tarjeta(30, roja: true), _cambio(60)]),
+        );
+
+        expect(find.byIcon(Icons.sports_soccer), findsOneWidget);
+        expect(find.byIcon(Icons.arrow_upward), findsOneWidget);
+        expect(find.byIcon(Icons.arrow_downward), findsOneWidget);
+        expect(find.byType(Tooltip), findsNWidgets(4));
+      },
+    );
+
+    testWidgets('tocar un icono muestra el globo con el detalle', (
       tester,
     ) async {
-      await pintar(
-        tester,
-        ficha([_gol(5), _tarjeta(20), _tarjeta(30, roja: true), _cambio(60)]),
-      );
-
-      expect(find.byIcon(Icons.sports_soccer), findsOneWidget);
-      expect(find.byIcon(Icons.arrow_upward), findsOneWidget);
-      expect(find.byIcon(Icons.arrow_downward), findsOneWidget);
-      expect(find.byType(Tooltip), findsNWidgets(4));
-    });
-
-    testWidgets('tocar un icono muestra el globo con el detalle', (tester) async {
       final f = ficha([
         _gol(23),
         _golRival(31, dorsal: 9),
@@ -378,15 +414,18 @@ void main() {
       tic!.cancel();
     });
 
-    testWidgets('sin reloj (partido terminado) no hay marca del minuto actual', (
+    testWidgets(
+      'sin reloj (partido terminado) no hay marca del minuto actual',
+      (tester) async {
+        await pintar(tester, ficha([_gol(5)]));
+
+        expect(find.byKey(const ValueKey('marca-minuto-actual')), findsNothing);
+      },
+    );
+
+    testWidgets('con letra grande y pantalla pequeña se sigue leyendo', (
       tester,
     ) async {
-      await pintar(tester, ficha([_gol(5)]));
-
-      expect(find.byKey(const ValueKey('marca-minuto-actual')), findsNothing);
-    });
-
-    testWidgets('con letra grande y pantalla pequeña se sigue leyendo', (tester) async {
       tester.view.physicalSize = const Size(320, 640);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
@@ -399,7 +438,9 @@ void main() {
             textScaler: TextScaler.linear(2),
           ),
           child: appCon(
-            Center(child: BarraMomentos(ficha: ficha([_gol(5), _golRival(60)]))),
+            Center(
+              child: BarraMomentos(ficha: ficha([_gol(5), _golRival(60)])),
+            ),
           ),
         ),
       );

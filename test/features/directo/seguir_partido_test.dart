@@ -100,7 +100,8 @@ void main() {
   // El permiso de notificaciones del sistema: concedido (lo del permiso se prueba en permiso_notificaciones_test).
   setUp(() {
     final estadoOriginal = PermisoNotificaciones.leerEstado;
-    PermisoNotificaciones.leerEstado = () async => EstadoPermisoAvisos.concedido;
+    PermisoNotificaciones.leerEstado = () async =>
+        EstadoPermisoAvisos.concedido;
     addTearDown(() => PermisoNotificaciones.leerEstado = estadoOriginal);
   });
 
@@ -111,18 +112,24 @@ void main() {
       expect(SeguirPartidoService.topicDe(7, 'en'), 'partido_7_en');
     });
 
-    test('seguir: pide permiso, da de alta en el topic del idioma y guarda id y día', () async {
-      final e = _Entorno()..idioma = 'ca';
+    test(
+      'seguir: pide permiso, da de alta en el topic del idioma y guarda id y día',
+      () async {
+        final e = _Entorno()..idioma = 'ca';
 
-      final resultado = await e.servicio.seguir(30, DateTime(2026, 11, 20, 18));
+        final resultado = await e.servicio.seguir(
+          30,
+          DateTime(2026, 11, 20, 18),
+        );
 
-      expect(resultado, ResultadoSeguir.seguido);
-      expect(e.permisosPedidos, 1);
-      expect(e.altas, ['partido_30_ca']);
-      expect(e.guardados, {30: DateTime(2026, 11, 20)});
-      expect(await e.servicio.sigue(30), isTrue);
-      expect(await e.servicio.sigue(31), isFalse);
-    });
+        expect(resultado, ResultadoSeguir.seguido);
+        expect(e.permisosPedidos, 1);
+        expect(e.altas, ['partido_30_ca']);
+        expect(e.guardados, {30: DateTime(2026, 11, 20)});
+        expect(await e.servicio.sigue(30), isTrue);
+        expect(await e.servicio.sigue(31), isFalse);
+      },
+    );
 
     test('sin fecha se guarda el día de hoy', () async {
       final e = _Entorno();
@@ -132,16 +139,19 @@ void main() {
       expect(e.guardados[30], DateTime(2026, 11, 14));
     });
 
-    test('si se deniega el permiso no se da de alta ni se marca como seguido', () async {
-      final e = _Entorno()..permiso = false;
+    test(
+      'si se deniega el permiso no se da de alta ni se marca como seguido',
+      () async {
+        final e = _Entorno()..permiso = false;
 
-      final resultado = await e.servicio.seguir(30, DateTime(2026, 11, 20));
+        final resultado = await e.servicio.seguir(30, DateTime(2026, 11, 20));
 
-      expect(resultado, ResultadoSeguir.permisoDenegado);
-      expect(e.altas, isEmpty);
-      expect(e.guardados, isEmpty);
-      expect(await e.servicio.sigue(30), isFalse);
-    });
+        expect(resultado, ResultadoSeguir.permisoDenegado);
+        expect(e.altas, isEmpty);
+        expect(e.guardados, isEmpty);
+        expect(await e.servicio.sigue(30), isFalse);
+      },
+    );
 
     test('dejar de seguir: baja del topic y lo olvida', () async {
       final e = _Entorno();
@@ -162,17 +172,20 @@ void main() {
       expect(e.bajas, isEmpty);
     });
 
-    test('al cambiar de idioma mueve cada partido seguido al topic del idioma nuevo', () async {
-      final e = _Entorno();
-      await e.servicio.seguir(30, DateTime(2026, 11, 20));
-      await e.servicio.seguir(31, DateTime(2026, 11, 21));
-      e.altas.clear();
+    test(
+      'al cambiar de idioma mueve cada partido seguido al topic del idioma nuevo',
+      () async {
+        final e = _Entorno();
+        await e.servicio.seguir(30, DateTime(2026, 11, 20));
+        await e.servicio.seguir(31, DateTime(2026, 11, 21));
+        e.altas.clear();
 
-      await e.servicio.alCambiarIdioma('es', 'ca');
+        await e.servicio.alCambiarIdioma('es', 'ca');
 
-      expect(e.bajas, unorderedEquals(['partido_30_es', 'partido_31_es']));
-      expect(e.altas, unorderedEquals(['partido_30_ca', 'partido_31_ca']));
-    });
+        expect(e.bajas, unorderedEquals(['partido_30_es', 'partido_31_es']));
+        expect(e.altas, unorderedEquals(['partido_30_ca', 'partido_31_ca']));
+      },
+    );
 
     test('con el mismo idioma o sin partidos seguidos no hace nada', () async {
       final e = _Entorno();
@@ -187,23 +200,23 @@ void main() {
       expect(e.bajas, isEmpty);
     });
 
-    test('baja automática: los de más de 2 días, aunque no se haya cargado su ficha', () async {
-      final e = _Entorno();
-      e.guardados[1] = DateTime(2026, 11, 10); // hace 4 días
-      e.guardados[2] = DateTime(2026, 11, 11); // hace 3 días
-      e.guardados[3] = DateTime(2026, 11, 12); // hace 2 días: aún vale
-      e.guardados[4] = DateTime(2026, 11, 14); // hoy
-      e.guardados[5] = DateTime(2026, 11, 20); // futuro
+    test(
+      'baja automática: los de más de 2 días, aunque no se haya cargado su ficha',
+      () async {
+        final e = _Entorno();
+        e.guardados[1] = DateTime(2026, 11, 10); // hace 4 días
+        e.guardados[2] = DateTime(2026, 11, 11); // hace 3 días
+        e.guardados[3] = DateTime(2026, 11, 12); // hace 2 días: aún vale
+        e.guardados[4] = DateTime(2026, 11, 14); // hoy
+        e.guardados[5] = DateTime(2026, 11, 20); // futuro
 
-      await e.servicio.bajaAutomatica();
+        await e.servicio.bajaAutomatica();
 
-      expect(e.guardados.keys, unorderedEquals([3, 4, 5]));
-      expect(
-        e.bajas,
-        containsAll(['partido_1_es', 'partido_2_es']),
-      );
-      expect(e.bajas, isNot(contains('partido_3_es')));
-    });
+        expect(e.guardados.keys, unorderedEquals([3, 4, 5]));
+        expect(e.bajas, containsAll(['partido_1_es', 'partido_2_es']));
+        expect(e.bajas, isNot(contains('partido_3_es')));
+      },
+    );
 
     test('si todos están vigentes no escribe nada', () async {
       final e = _Entorno();
@@ -225,52 +238,62 @@ void main() {
       expect(e.guardados, isEmpty);
     });
 
-    test('al arrancar: caducados fuera y, si ya recibe los resultados, todos fuera', () async {
-      final e = _Entorno();
-      e.guardados[1] = DateTime(2026, 11, 1);
-      e.guardados[2] = DateTime(2026, 11, 14);
+    test(
+      'al arrancar: caducados fuera y, si ya recibe los resultados, todos fuera',
+      () async {
+        final e = _Entorno();
+        e.guardados[1] = DateTime(2026, 11, 1);
+        e.guardados[2] = DateTime(2026, 11, 14);
 
-      await e.servicio.alArrancar();
-      expect(e.guardados.keys, [2]);
+        await e.servicio.alArrancar();
+        expect(e.guardados.keys, [2]);
 
-      e.recibe = true;
-      await e.servicio.alArrancar();
-      expect(e.guardados, isEmpty);
-      expect(e.bajas, contains('partido_2_es'));
-    });
+        e.recibe = true;
+        await e.servicio.alArrancar();
+        expect(e.guardados, isEmpty);
+        expect(e.bajas, contains('partido_2_es'));
+      },
+    );
 
-    test('si no se sabe si recibe los resultados, no se baja de nada', () async {
-      final e = _Entorno()..recibe = null;
-      e.guardados[2] = DateTime(2026, 11, 14);
+    test(
+      'si no se sabe si recibe los resultados, no se baja de nada',
+      () async {
+        final e = _Entorno()..recibe = null;
+        e.guardados[2] = DateTime(2026, 11, 14);
 
-      await e.servicio.alArrancar();
+        await e.servicio.alArrancar();
 
-      expect(e.guardados.keys, [2]);
-    });
+        expect(e.guardados.keys, [2]);
+      },
+    );
   });
 
   group('botón "Seguir este partido" en la ficha', () {
-    testWidgets('sin recibir los resultados: botón con campana; seguir da de alta y pasa a "Siguiendo"', (
-      tester,
-    ) async {
-      final e = _Entorno();
+    testWidgets(
+      'sin recibir los resultados: botón con campana; seguir da de alta y pasa a "Siguiendo"',
+      (tester) async {
+        final e = _Entorno();
 
-      await _pintar(tester, e);
+        await _pintar(tester, e);
 
-      expect(find.byKey(_seguir), findsOneWidget);
-      expect(find.text('Seguir este partido'), findsOneWidget);
-      expect(find.byIcon(Icons.notifications_none), findsOneWidget);
+        expect(find.byKey(_seguir), findsOneWidget);
+        expect(find.text('Seguir este partido'), findsOneWidget);
+        expect(find.byIcon(Icons.notifications_none), findsOneWidget);
 
-      await tester.tap(find.byKey(_seguir));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
+        await tester.tap(find.byKey(_seguir));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
 
-      expect(e.altas, ['partido_30_es']);
-      expect(find.byKey(_siguiendo), findsOneWidget);
-      expect(find.text('Siguiendo'), findsOneWidget);
-      expect(find.text('Recibirás los avisos de este partido.'), findsOneWidget);
-      expect(e.guardados.keys, [30]);
-    });
+        expect(e.altas, ['partido_30_es']);
+        expect(find.byKey(_siguiendo), findsOneWidget);
+        expect(find.text('Siguiendo'), findsOneWidget);
+        expect(
+          find.text('Recibirás los avisos de este partido.'),
+          findsOneWidget,
+        );
+        expect(e.guardados.keys, [30]);
+      },
+    );
 
     testWidgets('al tocar "Siguiendo" se deja de seguir', (tester) async {
       final e = _Entorno();
@@ -322,56 +345,61 @@ void main() {
       expect(find.text('Seguint'), findsOneWidget);
     });
 
-    testWidgets('si ya recibe los avisos de resultados no hay botón: solo el texto', (
+    testWidgets(
+      'si ya recibe los avisos de resultados no hay botón: solo el texto',
+      (tester) async {
+        final e = _Entorno()..recibe = true;
+
+        await _pintar(tester, e);
+
+        expect(find.byKey(_seguir), findsNothing);
+        expect(find.byKey(_yaRecibe), findsOneWidget);
+        expect(
+          find.text('Ya recibes los avisos de todos los partidos'),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'si no se sabe si los recibe (sin red con cuenta) no se ofrece nada',
+      (tester) async {
+        final e = _Entorno()..recibe = null;
+
+        await _pintar(tester, e);
+
+        expect(find.byKey(_seguir), findsNothing);
+        expect(find.byKey(_yaRecibe), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'si se deniega el permiso: mensaje claro y no se marca como seguido',
+      (tester) async {
+        final e = _Entorno()..permiso = false;
+
+        await _pintar(tester, e);
+        await tester.tap(find.byKey(_seguir));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
+
+        expect(e.permisosPedidos, 1);
+        expect(e.altas, isEmpty);
+        expect(e.guardados, isEmpty);
+        expect(find.byKey(_siguiendo), findsNothing);
+        expect(find.byKey(_seguir), findsOneWidget);
+        expect(
+          find.text(
+            'Para seguir el partido activa las notificaciones de la app en los ajustes del móvil.',
+          ),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets('en juego y en el descanso también se puede seguir', (
       tester,
     ) async {
-      final e = _Entorno()..recibe = true;
-
-      await _pintar(tester, e);
-
-      expect(find.byKey(_seguir), findsNothing);
-      expect(find.byKey(_yaRecibe), findsOneWidget);
-      expect(
-        find.text('Ya recibes los avisos de todos los partidos'),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets('si no se sabe si los recibe (sin red con cuenta) no se ofrece nada', (
-      tester,
-    ) async {
-      final e = _Entorno()..recibe = null;
-
-      await _pintar(tester, e);
-
-      expect(find.byKey(_seguir), findsNothing);
-      expect(find.byKey(_yaRecibe), findsNothing);
-    });
-
-    testWidgets('si se deniega el permiso: mensaje claro y no se marca como seguido', (
-      tester,
-    ) async {
-      final e = _Entorno()..permiso = false;
-
-      await _pintar(tester, e);
-      await tester.tap(find.byKey(_seguir));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
-
-      expect(e.permisosPedidos, 1);
-      expect(e.altas, isEmpty);
-      expect(e.guardados, isEmpty);
-      expect(find.byKey(_siguiendo), findsNothing);
-      expect(find.byKey(_seguir), findsOneWidget);
-      expect(
-        find.text(
-          'Para seguir el partido activa las notificaciones de la app en los ajustes del móvil.',
-        ),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets('en juego y en el descanso también se puede seguir', (tester) async {
       for (final estado in [EstadoFicha.enJuego, EstadoFicha.descanso]) {
         await _pintar(tester, _Entorno(), estado: estado);
 
@@ -381,24 +409,25 @@ void main() {
       }
     });
 
-    testWidgets('en un partido terminado no hay botón ni texto, y se da de baja', (
-      tester,
-    ) async {
-      for (final estado in [EstadoFicha.finalizado, EstadoFicha.cancelado]) {
-        final e = _Entorno();
-        await e.servicio.seguir(30, DateTime(2026, 11, 14));
+    testWidgets(
+      'en un partido terminado no hay botón ni texto, y se da de baja',
+      (tester) async {
+        for (final estado in [EstadoFicha.finalizado, EstadoFicha.cancelado]) {
+          final e = _Entorno();
+          await e.servicio.seguir(30, DateTime(2026, 11, 14));
 
-        await _pintar(tester, e, estado: estado);
+          await _pintar(tester, e, estado: estado);
 
-        expect(find.byKey(_seguir), findsNothing, reason: '$estado');
-        expect(find.byKey(_siguiendo), findsNothing);
-        expect(find.byKey(_yaRecibe), findsNothing);
-        expect(e.bajas, contains('partido_30_es'), reason: '$estado');
-        expect(e.guardados, isEmpty);
+          expect(find.byKey(_seguir), findsNothing, reason: '$estado');
+          expect(find.byKey(_siguiendo), findsNothing);
+          expect(find.byKey(_yaRecibe), findsNothing);
+          expect(e.bajas, contains('partido_30_es'), reason: '$estado');
+          expect(e.guardados, isEmpty);
 
-        await tester.pumpWidget(const SizedBox());
-      }
-    });
+          await tester.pumpWidget(const SizedBox());
+        }
+      },
+    );
   });
 
   group('PushNotificationService y los partidos seguidos', () {
@@ -421,37 +450,46 @@ void main() {
       );
     });
 
-    test('al cambiar el idioma en Ajustes, los partidos seguidos pasan al topic del idioma nuevo', () async {
-      await e.servicio.seguir(30, DateTime(2026, 11, 14));
-      e.altas.clear();
+    test(
+      'al cambiar el idioma en Ajustes, los partidos seguidos pasan al topic del idioma nuevo',
+      () async {
+        await e.servicio.seguir(30, DateTime(2026, 11, 14));
+        e.altas.clear();
 
-      await PushNotificationService.alCambiarIdioma('es', 'ca');
+        await PushNotificationService.alCambiarIdioma('es', 'ca');
 
-      expect(e.bajas, contains('partido_30_es'));
-      expect(e.altas, ['partido_30_ca']);
-    });
+        expect(e.bajas, contains('partido_30_es'));
+        expect(e.altas, ['partido_30_ca']);
+      },
+    );
 
-    test('si el idioma cambió sin pasar por Ajustes, se corrige al arrancar', () async {
-      await AppPreferences.guardarIdiomaTopics('es');
-      await AppPreferences.guardarIdioma('en');
-      await e.servicio.seguir(30, DateTime(2026, 11, 14));
-      e.altas.clear();
+    test(
+      'si el idioma cambió sin pasar por Ajustes, se corrige al arrancar',
+      () async {
+        await AppPreferences.guardarIdiomaTopics('es');
+        await AppPreferences.guardarIdioma('en');
+        await e.servicio.seguir(30, DateTime(2026, 11, 14));
+        e.altas.clear();
 
-      await PushNotificationService.sincronizarTopicsAnonimos();
+        await PushNotificationService.sincronizarTopicsAnonimos();
 
-      expect(e.bajas, contains('partido_30_es'));
-      expect(e.altas, ['partido_30_en']);
-    });
+        expect(e.bajas, contains('partido_30_es'));
+        expect(e.altas, ['partido_30_en']);
+      },
+    );
 
-    test('activar los resultados anónimos da de baja de los partidos seguidos (no duplicar avisos)', () async {
-      await e.servicio.seguir(30, DateTime(2026, 11, 14));
+    test(
+      'activar los resultados anónimos da de baja de los partidos seguidos (no duplicar avisos)',
+      () async {
+        await e.servicio.seguir(30, DateTime(2026, 11, 14));
 
-      await PushNotificationService.activarResultadosAnonimos(true);
+        await PushNotificationService.activarResultadosAnonimos(true);
 
-      expect(altasAnonimas, ['resultados_es']);
-      expect(e.guardados, isEmpty);
-      expect(e.bajas, contains('partido_30_es'));
-    });
+        expect(altasAnonimas, ['resultados_es']);
+        expect(e.guardados, isEmpty);
+        expect(e.bajas, contains('partido_30_es'));
+      },
+    );
 
     test('apagarlos no toca los partidos seguidos', () async {
       await e.servicio.seguir(30, DateTime(2026, 11, 14));
@@ -461,17 +499,20 @@ void main() {
       expect(e.guardados.keys, [30]);
     });
 
-    test('al arrancar se dan de baja los caducados, y todos si ya recibe los resultados', () async {
-      e.guardados[1] = DateTime(2026, 11, 1);
-      e.guardados[2] = DateTime(2026, 11, 14);
+    test(
+      'al arrancar se dan de baja los caducados, y todos si ya recibe los resultados',
+      () async {
+        e.guardados[1] = DateTime(2026, 11, 1);
+        e.guardados[2] = DateTime(2026, 11, 14);
 
-      await PushNotificationService.sincronizarPartidosSeguidos();
-      expect(e.guardados.keys, [2]);
+        await PushNotificationService.sincronizarPartidosSeguidos();
+        expect(e.guardados.keys, [2]);
 
-      e.recibe = true;
-      await PushNotificationService.sincronizarPartidosSeguidos();
-      expect(e.guardados, isEmpty);
-    });
+        e.recibe = true;
+        await PushNotificationService.sincronizarPartidosSeguidos();
+        expect(e.guardados, isEmpty);
+      },
+    );
 
     test('un fallo no se propaga', () async {
       PushNotificationService.seguirPartidos = SeguirPartidoService(
@@ -486,58 +527,64 @@ void main() {
       await PushNotificationService.sinSeguirPartidos();
     });
 
-    test('con la portada o la ficha del partido a la vista, el aviso del directo no sale como notificación local', () async {
-      final mostradas = <Map<String, dynamic>>[];
+    test(
+      'con la portada o la ficha del partido a la vista, el aviso del directo no sale como notificación local',
+      () async {
+        final mostradas = <Map<String, dynamic>>[];
 
-      PushNotificationService.mostrarNotificacionLocal =
-          ({
-            required int comunicacionId,
-            required String titulo,
-            required String mensaje,
-            int cantidadNoLeidas = 1,
-            bool esPrivada = false,
-            int? autorId,
-            Map<String, dynamic> datos = const {},
-          }) async {
-            mostradas.add(datos);
-          };
+        PushNotificationService.mostrarNotificacionLocal =
+            ({
+              required int comunicacionId,
+              required String titulo,
+              required String mensaje,
+              int cantidadNoLeidas = 1,
+              bool esPrivada = false,
+              int? autorId,
+              Map<String, dynamic> datos = const {},
+            }) async {
+              mostradas.add(datos);
+            };
 
-      RemoteMessage aviso(String partido) => RemoteMessage(
-        data: {
-          'tipo': 'RESULTADO',
-          'pantalla': 'FICHA_PARTIDO',
-          'partidoId': partido,
-        },
-        notification: RemoteNotification(title: 'Gol', body: '1-0'),
-      );
+        RemoteMessage aviso(String partido) => RemoteMessage(
+          data: {
+            'tipo': 'RESULTADO',
+            'pantalla': 'FICHA_PARTIDO',
+            'partidoId': partido,
+          },
+          notification: RemoteNotification(title: 'Gol', body: '1-0'),
+        );
 
-      final dueno = Object();
+        final dueno = Object();
 
-      // Con el partido 30 a la vista (portada o ficha).
-      PartidoVisible.actualizar(dueno, 30);
-      await PushNotificationService.mostrarEnPrimerPlano(aviso('30'));
-      expect(mostradas, isEmpty);
+        // Con el partido 30 a la vista (portada o ficha).
+        PartidoVisible.actualizar(dueno, 30);
+        await PushNotificationService.mostrarEnPrimerPlano(aviso('30'));
+        expect(mostradas, isEmpty);
 
-      // Otro partido sí sale.
-      await PushNotificationService.mostrarEnPrimerPlano(aviso('31'));
-      expect(mostradas, hasLength(1));
+        // Otro partido sí sale.
+        await PushNotificationService.mostrarEnPrimerPlano(aviso('31'));
+        expect(mostradas, hasLength(1));
 
-      // Y sin nada a la vista, también.
-      PartidoVisible.actualizar(dueno, null);
-      await PushNotificationService.mostrarEnPrimerPlano(aviso('30'));
-      expect(mostradas, hasLength(2));
-    });
+        // Y sin nada a la vista, también.
+        PartidoVisible.actualizar(dueno, null);
+        await PushNotificationService.mostrarEnPrimerPlano(aviso('30'));
+        expect(mostradas, hasLength(2));
+      },
+    );
 
-    test('quien sigue un partido recibe su aviso una sola vez: el topic lleva los mismos datos y abre la ficha', () {
-      // El aviso del topic del partido trae tipo RESULTADO y partidoId, como el de resultados: abre su ficha.
-      expect(
-        PushNotificationService.partidoDeAviso({
-          'tipo': 'RESULTADO',
-          'pantalla': 'FICHA_PARTIDO',
-          'partidoId': '30',
-        }),
-        30,
-      );
-    });
+    test(
+      'quien sigue un partido recibe su aviso una sola vez: el topic lleva los mismos datos y abre la ficha',
+      () {
+        // El aviso del topic del partido trae tipo RESULTADO y partidoId, como el de resultados: abre su ficha.
+        expect(
+          PushNotificationService.partidoDeAviso({
+            'tipo': 'RESULTADO',
+            'pantalla': 'FICHA_PARTIDO',
+            'partidoId': '30',
+          }),
+          30,
+        );
+      },
+    );
   });
 }

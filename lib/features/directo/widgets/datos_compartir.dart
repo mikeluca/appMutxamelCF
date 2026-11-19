@@ -24,12 +24,16 @@ class OpcionesCompartir {
   final bool racha;
   final bool qr;
 
+  /// La línea "#somMTX #mareaAzul #MutxamelCF" de la imagen. Siempre empieza marcada (no se guarda la elección).
+  final bool hashtags;
+
   const OpcionesCompartir({
     this.formato = FormatoCompartir.publicacion,
     this.estilo = EstiloCompartir.club,
     this.goleadores = true,
     this.racha = true,
     this.qr = true,
+    this.hashtags = true,
   });
 
   OpcionesCompartir copiaCon({
@@ -38,6 +42,7 @@ class OpcionesCompartir {
     bool? goleadores,
     bool? racha,
     bool? qr,
+    bool? hashtags,
   }) {
     return OpcionesCompartir(
       formato: formato ?? this.formato,
@@ -45,6 +50,7 @@ class OpcionesCompartir {
       goleadores: goleadores ?? this.goleadores,
       racha: racha ?? this.racha,
       qr: qr ?? this.qr,
+      hashtags: hashtags ?? this.hashtags,
     );
   }
 }

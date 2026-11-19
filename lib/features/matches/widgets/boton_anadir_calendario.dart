@@ -9,7 +9,14 @@ import '../../../l10n/gen/app_localizations.dart';
 class BotonAnadirCalendario extends StatefulWidget {
   final Future<EventoCalendario?> Function(AppLocalizations t) construir;
 
-  const BotonAnadirCalendario({super.key, required this.construir});
+  /// Relleno del botón; null = el del botón de texto por defecto.
+  final EdgeInsetsGeometry? padding;
+
+  const BotonAnadirCalendario({
+    super.key,
+    required this.construir,
+    this.padding,
+  });
 
   @override
   State<BotonAnadirCalendario> createState() => _BotonAnadirCalendarioState();
@@ -48,6 +55,7 @@ class _BotonAnadirCalendarioState extends State<BotonAnadirCalendario> {
       label: Text(t.calendarAddButton),
       style: TextButton.styleFrom(
         visualDensity: VisualDensity.compact,
+        padding: widget.padding,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
     );

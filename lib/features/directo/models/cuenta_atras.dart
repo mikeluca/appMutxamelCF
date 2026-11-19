@@ -76,7 +76,12 @@ class CuentaAtras {
   final int horas;
   final int minutos;
 
-  const CuentaAtras(this.fase, {this.dias = 0, this.horas = 0, this.minutos = 0});
+  const CuentaAtras(
+    this.fase, {
+    this.dias = 0,
+    this.horas = 0,
+    this.minutos = 0,
+  });
 
   /// Desde cuánto antes del inicio se dice "Calentando…".
   static const Duration calentamiento = Duration(minutes: 30);

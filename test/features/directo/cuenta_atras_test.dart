@@ -10,7 +10,8 @@ import 'harness.dart';
 /// El inicio de un partido, en UTC, para 2026-11-14 a las 18:00 de Madrid (CET: UTC+1).
 final DateTime _inicio = DateTime.utc(2026, 11, 14, 17);
 
-CuentaAtras _falta(Duration d) => CuentaAtras.calcular(_inicio, _inicio.subtract(d));
+CuentaAtras _falta(Duration d) =>
+    CuentaAtras.calcular(_inicio, _inicio.subtract(d));
 
 void main() {
   group('HoraMadrid', () {
@@ -91,19 +92,34 @@ void main() {
     });
 
     test('desde 30 min antes: calentando', () {
-      expect(_falta(const Duration(minutes: 30)).fase, FaseCuentaAtras.calentando);
-      expect(_falta(const Duration(minutes: 12)).fase, FaseCuentaAtras.calentando);
+      expect(
+        _falta(const Duration(minutes: 30)).fase,
+        FaseCuentaAtras.calentando,
+      );
+      expect(
+        _falta(const Duration(minutes: 12)).fase,
+        FaseCuentaAtras.calentando,
+      );
       expect(
         _falta(const Duration(minutes: 30, seconds: 1)).fase,
         FaseCuentaAtras.minutos,
       );
-      expect(_falta(const Duration(seconds: 1)).fase, FaseCuentaAtras.calentando);
+      expect(
+        _falta(const Duration(seconds: 1)).fase,
+        FaseCuentaAtras.calentando,
+      );
     });
 
     test('ya pasó la hora: a punto de empezar, nunca negativo', () {
       expect(_falta(Duration.zero).fase, FaseCuentaAtras.aPuntoDeEmpezar);
-      expect(_falta(const Duration(minutes: -10)).fase, FaseCuentaAtras.aPuntoDeEmpezar);
-      expect(_falta(const Duration(days: -3)).fase, FaseCuentaAtras.aPuntoDeEmpezar);
+      expect(
+        _falta(const Duration(minutes: -10)).fase,
+        FaseCuentaAtras.aPuntoDeEmpezar,
+      );
+      expect(
+        _falta(const Duration(days: -3)).fase,
+        FaseCuentaAtras.aPuntoDeEmpezar,
+      );
     });
   });
 
@@ -173,7 +189,9 @@ void main() {
       expect(texto(tester), 'Calentando…');
     });
 
-    testWidgets('pasada la hora sin inicio: "A punto de empezar"', (tester) async {
+    testWidgets('pasada la hora sin inicio: "A punto de empezar"', (
+      tester,
+    ) async {
       pantalla(tester);
       ahora = DateTime.utc(2026, 11, 14, 17, 20);
 
@@ -195,27 +213,28 @@ void main() {
       expect(CuentaAtrasTexto.aplica(DateTime(2026, 11, 14), '18:00'), isTrue);
     });
 
-    testWidgets('se repinta cada minuto y el temporizador se para al llegar a "A punto de empezar"', (
-      tester,
-    ) async {
-      pantalla(tester);
-      ahora = DateTime.utc(2026, 11, 14, 16, 10);
-      final temporizadores = <_TemporizadorFalso>[];
+    testWidgets(
+      'se repinta cada minuto y el temporizador se para al llegar a "A punto de empezar"',
+      (tester) async {
+        pantalla(tester);
+        ahora = DateTime.utc(2026, 11, 14, 16, 10);
+        final temporizadores = <_TemporizadorFalso>[];
 
-      await tester.pumpWidget(
-        cuenta(
-          temporizador: (intervalo, alTic) {
-            final t = _TemporizadorFalso(intervalo, alTic);
-            temporizadores.add(t);
-            return t;
-          },
-        ),
-      );
+        await tester.pumpWidget(
+          cuenta(
+            temporizador: (intervalo, alTic) {
+              final t = _TemporizadorFalso(intervalo, alTic);
+              temporizadores.add(t);
+              return t;
+            },
+          ),
+        );
 
-      expect(temporizadores, hasLength(1));
-      expect(temporizadores.single.intervalo, const Duration(minutes: 1));
-      expect(texto(tester), 'Empieza en 50 min');
-    });
+        expect(temporizadores, hasLength(1));
+        expect(temporizadores.single.intervalo, const Duration(minutes: 1));
+        expect(texto(tester), 'Empieza en 50 min');
+      },
+    );
 
     testWidgets('cada tic recalcula con la hora de ahora', (tester) async {
       pantalla(tester);
@@ -247,58 +266,61 @@ void main() {
       expect(temporizador.cancelado, isTrue);
     });
 
-    testWidgets('el temporizador se para con la app en segundo plano, con otra pantalla encima y al salir', (
-      tester,
-    ) async {
-      pantalla(tester);
-      ahora = DateTime.utc(2026, 11, 14, 13);
-      final temporizadores = <_TemporizadorFalso>[];
-      final navegador = GlobalKey<NavigatorState>();
+    testWidgets(
+      'el temporizador se para con la app en segundo plano, con otra pantalla encima y al salir',
+      (tester) async {
+        pantalla(tester);
+        ahora = DateTime.utc(2026, 11, 14, 13);
+        final temporizadores = <_TemporizadorFalso>[];
+        final navegador = GlobalKey<NavigatorState>();
 
-      await tester.pumpWidget(
-        cuenta(
-          navegador: navegador,
-          temporizador: (intervalo, alTic) {
-            final t = _TemporizadorFalso(intervalo, alTic);
-            temporizadores.add(t);
-            return t;
-          },
-        ),
-      );
+        await tester.pumpWidget(
+          cuenta(
+            navegador: navegador,
+            temporizador: (intervalo, alTic) {
+              final t = _TemporizadorFalso(intervalo, alTic);
+              temporizadores.add(t);
+              return t;
+            },
+          ),
+        );
 
-      expect(temporizadores.last.cancelado, isFalse);
+        expect(temporizadores.last.cancelado, isFalse);
 
-      // Segundo plano.
-      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
-      await tester.pump();
-      expect(temporizadores.last.cancelado, isTrue);
+        // Segundo plano.
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+        await tester.pump();
+        expect(temporizadores.last.cancelado, isTrue);
 
-      // Al volver, otro temporizador (y se repinta con la hora de ahora).
-      ahora = DateTime.utc(2026, 11, 14, 14);
-      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-      await tester.pump();
-      expect(temporizadores, hasLength(2));
-      expect(temporizadores.last.cancelado, isFalse);
-      expect(texto(tester), 'Empieza en 3 h 0 min');
+        // Al volver, otro temporizador (y se repinta con la hora de ahora).
+        ahora = DateTime.utc(2026, 11, 14, 14);
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.resumed,
+        );
+        await tester.pump();
+        expect(temporizadores, hasLength(2));
+        expect(temporizadores.last.cancelado, isFalse);
+        expect(texto(tester), 'Empieza en 3 h 0 min');
 
-      // Otra pantalla encima.
-      unawaited(
-        navegador.currentState!.push(
-          MaterialPageRoute<void>(builder: (_) => const Scaffold()),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(temporizadores.last.cancelado, isTrue);
+        // Otra pantalla encima.
+        unawaited(
+          navegador.currentState!.push(
+            MaterialPageRoute<void>(builder: (_) => const Scaffold()),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(temporizadores.last.cancelado, isTrue);
 
-      navegador.currentState!.pop();
-      await tester.pumpAndSettle();
-      expect(temporizadores, hasLength(3));
-      expect(temporizadores.last.cancelado, isFalse);
+        navegador.currentState!.pop();
+        await tester.pumpAndSettle();
+        expect(temporizadores, hasLength(3));
+        expect(temporizadores.last.cancelado, isFalse);
 
-      // Al salir.
-      await tester.pumpWidget(const SizedBox());
-      expect(temporizadores.last.cancelado, isTrue);
-    });
+        // Al salir.
+        await tester.pumpWidget(const SizedBox());
+        expect(temporizadores.last.cancelado, isTrue);
+      },
+    );
   });
 }
 

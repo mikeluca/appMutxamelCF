@@ -586,13 +586,13 @@ class _CalendarioGestionPageState extends State<CalendarioGestionPage> {
                         Flexible(
                           child: Text(
                             subtitulo,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: _colors.onSurfaceVariant,
-                        decoration: item.cancelado
-                            ? TextDecoration.lineThrough
-                            : null,
-                      ),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: _colors.onSurfaceVariant,
+                              decoration: item.cancelado
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
                           ),
                         ),
                       ],

@@ -139,9 +139,7 @@ class _CelebraGolesState extends State<CelebraGoles>
       _mostrar(
         (context) => _AvisoGol(
           clave: 'aviso-gol-nuestro',
-          texto: AppLocalizations.of(
-            context,
-          ).goalOurBanner(_marcador),
+          texto: AppLocalizations.of(context).goalOurBanner(_marcador),
           color: const Color(0xFF2E7D32),
           animar: false,
         ),

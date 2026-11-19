@@ -9,7 +9,8 @@ import 'package:app_mutxamel_cf/features/news/services/news_services.dart';
 import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
-import 'package:flutter_localizations/flutter_localizations.dart' show GlobalWidgetsLocalizations;
+import 'package:flutter_localizations/flutter_localizations.dart'
+    show GlobalWidgetsLocalizations;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../../support/marcador_helpers.dart';
@@ -92,33 +93,34 @@ Future<void> _quitarPagina(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('en juego: letrero y marcador, y se vuelve a pedir cada 30 segundos', (
-    tester,
-  ) async {
-    final partidos = _MatchFalso([_enJuego(0), _enJuego(1), _enJuego(2)]);
+  testWidgets(
+    'en juego: letrero y marcador, y se vuelve a pedir cada 30 segundos',
+    (tester) async {
+      final partidos = _MatchFalso([_enJuego(0), _enJuego(1), _enJuego(2)]);
 
-    await _pintar(tester, partidos);
+      await _pintar(tester, partidos);
 
-    expect(find.text('PARTIDO EN JUEGO'), findsOneWidget);
-    expect(encuentraMarcador('0 - 0'), findsOneWidget);
-    expect(partidos.llamadas, 1);
+      expect(find.text('PARTIDO EN JUEGO'), findsOneWidget);
+      expect(encuentraMarcador('0 - 0'), findsOneWidget);
+      expect(partidos.llamadas, 1);
 
-    await tester.pump(_intervalo);
-    await tester.pump();
-    await tester.pump();
+      await tester.pump(_intervalo);
+      await tester.pump();
+      await tester.pump();
 
-    expect(partidos.llamadas, 2);
-    expect(encuentraMarcador('1 - 0'), findsOneWidget);
+      expect(partidos.llamadas, 2);
+      expect(encuentraMarcador('1 - 0'), findsOneWidget);
 
-    await tester.pump(_intervalo);
-    await tester.pump();
-    await tester.pump();
+      await tester.pump(_intervalo);
+      await tester.pump();
+      await tester.pump();
 
-    expect(partidos.llamadas, 3);
-    expect(encuentraMarcador('2 - 0'), findsOneWidget);
+      expect(partidos.llamadas, 3);
+      expect(encuentraMarcador('2 - 0'), findsOneWidget);
 
-    await _quitarPagina(tester);
-  });
+      await _quitarPagina(tester);
+    },
+  );
 
   testWidgets('la actualización no vuelve a la tarjeta de "cargando"', (
     tester,
@@ -210,7 +212,9 @@ void main() {
     await _quitarPagina(tester);
   });
 
-  testWidgets('al salir de la pantalla el temporizador se para', (tester) async {
+  testWidgets('al salir de la pantalla el temporizador se para', (
+    tester,
+  ) async {
     final partidos = _MatchFalso([_enJuego(0)]);
 
     await _pintar(tester, partidos);
@@ -301,27 +305,30 @@ void main() {
     },
   );
 
-  test('el servicio de push avisa a la portada con los pushes del directo', () async {
-    var avisos = 0;
-    final suscripcion = PushNotificationService.avisosDeResultados.listen(
-      (_) => avisos++,
-    );
+  test(
+    'el servicio de push avisa a la portada con los pushes del directo',
+    () async {
+      var avisos = 0;
+      final suscripcion = PushNotificationService.avisosDeResultados.listen(
+        (_) => avisos++,
+      );
 
-    await PushNotificationService.mostrarEnPrimerPlano(
-      const RemoteMessage(data: {'tipo': 'RESULTADO'}),
-    );
-    // El push de un topic anónimo no trae datos.
-    await PushNotificationService.mostrarEnPrimerPlano(const RemoteMessage());
-    // Una noticia no es del directo.
-    await PushNotificationService.mostrarEnPrimerPlano(
-      const RemoteMessage(data: {'tipo': 'NOTICIA'}),
-    );
-    await Future<void>.delayed(Duration.zero);
+      await PushNotificationService.mostrarEnPrimerPlano(
+        const RemoteMessage(data: {'tipo': 'RESULTADO'}),
+      );
+      // El push de un topic anónimo no trae datos.
+      await PushNotificationService.mostrarEnPrimerPlano(const RemoteMessage());
+      // Una noticia no es del directo.
+      await PushNotificationService.mostrarEnPrimerPlano(
+        const RemoteMessage(data: {'tipo': 'NOTICIA'}),
+      );
+      await Future<void>.delayed(Duration.zero);
 
-    expect(avisos, 2);
+      expect(avisos, 2);
 
-    await suscripcion.cancel();
-  });
+      await suscripcion.cancel();
+    },
+  );
 
   testWidgets(
     'compatibilidad: un backend sin los campos nuevos pinta la tarjeta de siempre',
