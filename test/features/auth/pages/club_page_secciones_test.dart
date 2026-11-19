@@ -108,8 +108,9 @@ void main() {
       'Administración',
       'Moderación',
       'Cuentas pendientes',
-      'Retransmisión',
+      'Directo y RRSS',
       'Partido en directo',
+      'Imágenes para redes',
       'Mi cuenta',
       'Mi perfil',
       'Cerrar sesión',
@@ -117,7 +118,7 @@ void main() {
 
     var anterior = -1.0;
     for (final texto in esperado) {
-      // "Retransmisión" también es un chip del rol: se mira el título.
+      // El título de la sección es "Directo y RRSS" (el chip del rol sigue siendo "Retransmisión").
       final candidatos = find.text(texto);
       expect(candidatos, findsWidgets, reason: texto);
       final y = tester
@@ -163,7 +164,7 @@ void main() {
       'Entrenador',
       'Coordinación',
       'Administración',
-      'Retransmisión',
+      'Directo y RRSS',
     ]) {
       expect(find.text(titulo), findsNothing, reason: titulo);
     }
@@ -193,6 +194,7 @@ void main() {
       'Moderación': ['/admin/moderation'],
       'Cuentas pendientes': ['/admin/pending-accounts'],
       'Partido en directo': ['/live-match'],
+      'Imágenes para redes': ['/social-images'],
       'Mi perfil': ['/profile'],
     };
 
@@ -228,5 +230,43 @@ void main() {
         expect(_rutas, [caso.value[1]]);
       });
     }
+  });
+
+  group('Directo y RRSS según el rol', () {
+    testWidgets('RETRANSMISION: Partido en directo e Imágenes para redes', (
+      tester,
+    ) async {
+      await _pintar(tester, ['RETRANSMISION']);
+
+      expect(find.text('Directo y RRSS'), findsOneWidget);
+      expect(find.text('Partido en directo'), findsOneWidget);
+      expect(find.text('Imágenes para redes'), findsOneWidget);
+    });
+
+    testWidgets('ADMIN_APP: solo Imágenes para redes', (tester) async {
+      await _pintar(tester, ['ADMIN_APP']);
+
+      expect(find.text('Directo y RRSS'), findsOneWidget);
+      expect(find.text('Imágenes para redes'), findsOneWidget);
+      expect(find.text('Partido en directo'), findsNothing);
+    });
+
+    testWidgets('los dos roles: las dos opciones, una sola vez', (
+      tester,
+    ) async {
+      await _pintar(tester, ['RETRANSMISION', 'ADMIN_APP']);
+
+      expect(find.text('Directo y RRSS'), findsOneWidget);
+      expect(find.text('Partido en directo'), findsOneWidget);
+      expect(find.text('Imágenes para redes'), findsOneWidget);
+    });
+
+    testWidgets('COORDINADOR no ve la sección', (tester) async {
+      await _pintar(tester, ['COORDINADOR']);
+
+      expect(find.text('Directo y RRSS'), findsNothing);
+      expect(find.text('Imágenes para redes'), findsNothing);
+      expect(find.text('Partido en directo'), findsNothing);
+    });
   });
 }

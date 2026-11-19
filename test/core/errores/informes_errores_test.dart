@@ -1,4 +1,3 @@
-
 import 'package:app_mutxamel_cf/core/config/app_preferences.dart';
 import 'package:app_mutxamel_cf/core/errores/informes_errores.dart';
 import 'package:flutter/foundation.dart';

@@ -904,6 +904,18 @@ abstract class AppLocalizations {
   /// **'Avisos en directo del primer equipo'**
   String get clubPageLiveMatchDesc;
 
+  /// No description provided for @clubPageSocialImages.
+  ///
+  /// In es, this message translates to:
+  /// **'Imágenes para redes'**
+  String get clubPageSocialImages;
+
+  /// No description provided for @clubPageSocialImagesDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Previa, resultados y cartel del próximo partido'**
+  String get clubPageSocialImagesDesc;
+
   /// No description provided for @clubPageCommunications.
   ///
   /// In es, this message translates to:
@@ -955,7 +967,7 @@ abstract class AppLocalizations {
   /// No description provided for @clubSectionBroadcast.
   ///
   /// In es, this message translates to:
-  /// **'Retransmisión'**
+  /// **'Directo y RRSS'**
   String get clubSectionBroadcast;
 
   /// No description provided for @clubPageMyProfile.
@@ -4555,13 +4567,13 @@ abstract class AppLocalizations {
   /// No description provided for @socialImagesEmptyPreview.
   ///
   /// In es, this message translates to:
-  /// **'Todavía no se han generado. Se generan solas los viernes a las 12:00.'**
+  /// **'Todavía no se han generado. Pulsa Generar ahora para crearlas con los partidos de este fin de semana.'**
   String get socialImagesEmptyPreview;
 
   /// No description provided for @socialImagesEmptyResults.
   ///
   /// In es, this message translates to:
-  /// **'Todavía no se han generado. Se generan solas los lunes a las 09:00.'**
+  /// **'Todavía no se han generado. Pulsa Generar ahora para crearlas con los resultados de este fin de semana.'**
   String get socialImagesEmptyResults;
 
   /// No description provided for @socialImagesGenerateNow.
@@ -4653,6 +4665,84 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'{page} de {total}'**
   String socialImagesPageOf(int page, int total);
+
+  /// No description provided for @socialImagesTabFirstTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'Partido Primer Equipo'**
+  String get socialImagesTabFirstTeam;
+
+  /// No description provided for @socialImagesTabReserve.
+  ///
+  /// In es, this message translates to:
+  /// **'Partido Filial'**
+  String get socialImagesTabReserve;
+
+  /// No description provided for @socialImagesNoMatch.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay ningún próximo partido del Primer Equipo'**
+  String get socialImagesNoMatch;
+
+  /// No description provided for @socialImagesMatchStarted.
+  ///
+  /// In es, this message translates to:
+  /// **'El partido ya ha empezado'**
+  String get socialImagesMatchStarted;
+
+  /// No description provided for @socialImagesLanguageLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Idioma del cartel'**
+  String get socialImagesLanguageLabel;
+
+  /// No description provided for @socialImagesLanguageEs.
+  ///
+  /// In es, this message translates to:
+  /// **'Castellano'**
+  String get socialImagesLanguageEs;
+
+  /// No description provided for @socialImagesLanguageCa.
+  ///
+  /// In es, this message translates to:
+  /// **'Valencià'**
+  String get socialImagesLanguageCa;
+
+  /// No description provided for @socialImagesGenerate.
+  ///
+  /// In es, this message translates to:
+  /// **'Generar'**
+  String get socialImagesGenerate;
+
+  /// No description provided for @socialImagesPosterOutdated.
+  ///
+  /// In es, this message translates to:
+  /// **'Desactualizada: pulsa Generar para ver los cambios'**
+  String get socialImagesPosterOutdated;
+
+  /// No description provided for @socialImagesPosterError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido generar el cartel.'**
+  String get socialImagesPosterError;
+
+  /// No description provided for @socialImagesPosterLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido cargar el próximo partido.'**
+  String get socialImagesPosterLoadError;
+
+  /// No description provided for @socialImagesPosterAlt.
+  ///
+  /// In es, this message translates to:
+  /// **'Cartel del próximo partido'**
+  String get socialImagesPosterAlt;
+
+  /// No description provided for @socialImagesNoPermissionBack.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya no tienes permiso para ver las imágenes para redes'**
+  String get socialImagesNoPermissionBack;
 
   /// No description provided for @weekendReminderSent.
   ///

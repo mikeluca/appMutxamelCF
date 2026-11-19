@@ -436,6 +436,13 @@ class AppLocalizationsCa extends AppLocalizations {
   String get clubPageLiveMatchDesc => 'Avisos en directe del primer equip';
 
   @override
+  String get clubPageSocialImages => 'Imatges per a xarxes';
+
+  @override
+  String get clubPageSocialImagesDesc =>
+      'Prèvia, resultats i cartell del pròxim partit';
+
+  @override
   String get clubPageCommunications => 'Comunicacions';
 
   @override
@@ -460,7 +467,7 @@ class AppLocalizationsCa extends AppLocalizations {
   String get clubSectionAdministration => 'Administració';
 
   @override
-  String get clubSectionBroadcast => 'Retransmissió';
+  String get clubSectionBroadcast => 'Directe i XXSS';
 
   @override
   String get clubPageMyProfile => 'El meu perfil';
@@ -2582,11 +2589,11 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get socialImagesEmptyPreview =>
-      'Encara no s\'han generat. Es generen soles els divendres a les 12:00.';
+      'Encara no s\'han generat. Prem Generar ara per crear-les amb els partits d\'aquest cap de setmana.';
 
   @override
   String get socialImagesEmptyResults =>
-      'Encara no s\'han generat. Es generen soles els dilluns a les 09:00.';
+      'Encara no s\'han generat. Prem Generar ara per crear-les amb els resultats d\'aquest cap de setmana.';
 
   @override
   String get socialImagesGenerateNow => 'Generar ara';
@@ -2636,6 +2643,49 @@ class AppLocalizationsCa extends AppLocalizations {
   String socialImagesPageOf(int page, int total) {
     return '$page de $total';
   }
+
+  @override
+  String get socialImagesTabFirstTeam => 'Partit Primer Equip';
+
+  @override
+  String get socialImagesTabReserve => 'Partit Filial';
+
+  @override
+  String get socialImagesNoMatch =>
+      'No hi ha cap pròxim partit del Primer Equip';
+
+  @override
+  String get socialImagesMatchStarted => 'El partit ja ha començat';
+
+  @override
+  String get socialImagesLanguageLabel => 'Idioma del cartell';
+
+  @override
+  String get socialImagesLanguageEs => 'Castellà';
+
+  @override
+  String get socialImagesLanguageCa => 'Valencià';
+
+  @override
+  String get socialImagesGenerate => 'Generar';
+
+  @override
+  String get socialImagesPosterOutdated =>
+      'Desactualitzada: prem Generar per veure els canvis';
+
+  @override
+  String get socialImagesPosterError => 'No s\'ha pogut generar el cartell.';
+
+  @override
+  String get socialImagesPosterLoadError =>
+      'No s\'ha pogut carregar el pròxim partit.';
+
+  @override
+  String get socialImagesPosterAlt => 'Cartell del pròxim partit';
+
+  @override
+  String get socialImagesNoPermissionBack =>
+      'Ja no tens permís per veure les imatges per a xarxes';
 
   @override
   String weekendReminderSent(int count) {

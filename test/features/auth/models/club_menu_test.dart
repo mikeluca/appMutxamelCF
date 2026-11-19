@@ -140,12 +140,17 @@ void main() {
         SeccionClubId.club,
         SeccionClubId.coordinacion,
         SeccionClubId.administracion,
+        SeccionClubId.retransmision,
         SeccionClubId.cuenta,
       ]);
       expect(_opciones(s, SeccionClubId.administracion), [
         OpcionClub.moderacion,
         OpcionClub.cuentasPendientes,
         OpcionClub.estadoApp,
+      ]);
+      // Directo y RRSS: el administrador ve solo Imágenes para redes (Partido en directo es de Retransmisión).
+      expect(_opciones(s, SeccionClubId.retransmision), [
+        OpcionClub.imagenesRedes,
       ]);
     });
 
@@ -161,7 +166,35 @@ void main() {
       expect(_opciones(s, SeccionClubId.club), club);
       expect(_opciones(s, SeccionClubId.retransmision), [
         OpcionClub.partidoEnDirecto,
+        OpcionClub.imagenesRedes,
       ]);
+    });
+
+    test(
+      'RETRANSMISION y ADMIN_APP a la vez: las dos opciones, una sola vez',
+      () {
+        final s = de(['RETRANSMISION', 'ADMIN_APP']);
+
+        expect(_opciones(s, SeccionClubId.retransmision), [
+          OpcionClub.partidoEnDirecto,
+          OpcionClub.imagenesRedes,
+        ]);
+      },
+    );
+
+    test(
+      'COORDINADOR sin Retransmisión ni administrador: sin Directo y RRSS',
+      () {
+        final s = de(['COORDINADOR']);
+
+        expect(_ids(s), isNot(contains(SeccionClubId.retransmision)));
+        expect(_todas(s), isNot(contains(OpcionClub.imagenesRedes)));
+        expect(_todas(s), isNot(contains(OpcionClub.partidoEnDirecto)));
+      },
+    );
+
+    test('la ruta de Imágenes para redes es la nueva pantalla', () {
+      expect(rutaDeOpcionClub(OpcionClub.imagenesRedes), '/social-images');
     });
 
     test('SOCIO solo: Club (sin clasificaciones) + cuenta', () {

@@ -396,6 +396,14 @@ class _ClubPageState extends State<ClubPage> {
           descripcion: t.clubPageLiveMatchDesc,
           onTap: () => _navegar(opcion),
         );
+      case OpcionClub.imagenesRedes:
+        return _construirOpcion(
+          context,
+          icono: Icons.photo_library_outlined,
+          titulo: t.clubPageSocialImages,
+          descripcion: t.clubPageSocialImagesDesc,
+          onTap: () => _navegar(opcion),
+        );
       case OpcionClub.solicitudesFamilia:
         return _construirOpcion(
           context,

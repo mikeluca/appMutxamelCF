@@ -356,19 +356,22 @@ class AbrirBandeja extends DestinoConvocatoria {
   int get hashCode => 'AbrirBandeja'.hashCode;
 }
 
-/// COORDINADOR/ADMIN_APP: "Imágenes para redes" del panel Fin de semana de ese fin de semana ([desde] es su
-/// viernes; sin él, el de hoy).
+/// RETRANSMISION/ADMIN_APP: la pantalla "Imágenes para redes" en la pestaña [tipoImagen] (PREVIA o RESULTADOS; sin
+/// ella, la que toque) y en el fin de semana de [desde] (su viernes; sin él, el de por defecto de la pestaña).
 class AbrirImagenesRedes extends DestinoConvocatoria {
   final DateTime? desde;
+  final String? tipoImagen;
 
-  const AbrirImagenesRedes([this.desde]);
+  const AbrirImagenesRedes([this.desde, this.tipoImagen]);
 
   @override
   bool operator ==(Object other) =>
-      other is AbrirImagenesRedes && other.desde == desde;
+      other is AbrirImagenesRedes &&
+      other.desde == desde &&
+      other.tipoImagen == tipoImagen;
 
   @override
-  int get hashCode => Object.hash('AbrirImagenesRedes', desde);
+  int get hashCode => Object.hash('AbrirImagenesRedes', desde, tipoImagen);
 }
 
 /// COORDINADOR/ADMIN_APP/ENTRENADOR: la pantalla "Solicitudes de familia".
@@ -391,6 +394,14 @@ class AbrirMiSolicitudFamilia extends DestinoConvocatoria {
 
   @override
   int get hashCode => 'AbrirMiSolicitudFamilia'.hashCode;
+}
+
+/// Quien puede ver "Imágenes para redes": Retransmisión y los administradores de la app (Coordinación ya no).
+bool puedeVerImagenesRedes() {
+  final usuario = AuthManager.usuarioActual;
+
+  return usuario?.tieneRol('RETRANSMISION') == true ||
+      usuario?.tieneRol('ADMIN_APP') == true;
 }
 
 /// Quien puede revisar solicitudes de familia (el backend filtra qué ve cada uno).
@@ -437,7 +448,13 @@ DestinoConvocatoria? destinoDeAvisoConvocatoria({
   }
 
   if (tipo == tipoPushImagenesRedes) {
-    return AbrirImagenesRedes(diaDeFechaPartido(datos['desde']?.toString()));
+    // Sin permiso (p. ej. un coordinador con un aviso antiguo) no se abre nada.
+    return puedeVerImagenesRedes()
+        ? AbrirImagenesRedes(
+            diaDeFechaPartido(datos['desde']?.toString()),
+            datos['tipoImagen']?.toString(),
+          )
+        : null;
   }
 
   if (tipo == tipoPushReporte) {
@@ -648,8 +665,12 @@ String payloadDeDestino(DestinoConvocatoria destino) {
     AbrirBandeja() => 'CONTINUIDAD_RESPUESTA',
     AbrirSolicitudesFamilia() => 'SOLICITUDES_FAMILIA',
     AbrirMiSolicitudFamilia() => 'MI_SOLICITUD_FAMILIA',
-    AbrirImagenesRedes(:final desde) =>
-      desde == null ? 'IMAGENES_REDES' : 'IMAGENES_REDES:${_diaTexto(desde)}',
+    AbrirImagenesRedes(:final desde, :final tipoImagen) =>
+      tipoImagen != null
+          ? 'IMAGENES_REDES:${desde == null ? '' : _diaTexto(desde)}:$tipoImagen'
+          : desde == null
+          ? 'IMAGENES_REDES'
+          : 'IMAGENES_REDES:${_diaTexto(desde)}',
   };
 }
 
@@ -783,8 +804,12 @@ DestinoConvocatoria? destinoDePayload(String payload) {
   }
 
   if (payload.startsWith('IMAGENES_REDES:')) {
+    // IMAGENES_REDES:<fecha>[:<tipo>] (la fecha puede ir vacía).
+    final partes = payload.substring('IMAGENES_REDES:'.length).split(':');
+
     return AbrirImagenesRedes(
-      diaDeFechaPartido(payload.substring('IMAGENES_REDES:'.length)),
+      diaDeFechaPartido(partes.first),
+      partes.length > 1 && partes[1].isNotEmpty ? partes[1] : null,
     );
   }
 

@@ -14,7 +14,6 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_secure_storage/test/test_flutter_secure_storage_platform.dart';
 import 'package:flutter_secure_storage_platform_interface/flutter_secure_storage_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../../support/imagenes_redes_fakes.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -87,10 +86,7 @@ Future<void> _pintar(WidgetTester tester, _Servicio servicio) async {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: FinDeSemanaPage(
-        imagenesServicio: FakeImagenesRedesService(),
-        servicio: servicio,
-      ),
+      home: FinDeSemanaPage(servicio: servicio),
     ),
   );
   await tester.pumpAndSettle();

@@ -34,6 +34,7 @@ enum OpcionClub {
   cuentasPendientes,
   estadoApp,
   partidoEnDirecto,
+  imagenesRedes,
   solicitudesFamilia,
   pedirAccesoJugador,
   miPerfil,
@@ -84,6 +85,8 @@ String? rutaDeOpcionClub(OpcionClub opcion) {
       return AppRoutes.appStatus;
     case OpcionClub.partidoEnDirecto:
       return AppRoutes.liveMatch;
+    case OpcionClub.imagenesRedes:
+      return AppRoutes.socialImages;
     case OpcionClub.solicitudesFamilia:
       return AppRoutes.familyRequests;
     case OpcionClub.pedirAccesoJugador:
@@ -161,6 +164,8 @@ List<SeccionClub> construirSeccionesClub(
     ]),
     SeccionClub(SeccionClubId.retransmision, [
       if (esRetransmision) OpcionClub.partidoEnDirecto,
+      // Imágenes para redes: Retransmisión y los administradores de la app (Coordinación ya no las ve).
+      if (esRetransmision || esAdmin) OpcionClub.imagenesRedes,
     ]),
     SeccionClub(SeccionClubId.cuenta, [
       if (usuario != null) OpcionClub.pedirAccesoJugador,

@@ -430,6 +430,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clubPageLiveMatchDesc => 'Live alerts for the first team';
 
   @override
+  String get clubPageSocialImages => 'Social media images';
+
+  @override
+  String get clubPageSocialImagesDesc =>
+      'Preview, results and next-match poster';
+
+  @override
   String get clubPageCommunications => 'Communications';
 
   @override
@@ -454,7 +461,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clubSectionAdministration => 'Administration';
 
   @override
-  String get clubSectionBroadcast => 'Live broadcast';
+  String get clubSectionBroadcast => 'Live & social media';
 
   @override
   String get clubPageMyProfile => 'My profile';
@@ -2561,11 +2568,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get socialImagesEmptyPreview =>
-      'Not generated yet. They are generated automatically on Fridays at 12:00.';
+      'Not generated yet. Tap Generate now to create them with this weekend\'s matches.';
 
   @override
   String get socialImagesEmptyResults =>
-      'Not generated yet. They are generated automatically on Mondays at 09:00.';
+      'Not generated yet. Tap Generate now to create them with this weekend\'s results.';
 
   @override
   String get socialImagesGenerateNow => 'Generate now';
@@ -2615,6 +2622,48 @@ class AppLocalizationsEn extends AppLocalizations {
   String socialImagesPageOf(int page, int total) {
     return '$page of $total';
   }
+
+  @override
+  String get socialImagesTabFirstTeam => 'First Team match';
+
+  @override
+  String get socialImagesTabReserve => 'Reserve team match';
+
+  @override
+  String get socialImagesNoMatch => 'There is no upcoming First Team match';
+
+  @override
+  String get socialImagesMatchStarted => 'The match has already started';
+
+  @override
+  String get socialImagesLanguageLabel => 'Poster language';
+
+  @override
+  String get socialImagesLanguageEs => 'Spanish';
+
+  @override
+  String get socialImagesLanguageCa => 'Valencian';
+
+  @override
+  String get socialImagesGenerate => 'Generate';
+
+  @override
+  String get socialImagesPosterOutdated =>
+      'Out of date: tap Generate to see the changes';
+
+  @override
+  String get socialImagesPosterError => 'The poster could not be generated.';
+
+  @override
+  String get socialImagesPosterLoadError =>
+      'The next match could not be loaded.';
+
+  @override
+  String get socialImagesPosterAlt => 'Next-match poster';
+
+  @override
+  String get socialImagesNoPermissionBack =>
+      'You no longer have permission to see the social media images';
 
   @override
   String weekendReminderSent(int count) {

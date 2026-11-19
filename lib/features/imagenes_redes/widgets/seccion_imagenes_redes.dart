@@ -2,24 +2,34 @@ import 'dart:typed_data';
 
 import 'package:material_ui/material_ui.dart';
 
+import '../../../core/network/api_client.dart';
 import '../../../core/utils/mensaje_error.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/imagenes_redes_model.dart';
 import '../services/imagenes_redes_service.dart';
 import 'imagenes_redes_vista.dart';
 
-/// "Imágenes para redes" del panel Fin de semana: las miniaturas de la previa y de los resultados del
-/// fin de semana que se está viendo, o cuándo se generan y un botón para generarlas ya.
+/// Las imágenes de la previa o de los resultados (según [tipo]) del fin de semana que se está viendo: sus
+/// miniaturas y "Volver a generar", o un botón para generarlas ya. Las genera a mano Retransmisión (o un
+/// administrador de la app): ya no se generan solas.
 class SeccionImagenesRedes extends StatefulWidget {
   final ImagenesRedesService servicio;
 
   /// El viernes del fin de semana que se está viendo.
   final DateTime viernes;
 
+  /// [tipoImagenPrevia] o [tipoImagenResultados].
+  final String tipo;
+
+  /// Se llama si el servidor dice 403 (la cuenta ya no tiene permiso): la pantalla avisa y vuelve al menú.
+  final VoidCallback? alDenegar;
+
   const SeccionImagenesRedes({
     super.key,
     required this.servicio,
     required this.viernes,
+    required this.tipo,
+    this.alDenegar,
   });
 
   @override
@@ -29,28 +39,43 @@ class SeccionImagenesRedes extends StatefulWidget {
 class _SeccionImagenesRedesState extends State<SeccionImagenesRedes> {
   late Future<ImagenesRedesModel> _futuro;
 
-  /// El tipo que se está generando ahora (su botón queda en espera).
-  String? _generando;
+  /// Si se está generando ahora (su botón queda en espera).
+  bool _generando = false;
 
   AppLocalizations get _t => AppLocalizations.of(context);
 
   @override
   void initState() {
     super.initState();
-    _futuro = widget.servicio.obtener(fecha: widget.viernes);
+    _futuro = _cargar();
+  }
+
+  /// Un 403 no es un fallo de red: se avisa a la pantalla.
+  bool _esDenegado(Object? error) =>
+      error is ApiException && error.statusCode == 403;
+
+  Future<ImagenesRedesModel> _cargar() async {
+    try {
+      return await widget.servicio.obtener(fecha: widget.viernes);
+    } catch (e) {
+      if (_esDenegado(e)) widget.alDenegar?.call();
+
+      rethrow;
+    }
   }
 
   void _recargar() {
     setState(() {
-      _futuro = widget.servicio.obtener(fecha: widget.viernes);
+      _futuro = _cargar();
     });
   }
 
-  Future<void> _generar(String tipo) async {
+  Future<void> _generar() async {
     final t = _t;
+    final tipo = widget.tipo;
     final mensajero = ScaffoldMessenger.of(context);
 
-    setState(() => _generando = tipo);
+    setState(() => _generando = true);
 
     try {
       final nuevas = await widget.servicio.regenerar(
@@ -62,7 +87,7 @@ class _SeccionImagenesRedesState extends State<SeccionImagenesRedes> {
 
       setState(() {
         _futuro = Future.value(nuevas);
-        _generando = null;
+        _generando = false;
       });
 
       mensajero
@@ -79,7 +104,12 @@ class _SeccionImagenesRedesState extends State<SeccionImagenesRedes> {
     } catch (e) {
       if (!mounted) return;
 
-      setState(() => _generando = null);
+      setState(() => _generando = false);
+
+      if (_esDenegado(e)) {
+        widget.alDenegar?.call();
+        return;
+      }
 
       mensajero
         ..hideCurrentSnackBar()
@@ -89,20 +119,19 @@ class _SeccionImagenesRedesState extends State<SeccionImagenesRedes> {
 
   Future<void> _abrir(
     ImagenesRedesModel datos,
-    String tipo,
     ImagenRedesModel elegida,
   ) async {
-    final imagenes = datos.deTipo(tipo);
+    final imagenes = datos.deTipo(widget.tipo);
 
     await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => ImagenesRedesVistaPage(
           servicio: widget.servicio,
-          tipo: tipo,
+          tipo: widget.tipo,
           desde: widget.viernes,
           imagenes: imagenes,
-          texto: datos.textoDe(tipo),
+          texto: datos.textoDe(widget.tipo),
           indiceInicial: imagenes.indexWhere((i) => i.id == elegida.id),
         ),
       ),
@@ -114,63 +143,24 @@ class _SeccionImagenesRedesState extends State<SeccionImagenesRedes> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    return FutureBuilder<ImagenesRedesModel>(
+      future: _futuro,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-    return Card(
-      key: const ValueKey('seccion-imagenes-redes'),
-      margin: const EdgeInsets.only(top: 12),
-      elevation: 1,
-      color: colors.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.photo_library_outlined, color: colors.primary),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    _t.socialImagesTitle,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            FutureBuilder<ImagenesRedesModel>(
-              future: _futuro,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 24),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                }
+        final datos = snapshot.data;
 
-                final datos = snapshot.data;
+        if (snapshot.hasError || datos == null) {
+          return _construirError();
+        }
 
-                if (snapshot.hasError || datos == null) {
-                  return _construirError();
-                }
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _construirTipo(datos, tipoImagenPrevia),
-                    _construirTipo(datos, tipoImagenResultados),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+        return _construirTipo(datos);
+      },
     );
   }
 
@@ -187,7 +177,7 @@ class _SeccionImagenesRedesState extends State<SeccionImagenesRedes> {
   }
 
   /// Con imágenes ya hechas pide confirmar antes de sustituirlas.
-  Future<void> _volverAGenerar(String tipo) async {
+  Future<void> _volverAGenerar() async {
     final t = _t;
 
     final confirmado = await showDialog<bool>(
@@ -210,19 +200,17 @@ class _SeccionImagenesRedesState extends State<SeccionImagenesRedes> {
     );
 
     if (confirmado == true && mounted) {
-      await _generar(tipo);
+      await _generar();
     }
   }
 
-  Widget _construirBotonGenerar(String tipo, {required bool conImagenes}) {
-    final generando = _generando == tipo;
-
+  Widget _construirBotonGenerar({required bool conImagenes}) {
     return FilledButton.tonalIcon(
-      key: ValueKey('generar-$tipo'),
-      onPressed: _generando != null
+      key: ValueKey('generar-${widget.tipo}'),
+      onPressed: _generando
           ? null
-          : () => conImagenes ? _volverAGenerar(tipo) : _generar(tipo),
-      icon: generando
+          : () => conImagenes ? _volverAGenerar() : _generar(),
+      icon: _generando
           ? const SizedBox(
               width: 16,
               height: 16,
@@ -237,21 +225,16 @@ class _SeccionImagenesRedesState extends State<SeccionImagenesRedes> {
     );
   }
 
-  Widget _construirTipo(ImagenesRedesModel datos, String tipo) {
+  Widget _construirTipo(ImagenesRedesModel datos) {
     final t = _t;
-    final imagenes = datos.deTipo(tipo);
-    final esPrevia = tipo == tipoImagenPrevia;
+    final imagenes = datos.deTipo(widget.tipo);
+    final esPrevia = widget.tipo == tipoImagenPrevia;
 
     return Padding(
       padding: const EdgeInsets.only(top: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            esPrevia ? t.socialImagesPreview : t.socialImagesResults,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
           if (imagenes.isEmpty) ...[
             Text(
               esPrevia
@@ -261,8 +244,8 @@ class _SeccionImagenesRedesState extends State<SeccionImagenesRedes> {
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 8),
-            _construirBotonGenerar(tipo, conImagenes: false),
+            const SizedBox(height: 12),
+            _construirBotonGenerar(conImagenes: false),
           ] else ...[
             SizedBox(
               height: 190,
@@ -274,12 +257,12 @@ class _SeccionImagenesRedesState extends State<SeccionImagenesRedes> {
                   servicio: widget.servicio,
                   imagen: imagenes[i],
                   etiqueta: _etiqueta(imagenes[i]),
-                  onTap: () => _abrir(datos, tipo, imagenes[i]),
+                  onTap: () => _abrir(datos, imagenes[i]),
                 ),
               ),
             ),
-            const SizedBox(height: 8),
-            _construirBotonGenerar(tipo, conImagenes: true),
+            const SizedBox(height: 12),
+            _construirBotonGenerar(conImagenes: true),
           ],
         ],
       ),

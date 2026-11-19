@@ -21,7 +21,6 @@ import 'package:flutter_localizations/flutter_localizations.dart'
     show GlobalWidgetsLocalizations;
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../../support/imagenes_redes_fakes.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 class _FakeCoordinacion extends CoordinacionService {
@@ -183,12 +182,7 @@ void main() {
       _pantallaGrande(tester);
 
       await tester.pumpWidget(
-        _app(
-          FinDeSemanaPage(
-            imagenesServicio: FakeImagenesRedesService(),
-            servicio: _FakeCoordinacion(),
-          ),
-        ),
+        _app(FinDeSemanaPage(servicio: _FakeCoordinacion())),
       );
       await tester.pumpAndSettle();
 
@@ -215,16 +209,33 @@ void main() {
       expect(find.text('Todo al día'), findsNothing);
     });
 
+    testWidgets('ya no lleva "Imágenes para redes": eso es de Directo y RRSS', (
+      tester,
+    ) async {
+      _pantallaGrande(tester);
+
+      await tester.pumpWidget(
+        _app(FinDeSemanaPage(servicio: _FakeCoordinacion())),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Imágenes para redes'), findsNothing);
+      expect(
+        find.byKey(const ValueKey('seccion-imagenes-redes')),
+        findsNothing,
+      );
+      expect(find.byKey(const ValueKey('generar-PREVIA')), findsNothing);
+      expect(find.byKey(const ValueKey('generar-RESULTADOS')), findsNothing);
+      // El resto del panel sigue igual
+      expect(find.text('Sin convocatoria'), findsOneWidget);
+      expect(find.text('23/10/2026 - 25/10/2026'), findsOneWidget);
+    });
+
     testWidgets('las secciones se pliegan', (tester) async {
       _pantallaGrande(tester);
 
       await tester.pumpWidget(
-        _app(
-          FinDeSemanaPage(
-            imagenesServicio: FakeImagenesRedesService(),
-            servicio: _FakeCoordinacion(),
-          ),
-        ),
+        _app(FinDeSemanaPage(servicio: _FakeCoordinacion())),
       );
       await tester.pumpAndSettle();
 
@@ -242,14 +253,7 @@ void main() {
 
       final servicio = _FakeCoordinacion()..finDeSemana = _panel(vacio: true);
 
-      await tester.pumpWidget(
-        _app(
-          FinDeSemanaPage(
-            imagenesServicio: FakeImagenesRedesService(),
-            servicio: servicio,
-          ),
-        ),
-      );
+      await tester.pumpWidget(_app(FinDeSemanaPage(servicio: servicio)));
       await tester.pumpAndSettle();
 
       expect(find.text('Todo al día'), findsOneWidget);
@@ -269,14 +273,7 @@ void main() {
 
       final servicio = _FakeCoordinacion();
 
-      await tester.pumpWidget(
-        _app(
-          FinDeSemanaPage(
-            imagenesServicio: FakeImagenesRedesService(),
-            servicio: servicio,
-          ),
-        ),
-      );
+      await tester.pumpWidget(_app(FinDeSemanaPage(servicio: servicio)));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byTooltip('Fin de semana anterior'));
@@ -309,7 +306,6 @@ void main() {
         await tester.pumpWidget(
           _app(
             FinDeSemanaPage(
-              imagenesServicio: FakeImagenesRedesService(),
               servicio: _FakeCoordinacion(),
               constructorConvocatoria: (partido) {
                 abierto = partido;
@@ -338,7 +334,6 @@ void main() {
       await tester.pumpWidget(
         _app(
           FinDeSemanaPage(
-            imagenesServicio: FakeImagenesRedesService(),
             servicio: _FakeCoordinacion(),
             constructorResultado: (partido) {
               abierto = partido;
@@ -364,7 +359,6 @@ void main() {
       await tester.pumpWidget(
         _app(
           FinDeSemanaPage(
-            imagenesServicio: FakeImagenesRedesService(),
             servicio: servicio,
             constructorConvocatoria: (_) => Scaffold(
               body: Builder(
@@ -392,14 +386,7 @@ void main() {
 
       final servicio = _FakeCoordinacion()..fallo = Exception('sin red');
 
-      await tester.pumpWidget(
-        _app(
-          FinDeSemanaPage(
-            imagenesServicio: FakeImagenesRedesService(),
-            servicio: servicio,
-          ),
-        ),
-      );
+      await tester.pumpWidget(_app(FinDeSemanaPage(servicio: servicio)));
       await tester.pumpAndSettle();
 
       expect(find.textContaining('No se ha podido conectar'), findsOneWidget);
@@ -601,14 +588,7 @@ void main() {
       final servicio = _FakeCoordinacion()
         ..fallo = const ApiException('prohibido', statusCode: 403);
 
-      await tester.pumpWidget(
-        _app(
-          FinDeSemanaPage(
-            imagenesServicio: FakeImagenesRedesService(),
-            servicio: servicio,
-          ),
-        ),
-      );
+      await tester.pumpWidget(_app(FinDeSemanaPage(servicio: servicio)));
       await tester.pumpAndSettle();
 
       expect(find.text('No tienes permiso'), findsOneWidget);

@@ -106,7 +106,7 @@ class _NotificacionesPageState extends State<NotificacionesPage> {
     // aviso de convocatoria por su título (abre el calendario en hoy).
     // Las de continuidad sí guardan su tipo: la pregunta a la familia abre su pantalla; la respuesta a
     // coordinación ya está en esta bandeja y se revisa en el panel web.
-    // Las de las imágenes para redes llevan el viernes del fin de semana (yyyyMMdd) como referencia.
+    // Las de las imágenes para redes (recordatorios y avisos antiguos) llevan el viernes del fin de semana (yyyyMMdd) como referencia.
     final destino = notificacion.tipo == tipoPushContinuidad
         ? const AbrirContinuidad()
         : notificacion.tipo == tipoPushSolicitudFamiliaRespuesta

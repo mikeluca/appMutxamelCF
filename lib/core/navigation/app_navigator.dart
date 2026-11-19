@@ -14,7 +14,7 @@ import '../../features/continuidad/pages/continuidad_page.dart';
 import '../../features/familia/pages/mi_solicitud_familia_page.dart';
 import '../../features/familia/pages/solicitudes_familia_page.dart';
 import '../../features/auth/services/auth_manager.dart';
-import '../../features/coordinacion/pages/fin_de_semana_page.dart';
+import '../../features/imagenes_redes/pages/imagenes_redes_page.dart';
 import '../../features/calendario/pages/calendario_page.dart';
 import '../../features/convocatorias/model/convocatoria_model.dart';
 import '../../features/auth/services/perfil_service.dart';
@@ -134,8 +134,8 @@ class AppNavigator {
         await abrirMiSolicitudFamilia();
       case AbrirBandeja():
         await abrirBandeja();
-      case AbrirImagenesRedes(:final desde):
-        await abrirImagenesRedes(desde);
+      case AbrirImagenesRedes(:final desde, :final tipoImagen):
+        await abrirImagenesRedes(desde, tipoImagen);
       case AbrirInvitaciones():
         await abrirInvitaciones();
       case AbrirLiberarInvitacion(
@@ -433,23 +433,30 @@ class AppNavigator {
     );
   }
 
-  /// Solo para tests: sustituye al panel Fin de semana (que pide datos a la red al abrirse).
+  /// Solo para tests: sustituye a la pantalla (que pide datos a la red al abrirse).
   @visibleForTesting
-  static Widget Function(DateTime? desde)? constructorImagenesRedes;
+  static Widget Function(DateTime? desde, String? tipoImagen)?
+  constructorImagenesRedes;
 
-  /// "Imágenes para redes" del panel Fin de semana del fin de semana [desde] (push IMAGENES_REDES).
-  static Future<void> abrirImagenesRedes(DateTime? desde) async {
+  /// "Imágenes para redes" en la pestaña [tipoImagen] y el fin de semana [desde] (push IMAGENES_REDES). Solo para
+  /// Retransmisión y los administradores de la app: con otra cuenta no hace nada.
+  static Future<void> abrirImagenesRedes(
+    DateTime? desde, [
+    String? tipoImagen,
+  ]) async {
     final navigatorState = navigator;
 
-    if (navigatorState == null || ControlVersion.bloqueada) {
+    if (navigatorState == null ||
+        ControlVersion.bloqueada ||
+        !puedeVerImagenesRedes()) {
       return;
     }
 
     await navigatorState.push(
       MaterialPageRoute(
         builder: (_) =>
-            constructorImagenesRedes?.call(desde) ??
-            FinDeSemanaPage(fechaInicial: desde, irAImagenes: true),
+            constructorImagenesRedes?.call(desde, tipoImagen) ??
+            ImagenesRedesPage(desde: desde, tipoInicial: tipoImagen),
       ),
     );
   }

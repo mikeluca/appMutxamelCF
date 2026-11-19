@@ -2,8 +2,9 @@ import 'dart:typed_data';
 
 import '../../../core/network/api_client.dart';
 import '../models/imagenes_redes_model.dart';
+import '../models/partido_primer_equipo_model.dart';
 
-/// Imágenes para redes sociales (solo COORDINADOR y ADMIN_APP).
+/// Imágenes para redes sociales (solo RETRANSMISION y ADMIN_APP).
 class ImagenesRedesService {
   /// Los PNG ya descargados ("id:versión"): una versión nueva es otra clave.
   static final Map<String, Uint8List> _cache = {};
@@ -50,6 +51,25 @@ class ImagenesRedesService {
     );
 
     return ImagenesRedesModel.fromJson(data as Map<String, dynamic>);
+  }
+
+  /// El próximo partido del Primer Equipo para el cartel (o por qué no hay).
+  Future<PartidoPrimerEquipoModel> obtenerPartidoPrimerEquipo() async {
+    final data = await ApiClient.get(
+      '/app/imagenes-redes/partido-primer-equipo',
+      autenticado: true,
+    );
+
+    return PartidoPrimerEquipoModel.fromJson(data as Map<String, dynamic>);
+  }
+
+  /// El PNG del cartel del próximo partido con esas opciones. El servidor lo genera al momento y no se guarda ni
+  /// aquí ni en ningún sitio: cada llamada pide uno nuevo.
+  Future<Uint8List> generarCartelPrimerEquipo(OpcionesCartel opciones) {
+    return ApiClient.getBytes(
+      '/app/imagenes-redes/partido-primer-equipo/png${opciones.consulta}',
+      autenticado: true,
+    );
   }
 
   static String _consulta(DateTime? fecha) =>

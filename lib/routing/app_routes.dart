@@ -25,6 +25,7 @@ class AppRoutes {
   static const String settings = '/settings';
   static const String communication = '/communication';
   static const String liveMatch = '/live-match';
+  static const String socialImages = '/social-images';
   static const String cuotas = '/cuotas';
   static const String familyRequests = '/coordination/family-requests';
   static const String myFamilyRequest = '/my-family-request';

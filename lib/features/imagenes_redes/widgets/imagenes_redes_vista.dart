@@ -21,6 +21,14 @@ typedef EnviarImagenesRedes =
 class CompartirImagenesRedes {
   CompartirImagenesRedes._();
 
+  /// Abre el menú de compartir del sistema con los PNG y el texto.
+  static Future<void> compartir(
+    List<Uint8List> pngs,
+    List<String> nombres,
+    String texto,
+    Rect origen,
+  ) => enviar(pngs, nombres, texto, origen);
+
   @visibleForTesting
   static EnviarImagenesRedes enviar = (pngs, nombres, texto, origen) async {
     await SharePlus.instance.share(

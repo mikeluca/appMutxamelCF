@@ -40,6 +40,7 @@ import 'features/invitados/pages/invitaciones_page.dart';
 import 'features/continuidad/pages/continuidad_page.dart';
 import 'features/auth/pages/ajustes_page.dart';
 import 'features/auth/pages/comunicaciones_page.dart';
+import 'features/imagenes_redes/pages/imagenes_redes_page.dart';
 import 'features/partido_en_vivo/pages/partido_en_vivo_page.dart';
 import 'features/cuotas/pages/cuotas_page.dart';
 import 'core/navigation/app_navigator.dart';
@@ -257,6 +258,7 @@ class _MutxamelCfAppState extends State<MutxamelCfApp>
         ),
         AppRoutes.communication: (context) => const ComunicacionesPage(),
         AppRoutes.liveMatch: (context) => const PartidoEnVivoPage(),
+        AppRoutes.socialImages: (context) => const ImagenesRedesPage(),
         AppRoutes.cuotas: (context) => const CuotasPage(),
         AppRoutes.familyRequests: (context) => const SolicitudesFamiliaPage(),
         AppRoutes.myFamilyRequest: (context) => const MiSolicitudFamiliaPage(),
