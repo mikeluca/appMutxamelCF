@@ -110,7 +110,7 @@ void main() {
       expect(gradle.contains('Mutxamel C.F.'), isFalse);
       expect(
         File('pubspec.yaml').readAsStringSync(),
-        contains('version: 1.0.14+23'),
+        contains('version: 1.0.15+24'),
       );
     });
   });

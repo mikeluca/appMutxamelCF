@@ -154,16 +154,48 @@ void main() {
       ]);
     });
 
-    test('RETRANSMISION sola: Club (sin clasificaciones) + Retransmisión + '
-        'cuenta', () {
+    test('RETRANSMISION sola: Directo y RRSS + Mi cuenta, sin Club ni pedir '
+        'acceso a otro jugador', () {
       final s = de(['RETRANSMISION']);
 
-      expect(_ids(s), [
-        SeccionClubId.club,
-        SeccionClubId.retransmision,
-        SeccionClubId.cuenta,
+      expect(_ids(s), [SeccionClubId.retransmision, SeccionClubId.cuenta]);
+      expect(_opciones(s, SeccionClubId.retransmision), [
+        OpcionClub.partidoEnDirecto,
+        OpcionClub.imagenesRedes,
       ]);
-      expect(_opciones(s, SeccionClubId.club), club);
+      expect(_opciones(s, SeccionClubId.cuenta), [
+        OpcionClub.miPerfil,
+        OpcionClub.cerrarSesion,
+      ]);
+      expect(_todas(s), isNot(contains(OpcionClub.comunicaciones)));
+      expect(_todas(s), isNot(contains(OpcionClub.calendario)));
+      expect(_todas(s), isNot(contains(OpcionClub.partidos)));
+      expect(_todas(s), isNot(contains(OpcionClub.clasificaciones)));
+      expect(_todas(s), isNot(contains(OpcionClub.pedirAccesoJugador)));
+    });
+
+    for (final otro in ['ENTRENADOR', 'FAMILIAR', 'ADMIN_APP']) {
+      test('RETRANSMISION + $otro: el menú de siempre, con Club y pedir '
+          'acceso', () {
+        final s = de(['RETRANSMISION', otro]);
+
+        expect(_opciones(s, SeccionClubId.club), containsAll(club));
+        expect(_opciones(s, SeccionClubId.cuenta), cuenta);
+        expect(
+          _opciones(s, SeccionClubId.retransmision),
+          contains(OpcionClub.imagenesRedes),
+        );
+      });
+    }
+
+    test('RETRANSMISION + ENTRENADOR: Mis equipos y las dos opciones del '
+        'directo', () {
+      final s = de(['RETRANSMISION', 'ENTRENADOR']);
+
+      expect(
+        _opciones(s, SeccionClubId.entrenador),
+        contains(OpcionClub.misEquipos),
+      );
       expect(_opciones(s, SeccionClubId.retransmision), [
         OpcionClub.partidoEnDirecto,
         OpcionClub.imagenesRedes,

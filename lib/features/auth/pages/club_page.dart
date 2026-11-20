@@ -42,7 +42,9 @@ class _ClubPageState extends State<ClubPage> {
     final usuario = AuthManager.usuarioActual;
 
     // Una cuenta sin roles (familia pendiente de aprobar) no ve comunicaciones ni nada privado: el backend lo rechaza.
-    if (usuario != null && usuario.roles.isNotEmpty) {
+    if (usuario != null &&
+        usuario.roles.isNotEmpty &&
+        !esSoloRetransmision(usuario)) {
       _cargarContadorComunicaciones();
     }
 

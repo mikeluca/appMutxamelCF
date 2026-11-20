@@ -243,6 +243,37 @@ void main() {
       expect(find.text('Imágenes para redes'), findsOneWidget);
     });
 
+    testWidgets('RETRANSMISION sola: solo Directo y RRSS y Mi cuenta, y no '
+        'pide nada de comunicaciones', (tester) async {
+      await _pintar(tester, ['RETRANSMISION']);
+
+      double y(String t) => tester.getTopLeft(find.text(t).first).dy;
+      expect(y('Directo y RRSS'), lessThan(y('Partido en directo')));
+      expect(y('Partido en directo'), lessThan(y('Imágenes para redes')));
+      expect(y('Imágenes para redes'), lessThan(y('Mi cuenta')));
+      expect(y('Mi cuenta'), lessThan(y('Mi perfil')));
+      expect(y('Mi perfil'), lessThan(y('Cerrar sesión')));
+
+      expect(find.text('Club'), findsNothing);
+      expect(find.text('Comunicaciones'), findsNothing);
+      expect(find.text('Calendario'), findsNothing);
+      expect(find.text('Mis partidos'), findsNothing);
+      expect(find.text('Clasificaciones'), findsNothing);
+      expect(find.text('Pedir acceso a otro jugador'), findsNothing);
+    });
+
+    for (final otro in ['ENTRENADOR', 'FAMILIAR', 'ADMIN_APP']) {
+      testWidgets('RETRANSMISION + $otro: sigue viendo Club', (tester) async {
+        await _pintar(tester, ['RETRANSMISION', otro]);
+
+        expect(find.text('Club'), findsOneWidget);
+        expect(find.text('Comunicaciones'), findsOneWidget);
+        expect(find.text('Calendario'), findsOneWidget);
+        expect(find.text('Pedir acceso a otro jugador'), findsOneWidget);
+        expect(find.text('Directo y RRSS'), findsOneWidget);
+      });
+    }
+
     testWidgets('ADMIN_APP: solo Imágenes para redes', (tester) async {
       await _pintar(tester, ['ADMIN_APP']);
 

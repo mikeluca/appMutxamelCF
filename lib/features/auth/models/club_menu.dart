@@ -99,6 +99,12 @@ String? rutaDeOpcionClub(OpcionClub opcion) {
   }
 }
 
+/// true si la cuenta tiene RETRANSMISION y ningún otro rol.
+bool esSoloRetransmision(AuthUser? usuario) =>
+    usuario != null &&
+    usuario.roles.isNotEmpty &&
+    usuario.roles.every((r) => r == 'RETRANSMISION');
+
 /// Qué secciones y opciones ve el usuario. Función pura: las condiciones de
 /// cada opción son las del menú de siempre; aquí solo se decide dónde van.
 /// Una sección sin opciones no se devuelve.
@@ -115,6 +121,21 @@ List<SeccionClub> construirSeccionesClub(
   }
 
   bool tiene(String rol) => usuario?.tieneRol(rol) == true;
+
+  // Una cuenta solo de Retransmisión no tiene equipo ni jugadores: Club (Comunicaciones, Calendario, Mis partidos)
+  // y "Pedir acceso a otro jugador" no le sirven. Solo ve el directo, las imágenes para redes y su cuenta.
+  if (esSoloRetransmision(usuario)) {
+    return const [
+      SeccionClub(SeccionClubId.retransmision, [
+        OpcionClub.partidoEnDirecto,
+        OpcionClub.imagenesRedes,
+      ]),
+      SeccionClub(SeccionClubId.cuenta, [
+        OpcionClub.miPerfil,
+        OpcionClub.cerrarSesion,
+      ]),
+    ];
+  }
 
   final esFamiliar = tiene('FAMILIAR');
   final esJugador = tiene('JUGADOR');
