@@ -1,3 +1,4 @@
+import '../../../features/auth/models/club_menu.dart';
 import '../../../features/auth/services/auth_manager.dart';
 
 /// Valor de data["tipo"] con el que el backend marca el push de una
@@ -356,7 +357,7 @@ class AbrirBandeja extends DestinoConvocatoria {
   int get hashCode => 'AbrirBandeja'.hashCode;
 }
 
-/// RETRANSMISION/ADMIN_APP: la pantalla "Imágenes para redes" en la pestaña [tipoImagen] (PREVIA o RESULTADOS; sin
+/// RRSS/ADMIN_APP: la pantalla "Imágenes para redes" en la pestaña [tipoImagen] (PREVIA o RESULTADOS; sin
 /// ella, la que toque) y en el fin de semana de [desde] (su viernes; sin él, el de por defecto de la pestaña).
 class AbrirImagenesRedes extends DestinoConvocatoria {
   final DateTime? desde;
@@ -396,13 +397,10 @@ class AbrirMiSolicitudFamilia extends DestinoConvocatoria {
   int get hashCode => 'AbrirMiSolicitudFamilia'.hashCode;
 }
 
-/// Quien puede ver "Imágenes para redes": Retransmisión y los administradores de la app (Coordinación ya no).
-bool puedeVerImagenesRedes() {
-  final usuario = AuthManager.usuarioActual;
-
-  return usuario?.tieneRol('RETRANSMISION') == true ||
-      usuario?.tieneRol('ADMIN_APP') == true;
-}
+/// Quien puede ver "Imágenes para redes": Redes sociales (RRSS) y los administradores de la app (ni Retransmisión
+/// ni Coordinación).
+bool puedeVerImagenesRedes() =>
+    puedeVerImagenesRedesUsuario(AuthManager.usuarioActual);
 
 /// Quien puede revisar solicitudes de familia (el backend filtra qué ve cada uno).
 bool puedeRevisarSolicitudesFamilia() {

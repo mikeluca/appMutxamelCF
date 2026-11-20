@@ -439,7 +439,7 @@ class AppNavigator {
   constructorImagenesRedes;
 
   /// "Imágenes para redes" en la pestaña [tipoImagen] y el fin de semana [desde] (push IMAGENES_REDES). Solo para
-  /// Retransmisión y los administradores de la app: con otra cuenta no hace nada.
+  /// Redes sociales (RRSS) y los administradores de la app: con otra cuenta no hace nada.
   static Future<void> abrirImagenesRedes(
     DateTime? desde, [
     String? tipoImagen,

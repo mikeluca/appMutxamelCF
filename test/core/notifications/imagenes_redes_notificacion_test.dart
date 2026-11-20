@@ -69,9 +69,9 @@ void main() {
   }
 
   group('destinos y payloads', () {
-    test('Retransmisión y administradores: abre la pantalla con su pestaña y '
+    test('RRSS y administradores: abre la pantalla con su pestaña y '
         'fin de semana', () async {
-      for (final rol in ['RETRANSMISION', 'ADMIN_APP']) {
+      for (final rol in ['RRSS', 'ADMIN_APP']) {
         await AuthManager.establecerUsuario(
           AuthUser(usuarioId: 1, email: 'a@b.c', roles: [rol]),
         );
@@ -96,9 +96,10 @@ void main() {
     });
 
     test(
-      'sin permiso (coordinador, entrenador...) el aviso no abre nada',
+      'sin permiso (Retransmisión, coordinador, entrenador...) el aviso no abre nada',
       () async {
         for (final rol in [
+          'RETRANSMISION',
           'COORDINADOR',
           'ENTRENADOR',
           'FAMILIAR',
@@ -123,7 +124,7 @@ void main() {
     test('un aviso sin pestaña ni fecha (antiguo) abre la pantalla por '
         'defecto', () async {
       await AuthManager.establecerUsuario(
-        AuthUser(usuarioId: 1, email: 'a@b.c', roles: ['RETRANSMISION']),
+        AuthUser(usuarioId: 1, email: 'a@b.c', roles: ['RRSS']),
       );
 
       expect(
@@ -170,9 +171,9 @@ void main() {
   });
 
   group('al tocar el aviso', () {
-    testWidgets('Retransmisión abre la pantalla en esa pestaña y fin de '
+    testWidgets('RRSS abre la pantalla en esa pestaña y fin de '
         'semana', (tester) async {
-      await conRoles(['RETRANSMISION']);
+      await conRoles(['RRSS']);
       await pintarFamilia(
         tester,
         const Scaffold(body: Text('HOME')),
@@ -230,7 +231,7 @@ void main() {
     ) async {
       AppNavigator.constructorImagenesRedes = null;
 
-      await conRoles(['RETRANSMISION']);
+      await conRoles(['RRSS']);
       await pintarFamilia(
         tester,
         const Scaffold(body: Text('HOME')),
@@ -272,7 +273,7 @@ void main() {
     testWidgets('con permiso abre la pantalla en el fin de semana del aviso', (
       tester,
     ) async {
-      await conRoles(['RETRANSMISION']);
+      await conRoles(['RRSS']);
 
       await conMockHttp(backend, () async {
         await pintarFamilia(

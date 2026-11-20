@@ -10,7 +10,7 @@ import '../widgets/pestana_partido_cartel.dart';
 import '../widgets/selector_fin_de_semana.dart';
 import '../widgets/seccion_imagenes_redes.dart';
 
-/// "Imágenes para redes" (Directo y RRSS, solo RETRANSMISION y ADMIN_APP): Previa, Resultados, Partido Primer Equipo y
+/// "Imágenes para redes" (Directo y RRSS, solo RRSS y ADMIN_APP): Previa, Resultados, Partido Primer Equipo y
 /// Partido Filial (los dos carteles son la misma pestaña con otro equipo).
 class ImagenesRedesPage extends StatefulWidget {
   final ImagenesRedesService? servicio;

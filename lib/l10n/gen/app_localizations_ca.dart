@@ -555,6 +555,9 @@ class AppLocalizationsCa extends AppLocalizations {
   String get roleRetransmision => 'Retransmissió';
 
   @override
+  String get roleRrss => 'Xarxes socials';
+
+  @override
   String get roleAdministrador => 'Administrador';
 
   @override
@@ -2850,6 +2853,12 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get inviteRolesTitle => 'Rols addicionals';
+
+  @override
+  String get inviteRoleBroadcastHint => 'Només el partit en directe';
+
+  @override
+  String get inviteRoleSocialHint => 'Imatges per a xarxes';
 
   @override
   String get inviteSummaryTitle => 'Rols resultants';

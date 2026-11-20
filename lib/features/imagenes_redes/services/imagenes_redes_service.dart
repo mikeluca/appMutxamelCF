@@ -4,7 +4,7 @@ import '../../../core/network/api_client.dart';
 import '../models/imagenes_redes_model.dart';
 import '../models/partido_primer_equipo_model.dart';
 
-/// Imágenes para redes sociales (solo RETRANSMISION y ADMIN_APP).
+/// Imágenes para redes sociales (solo RRSS y ADMIN_APP).
 class ImagenesRedesService {
   /// Los PNG ya descargados ("id:versión"): una versión nueva es otra clave.
   static final Map<String, Uint8List> _cache = {};

@@ -202,6 +202,7 @@
   "roleEntrenador": "Entrenador",
   "roleCoordinador": "Coordinador",
   "roleRetransmision": "Retransmissió",
+  "roleRrss": "Xarxes socials",
   "roleAdministrador": "Administrador",
   "roleSocio": "Soci",
 
@@ -1062,6 +1063,8 @@
   "inviteSearchHint": "Cerca per nom",
   "inviteNoResults": "No hi ha persones sense compte que coincidisquen.",
   "inviteRolesTitle": "Rols addicionals",
+  "inviteRoleBroadcastHint": "Només el partit en directe",
+  "inviteRoleSocialHint": "Imatges per a xarxes",
   "inviteSummaryTitle": "Rols resultants",
   "inviteSummaryEmpty": "Tria almenys un vincle o un rol.",
   "inviteSubmit": "Envia la invitació",

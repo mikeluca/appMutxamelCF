@@ -364,6 +364,10 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
       return _t.roleRetransmision;
     }
 
+    if (perfil.roles.contains('RRSS')) {
+      return _t.roleRrss;
+    }
+
     if (perfil.roles.contains('ADMIN_APP')) {
       return _t.roleAdministrador;
     }

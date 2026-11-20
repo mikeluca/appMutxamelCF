@@ -11,7 +11,7 @@ import '../models/partido_en_vivo_models.dart';
 import '../services/partido_en_vivo_service.dart';
 import 'alineacion_page.dart';
 
-/// Panel del retransmisor (rol RETRANSMISION): se elige el partido de hoy del
+/// Panel del retransmisor (rol RETRANSMISION o ADMIN_APP): se elige el partido de hoy del
 /// Primer Equipo y cada botón registra un evento de ESE partido. El marcador,
 /// la fase y los goleadores los calcula el servidor; los botones solo se
 /// habilitan en el orden válido y el último aviso se puede deshacer durante 2

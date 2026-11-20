@@ -202,6 +202,7 @@
   "roleEntrenador": "Coach",
   "roleCoordinador": "Coordinator",
   "roleRetransmision": "Broadcast",
+  "roleRrss": "Social media",
   "roleAdministrador": "Administrator",
   "roleSocio": "Member",
 
@@ -1062,6 +1063,8 @@
   "inviteSearchHint": "Search by name",
   "inviteNoResults": "No matching people without an account.",
   "inviteRolesTitle": "Additional roles",
+  "inviteRoleBroadcastHint": "Only the live match",
+  "inviteRoleSocialHint": "Images for social media",
   "inviteSummaryTitle": "Resulting roles",
   "inviteSummaryEmpty": "Choose at least one link or role.",
   "inviteSubmit": "Send invitation",

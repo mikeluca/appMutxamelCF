@@ -14,6 +14,8 @@ String nombreDeRol(AppLocalizations t, String rol) {
       return t.roleCoordinador;
     case 'RETRANSMISION':
       return t.roleRetransmision;
+    case 'RRSS':
+      return t.roleRrss;
     case 'SOCIO':
       return t.roleSocio;
     case 'ADMIN_APP':

@@ -287,6 +287,11 @@ class _InvitarUsuarioPageState extends State<InvitarUsuarioPage> {
               controlAffinity: ListTileControlAffinity.leading,
               value: _roles.contains(rol.codigo),
               title: Text(nombreDeRol(_t, rol.codigo)),
+              subtitle: switch (rol.codigo) {
+                'RETRANSMISION' => Text(_t.inviteRoleBroadcastHint),
+                'RRSS' => Text(_t.inviteRoleSocialHint),
+                _ => null,
+              },
               onChanged: _enviando
                   ? null
                   : (valor) => setState(() {

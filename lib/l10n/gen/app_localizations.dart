@@ -1126,6 +1126,12 @@ abstract class AppLocalizations {
   /// **'Retransmisión'**
   String get roleRetransmision;
 
+  /// No description provided for @roleRrss.
+  ///
+  /// In es, this message translates to:
+  /// **'Redes sociales'**
+  String get roleRrss;
+
   /// No description provided for @roleAdministrador.
   ///
   /// In es, this message translates to:
@@ -5019,6 +5025,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Roles adicionales'**
   String get inviteRolesTitle;
+
+  /// No description provided for @inviteRoleBroadcastHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Solo el partido en directo'**
+  String get inviteRoleBroadcastHint;
+
+  /// No description provided for @inviteRoleSocialHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Imágenes para redes'**
+  String get inviteRoleSocialHint;
 
   /// No description provided for @inviteSummaryTitle.
   ///

@@ -202,6 +202,7 @@
   "roleEntrenador": "Entrenador",
   "roleCoordinador": "Coordinador",
   "roleRetransmision": "Retransmisión",
+  "roleRrss": "Redes sociales",
   "roleAdministrador": "Administrador",
   "roleSocio": "Socio",
 
@@ -1062,6 +1063,8 @@
   "inviteSearchHint": "Buscar por nombre",
   "inviteNoResults": "No hay personas sin cuenta que coincidan.",
   "inviteRolesTitle": "Roles adicionales",
+  "inviteRoleBroadcastHint": "Solo el partido en directo",
+  "inviteRoleSocialHint": "Imágenes para redes",
   "inviteSummaryTitle": "Roles resultantes",
   "inviteSummaryEmpty": "Elige al menos un vínculo o un rol.",
   "inviteSubmit": "Enviar invitación",

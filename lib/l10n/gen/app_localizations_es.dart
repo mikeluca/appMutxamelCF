@@ -561,6 +561,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get roleRetransmision => 'Retransmisión';
 
   @override
+  String get roleRrss => 'Redes sociales';
+
+  @override
   String get roleAdministrador => 'Administrador';
 
   @override
@@ -2859,6 +2862,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get inviteRolesTitle => 'Roles adicionales';
+
+  @override
+  String get inviteRoleBroadcastHint => 'Solo el partido en directo';
+
+  @override
+  String get inviteRoleSocialHint => 'Imágenes para redes';
 
   @override
   String get inviteSummaryTitle => 'Roles resultantes';

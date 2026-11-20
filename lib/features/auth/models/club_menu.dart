@@ -99,11 +99,26 @@ String? rutaDeOpcionClub(OpcionClub opcion) {
   }
 }
 
-/// true si la cuenta tiene RETRANSMISION y ningún otro rol.
-bool esSoloRetransmision(AuthUser? usuario) =>
+/// true si la cuenta solo tiene roles de "Directo y RRSS" (RETRANSMISION, RRSS o los dos) y ningún otro.
+bool esSoloDirectoYRrss(AuthUser? usuario) =>
     usuario != null &&
     usuario.roles.isNotEmpty &&
-    usuario.roles.every((r) => r == 'RETRANSMISION');
+    usuario.roles.every((r) => r == 'RETRANSMISION' || r == 'RRSS');
+
+/// Partido en directo: RETRANSMISION y ADMIN_APP (RRSS y el resto, no).
+bool puedeVerPartidoEnDirecto(AuthUser? usuario) =>
+    usuario?.tieneRol('RETRANSMISION') == true ||
+    usuario?.tieneRol('ADMIN_APP') == true;
+
+/// Imágenes para redes: RRSS y ADMIN_APP (RETRANSMISION y COORDINADOR, no).
+bool puedeVerImagenesRedesUsuario(AuthUser? usuario) =>
+    usuario?.tieneRol('RRSS') == true || usuario?.tieneRol('ADMIN_APP') == true;
+
+/// Opciones de "Directo y RRSS" según los roles (la sección sin opciones no se pinta).
+List<OpcionClub> _opcionesDirectoYRrss(AuthUser? usuario) => [
+  if (puedeVerPartidoEnDirecto(usuario)) OpcionClub.partidoEnDirecto,
+  if (puedeVerImagenesRedesUsuario(usuario)) OpcionClub.imagenesRedes,
+];
 
 /// Qué secciones y opciones ve el usuario. Función pura: las condiciones de
 /// cada opción son las del menú de siempre; aquí solo se decide dónde van.
@@ -122,15 +137,13 @@ List<SeccionClub> construirSeccionesClub(
 
   bool tiene(String rol) => usuario?.tieneRol(rol) == true;
 
-  // Una cuenta solo de Retransmisión no tiene equipo ni jugadores: Club (Comunicaciones, Calendario, Mis partidos)
-  // y "Pedir acceso a otro jugador" no le sirven. Solo ve el directo, las imágenes para redes y su cuenta.
-  if (esSoloRetransmision(usuario)) {
-    return const [
-      SeccionClub(SeccionClubId.retransmision, [
-        OpcionClub.partidoEnDirecto,
-        OpcionClub.imagenesRedes,
-      ]),
-      SeccionClub(SeccionClubId.cuenta, [
+  // Una cuenta solo de Retransmisión y/o Redes sociales no tiene equipo ni jugadores: Club (Comunicaciones,
+  // Calendario, Mis partidos) y "Pedir acceso a otro jugador" no le sirven. Solo ve sus opciones de "Directo y
+  // RRSS" y su cuenta.
+  if (esSoloDirectoYRrss(usuario)) {
+    return [
+      SeccionClub(SeccionClubId.retransmision, _opcionesDirectoYRrss(usuario)),
+      const SeccionClub(SeccionClubId.cuenta, [
         OpcionClub.miPerfil,
         OpcionClub.cerrarSesion,
       ]),
@@ -142,7 +155,6 @@ List<SeccionClub> construirSeccionesClub(
   final esEntrenador = tiene('ENTRENADOR');
   final esGestionGlobal = tiene('COORDINADOR') || tiene('ADMIN_APP');
   final esAdmin = tiene('ADMIN_APP');
-  final esRetransmision = tiene('RETRANSMISION');
 
   // Un JUGADOR sin rol de familiar tiene su propia ficha. Si es JUGADOR y
   // FAMILIAR a la vez, "Mis jugadores" ya los incluye a todos.
@@ -183,11 +195,7 @@ List<SeccionClub> construirSeccionesClub(
       if (esAdmin) OpcionClub.cuentasPendientes,
       if (esAdmin) OpcionClub.estadoApp,
     ]),
-    SeccionClub(SeccionClubId.retransmision, [
-      if (esRetransmision) OpcionClub.partidoEnDirecto,
-      // Imágenes para redes: Retransmisión y los administradores de la app (Coordinación ya no las ve).
-      if (esRetransmision || esAdmin) OpcionClub.imagenesRedes,
-    ]),
+    SeccionClub(SeccionClubId.retransmision, _opcionesDirectoYRrss(usuario)),
     SeccionClub(SeccionClubId.cuenta, [
       if (usuario != null) OpcionClub.pedirAccesoJugador,
       OpcionClub.miPerfil,

@@ -148,15 +148,52 @@ void main() {
         OpcionClub.cuentasPendientes,
         OpcionClub.estadoApp,
       ]);
-      // Directo y RRSS: el administrador ve solo Imágenes para redes (Partido en directo es de Retransmisión).
+      // Directo y RRSS: el administrador ve las dos opciones.
       expect(_opciones(s, SeccionClubId.retransmision), [
+        OpcionClub.partidoEnDirecto,
         OpcionClub.imagenesRedes,
       ]);
     });
 
-    test('RETRANSMISION sola: Directo y RRSS + Mi cuenta, sin Club ni pedir '
-        'acceso a otro jugador', () {
+    test('RETRANSMISION sola: Partido en directo + Mi cuenta, sin Club ni '
+        'pedir acceso a otro jugador ni Imágenes para redes', () {
       final s = de(['RETRANSMISION']);
+
+      expect(_ids(s), [SeccionClubId.retransmision, SeccionClubId.cuenta]);
+      expect(_opciones(s, SeccionClubId.retransmision), [
+        OpcionClub.partidoEnDirecto,
+      ]);
+      expect(_opciones(s, SeccionClubId.cuenta), [
+        OpcionClub.miPerfil,
+        OpcionClub.cerrarSesion,
+      ]);
+      expect(_todas(s), isNot(contains(OpcionClub.imagenesRedes)));
+      expect(_todas(s), isNot(contains(OpcionClub.comunicaciones)));
+      expect(_todas(s), isNot(contains(OpcionClub.calendario)));
+      expect(_todas(s), isNot(contains(OpcionClub.partidos)));
+      expect(_todas(s), isNot(contains(OpcionClub.clasificaciones)));
+      expect(_todas(s), isNot(contains(OpcionClub.pedirAccesoJugador)));
+    });
+
+    test('RRSS sola: Imágenes para redes + Mi cuenta, sin Club ni pedir '
+        'acceso a otro jugador ni Partido en directo', () {
+      final s = de(['RRSS']);
+
+      expect(_ids(s), [SeccionClubId.retransmision, SeccionClubId.cuenta]);
+      expect(_opciones(s, SeccionClubId.retransmision), [
+        OpcionClub.imagenesRedes,
+      ]);
+      expect(_opciones(s, SeccionClubId.cuenta), [
+        OpcionClub.miPerfil,
+        OpcionClub.cerrarSesion,
+      ]);
+      expect(_todas(s), isNot(contains(OpcionClub.partidoEnDirecto)));
+      expect(_todas(s), isNot(contains(OpcionClub.comunicaciones)));
+      expect(_todas(s), isNot(contains(OpcionClub.pedirAccesoJugador)));
+    });
+
+    test('RRSS + RETRANSMISION: las dos opciones + Mi cuenta, sin Club', () {
+      final s = de(['RRSS', 'RETRANSMISION']);
 
       expect(_ids(s), [SeccionClubId.retransmision, SeccionClubId.cuenta]);
       expect(_opciones(s, SeccionClubId.retransmision), [
@@ -167,39 +204,76 @@ void main() {
         OpcionClub.miPerfil,
         OpcionClub.cerrarSesion,
       ]);
-      expect(_todas(s), isNot(contains(OpcionClub.comunicaciones)));
-      expect(_todas(s), isNot(contains(OpcionClub.calendario)));
-      expect(_todas(s), isNot(contains(OpcionClub.partidos)));
-      expect(_todas(s), isNot(contains(OpcionClub.clasificaciones)));
       expect(_todas(s), isNot(contains(OpcionClub.pedirAccesoJugador)));
     });
 
-    for (final otro in ['ENTRENADOR', 'FAMILIAR', 'ADMIN_APP']) {
-      test('RETRANSMISION + $otro: el menú de siempre, con Club y pedir '
-          'acceso', () {
-        final s = de(['RETRANSMISION', otro]);
+    test('RETRANSMISION + FAMILIAR: el menú de siempre, con Club, pedir '
+        'acceso y solo Partido en directo', () {
+      final s = de(['RETRANSMISION', 'FAMILIAR']);
 
-        expect(_opciones(s, SeccionClubId.club), containsAll(club));
-        expect(_opciones(s, SeccionClubId.cuenta), cuenta);
-        expect(
-          _opciones(s, SeccionClubId.retransmision),
-          contains(OpcionClub.imagenesRedes),
-        );
-      });
-    }
+      expect(_opciones(s, SeccionClubId.club), containsAll(club));
+      expect(_opciones(s, SeccionClubId.cuenta), cuenta);
+      expect(_opciones(s, SeccionClubId.retransmision), [
+        OpcionClub.partidoEnDirecto,
+      ]);
+    });
 
-    test('RETRANSMISION + ENTRENADOR: Mis equipos y las dos opciones del '
-        'directo', () {
-      final s = de(['RETRANSMISION', 'ENTRENADOR']);
+    test('RRSS + ENTRENADOR: Mis equipos y solo Imágenes para redes', () {
+      final s = de(['RRSS', 'ENTRENADOR']);
 
+      expect(_opciones(s, SeccionClubId.club), containsAll(club));
+      expect(_opciones(s, SeccionClubId.cuenta), cuenta);
       expect(
         _opciones(s, SeccionClubId.entrenador),
         contains(OpcionClub.misEquipos),
       );
       expect(_opciones(s, SeccionClubId.retransmision), [
+        OpcionClub.imagenesRedes,
+      ]);
+    });
+
+    test(
+      'RETRANSMISION + ENTRENADOR: Mis equipos y solo Partido en directo',
+      () {
+        final s = de(['RETRANSMISION', 'ENTRENADOR']);
+
+        expect(
+          _opciones(s, SeccionClubId.entrenador),
+          contains(OpcionClub.misEquipos),
+        );
+        expect(_opciones(s, SeccionClubId.retransmision), [
+          OpcionClub.partidoEnDirecto,
+        ]);
+      },
+    );
+
+    test('ADMIN_APP ve Partido en directo, Imágenes para redes, Coordinación '
+        'y Administración', () {
+      final s = de(['ADMIN_APP']);
+
+      expect(
+        _ids(s),
+        containsAll([
+          SeccionClubId.coordinacion,
+          SeccionClubId.administracion,
+          SeccionClubId.retransmision,
+        ]),
+      );
+      expect(_opciones(s, SeccionClubId.retransmision), [
         OpcionClub.partidoEnDirecto,
         OpcionClub.imagenesRedes,
       ]);
+      expect(
+        _todas(s),
+        containsAll([
+          OpcionClub.todosLosEquipos,
+          OpcionClub.solicitudesFamilia,
+          OpcionClub.invitaciones,
+          OpcionClub.moderacion,
+          OpcionClub.cuentasPendientes,
+          OpcionClub.estadoApp,
+        ]),
+      );
     });
 
     test(
@@ -213,6 +287,43 @@ void main() {
         ]);
       },
     );
+
+    test('puedeVerImagenesRedes y Partido en directo según el rol', () {
+      const casos = {
+        'RRSS': [true, false],
+        'ADMIN_APP': [true, true],
+        'RETRANSMISION': [false, true],
+        'COORDINADOR': [false, false],
+        'ENTRENADOR': [false, false],
+        'FAMILIAR': [false, false],
+        'JUGADOR': [false, false],
+      };
+
+      casos.forEach((rol, esperado) {
+        expect(
+          puedeVerImagenesRedesUsuario(_usuario([rol])),
+          esperado[0],
+          reason: 'imágenes $rol',
+        );
+        expect(
+          puedeVerPartidoEnDirecto(_usuario([rol])),
+          esperado[1],
+          reason: 'directo $rol',
+        );
+      });
+      expect(puedeVerImagenesRedesUsuario(null), isFalse);
+      expect(puedeVerPartidoEnDirecto(null), isFalse);
+    });
+
+    test('esSoloDirectoYRrss: solo RETRANSMISION y/o RRSS', () {
+      expect(esSoloDirectoYRrss(_usuario(['RRSS'])), isTrue);
+      expect(esSoloDirectoYRrss(_usuario(['RETRANSMISION'])), isTrue);
+      expect(esSoloDirectoYRrss(_usuario(['RRSS', 'RETRANSMISION'])), isTrue);
+      expect(esSoloDirectoYRrss(_usuario(['RRSS', 'FAMILIAR'])), isFalse);
+      expect(esSoloDirectoYRrss(_usuario(['ADMIN_APP'])), isFalse);
+      expect(esSoloDirectoYRrss(_usuario([])), isFalse);
+      expect(esSoloDirectoYRrss(null), isFalse);
+    });
 
     test(
       'COORDINADOR sin Retransmisión ni administrador: sin Directo y RRSS',

@@ -233,19 +233,25 @@ void main() {
   });
 
   group('Directo y RRSS según el rol', () {
-    testWidgets('RETRANSMISION: Partido en directo e Imágenes para redes', (
-      tester,
-    ) async {
+    testWidgets('RETRANSMISION: solo Partido en directo', (tester) async {
       await _pintar(tester, ['RETRANSMISION']);
 
       expect(find.text('Directo y RRSS'), findsOneWidget);
       expect(find.text('Partido en directo'), findsOneWidget);
-      expect(find.text('Imágenes para redes'), findsOneWidget);
+      expect(find.text('Imágenes para redes'), findsNothing);
     });
 
-    testWidgets('RETRANSMISION sola: solo Directo y RRSS y Mi cuenta, y no '
-        'pide nada de comunicaciones', (tester) async {
-      await _pintar(tester, ['RETRANSMISION']);
+    testWidgets('RRSS: solo Imágenes para redes', (tester) async {
+      await _pintar(tester, ['RRSS']);
+
+      expect(find.text('Directo y RRSS'), findsOneWidget);
+      expect(find.text('Imágenes para redes'), findsOneWidget);
+      expect(find.text('Partido en directo'), findsNothing);
+    });
+
+    testWidgets('RETRANSMISION + RRSS sin más roles: solo Directo y RRSS y Mi '
+        'cuenta, y no pide nada de comunicaciones', (tester) async {
+      await _pintar(tester, ['RETRANSMISION', 'RRSS']);
 
       double y(String t) => tester.getTopLeft(find.text(t).first).dy;
       expect(y('Directo y RRSS'), lessThan(y('Partido en directo')));
@@ -274,12 +280,14 @@ void main() {
       });
     }
 
-    testWidgets('ADMIN_APP: solo Imágenes para redes', (tester) async {
+    testWidgets('ADMIN_APP: Partido en directo e Imágenes para redes', (
+      tester,
+    ) async {
       await _pintar(tester, ['ADMIN_APP']);
 
       expect(find.text('Directo y RRSS'), findsOneWidget);
       expect(find.text('Imágenes para redes'), findsOneWidget);
-      expect(find.text('Partido en directo'), findsNothing);
+      expect(find.text('Partido en directo'), findsOneWidget);
     });
 
     testWidgets('los dos roles: las dos opciones, una sola vez', (
