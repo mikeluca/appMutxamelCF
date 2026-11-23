@@ -200,16 +200,21 @@ class PartidoListaCard extends StatelessWidget {
     return _envolverConEtiquetaTipo(context, tarjeta);
   }
 
+  /// El relleno de la tarjeta (compacto: ocupa poco alto en la lista).
+  static const EdgeInsets _relleno = EdgeInsets.fromLTRB(14, 12, 14, 8);
+
   /// El cuerpo de la tarjeta. Los partidos del Primer Equipo con ficha son pulsables (el efecto cae dentro de la
   /// tarjeta) y llevan un chevron al final de la fila; los demás equipos, como siempre.
   Widget _cuerpo(BuildContext context, {required Widget child}) {
     if (!partido.tieneFicha) {
-      return Padding(padding: const EdgeInsets.all(16), child: child);
+      return Padding(padding: _relleno, child: child);
     }
 
     return Semantics(
       button: true,
-      label: AppLocalizations.of(context).matchViewMatchAgainst(partido.rival),
+      label: AppLocalizations.of(
+        context,
+      ).matchViewMatchAgainst(partido.rivalVisible),
       child: InkWell(
         key: const ValueKey('abrir-ficha'),
         borderRadius: BorderRadius.circular(8),
@@ -217,7 +222,7 @@ class PartidoListaCard extends StatelessWidget {
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 36, 16),
+              padding: const EdgeInsets.fromLTRB(14, 12, 36, 8),
               child: child,
             ),
             Positioned(
@@ -307,21 +312,24 @@ class PartidoListaCard extends StatelessWidget {
               Icons.sports_soccer,
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
 
             _buildEquipos(context),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
 
-            if (partido.dia != null)
+            // Fecha y hora en una sola línea: "Domingo 22/11/2026 · 17:30".
+            if (partido.dia != null ||
+                (partido.hora != null && partido.hora!.isNotEmpty))
               _buildInfoRow(
                 context,
                 Icons.calendar_today_outlined,
-                _formatearFecha(context, partido.dia!),
+                formatearFechaHoraEnUnaLinea(
+                  partido.dia,
+                  partido.hora,
+                  AppLocalizations.of(context),
+                ),
               ),
-
-            if (partido.hora != null && partido.hora!.isNotEmpty)
-              _buildInfoRow(context, Icons.access_time, partido.hora!),
 
             if (partido.campo != null && partido.campo!.isNotEmpty)
               _buildInfoRow(
@@ -461,11 +469,11 @@ class PartidoListaCard extends StatelessWidget {
               Icons.sports_soccer,
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
 
             _equipoConEscudo(context, partido.equipo, esRival: false),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
 
             Text(
               partido.resultado ?? '',
@@ -476,12 +484,12 @@ class PartidoListaCard extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
 
-            _equipoConEscudo(context, partido.rival, esRival: true),
+            _equipoConEscudo(context, partido.rivalVisible, esRival: true),
 
             if (partido.dia != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Text(
                 _formatearFecha(context, partido.dia!),
                 style: TextStyle(color: _colors(context).onSurfaceVariant),
@@ -510,15 +518,15 @@ class PartidoListaCard extends StatelessWidget {
           children: [
             _buildHeader(context, t.matchesResult, Icons.sports_soccer),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
 
             _equipoConEscudo(
               context,
-              partido.local ? partido.equipo : partido.rival,
+              partido.local ? partido.equipo : partido.rivalVisible,
               esRival: !partido.local,
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
 
             Text(
               t.matchResultPending,
@@ -530,16 +538,16 @@ class PartidoListaCard extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
 
             _equipoConEscudo(
               context,
-              partido.local ? partido.rival : partido.equipo,
+              partido.local ? partido.rivalVisible : partido.equipo,
               esRival: partido.local,
             ),
 
             if (partido.dia != null) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Text(
                 _formatearFecha(context, partido.dia!),
                 style: TextStyle(color: _colors(context).onSurfaceVariant),
@@ -661,7 +669,7 @@ class PartidoListaCard extends StatelessWidget {
         ),
 
         Expanded(
-          child: _equipoConEscudo(context, partido.rival, esRival: true),
+          child: _equipoConEscudo(context, partido.rivalVisible, esRival: true),
         ),
       ],
     );
@@ -674,7 +682,7 @@ class PartidoListaCard extends StatelessWidget {
     Widget? trailing,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.only(top: 4),
       child: Row(
         children: [
           Icon(icono, size: 18, color: AppColors.azul),

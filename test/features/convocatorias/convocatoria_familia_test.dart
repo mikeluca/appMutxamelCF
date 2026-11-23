@@ -60,7 +60,7 @@ ConvocatoriaPartidoModel _convocatoria({
   String? lugarCitacion = 'Vestuarios',
 }) => ConvocatoriaPartidoModel(
   convocatoriaId: 20,
-  rival: 'Pego C.F.',
+  rival: 'Pego',
   fecha: DateTime(2026, 10, 24),
   hora: '11:00',
   campo: campo,
@@ -129,7 +129,7 @@ void main() {
     test('el modelo lee el JSON del backend', () {
       final modelo = ConvocatoriaPartidoModel.fromJson({
         'convocatoriaId': 20,
-        'rival': 'Pego C.F.',
+        'rival': 'Pego',
         'fecha': '2026-10-24',
         'hora': '11:00',
         'campo': 'Municipal',
@@ -143,7 +143,7 @@ void main() {
         ],
       });
 
-      expect(modelo.rival, 'Pego C.F.');
+      expect(modelo.rival, 'Pego');
       expect(modelo.fecha, DateTime(2026, 10, 24));
       expect(modelo.local, isFalse);
       expect(modelo.convocado, isTrue);
@@ -206,7 +206,7 @@ void main() {
       );
 
       // Cabecera: rival, fecha y hora, y local.
-      expect(find.text('Pego C.F.'), findsOneWidget);
+      expect(find.text('Pego'), findsOneWidget);
       expect(find.textContaining('11:00'), findsOneWidget);
       expect(find.text('Local'), findsOneWidget);
       expect(find.text('Campo Municipal'), findsOneWidget);

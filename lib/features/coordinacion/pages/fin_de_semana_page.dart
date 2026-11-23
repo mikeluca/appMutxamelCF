@@ -1,3 +1,4 @@
+import '../../../core/utils/nombre_equipo.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../core/network/api_client.dart';
@@ -383,7 +384,7 @@ class _FinDeSemanaPageState extends State<FinDeSemanaPage> {
     required String tipoRecordatorio,
   }) {
     return ListTile(
-      title: Text('${partido.equipo} - ${partido.rival}'),
+      title: Text('${partido.equipo} - ${nombreRivalVisible(partido.rival)}'),
       subtitle: Text(subtitulo),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,

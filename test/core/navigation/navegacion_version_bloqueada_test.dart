@@ -40,7 +40,7 @@ class _ServicioLento extends ConvocatoriaPartidoService {
 
 ConvocatoriaPartidoModel _convocatoria() => ConvocatoriaPartidoModel(
   convocatoriaId: 20,
-  rival: 'Pego C.F.',
+  rival: 'Pego',
   fecha: DateTime(2026, 10, 24),
   hora: '11:00',
   campo: 'Campo Municipal',

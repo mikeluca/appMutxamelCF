@@ -1,3 +1,4 @@
+import '../../../core/utils/nombre_equipo.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../core/network/api_client.dart';
@@ -480,7 +481,7 @@ class _ConvocatoriaDetallePageState extends State<ConvocatoriaDetallePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              _convocatoria.rival,
+              nombreRivalVisible(_convocatoria.rival),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

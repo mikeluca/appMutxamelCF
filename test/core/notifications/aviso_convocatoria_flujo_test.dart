@@ -40,7 +40,7 @@ class _FakeConvocatoriaService extends ConvocatoriaService {
       equipoId: 5,
       equipo: 'Cadete A',
       partidoId: 30,
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       campo: 'Campo Municipal',
       fechaPartido: '2026-10-24',
       horaPartido: '11:00',

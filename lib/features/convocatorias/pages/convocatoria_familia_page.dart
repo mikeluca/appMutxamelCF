@@ -1,3 +1,4 @@
+import '../../../core/utils/nombre_equipo.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../core/network/api_client.dart';
@@ -234,7 +235,7 @@ class _ConvocatoriaFamiliaPageState extends State<ConvocatoriaFamiliaPage> {
             children: [
               Expanded(
                 child: Text(
-                  convocatoria.rival,
+                  nombreRivalVisible(convocatoria.rival),
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,

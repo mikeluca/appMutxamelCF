@@ -163,7 +163,7 @@ class _FakeMatchService extends MatchService {
       equipoId: 5,
       categoria: 'Cadete',
       equipo: 'Cadete A',
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       dia: DateTime(2026, 10, 24),
       hora: '11:00',
     ),
@@ -208,7 +208,7 @@ ConvocatoriaModel _convocatoria({List<ConvocatoriaJugadorModel>? jugadores}) =>
       equipoId: 5,
       equipo: 'Cadete A',
       partidoId: 30,
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       campo: 'Campo Municipal',
       fechaPartido: '2026-10-24',
       horaPartido: '11:00',
@@ -335,7 +335,7 @@ void main() {
       // Elige el partido.
       await tester.tap(find.byType(DropdownButtonFormField<int>));
       await tester.pumpAndSettle();
-      await tester.tap(find.textContaining('Pego C.F.').last);
+      await tester.tap(find.textContaining('Pego').last);
       await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(const ValueKey('invitados-anadir')));
@@ -1022,7 +1022,7 @@ void main() {
   group('"No puede ir" del jugador invitado', () {
     final convocatoria = ConvocatoriaPartidoModel(
       convocatoriaId: 20,
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       fecha: DateTime(2026, 11, 14),
       hora: '11:00',
       campo: 'Municipal',

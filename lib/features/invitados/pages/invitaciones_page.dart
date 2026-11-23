@@ -1,3 +1,4 @@
+import '../../../core/utils/nombre_equipo.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -222,7 +223,7 @@ class _InvitacionesPageState extends State<InvitacionesPage> {
         : formatearFechaConDiaSemana(invitacion.fechaPartido!, _t);
 
     final partidos = invitacion.solapamiento
-        .map((p) => '${p.hora} ${p.rival}'.trim())
+        .map((p) => '${p.hora} ${nombreRivalVisible(p.rival)}'.trim())
         .join(', ');
 
     return Card(
@@ -261,7 +262,11 @@ class _InvitacionesPageState extends State<InvitacionesPage> {
             ),
             const SizedBox(height: 6),
             Text(
-              _t.invMatchLine(fecha, invitacion.horaPartido, invitacion.rival),
+              _t.invMatchLine(
+                fecha,
+                invitacion.horaPartido,
+                nombreRivalVisible(invitacion.rival),
+              ),
               style: TextStyle(color: _colors.onSurface),
             ),
             if (invitacion.convoca.isNotEmpty)

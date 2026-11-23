@@ -1,3 +1,4 @@
+import '../../../core/utils/nombre_equipo.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
@@ -336,7 +337,7 @@ class _ResultadoPartidoFormPageState extends State<ResultadoPartidoFormPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${partido.equipo} - ${partido.rival}',
+              '${partido.equipo} - ${nombreRivalVisible(partido.rival)}',
               style: TextStyle(
                 fontSize: 19,
                 fontWeight: FontWeight.bold,

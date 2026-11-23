@@ -31,7 +31,7 @@ class _Servicio extends CoordinacionService {
     return FinDeSemanaModel(
       desde: DateTime(2026, 10, 23),
       hasta: DateTime(2026, 10, 25),
-      sinConvocatoria: [_partido(2, 'Cadete A', 'Pego C.F.')],
+      sinConvocatoria: [_partido(2, 'Cadete A', 'Pego')],
       resultadosPendientes: [_partido(1, 'Primer Equipo', 'Elx')],
       descansan: const [],
       sinPartido: const [],

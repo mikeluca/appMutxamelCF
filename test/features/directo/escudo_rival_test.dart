@@ -179,7 +179,7 @@ void main() {
       id: 30,
       categoria: equipo,
       equipo: equipo,
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       local: local,
       dia: DateTime(2030, 11, 14),
       hora: '18:00',
@@ -293,7 +293,7 @@ void main() {
       final p = MatchModel.fromJson({
         'id': 30,
         'equipo': 'Primer Equipo',
-        'rival': 'Pego C.F.',
+        'rival': 'Pego',
       });
 
       expect(p.escudoRivalUrl, isNull);
@@ -314,7 +314,7 @@ void main() {
     testWidgets('el modelo lee escudoRivalUrl y rivalEsPropio', (tester) async {
       final p = MatchModel.fromJson({
         'equipo': 'Cadete A',
-        'rival': 'Pego C.F.',
+        'rival': 'Pego',
         'escudoRivalUrl': _ruta7,
         'rivalEsPropio': false,
       });
@@ -335,8 +335,8 @@ void main() {
       bool propio = false,
     }) => CabeceraFicha(
       partidoId: 30,
-      equipoLocal: local ? 'Mutxamel CF' : 'Pego C.F.',
-      equipoVisitante: local ? 'Pego C.F.' : 'Mutxamel CF',
+      equipoLocal: local ? 'Mutxamel CF' : 'Pego',
+      equipoVisitante: local ? 'Pego' : 'Mutxamel CF',
       dia: DateTime(2026, 11, 14),
       estado: EstadoFicha.finalizado,
       golesFavor: 1,
@@ -396,7 +396,7 @@ void main() {
       final c = CabeceraFicha.fromJson({
         'partidoId': 30,
         'equipoLocal': 'Mutxamel CF',
-        'equipoVisitante': 'Pego C.F.',
+        'equipoVisitante': 'Pego',
         'escudoRivalUrl': _ruta7,
         'rivalEsPropio': false,
       });
@@ -420,7 +420,7 @@ void main() {
                 FormaFicha(
                   partidoId: 1,
                   local: true,
-                  rival: 'Pego C.F.',
+                  rival: 'Pego',
                   golesFavor: 2,
                   resultado: 'G',
                   escudoRivalUrl: _ruta7,
@@ -472,7 +472,7 @@ void main() {
                 partido: MatchModel(
                   equipo: 'Cadete A',
                   categoria: 'Cadete A',
-                  rival: 'Pego C.F.',
+                  rival: 'Pego',
                   resultado: '2-1',
                   dia: DateTime(2026, 11, 1),
                   escudoRivalUrl: _ruta7,
@@ -510,7 +510,7 @@ void main() {
         // Delante del nombre.
         expect(
           tester.getCenter(_red(_ruta7)).dx,
-          lessThan(tester.getCenter(find.text('Pego C.F.')).dx),
+          lessThan(tester.getCenter(find.text('Pego')).dx),
         );
       },
     );
@@ -550,7 +550,7 @@ void main() {
                     jornada: 5,
                     fechaImportacion: null,
                     filas: [
-                      fila(1, 'Pego C.F.', url: _ruta7),
+                      fila(1, 'Pego', url: _ruta7),
                       fila(2, 'Mutxamel C.F.', nuestro: true),
                       fila(3, 'Orba C.F.'),
                     ],
@@ -569,7 +569,7 @@ void main() {
         expect(tester.getSize(_red(_ruta7)).width, lessThanOrEqualTo(24));
         expect(
           tester.getCenter(_red(_ruta7)).dx,
-          lessThan(tester.getCenter(find.text('Pego C.F.')).dx),
+          lessThan(tester.getCenter(find.text('Pego')).dx),
         );
       },
     );
@@ -611,7 +611,7 @@ void main() {
                     jornada: 5,
                     fechaImportacion: null,
                     filas: [
-                      fila(1, 'Pego C.F.', url: _ruta7),
+                      fila(1, 'Pego', url: _ruta7),
                       fila(2, 'Mutxamel C.F.', nuestro: true, propio: true),
                       fila(3, "C.F. Mutxamel 'B'", propio: true),
                       fila(4, 'Orba C.F.'),
@@ -653,7 +653,7 @@ void main() {
     ) async {
       final con = StandingsRowModel.fromJson({
         'posicion': 1,
-        'equipo': 'Pego C.F.',
+        'equipo': 'Pego',
         'escudoUrl': _ruta7,
       });
       final sin = StandingsRowModel.fromJson({'posicion': 2, 'equipo': 'X'});
@@ -666,7 +666,7 @@ void main() {
   group('imagen de compartir', () {
     DatosCompartir datos({String? url, bool propio = false}) => DatosCompartir(
       local: 'Mutxamel C.F.',
-      visitante: 'Pego C.F.',
+      visitante: 'Pego',
       mutxamelEsLocal: true,
       golesLocal: 2,
       golesVisitante: 1,
@@ -674,7 +674,7 @@ void main() {
       etiqueta: 'FINAL',
       competicion: 'Liga',
       fecha: '14/11/2026',
-      textoBase: 'Mutxamel C.F. 2-1 Pego C.F. · Final',
+      textoBase: 'Mutxamel C.F. 2-1 Pego · Final',
       escudoRivalUrl: url,
       rivalEsPropio: propio,
     );
@@ -729,7 +729,7 @@ void main() {
                   cabecera: CabeceraFicha(
                     partidoId: 30,
                     equipoLocal: 'Mutxamel CF',
-                    equipoVisitante: 'Pego C.F.',
+                    equipoVisitante: 'Pego',
                     escudoRivalUrl: _ruta7,
                   ),
                 ),

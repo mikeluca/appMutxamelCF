@@ -145,7 +145,8 @@ void main() {
       ]);
       expect(_opciones(s, SeccionClubId.administracion), [
         OpcionClub.moderacion,
-        OpcionClub.cuentasPendientes,
+        OpcionClub.usuarios,
+        OpcionClub.subirDatosFfcv,
         OpcionClub.estadoApp,
       ]);
       // Directo y RRSS: el administrador ve las dos opciones.
@@ -270,7 +271,8 @@ void main() {
           OpcionClub.solicitudesFamilia,
           OpcionClub.invitaciones,
           OpcionClub.moderacion,
-          OpcionClub.cuentasPendientes,
+          OpcionClub.usuarios,
+          OpcionClub.subirDatosFfcv,
           OpcionClub.estadoApp,
         ]),
       );
@@ -439,10 +441,8 @@ void main() {
       '/coordination/invitations',
     );
     expect(rutaDeOpcionClub(OpcionClub.moderacion), '/admin/moderation');
-    expect(
-      rutaDeOpcionClub(OpcionClub.cuentasPendientes),
-      '/admin/pending-accounts',
-    );
+    expect(rutaDeOpcionClub(OpcionClub.usuarios), '/admin/users');
+    expect(rutaDeOpcionClub(OpcionClub.subirDatosFfcv), '/admin/ffcv-upload');
     expect(rutaDeOpcionClub(OpcionClub.estadoApp), '/admin/app-status');
     expect(rutaDeOpcionClub(OpcionClub.partidoEnDirecto), '/live-match');
     expect(rutaDeOpcionClub(OpcionClub.miPerfil), '/profile');

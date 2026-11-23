@@ -1,3 +1,4 @@
+import '../../../core/utils/nombre_equipo.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../core/utils/como_llegar.dart';
@@ -701,7 +702,7 @@ class _ConvocatoriaFormPageState extends State<ConvocatoriaFormPage> {
             (partido) => DropdownMenuItem<int>(
               value: partido.id,
               child: Text(
-                '${partido.rival}'
+                '${nombreRivalVisible(partido.rival)}'
                 '${_formatearFechaPartido(partido)?.isNotEmpty == true ? ' — ${_formatearFechaPartido(partido)}' : ''}',
                 overflow: TextOverflow.ellipsis,
               ),

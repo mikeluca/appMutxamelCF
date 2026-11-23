@@ -100,7 +100,7 @@ void main() {
         'motivo': null,
         'partidoId': 30,
         'local': false,
-        'rival': 'Pego C.F.',
+        'rival': 'Pego',
         'escudoRivalUrl': '/api/public/escudos-rivales/40?v=2',
         'dia': '2026-11-21',
         'hora': '17:30',
@@ -113,7 +113,7 @@ void main() {
 
       expect(partido.disponible, isTrue);
       expect(partido.local, isFalse);
-      expect(partido.rival, 'Pego C.F.');
+      expect(partido.rival, 'Pego');
       expect(partido.dia, DateTime(2026, 11, 21));
       expect(partido.hora, '17:30');
       expect(partido.jornada, 11);
@@ -175,7 +175,7 @@ void main() {
 
       expect(servicio.partidosPedidos, 1);
       expect(_clave('cartel-tarjeta-partido'), findsOneWidget);
-      expect(find.text('C.D. Salesianos Alicante'), findsOneWidget);
+      expect(find.text('Salesianos Alicante'), findsOneWidget);
       expect(find.text('Mutxamel C.F.'), findsOneWidget);
       expect(find.text('21/11/2026 · 17:30'), findsOneWidget);
       expect(find.text('Camp Nou Los Olmos (Mutxamel)'), findsOneWidget);
@@ -194,7 +194,7 @@ void main() {
       final servicio = ServicioImagenesFalso(
         partido: const PartidoPrimerEquipoModel(
           disponible: true,
-          rival: 'Pego C.F.',
+          rival: 'Pego',
         ),
       );
 

@@ -32,7 +32,7 @@ const _proximo = MatchModel(
   equipoId: 7,
   categoria: 'Cadete',
   equipo: 'Cadete A',
-  rival: 'Pego C.F.',
+  rival: 'Pego',
 );
 
 void main() {
@@ -44,7 +44,7 @@ void main() {
       equipoId: 7,
       categoria: 'Cadete',
       equipo: 'Cadete A',
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       resultado: '2-1',
       golesFavor: 2,
       golesContra: 1,
@@ -59,12 +59,12 @@ void main() {
   };
 
   for (final entrada in tarjetas.entries) {
-    testWidgets('${entrada.key} con equipoId muestra "Ver clasificación"', (
+    testWidgets('${entrada.key} con equipoId muestra "Clasificación"', (
       tester,
     ) async {
       await _pintar(tester, entrada.value);
 
-      expect(find.text('Ver clasificación'), findsOneWidget);
+      expect(find.text('Clasificación'), findsOneWidget);
       expect(find.byIcon(Icons.leaderboard_outlined), findsOneWidget);
     });
 
@@ -86,7 +86,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Ver clasificación'), findsNothing);
+      expect(find.text('Clasificación'), findsNothing);
       expect(find.byIcon(Icons.leaderboard_outlined), findsNothing);
     });
   }
@@ -100,7 +100,7 @@ void main() {
           equipoId: 7,
           categoria: 'Cadete',
           equipo: 'Cadete A',
-          rival: 'Pego C.F.',
+          rival: 'Pego',
           dia: DateTime(2026, 10, 17),
           pendienteResultado: true,
           local: false,
@@ -111,13 +111,13 @@ void main() {
       expect(texto.style?.color, isNotNull);
 
       // Visitante: el rival va primero (arriba) y el Mutxamel después.
-      final rival = tester.getCenter(find.text('Pego C.F.')).dy;
+      final rival = tester.getCenter(find.text('Pego')).dy;
       final nuestro = tester.getCenter(find.text('Cadete A')).dy;
       expect(rival, lessThan(nuestro));
 
       // La fecha va debajo del último equipo, y se mantiene el botón.
       expect(find.textContaining('17'), findsWidgets);
-      expect(find.text('Ver clasificación'), findsOneWidget);
+      expect(find.text('Clasificación'), findsOneWidget);
     },
   );
 
@@ -135,7 +135,7 @@ void main() {
     await http.runWithClient(() async {
       await _pintar(tester, _proximo);
 
-      await tester.tap(find.text('Ver clasificación'));
+      await tester.tap(find.text('Clasificación'));
       await tester.pumpAndSettle();
 
       expect(find.byType(TeamStandingsPage), findsOneWidget);

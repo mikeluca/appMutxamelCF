@@ -1435,9 +1435,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get matchResultPending => 'Pendiente de resultado';
 
   @override
-  String get viewStandings => 'Ver clasificación';
-
-  @override
   String seasonTitle(String name) {
     return 'Temporada $name';
   }
@@ -4057,4 +4054,376 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get familyRejectedSnack => 'Solicitud rechazada';
+
+  @override
+  String get viewStandings => 'Clasificación';
+
+  @override
+  String get countdownBlockDays => 'Días';
+
+  @override
+  String get countdownBlockHours => 'Horas';
+
+  @override
+  String get countdownBlockMinutes => 'Minutos';
+
+  @override
+  String get countdownBlockSeconds => 'Segundos';
+
+  @override
+  String get clockFirstHalf => '1T';
+
+  @override
+  String get clockSecondHalf => '2T';
+
+  @override
+  String get clubPageFfcvUpload => 'Subir datos FFCV';
+
+  @override
+  String get clubPageFfcvUploadDesc =>
+      'Importa los partidos y las clasificaciones de la FFCV';
+
+  @override
+  String get clubPageUsers => 'Usuarios';
+
+  @override
+  String get clubPageUsersDesc =>
+      'Cuentas de la app: invitar, editar roles, activar y desactivar';
+
+  @override
+  String get ffcvTabMatches => 'Partidos';
+
+  @override
+  String get ffcvTabStandings => 'Clasificaciones';
+
+  @override
+  String get ffcvMatchesHelp =>
+      'Descarga el listado LstPartidos.csv de la intranet de la FFCV y súbelo aquí. Primero verás una vista previa; no se guarda nada hasta pulsar «Confirmar».';
+
+  @override
+  String get ffcvStandingsHelp =>
+      'Descarga ListadoClasificaciones.xlsx de la intranet de la FFCV y súbelo aquí. El archivo trae todas las clasificaciones de la Comunitat: solo se importan los grupos de los equipos relacionados en Equipos FFCV. Antes de guardar nada verás una vista previa.';
+
+  @override
+  String get ffcvChooseFile => 'Elegir fichero';
+
+  @override
+  String get ffcvChangeFile => 'Cambiar fichero';
+
+  @override
+  String get ffcvNoFile => 'Ningún fichero elegido';
+
+  @override
+  String get ffcvPreview => 'Previsualizar';
+
+  @override
+  String get ffcvConfirm => 'Confirmar importación';
+
+  @override
+  String get ffcvUploading => 'Subiendo y procesando el fichero…';
+
+  @override
+  String get ffcvSaving => 'Guardando la importación…';
+
+  @override
+  String get ffcvNewImport => 'Subir otro fichero';
+
+  @override
+  String get ffcvStatusNew => 'Nuevo';
+
+  @override
+  String get ffcvStatusUpdated => 'Actualizado';
+
+  @override
+  String get ffcvStatusUnchanged => 'Sin cambios';
+
+  @override
+  String get ffcvStatusNoTeam => 'Sin equipo';
+
+  @override
+  String get ffcvStatusConflict => 'Conflicto manual';
+
+  @override
+  String ffcvCountNew(int n) {
+    return '$n nuevos';
+  }
+
+  @override
+  String ffcvCountUpdated(int n) {
+    return '$n actualizados';
+  }
+
+  @override
+  String ffcvCountUnchanged(int n) {
+    return '$n sin cambios';
+  }
+
+  @override
+  String ffcvCountNoTeam(int n) {
+    return '$n sin equipo';
+  }
+
+  @override
+  String ffcvCountConflict(int n) {
+    return '$n conflictos manuales';
+  }
+
+  @override
+  String ffcvWeekendSummary(String desde, String hasta, String resumen) {
+    return 'Fin de semana $desde – $hasta: $resumen';
+  }
+
+  @override
+  String get ffcvNoMatchesFound =>
+      'No se ha encontrado ningún partido del Mutxamel en el archivo';
+
+  @override
+  String ffcvHomeVs(String rival) {
+    return 'Local · $rival';
+  }
+
+  @override
+  String ffcvAwayVs(String rival) {
+    return 'Visitante · $rival';
+  }
+
+  @override
+  String get ffcvChooseTeam => '— Elegir equipo —';
+
+  @override
+  String ffcvAssignTeamFor(String grupo) {
+    return 'Equipo para $grupo';
+  }
+
+  @override
+  String get ffcvRests => 'Descansan';
+
+  @override
+  String get ffcvVanished => 'Ya no aparecen en la FFCV (¿aplazado?)';
+
+  @override
+  String get ffcvVanishedNote =>
+      'No se borran ni se modifican automáticamente.';
+
+  @override
+  String get ffcvHasCallup => 'tiene convocatoria';
+
+  @override
+  String get ffcvErrorsTitle => 'Líneas que no se han podido leer';
+
+  @override
+  String ffcvErrorLine(int n, String mensaje) {
+    return 'Línea $n: $mensaje';
+  }
+
+  @override
+  String ffcvConfirmMatchesBody(int n, int nuevos, int actualizados) {
+    return 'Se importarán $n partidos ($nuevos nuevos y $actualizados actualizados). ¿Continuar?';
+  }
+
+  @override
+  String ffcvResultMatches(int c, int a, int s, int m, int e, int dc, int de) {
+    return 'Importación guardada: $c nuevos, $a actualizados, $s sin cambios, $m conflictos manuales, $e sin equipo. Descansos: +$dc / −$de.';
+  }
+
+  @override
+  String get ffcvWarnings => 'Avisos';
+
+  @override
+  String ffcvStandingsSummary(int filas, int grupos) {
+    return '$filas filas leídas en $grupos grupos. Marca los equipos cuya clasificación quieres actualizar: se sustituye por completo la tabla guardada de cada uno.';
+  }
+
+  @override
+  String get ffcvFound => 'Encontrado';
+
+  @override
+  String get ffcvNotFound => 'No encontrado';
+
+  @override
+  String ffcvStandingsLine(String jornada, String pos, String pts, String pj) {
+    return 'Jornada $jornada · Pos. $pos · $pts pts · PJ $pj';
+  }
+
+  @override
+  String ffcvOldFileWarning(String jornada, String guardada) {
+    return 'Aviso: el archivo es de la jornada $jornada y lo guardado es de la jornada $guardada (¿archivo antiguo?). Desmarcado por defecto.';
+  }
+
+  @override
+  String get ffcvNoTeamsRelated =>
+      'No hay ningún equipo relacionado. Añádelos en Equipos FFCV, en el panel web.';
+
+  @override
+  String get ffcvUnmappedTitle => 'Equipos del club sin grupo asignado';
+
+  @override
+  String get ffcvUnmappedBody =>
+      'Estas filas del Mutxamel C.F. están en el archivo, pero ninguna relación de Equipos FFCV las reconoce, así que no se importan. Añade la relación (competición y letra) en el panel web.';
+
+  @override
+  String ffcvConfirmStandingsBody(int n) {
+    return 'Se actualizará la clasificación de $n equipos: se sustituye por completo la tabla guardada de cada uno. ¿Continuar?';
+  }
+
+  @override
+  String get ffcvNothingSelected => 'Marca al menos un equipo.';
+
+  @override
+  String ffcvResultStandings(int equipos, int filas) {
+    return '$equipos equipo(s) actualizado(s), $filas filas de clasificación guardadas.';
+  }
+
+  @override
+  String get usersSearchHint => 'Buscar por nombre o email…';
+
+  @override
+  String get usersFilterRole => 'Rol';
+
+  @override
+  String get usersAllRoles => 'Todos los roles';
+
+  @override
+  String get usersNoRoles => 'Sin roles';
+
+  @override
+  String get usersFilterState => 'Estado';
+
+  @override
+  String get usersAllStates => 'Todos los estados';
+
+  @override
+  String get usersStateActive => 'Activa';
+
+  @override
+  String get usersStatePending => 'Pendiente de activar';
+
+  @override
+  String get usersStateExpired => 'Invitación caducada';
+
+  @override
+  String get usersStateDisabled => 'Desactivada';
+
+  @override
+  String usersCount(int x, int y) {
+    return '$x de $y cuentas';
+  }
+
+  @override
+  String get usersNoneMatch => 'Ninguna cuenta cumple los filtros';
+
+  @override
+  String get usersEmpty => 'Todavía no hay ninguna cuenta de la app.';
+
+  @override
+  String get usersClearFilters => 'Limpiar filtros';
+
+  @override
+  String usersLastAccess(String fecha) {
+    return 'Último acceso: $fecha';
+  }
+
+  @override
+  String get usersNeverAccessed => 'Todavía no ha entrado';
+
+  @override
+  String get usersDetailTitle => 'Cuenta';
+
+  @override
+  String get usersName => 'Nombre';
+
+  @override
+  String get usersSurname => 'Apellidos';
+
+  @override
+  String get usersEditName => 'Editar nombre';
+
+  @override
+  String get usersNameFromProfile => 'El nombre sale de su ficha vinculada.';
+
+  @override
+  String get usersSave => 'Guardar';
+
+  @override
+  String get usersNameSaved => 'Nombre actualizado.';
+
+  @override
+  String get usersLinksTitle => 'Vínculos y roles';
+
+  @override
+  String get usersNoLinks =>
+      'Esta cuenta no tiene ningún vínculo ni rol de club todavía.';
+
+  @override
+  String get usersAddLink => 'Añadir vínculo o rol';
+
+  @override
+  String get usersAddPersonTitle => 'Vincular a una persona';
+
+  @override
+  String get usersAddRoleTitle => 'Añadir un rol';
+
+  @override
+  String get usersChoosePerson => 'Elige una persona';
+
+  @override
+  String get usersNoPeople => 'No hay personas sin cuenta de este tipo.';
+
+  @override
+  String usersRemoveConfirm(String nombre) {
+    return '¿Quitar «$nombre» de esta cuenta?';
+  }
+
+  @override
+  String get usersRemove => 'Quitar';
+
+  @override
+  String get usersLinkAdded => 'Vínculo o rol añadido.';
+
+  @override
+  String get usersLinkRemoved => 'Vínculo o rol quitado.';
+
+  @override
+  String get usersActivate => 'Activar';
+
+  @override
+  String get usersDeactivate => 'Desactivar';
+
+  @override
+  String get usersDelete => 'Eliminar invitación';
+
+  @override
+  String usersActivateConfirm(String email) {
+    return '¿Activar la cuenta de $email? Podrá entrar en la app.';
+  }
+
+  @override
+  String usersDeactivateConfirm(String email) {
+    return '¿Desactivar la cuenta de $email? Dejará de poder entrar en la app.';
+  }
+
+  @override
+  String usersDeleteConfirm(String email) {
+    return '¿Eliminar la invitación de $email? Se borra la cuenta sin activar.';
+  }
+
+  @override
+  String get usersActivated => 'Cuenta activada.';
+
+  @override
+  String get usersDeactivated => 'Cuenta desactivada.';
+
+  @override
+  String get usersDeleted => 'Invitación eliminada.';
+
+  @override
+  String get usersReadOnlyOwn =>
+      'Es tu cuenta: no se puede modificar desde aquí.';
+
+  @override
+  String get usersReadOnlyAdmin =>
+      'Es una cuenta de administrador: no se puede modificar desde la app.';
+
+  @override
+  String get usersSavingError => 'No se ha podido completar la acción.';
 }

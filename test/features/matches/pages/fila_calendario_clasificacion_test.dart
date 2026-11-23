@@ -47,14 +47,14 @@ MatchModel _proximo({int? equipoId = 7}) => MatchModel(
   equipoId: equipoId,
   categoria: 'Cadete',
   equipo: 'Cadete A',
-  rival: 'Pego C.F.',
+  rival: 'Pego',
   dia: DateTime.now().add(const Duration(days: 20)),
   hora: '11:00',
   campo: 'Camp Municipal',
 );
 
 final _calendario = find.text('Añadir a mi calendario');
-final _clasificacion = find.text('Ver clasificación');
+final _clasificacion = find.text('Clasificación');
 
 void main() {
   setUpAll(() async => initializeDateFormatting('es'));

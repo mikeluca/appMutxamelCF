@@ -466,7 +466,7 @@ void main() {
     }) => CabeceraFicha(
       partidoId: 30,
       equipoLocal: 'Mutxamel CF',
-      equipoVisitante: 'Pego C.F.',
+      equipoVisitante: 'Pego',
       dia: DateTime(2026, 11, 16),
       hora: '12:00',
       golesFavor: 1,
@@ -558,7 +558,7 @@ void main() {
           id: 30,
           categoria: 'Primer Equipo',
           equipo: 'Mutxamel CF',
-          rival: 'Pego C.F.',
+          rival: 'Pego',
           enJuego: true,
           fase: fase,
           golesFavor: 1,
@@ -631,8 +631,8 @@ void main() {
         FichaPartido(
           cabecera: CabeceraFicha(
             partidoId: 30,
-            equipoLocal: local ? 'Mutxamel CF' : 'Pego C.F.',
-            equipoVisitante: local ? 'Pego C.F.' : 'Mutxamel CF',
+            equipoLocal: local ? 'Mutxamel CF' : 'Pego',
+            equipoVisitante: local ? 'Pego' : 'Mutxamel CF',
             estado: EstadoFicha.enJuego,
           ),
           eventos: eventos,

@@ -38,7 +38,7 @@ class _ServicioFalso extends FichaPartidoService {
       cabecera: CabeceraFicha(
         partidoId: partidoId,
         equipoLocal: 'Mutxamel CF',
-        equipoVisitante: 'Pego C.F.',
+        equipoVisitante: 'Pego',
         dia: DateTime(2026, 11, 11),
         hora: '21:00',
         estado: EstadoFicha.proximo,

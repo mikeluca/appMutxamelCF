@@ -111,7 +111,7 @@ Future<void> _pintar(
   _ServicioFalso servicio, {
   PartidoEnVivoDisponible partido = const PartidoEnVivoDisponible(
     id: 30,
-    rival: 'Pego C.F.',
+    rival: 'Pego',
   ),
   Locale locale = const Locale('es'),
   bool yaEnviada = false,
@@ -344,7 +344,7 @@ void main() {
           _ServicioFalso(jugadores),
           partido: const PartidoEnVivoDisponible(
             id: 30,
-            rival: 'Pego C.F.',
+            rival: 'Pego',
             modalidad: 'F5',
           ),
         );
@@ -693,7 +693,7 @@ void main() {
         saltarFormacion: false,
         partido: const PartidoEnVivoDisponible(
           id: 30,
-          rival: 'Pego C.F.',
+          rival: 'Pego',
           modalidad: 'F8',
         ),
       );

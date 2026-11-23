@@ -140,7 +140,7 @@ class _FakeMatchService extends MatchService {
       equipoId: 5,
       categoria: 'Cadete',
       equipo: 'Cadete A',
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       dia: DateTime(2026, 10, 24),
       hora: '11:00',
     ),
@@ -179,7 +179,7 @@ ConvocatoriaModel _convocatoria({List<ConvocatoriaJugadorModel>? jugadores}) =>
       equipoId: 5,
       equipo: 'Cadete A',
       partidoId: 30,
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       campo: 'Campo Municipal',
       fechaPartido: '2026-10-24',
       horaPartido: '11:00',
@@ -263,7 +263,7 @@ void main() {
         'equipoId': 5,
         'equipo': 'Cadete A',
         'partidoId': 30,
-        'rival': 'Pego C.F.',
+        'rival': 'Pego',
         'fechaPartido': '2026-10-24',
         'usuarioEntrenadorId': 1,
         'jugadores': [
@@ -320,7 +320,7 @@ void main() {
       // Se elige el partido: entonces se consultan sus ausencias.
       await tester.tap(find.byType(DropdownButtonFormField<int>));
       await tester.pumpAndSettle();
-      await tester.tap(find.textContaining('Pego C.F.').last);
+      await tester.tap(find.textContaining('Pego').last);
       await tester.pumpAndSettle();
 
       expect(justificaciones.consultas, [30]);
@@ -354,7 +354,7 @@ void main() {
       // ...y al elegir un partido en el que está justificado se desmarca.
       await tester.tap(find.byType(DropdownButtonFormField<int>));
       await tester.pumpAndSettle();
-      await tester.tap(find.textContaining('Pego C.F.').last);
+      await tester.tap(find.textContaining('Pego').last);
       await tester.pumpAndSettle();
 
       expect(find.text('0 seleccionados'), findsOneWidget);
@@ -369,7 +369,7 @@ void main() {
 
       await tester.tap(find.byType(DropdownButtonFormField<int>));
       await tester.pumpAndSettle();
-      await tester.tap(find.textContaining('Pego C.F.').last);
+      await tester.tap(find.textContaining('Pego').last);
       await tester.pumpAndSettle();
 
       expect(find.text('Ausencia justificada'), findsNothing);
@@ -666,7 +666,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Pego C.F.'), findsOneWidget);
+      expect(find.text('Pego'), findsOneWidget);
       expect(find.text('2 convocados'), findsOneWidget);
       expect(find.text('1 ausencia justificada'), findsOneWidget);
       // Ya no hay recuento "van / no pueden / sin responder".
@@ -695,7 +695,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Pego C.F.'));
+      await tester.tap(find.text('Pego'));
       await tester.pumpAndSettle();
 
       expect(find.byType(ConvocatoriaDetallePage), findsOneWidget);

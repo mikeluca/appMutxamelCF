@@ -28,7 +28,7 @@ Widget _app(Widget hijo, {String idioma = 'es'}) {
 
 MatchModel _partido({
   String equipo = 'Primer Equipo',
-  String rival = 'Pego C.F.',
+  String rival = 'Pego',
   bool local = true,
   DateTime? dia,
   String? hora = '17:00',
@@ -70,38 +70,30 @@ void main() {
         expect(
           EventoPartido.titulo(
             equipo: 'Primer Equipo',
-            rival: 'Pego C.F.',
+            rival: 'Pego',
             local: true,
           ),
-          'Mutxamel C.F. - Pego C.F.',
+          'Mutxamel C.F. - Pego',
         );
         expect(
           EventoPartido.titulo(
             equipo: 'Primer Equipo',
-            rival: 'Pego C.F.',
+            rival: 'Pego',
             local: false,
           ),
-          'Pego C.F. - Mutxamel C.F.',
+          'Pego - Mutxamel C.F.',
         );
       },
     );
 
     test('con el equipo si no es el Primer Equipo', () {
       expect(
-        EventoPartido.titulo(
-          equipo: 'Infantil A',
-          rival: 'Pego C.F.',
-          local: true,
-        ),
-        'Mutxamel C.F. Infantil A - Pego C.F.',
+        EventoPartido.titulo(equipo: 'Infantil A', rival: 'Pego', local: true),
+        'Mutxamel C.F. Infantil A - Pego',
       );
       expect(
-        EventoPartido.titulo(
-          equipo: 'Infantil A',
-          rival: 'Pego C.F.',
-          local: false,
-        ),
-        'Pego C.F. - Mutxamel C.F. Infantil A',
+        EventoPartido.titulo(equipo: 'Infantil A', rival: 'Pego', local: false),
+        'Pego - Mutxamel C.F. Infantil A',
       );
     });
   });
@@ -334,7 +326,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(anadidos, hasLength(1));
-      expect(anadidos.single.titulo, 'Pego C.F. - Mutxamel C.F. Infantil A');
+      expect(anadidos.single.titulo, 'Pego - Mutxamel C.F. Infantil A');
       expect(anadidos.single.lugar, 'Camp Municipal');
       expect(find.byType(SnackBar), findsNothing);
     });
@@ -363,7 +355,7 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('anadir-calendario')));
       await tester.pumpAndSettle();
 
-      expect(anadidos.single.titulo, 'Mutxamel C.F. - Pego C.F.');
+      expect(anadidos.single.titulo, 'Mutxamel C.F. - Pego');
 
       await tester.pumpWidget(
         _app(PartidoListaCard(partido: _partido(resultado: '2-1'))),

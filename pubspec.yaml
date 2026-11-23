@@ -33,6 +33,7 @@ dependencies:
   firebase_crashlytics: 6.1.0
   add_2_calendar: ^3.1.1
   app_settings: ^9.0.1
+  file_picker: ^13.4.1
 
 dev_dependencies:
   flutter_test:

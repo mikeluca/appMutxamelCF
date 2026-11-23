@@ -52,8 +52,8 @@ CabeceraFicha _cabecera({
 }) {
   return CabeceraFicha(
     partidoId: id,
-    equipoLocal: local ? 'Mutxamel CF' : 'Pego C.F.',
-    equipoVisitante: local ? 'Pego C.F.' : 'Mutxamel CF',
+    equipoLocal: local ? 'Mutxamel CF' : 'Pego',
+    equipoVisitante: local ? 'Pego' : 'Mutxamel CF',
     dia: DateTime(2026, 11, 11),
     hora: hora,
     golesFavor: favor,
@@ -268,7 +268,7 @@ void main() {
           ),
           findsOneWidget,
         );
-        expect(find.text('Pego C.F.'), findsOneWidget);
+        expect(find.text('Pego'), findsOneWidget);
         expect(find.text('Mutxamel C.F.'), findsOneWidget);
       },
     );
@@ -1383,7 +1383,7 @@ void main() {
         final ficha = await conMockHttp((request) async {
           peticion = request;
           return http.Response(
-            '''{"cabecera":{"partidoId":30,"equipoLocal":"Mutxamel CF","equipoVisitante":"Pego C.F.",
+            '''{"cabecera":{"partidoId":30,"equipoLocal":"Mutxamel CF","equipoVisitante":"Pego",
               "dia":"2026-11-08","hora":"18:00","golesFavor":2,"golesContra":1,"estado":"EN_JUEGO",
               "competicion":"Preferente Valenciana · Jornada 9"},
              "eventos":[{"tipo":"GOL_FAVOR","minuto":12,"jugador":"Pablito","jugadorEntra":null,
@@ -1407,7 +1407,7 @@ void main() {
 
         expect(ficha.cabecera.estado, EstadoFicha.enJuego);
         expect(ficha.cabecera.mutxamelEsLocal, isTrue);
-        expect(ficha.cabecera.rival, 'Pego C.F.');
+        expect(ficha.cabecera.rival, 'Pego');
         expect(ficha.cabecera.dia, DateTime(2026, 11, 8));
         expect(ficha.eventos.single.jugador, 'Pablito');
         expect(ficha.alineacion.formacion, '4-4-2');

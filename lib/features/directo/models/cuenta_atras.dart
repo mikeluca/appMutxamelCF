@@ -76,12 +76,22 @@ class CuentaAtras {
   final int horas;
   final int minutos;
 
+  /// Los segundos que faltan dentro del minuto (solo con tiempo por delante; 0 en "Calentando" y "A punto de empezar").
+  final int segundos;
+
   const CuentaAtras(
     this.fase, {
     this.dias = 0,
     this.horas = 0,
     this.minutos = 0,
+    this.segundos = 0,
   });
+
+  /// true si todavía hay números que enseñar (días, horas o minutos); en "Calentando" y "A punto de empezar" no.
+  bool get conNumeros =>
+      fase == FaseCuentaAtras.dias ||
+      fase == FaseCuentaAtras.horas ||
+      fase == FaseCuentaAtras.minutos;
 
   /// Desde cuánto antes del inicio se dice "Calentando…".
   static const Duration calentamiento = Duration(minutes: 30);
@@ -98,7 +108,11 @@ class CuentaAtras {
     }
 
     if (falta < const Duration(hours: 1)) {
-      return CuentaAtras(FaseCuentaAtras.minutos, minutos: falta.inMinutes);
+      return CuentaAtras(
+        FaseCuentaAtras.minutos,
+        minutos: falta.inMinutes,
+        segundos: falta.inSeconds % 60,
+      );
     }
 
     if (falta < const Duration(days: 1)) {
@@ -106,6 +120,7 @@ class CuentaAtras {
         FaseCuentaAtras.horas,
         horas: falta.inHours,
         minutos: falta.inMinutes % 60,
+        segundos: falta.inSeconds % 60,
       );
     }
 
@@ -113,6 +128,8 @@ class CuentaAtras {
       FaseCuentaAtras.dias,
       dias: falta.inDays,
       horas: falta.inHours % 24,
+      minutos: falta.inMinutes % 60,
+      segundos: falta.inSeconds % 60,
     );
   }
 }

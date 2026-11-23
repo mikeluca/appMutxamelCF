@@ -1,3 +1,4 @@
+import '../../../core/utils/nombre_equipo.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:intl/intl.dart';
 
@@ -182,7 +183,9 @@ class TeamStandingsSection extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              f.equipo,
+              f.esNuestro
+                  ? f.equipo
+                  : nombreRivalVisible(f.equipo, esPropio: f.esPropio),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: estilo,

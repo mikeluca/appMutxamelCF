@@ -41,3 +41,16 @@ String mensajeDeRecuperacion(AppLocalizations t, Object? error) {
 
   return mensajeDeAccion(t, error);
 }
+
+/// El texto para un fallo en la administración (subir datos de la FFCV, gestionar usuarios): el servidor manda un
+/// mensaje claro en cualquier error con respuesta (también un 403 con el motivo, p. ej. "No se puede desactivar a un
+/// administrador"), y se muestra tal cual; sin respuesta (sin red, tiempo agotado) es el error de conexión genérico.
+String mensajeDeAdmin(AppLocalizations t, Object? error) {
+  if (error is ApiException &&
+      error.statusCode != null &&
+      error.message.trim().isNotEmpty) {
+    return error.message.trim();
+  }
+
+  return t.connectionError;
+}

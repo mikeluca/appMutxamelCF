@@ -492,7 +492,7 @@ class _CalendarioGestionPageState extends State<CalendarioGestionPage> {
 
     final subtitulo = item.esEntrenamiento
         ? (item.sesion?.lugar ?? '')
-        : (item.partido?.rival ?? '');
+        : (item.partido?.rivalVisible ?? '');
 
     return Card(
       margin: EdgeInsets.zero,

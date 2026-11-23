@@ -1,3 +1,4 @@
+import '../../../core/utils/nombre_equipo.dart';
 import 'dart:async';
 
 import 'package:material_ui/material_ui.dart';
@@ -367,7 +368,7 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
               ),
               leading: Icon(Icons.sports_soccer, color: _colors.primary),
               title: Text(
-                partido.rival,
+                nombreRivalVisible(partido.rival),
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               subtitle: Text(
@@ -485,9 +486,9 @@ class _PartidoEnVivoPageState extends State<PartidoEnVivoPage>
     final partido = _partido!;
     final estado = _estado;
 
-    final rival = estado?.rival.isNotEmpty == true
-        ? estado!.rival
-        : partido.rival;
+    final rival = nombreRivalVisible(
+      estado?.rival.isNotEmpty == true ? estado!.rival : partido.rival,
+    );
     final local = estado?.local ?? partido.local;
     final favor = estado?.golesFavor ?? 0;
     final contra = estado?.golesContra ?? 0;

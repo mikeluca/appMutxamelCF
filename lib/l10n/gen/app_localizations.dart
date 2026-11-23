@@ -2680,12 +2680,6 @@ abstract class AppLocalizations {
   /// **'Pendiente de resultado'**
   String get matchResultPending;
 
-  /// No description provided for @viewStandings.
-  ///
-  /// In es, this message translates to:
-  /// **'Ver clasificación'**
-  String get viewStandings;
-
   /// No description provided for @seasonTitle.
   ///
   /// In es, this message translates to:
@@ -7058,6 +7052,636 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Solicitud rechazada'**
   String get familyRejectedSnack;
+
+  /// No description provided for @viewStandings.
+  ///
+  /// In es, this message translates to:
+  /// **'Clasificación'**
+  String get viewStandings;
+
+  /// No description provided for @countdownBlockDays.
+  ///
+  /// In es, this message translates to:
+  /// **'Días'**
+  String get countdownBlockDays;
+
+  /// No description provided for @countdownBlockHours.
+  ///
+  /// In es, this message translates to:
+  /// **'Horas'**
+  String get countdownBlockHours;
+
+  /// No description provided for @countdownBlockMinutes.
+  ///
+  /// In es, this message translates to:
+  /// **'Minutos'**
+  String get countdownBlockMinutes;
+
+  /// No description provided for @countdownBlockSeconds.
+  ///
+  /// In es, this message translates to:
+  /// **'Segundos'**
+  String get countdownBlockSeconds;
+
+  /// No description provided for @clockFirstHalf.
+  ///
+  /// In es, this message translates to:
+  /// **'1T'**
+  String get clockFirstHalf;
+
+  /// No description provided for @clockSecondHalf.
+  ///
+  /// In es, this message translates to:
+  /// **'2T'**
+  String get clockSecondHalf;
+
+  /// No description provided for @clubPageFfcvUpload.
+  ///
+  /// In es, this message translates to:
+  /// **'Subir datos FFCV'**
+  String get clubPageFfcvUpload;
+
+  /// No description provided for @clubPageFfcvUploadDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Importa los partidos y las clasificaciones de la FFCV'**
+  String get clubPageFfcvUploadDesc;
+
+  /// No description provided for @clubPageUsers.
+  ///
+  /// In es, this message translates to:
+  /// **'Usuarios'**
+  String get clubPageUsers;
+
+  /// No description provided for @clubPageUsersDesc.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuentas de la app: invitar, editar roles, activar y desactivar'**
+  String get clubPageUsersDesc;
+
+  /// No description provided for @ffcvTabMatches.
+  ///
+  /// In es, this message translates to:
+  /// **'Partidos'**
+  String get ffcvTabMatches;
+
+  /// No description provided for @ffcvTabStandings.
+  ///
+  /// In es, this message translates to:
+  /// **'Clasificaciones'**
+  String get ffcvTabStandings;
+
+  /// No description provided for @ffcvMatchesHelp.
+  ///
+  /// In es, this message translates to:
+  /// **'Descarga el listado LstPartidos.csv de la intranet de la FFCV y súbelo aquí. Primero verás una vista previa; no se guarda nada hasta pulsar «Confirmar».'**
+  String get ffcvMatchesHelp;
+
+  /// No description provided for @ffcvStandingsHelp.
+  ///
+  /// In es, this message translates to:
+  /// **'Descarga ListadoClasificaciones.xlsx de la intranet de la FFCV y súbelo aquí. El archivo trae todas las clasificaciones de la Comunitat: solo se importan los grupos de los equipos relacionados en Equipos FFCV. Antes de guardar nada verás una vista previa.'**
+  String get ffcvStandingsHelp;
+
+  /// No description provided for @ffcvChooseFile.
+  ///
+  /// In es, this message translates to:
+  /// **'Elegir fichero'**
+  String get ffcvChooseFile;
+
+  /// No description provided for @ffcvChangeFile.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar fichero'**
+  String get ffcvChangeFile;
+
+  /// No description provided for @ffcvNoFile.
+  ///
+  /// In es, this message translates to:
+  /// **'Ningún fichero elegido'**
+  String get ffcvNoFile;
+
+  /// No description provided for @ffcvPreview.
+  ///
+  /// In es, this message translates to:
+  /// **'Previsualizar'**
+  String get ffcvPreview;
+
+  /// No description provided for @ffcvConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar importación'**
+  String get ffcvConfirm;
+
+  /// No description provided for @ffcvUploading.
+  ///
+  /// In es, this message translates to:
+  /// **'Subiendo y procesando el fichero…'**
+  String get ffcvUploading;
+
+  /// No description provided for @ffcvSaving.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardando la importación…'**
+  String get ffcvSaving;
+
+  /// No description provided for @ffcvNewImport.
+  ///
+  /// In es, this message translates to:
+  /// **'Subir otro fichero'**
+  String get ffcvNewImport;
+
+  /// No description provided for @ffcvStatusNew.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo'**
+  String get ffcvStatusNew;
+
+  /// No description provided for @ffcvStatusUpdated.
+  ///
+  /// In es, this message translates to:
+  /// **'Actualizado'**
+  String get ffcvStatusUpdated;
+
+  /// No description provided for @ffcvStatusUnchanged.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin cambios'**
+  String get ffcvStatusUnchanged;
+
+  /// No description provided for @ffcvStatusNoTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin equipo'**
+  String get ffcvStatusNoTeam;
+
+  /// No description provided for @ffcvStatusConflict.
+  ///
+  /// In es, this message translates to:
+  /// **'Conflicto manual'**
+  String get ffcvStatusConflict;
+
+  /// No description provided for @ffcvCountNew.
+  ///
+  /// In es, this message translates to:
+  /// **'{n} nuevos'**
+  String ffcvCountNew(int n);
+
+  /// No description provided for @ffcvCountUpdated.
+  ///
+  /// In es, this message translates to:
+  /// **'{n} actualizados'**
+  String ffcvCountUpdated(int n);
+
+  /// No description provided for @ffcvCountUnchanged.
+  ///
+  /// In es, this message translates to:
+  /// **'{n} sin cambios'**
+  String ffcvCountUnchanged(int n);
+
+  /// No description provided for @ffcvCountNoTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'{n} sin equipo'**
+  String ffcvCountNoTeam(int n);
+
+  /// No description provided for @ffcvCountConflict.
+  ///
+  /// In es, this message translates to:
+  /// **'{n} conflictos manuales'**
+  String ffcvCountConflict(int n);
+
+  /// No description provided for @ffcvWeekendSummary.
+  ///
+  /// In es, this message translates to:
+  /// **'Fin de semana {desde} – {hasta}: {resumen}'**
+  String ffcvWeekendSummary(String desde, String hasta, String resumen);
+
+  /// No description provided for @ffcvNoMatchesFound.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha encontrado ningún partido del Mutxamel en el archivo'**
+  String get ffcvNoMatchesFound;
+
+  /// No description provided for @ffcvHomeVs.
+  ///
+  /// In es, this message translates to:
+  /// **'Local · {rival}'**
+  String ffcvHomeVs(String rival);
+
+  /// No description provided for @ffcvAwayVs.
+  ///
+  /// In es, this message translates to:
+  /// **'Visitante · {rival}'**
+  String ffcvAwayVs(String rival);
+
+  /// No description provided for @ffcvChooseTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'— Elegir equipo —'**
+  String get ffcvChooseTeam;
+
+  /// No description provided for @ffcvAssignTeamFor.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipo para {grupo}'**
+  String ffcvAssignTeamFor(String grupo);
+
+  /// No description provided for @ffcvRests.
+  ///
+  /// In es, this message translates to:
+  /// **'Descansan'**
+  String get ffcvRests;
+
+  /// No description provided for @ffcvVanished.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya no aparecen en la FFCV (¿aplazado?)'**
+  String get ffcvVanished;
+
+  /// No description provided for @ffcvVanishedNote.
+  ///
+  /// In es, this message translates to:
+  /// **'No se borran ni se modifican automáticamente.'**
+  String get ffcvVanishedNote;
+
+  /// No description provided for @ffcvHasCallup.
+  ///
+  /// In es, this message translates to:
+  /// **'tiene convocatoria'**
+  String get ffcvHasCallup;
+
+  /// No description provided for @ffcvErrorsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Líneas que no se han podido leer'**
+  String get ffcvErrorsTitle;
+
+  /// No description provided for @ffcvErrorLine.
+  ///
+  /// In es, this message translates to:
+  /// **'Línea {n}: {mensaje}'**
+  String ffcvErrorLine(int n, String mensaje);
+
+  /// No description provided for @ffcvConfirmMatchesBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Se importarán {n} partidos ({nuevos} nuevos y {actualizados} actualizados). ¿Continuar?'**
+  String ffcvConfirmMatchesBody(int n, int nuevos, int actualizados);
+
+  /// No description provided for @ffcvResultMatches.
+  ///
+  /// In es, this message translates to:
+  /// **'Importación guardada: {c} nuevos, {a} actualizados, {s} sin cambios, {m} conflictos manuales, {e} sin equipo. Descansos: +{dc} / −{de}.'**
+  String ffcvResultMatches(int c, int a, int s, int m, int e, int dc, int de);
+
+  /// No description provided for @ffcvWarnings.
+  ///
+  /// In es, this message translates to:
+  /// **'Avisos'**
+  String get ffcvWarnings;
+
+  /// No description provided for @ffcvStandingsSummary.
+  ///
+  /// In es, this message translates to:
+  /// **'{filas} filas leídas en {grupos} grupos. Marca los equipos cuya clasificación quieres actualizar: se sustituye por completo la tabla guardada de cada uno.'**
+  String ffcvStandingsSummary(int filas, int grupos);
+
+  /// No description provided for @ffcvFound.
+  ///
+  /// In es, this message translates to:
+  /// **'Encontrado'**
+  String get ffcvFound;
+
+  /// No description provided for @ffcvNotFound.
+  ///
+  /// In es, this message translates to:
+  /// **'No encontrado'**
+  String get ffcvNotFound;
+
+  /// No description provided for @ffcvStandingsLine.
+  ///
+  /// In es, this message translates to:
+  /// **'Jornada {jornada} · Pos. {pos} · {pts} pts · PJ {pj}'**
+  String ffcvStandingsLine(String jornada, String pos, String pts, String pj);
+
+  /// No description provided for @ffcvOldFileWarning.
+  ///
+  /// In es, this message translates to:
+  /// **'Aviso: el archivo es de la jornada {jornada} y lo guardado es de la jornada {guardada} (¿archivo antiguo?). Desmarcado por defecto.'**
+  String ffcvOldFileWarning(String jornada, String guardada);
+
+  /// No description provided for @ffcvNoTeamsRelated.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay ningún equipo relacionado. Añádelos en Equipos FFCV, en el panel web.'**
+  String get ffcvNoTeamsRelated;
+
+  /// No description provided for @ffcvUnmappedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipos del club sin grupo asignado'**
+  String get ffcvUnmappedTitle;
+
+  /// No description provided for @ffcvUnmappedBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Estas filas del Mutxamel C.F. están en el archivo, pero ninguna relación de Equipos FFCV las reconoce, así que no se importan. Añade la relación (competición y letra) en el panel web.'**
+  String get ffcvUnmappedBody;
+
+  /// No description provided for @ffcvConfirmStandingsBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Se actualizará la clasificación de {n} equipos: se sustituye por completo la tabla guardada de cada uno. ¿Continuar?'**
+  String ffcvConfirmStandingsBody(int n);
+
+  /// No description provided for @ffcvNothingSelected.
+  ///
+  /// In es, this message translates to:
+  /// **'Marca al menos un equipo.'**
+  String get ffcvNothingSelected;
+
+  /// No description provided for @ffcvResultStandings.
+  ///
+  /// In es, this message translates to:
+  /// **'{equipos} equipo(s) actualizado(s), {filas} filas de clasificación guardadas.'**
+  String ffcvResultStandings(int equipos, int filas);
+
+  /// No description provided for @usersSearchHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar por nombre o email…'**
+  String get usersSearchHint;
+
+  /// No description provided for @usersFilterRole.
+  ///
+  /// In es, this message translates to:
+  /// **'Rol'**
+  String get usersFilterRole;
+
+  /// No description provided for @usersAllRoles.
+  ///
+  /// In es, this message translates to:
+  /// **'Todos los roles'**
+  String get usersAllRoles;
+
+  /// No description provided for @usersNoRoles.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin roles'**
+  String get usersNoRoles;
+
+  /// No description provided for @usersFilterState.
+  ///
+  /// In es, this message translates to:
+  /// **'Estado'**
+  String get usersFilterState;
+
+  /// No description provided for @usersAllStates.
+  ///
+  /// In es, this message translates to:
+  /// **'Todos los estados'**
+  String get usersAllStates;
+
+  /// No description provided for @usersStateActive.
+  ///
+  /// In es, this message translates to:
+  /// **'Activa'**
+  String get usersStateActive;
+
+  /// No description provided for @usersStatePending.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendiente de activar'**
+  String get usersStatePending;
+
+  /// No description provided for @usersStateExpired.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitación caducada'**
+  String get usersStateExpired;
+
+  /// No description provided for @usersStateDisabled.
+  ///
+  /// In es, this message translates to:
+  /// **'Desactivada'**
+  String get usersStateDisabled;
+
+  /// No description provided for @usersCount.
+  ///
+  /// In es, this message translates to:
+  /// **'{x} de {y} cuentas'**
+  String usersCount(int x, int y);
+
+  /// No description provided for @usersNoneMatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Ninguna cuenta cumple los filtros'**
+  String get usersNoneMatch;
+
+  /// No description provided for @usersEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay ninguna cuenta de la app.'**
+  String get usersEmpty;
+
+  /// No description provided for @usersClearFilters.
+  ///
+  /// In es, this message translates to:
+  /// **'Limpiar filtros'**
+  String get usersClearFilters;
+
+  /// No description provided for @usersLastAccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Último acceso: {fecha}'**
+  String usersLastAccess(String fecha);
+
+  /// No description provided for @usersNeverAccessed.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no ha entrado'**
+  String get usersNeverAccessed;
+
+  /// No description provided for @usersDetailTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta'**
+  String get usersDetailTitle;
+
+  /// No description provided for @usersName.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre'**
+  String get usersName;
+
+  /// No description provided for @usersSurname.
+  ///
+  /// In es, this message translates to:
+  /// **'Apellidos'**
+  String get usersSurname;
+
+  /// No description provided for @usersEditName.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar nombre'**
+  String get usersEditName;
+
+  /// No description provided for @usersNameFromProfile.
+  ///
+  /// In es, this message translates to:
+  /// **'El nombre sale de su ficha vinculada.'**
+  String get usersNameFromProfile;
+
+  /// No description provided for @usersSave.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get usersSave;
+
+  /// No description provided for @usersNameSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre actualizado.'**
+  String get usersNameSaved;
+
+  /// No description provided for @usersLinksTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Vínculos y roles'**
+  String get usersLinksTitle;
+
+  /// No description provided for @usersNoLinks.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta cuenta no tiene ningún vínculo ni rol de club todavía.'**
+  String get usersNoLinks;
+
+  /// No description provided for @usersAddLink.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir vínculo o rol'**
+  String get usersAddLink;
+
+  /// No description provided for @usersAddPersonTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Vincular a una persona'**
+  String get usersAddPersonTitle;
+
+  /// No description provided for @usersAddRoleTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Añadir un rol'**
+  String get usersAddRoleTitle;
+
+  /// No description provided for @usersChoosePerson.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige una persona'**
+  String get usersChoosePerson;
+
+  /// No description provided for @usersNoPeople.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay personas sin cuenta de este tipo.'**
+  String get usersNoPeople;
+
+  /// No description provided for @usersRemoveConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Quitar «{nombre}» de esta cuenta?'**
+  String usersRemoveConfirm(String nombre);
+
+  /// No description provided for @usersRemove.
+  ///
+  /// In es, this message translates to:
+  /// **'Quitar'**
+  String get usersRemove;
+
+  /// No description provided for @usersLinkAdded.
+  ///
+  /// In es, this message translates to:
+  /// **'Vínculo o rol añadido.'**
+  String get usersLinkAdded;
+
+  /// No description provided for @usersLinkRemoved.
+  ///
+  /// In es, this message translates to:
+  /// **'Vínculo o rol quitado.'**
+  String get usersLinkRemoved;
+
+  /// No description provided for @usersActivate.
+  ///
+  /// In es, this message translates to:
+  /// **'Activar'**
+  String get usersActivate;
+
+  /// No description provided for @usersDeactivate.
+  ///
+  /// In es, this message translates to:
+  /// **'Desactivar'**
+  String get usersDeactivate;
+
+  /// No description provided for @usersDelete.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar invitación'**
+  String get usersDelete;
+
+  /// No description provided for @usersActivateConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Activar la cuenta de {email}? Podrá entrar en la app.'**
+  String usersActivateConfirm(String email);
+
+  /// No description provided for @usersDeactivateConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Desactivar la cuenta de {email}? Dejará de poder entrar en la app.'**
+  String usersDeactivateConfirm(String email);
+
+  /// No description provided for @usersDeleteConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Eliminar la invitación de {email}? Se borra la cuenta sin activar.'**
+  String usersDeleteConfirm(String email);
+
+  /// No description provided for @usersActivated.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta activada.'**
+  String get usersActivated;
+
+  /// No description provided for @usersDeactivated.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta desactivada.'**
+  String get usersDeactivated;
+
+  /// No description provided for @usersDeleted.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitación eliminada.'**
+  String get usersDeleted;
+
+  /// No description provided for @usersReadOnlyOwn.
+  ///
+  /// In es, this message translates to:
+  /// **'Es tu cuenta: no se puede modificar desde aquí.'**
+  String get usersReadOnlyOwn;
+
+  /// No description provided for @usersReadOnlyAdmin.
+  ///
+  /// In es, this message translates to:
+  /// **'Es una cuenta de administrador: no se puede modificar desde la app.'**
+  String get usersReadOnlyAdmin;
+
+  /// No description provided for @usersSavingError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido completar la acción.'**
+  String get usersSavingError;
 }
 
 class _AppLocalizationsDelegate

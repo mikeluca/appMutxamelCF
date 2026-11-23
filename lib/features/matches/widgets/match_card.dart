@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widget/escudo_rival.dart';
 import '../../../core/utils/como_llegar.dart';
 import '../../../core/utils/fecha_visualizacion.dart';
+import '../../directo/widgets/cuenta_atras_bloques.dart';
 import '../../../core/utils/evento_partido.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../ficha_partido/pages/ficha_partido_page.dart';
@@ -87,7 +88,7 @@ class MatchCard extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: t.matchViewMatchAgainst(match.rival),
+      label: t.matchViewMatchAgainst(match.rivalVisible),
       child: InkWell(
         key: const ValueKey('abrir-ficha'),
         borderRadius: BorderRadius.circular(8),
@@ -204,7 +205,7 @@ class MatchCard extends StatelessWidget {
             ),
 
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: _rellenoCuerpo,
               child: Column(
                 children: [
                   Row(
@@ -212,7 +213,7 @@ class MatchCard extends StatelessWidget {
                     children: [
                       _buildTeam(
                         context,
-                        match.local ? match.equipo : match.rival,
+                        match.local ? match.equipo : match.rivalVisible,
                         isHomeTeam: match.local,
                       ),
 
@@ -230,31 +231,27 @@ class MatchCard extends StatelessWidget {
 
                       _buildTeam(
                         context,
-                        match.local ? match.rival : match.equipo,
+                        match.local ? match.rivalVisible : match.equipo,
                         isHomeTeam: !match.local,
                       ),
                     ],
                   ),
 
-                  // La cuenta atrás de la tarjeta del Primer Equipo ("Empieza en 3 h 15 min"); sin hora, solo el día.
+                  // La cuenta atrás de la tarjeta del Primer Equipo, en bloques (Días / Horas / Minutos / Segundos);
+                  // en los últimos 30 minutos, "Calentando…" y "A punto de empezar". Sin hora, solo el día.
                   if (mostrarPrimerEquipo &&
                       CuentaAtrasTexto.aplica(match.dia, match.hora))
                     Padding(
-                      padding: const EdgeInsets.only(top: 14),
-                      child: CuentaAtrasTexto(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: CuentaAtrasBloques(
                         dia: match.dia,
                         hora: match.hora,
                         ahora: ahora,
                         crearTemporizador: crearTemporizador,
-                        estilo: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
                       ),
                     ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
 
                   _buildMatchInformation(context),
 
@@ -285,7 +282,7 @@ class MatchCard extends StatelessWidget {
             Container(
               key: const ValueKey('letrero-en-juego'),
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 6),
               color: Colors.red.shade700,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -306,7 +303,7 @@ class MatchCard extends StatelessWidget {
             ),
 
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: _rellenoCuerpo,
               child: Column(
                 children: [
                   Row(
@@ -314,7 +311,7 @@ class MatchCard extends StatelessWidget {
                     children: [
                       _buildTeam(
                         context,
-                        match.local ? match.equipo : match.rival,
+                        match.local ? match.equipo : match.rivalVisible,
                         isHomeTeam: match.local,
                       ),
 
@@ -322,18 +319,20 @@ class MatchCard extends StatelessWidget {
 
                       _buildTeam(
                         context,
-                        match.local ? match.rival : match.equipo,
+                        match.local ? match.rivalVisible : match.equipo,
                         isHomeTeam: !match.local,
                       ),
                     ],
                   ),
 
-                  // El reloj en directo (MM:ss con el punto rojo parpadeante); en el descanso, el texto de siempre.
+                  // El reloj en directo (MM:ss con el punto rojo parpadeante y "1T" / "2T"); en el descanso, el texto
+                  // de siempre.
                   if (match.reloj case final reloj? when !reloj.enDescanso)
                     Padding(
-                      padding: const EdgeInsets.only(top: 6),
+                      padding: const EdgeInsets.only(top: 4),
                       child: RelojEnDirecto(
                         reloj: reloj,
+                        conParte: true,
                         ahora: ahora,
                         crearTemporizador: crearTemporizador,
                         estilo: TextStyle(
@@ -346,7 +345,7 @@ class MatchCard extends StatelessWidget {
 
                   if (match.enDescanso)
                     Padding(
-                      padding: const EdgeInsets.only(top: 6),
+                      padding: const EdgeInsets.only(top: 4),
                       child: Text(
                         t.matchHalfTime,
                         key: const ValueKey('descanso'),
@@ -358,7 +357,7 @@ class MatchCard extends StatelessWidget {
                       ),
                     ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
 
                   _buildMatchInformation(context),
                 ],
@@ -418,7 +417,7 @@ class MatchCard extends StatelessWidget {
             ),
 
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: _rellenoCuerpo,
               child: Column(
                 children: [
                   Row(
@@ -426,7 +425,7 @@ class MatchCard extends StatelessWidget {
                     children: [
                       _buildTeam(
                         context,
-                        match.local ? match.equipo : match.rival,
+                        match.local ? match.equipo : match.rivalVisible,
                         isHomeTeam: match.local,
                       ),
 
@@ -441,13 +440,13 @@ class MatchCard extends StatelessWidget {
 
                       _buildTeam(
                         context,
-                        match.local ? match.rival : match.equipo,
+                        match.local ? match.rivalVisible : match.equipo,
                         isHomeTeam: !match.local,
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
 
                   // Fecha, hora y campo
                   _buildMatchInformation(context),
@@ -482,7 +481,7 @@ class MatchCard extends StatelessWidget {
             ),
 
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: _rellenoCuerpo,
               child: Column(
                 children: [
                   Row(
@@ -490,7 +489,7 @@ class MatchCard extends StatelessWidget {
                     children: [
                       _buildTeam(
                         context,
-                        match.local ? match.equipo : match.rival,
+                        match.local ? match.equipo : match.rivalVisible,
                         isHomeTeam: match.local,
                       ),
 
@@ -513,13 +512,13 @@ class MatchCard extends StatelessWidget {
 
                       _buildTeam(
                         context,
-                        match.local ? match.rival : match.equipo,
+                        match.local ? match.rivalVisible : match.equipo,
                         isHomeTeam: !match.local,
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
 
                   _buildMatchInformation(context),
                 ],
@@ -619,10 +618,13 @@ class MatchCard extends StatelessWidget {
   // CABECERA
   // ============================================================
 
+  /// El relleno del cuerpo de las tarjetas (compacto: la tarjeta de Inicio ocupa poco alto).
+  static const EdgeInsets _rellenoCuerpo = EdgeInsets.fromLTRB(14, 10, 14, 8);
+
   Widget _buildHeader(String title, {required Color color}) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       color: color,
       child: Text(
         title,
@@ -646,43 +648,47 @@ class MatchCard extends StatelessWidget {
     String name, {
     required bool isHomeTeam,
   }) {
-    return SizedBox(
-      width: 105,
-      child: Column(
-        children: [
-          if (isHomeTeam)
-            Image.asset(
-              'assets/images/escudo.png',
-              width: 58,
-              height: 70,
-              fit: BoxFit.contain,
-            )
-          else
-            // El rival: su escudo de la red, el nuestro si es un filial, o el genérico.
-            SizedBox(
-              height: 70,
-              child: Center(
-                child: EscudoRival(
-                  url: match.escudoRivalUrl,
-                  esPropio: match.rivalEsPropio,
-                  tamano: 58,
+    // Hasta 105 de ancho, y menos si no cabe (iPhone pequeño o letra grande): sin desbordar.
+    return Flexible(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 105),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (isHomeTeam)
+              Image.asset(
+                'assets/images/escudo.png',
+                width: 44,
+                height: 54,
+                fit: BoxFit.contain,
+              )
+            else
+              // El rival: su escudo de la red, el nuestro si es un filial, o el genérico.
+              SizedBox(
+                height: 54,
+                child: Center(
+                  child: EscudoRival(
+                    url: match.escudoRivalUrl,
+                    esPropio: match.rivalEsPropio,
+                    tamano: 44,
+                  ),
                 ),
               ),
-            ),
 
-          const SizedBox(height: 8),
+            const SizedBox(height: 4),
 
-          Text(
-            name,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface,
+            Text(
+              name,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -692,21 +698,20 @@ class MatchCard extends StatelessWidget {
   // ============================================================
 
   Widget _buildMatchInformation(BuildContext context) {
-    // La fecha se calcula en el cliente a partir de match.dia (en vez de
-    // usar match.diaFormateado tal cual llega del backend) para poder
-    // anteponer el nombre del día y respetar el idioma activo (es/ca/en);
-    // diaFormateado queda como respaldo si match.dia no viniera informado.
-    final fechaVisible = match.dia != null
-        ? formatearFechaConDiaSemana(match.dia!, AppLocalizations.of(context))
-        : match.diaFormateado;
+    // Fecha y hora en una sola línea ("Domingo 22/11/2026 · 17:30"). La fecha se calcula en el cliente a partir de
+    // match.dia (para anteponer el nombre del día y respetar el idioma activo); diaFormateado queda como respaldo si
+    // match.dia no viniera informado.
+    final fechaHora = formatearFechaHoraEnUnaLinea(
+      match.dia,
+      match.hora,
+      AppLocalizations.of(context),
+      respaldoFecha: match.diaFormateado,
+    );
 
     return Column(
       children: [
-        if (fechaVisible?.isNotEmpty == true)
-          _buildInfoRow(context, Icons.calendar_today_outlined, fechaVisible!),
-
-        if (match.hora?.isNotEmpty == true)
-          _buildInfoRow(context, Icons.schedule_outlined, match.hora!),
+        if (fechaHora.isNotEmpty)
+          _buildInfoRow(context, Icons.calendar_today_outlined, fechaHora),
 
         if (match.campo?.isNotEmpty == true)
           _buildInfoRow(
@@ -726,7 +731,7 @@ class MatchCard extends StatelessWidget {
     Widget? trailing,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.only(bottom: 3),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

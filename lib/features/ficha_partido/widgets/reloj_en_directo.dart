@@ -6,6 +6,32 @@ import '../../../l10n/gen/app_localizations.dart';
 import '../models/reloj_directo.dart';
 import 'ficha_cabecera.dart';
 
+/// La etiqueta pequeña de la parte ("1T" / "2T") junto al reloj, en una pastilla con el contorno del color del texto.
+class _EtiquetaParte extends StatelessWidget {
+  final String texto;
+  final Color? color;
+
+  const _EtiquetaParte({required this.texto, this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = color ?? DefaultTextStyle.of(context).style.color;
+
+    return Container(
+      key: const ValueKey('reloj-parte'),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+      decoration: BoxDecoration(
+        border: Border.all(color: c ?? const Color(0xFF808080), width: 1),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        texto,
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: c),
+      ),
+    );
+  }
+}
+
 /// Crea el temporizador periódico del reloj; los tests lo sustituyen para comprobar cuándo corre y cuándo se para.
 typedef CrearTemporizador =
     Timer Function(Duration intervalo, void Function(Timer) alTic);
@@ -25,6 +51,10 @@ class RelojEnDirecto extends StatefulWidget {
   final TextStyle? estilo;
   final bool conPunto;
 
+  /// Con la parte junto al reloj: "1T" en la primera parte y "2T" en la segunda ("1H"/"2H" en inglés). Lo llevan la
+  /// tarjeta de Inicio y la cabecera de la ficha del partido; el panel del retransmisor no.
+  final bool conParte;
+
   const RelojEnDirecto({
     super.key,
     required this.reloj,
@@ -32,6 +62,7 @@ class RelojEnDirecto extends StatefulWidget {
     this.crearTemporizador,
     this.estilo,
     this.conPunto = true,
+    this.conParte = false,
   });
 
   @override
@@ -138,6 +169,15 @@ class _RelojEnDirectoState extends State<RelojEnDirecto>
             fontFeatures: const [FontFeature.tabularFigures()],
           ),
         ),
+        if (widget.conParte) ...[
+          const SizedBox(width: 6),
+          _EtiquetaParte(
+            texto: widget.reloj.fase == FaseReloj.segundaParte
+                ? t.clockSecondHalf
+                : t.clockFirstHalf,
+            color: estilo.color,
+          ),
+        ],
       ],
     );
   }

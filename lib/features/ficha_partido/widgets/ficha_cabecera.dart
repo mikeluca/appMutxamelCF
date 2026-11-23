@@ -229,6 +229,7 @@ class _Estado extends StatelessWidget {
           when cabecera.reloj != null && !cabecera.reloj!.enDescanso =>
         RelojEnDirecto(
           reloj: cabecera.reloj!,
+          conParte: true,
           estilo: estilo,
           ahora: ahora,
           crearTemporizador: crearTemporizador,

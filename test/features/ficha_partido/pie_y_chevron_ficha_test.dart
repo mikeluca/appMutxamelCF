@@ -19,7 +19,7 @@ const _primerEquipo = MatchModel(
   equipoId: 1,
   categoria: 'Primer Equipo',
   equipo: 'Primer Equipo',
-  rival: 'Pego C.F.',
+  rival: 'Pego',
   hora: '17:00',
 );
 
@@ -28,7 +28,7 @@ const _enJuego = MatchModel(
   equipoId: 1,
   categoria: 'Primer Equipo',
   equipo: 'Primer Equipo',
-  rival: 'Pego C.F.',
+  rival: 'Pego',
   enJuego: true,
   fase: 'PRIMERA_PARTE',
   golesFavor: 1,
@@ -40,7 +40,7 @@ const _otroEquipo = MatchModel(
   equipoId: 7,
   categoria: 'Cadete',
   equipo: 'Cadete A',
-  rival: 'Pego C.F.',
+  rival: 'Pego',
 );
 
 const _descanso = MatchModel(
@@ -112,7 +112,7 @@ void main() {
               equipoId: 1,
               categoria: 'Primer Equipo',
               equipo: 'Primer Equipo',
-              rival: 'Pego C.F.',
+              rival: 'Pego',
               resultado: '3-1',
               golesFavor: 3,
               golesContra: 1,
@@ -265,7 +265,7 @@ void main() {
               equipoId: 1,
               categoria: 'Primer Equipo',
               equipo: 'Primer Equipo',
-              rival: 'Pego C.F.',
+              rival: 'Pego',
               campo: 'Camp Municipal de Mutxamel',
               local: false,
             ),
@@ -291,9 +291,9 @@ void main() {
         await _pintar(tester, _portada(_primerEquipo));
 
         final nodo = tester.getSemantics(
-          find.bySemanticsLabel(RegExp('Ver partido contra Pego C.F.')),
+          find.bySemanticsLabel(RegExp('Ver partido contra Pego')),
         );
-        expect(nodo.label, contains('Ver partido contra Pego C.F.'));
+        expect(nodo.label, contains('Ver partido contra Pego'));
         expect(nodo.flagsCollection.isButton, isTrue);
 
         semantica.dispose();
@@ -311,7 +311,7 @@ void main() {
             equipoId: 1,
             categoria: 'Primer Equipo',
             equipo: 'Primer Equipo',
-            rival: 'Pego C.F.',
+            rival: 'Pego',
             tipo: 'LIGA',
           ),
         ),
@@ -340,7 +340,7 @@ void main() {
           isA<InkWell>(),
         );
 
-        await _tocarYCerrar(tester, find.text('Pego C.F.'), 30);
+        await _tocarYCerrar(tester, find.text('Pego'), 30);
       },
     );
 
@@ -383,7 +383,7 @@ void main() {
       await _pintar(tester, const PartidoListaCard(partido: _primerEquipo));
 
       expect(
-        find.bySemanticsLabel(RegExp('Ver partido contra Pego C.F.')),
+        find.bySemanticsLabel(RegExp('Ver partido contra Pego')),
         findsOneWidget,
       );
 
@@ -409,7 +409,7 @@ void main() {
             equipoId: 1,
             categoria: 'Primer Equipo',
             equipo: 'Primer Equipo',
-            rival: 'Pego C.F.',
+            rival: 'Pego',
             campo: 'Camp Municipal de Mutxamel',
           ),
         ),

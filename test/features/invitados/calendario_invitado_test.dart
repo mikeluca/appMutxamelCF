@@ -107,7 +107,7 @@ MatchModel _partido({required bool invitado}) => MatchModel(
   categoria: 'Cadete',
   // En un partido de invitado, el equipo es el de destino.
   equipo: invitado ? 'Cadete A' : 'Infantil A',
-  rival: 'Pego C.F.',
+  rival: 'Pego',
   dia: _hoy(),
   hora: '11:00',
   convocado: true,
@@ -168,7 +168,7 @@ void main() {
 
       expect(find.byKey(const ValueKey('partido-invitado')), findsOneWidget);
       expect(find.text('Invitado con Cadete A'), findsOneWidget);
-      expect(find.text('Pego C.F.'), findsOneWidget);
+      expect(find.text('Pego'), findsOneWidget);
     },
   );
 

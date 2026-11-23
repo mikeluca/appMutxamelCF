@@ -1,3 +1,4 @@
+import '../../../core/utils/nombre_equipo.dart';
 import '../../../core/utils/marcador.dart' as marcador;
 import '../../ficha_partido/models/reloj_directo.dart';
 
@@ -74,6 +75,10 @@ class MatchModel {
   /// el rival es un equipo de nuestro club (se pinta nuestro escudo).
   final String? escudoRivalUrl;
   final bool rivalEsPropio;
+
+  /// El rival como se enseña: sin las siglas de la entidad ("C.D. Salesianos Alicante" → "Salesianos Alicante"). Los
+  /// equipos de nuestro club (el filial) siguen como vienen. Solo para pintar: [rival] no cambia.
+  String get rivalVisible => nombreRivalVisible(rival, esPropio: rivalEsPropio);
 
   const MatchModel({
     this.id,

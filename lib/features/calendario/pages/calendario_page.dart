@@ -611,7 +611,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
 
     final subtitulo = item.esEntrenamiento
         ? (item.sesion?.lugar ?? '')
-        : (item.partido?.rival ?? '');
+        : (item.partido?.rivalVisible ?? '');
 
     final campoPartido = item.esEntrenamiento
         ? ''

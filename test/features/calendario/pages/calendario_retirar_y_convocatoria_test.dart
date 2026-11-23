@@ -101,7 +101,7 @@ CalendarioModel _calendario({
       equipoId: 5,
       categoria: 'Cadete',
       equipo: 'Cadete A',
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       dia: _hoy,
       hora: '11:00',
       campo: campo,
@@ -288,7 +288,7 @@ void main() {
 
       expect(find.byKey(const ValueKey('ver-convocatoria')), findsNothing);
 
-      await tester.tap(find.text('Pego C.F.'));
+      await tester.tap(find.text('Pego'));
       await tester.pumpAndSettle();
 
       expect(find.byType(ConvocatoriaFamiliaPage), findsNothing);

@@ -181,7 +181,7 @@ CalendarioModel _calendario({
       equipoId: 5,
       categoria: 'Cadete',
       equipo: 'Cadete A',
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       dia: diaPartido ?? _enDias(0),
       hora: '11:00',
       convocado: true,
@@ -511,13 +511,13 @@ void main() {
   testWidgets('abre en el día del partido cuando se le indica', (tester) async {
     await pintarPartido(tester, dia: _enDias(3), diaInicial: _enDias(3));
 
-    expect(find.text('Pego C.F.'), findsOneWidget);
+    expect(find.text('Pego'), findsOneWidget);
   });
 
   testWidgets('sin día inicial abre en hoy', (tester) async {
     await pintarPartido(tester, dia: _enDias(3));
 
-    expect(find.text('Pego C.F.'), findsNothing);
+    expect(find.text('Pego'), findsNothing);
     // El entrenamiento de hoy sí está.
     expect(find.text('Campo Municipal'), findsOneWidget);
   });
@@ -567,7 +567,7 @@ void main() {
     );
 
     // El mismo partido sale dos veces, una por hijo, con su nombre.
-    expect(find.text('Pego C.F.'), findsNWidgets(2));
+    expect(find.text('Pego'), findsNWidgets(2));
     expect(find.text('Cadete A — Pablo Garcia'), findsNWidgets(2));
     expect(find.text('Cadete A — Lucia Garcia'), findsNWidgets(2));
 
@@ -641,7 +641,7 @@ void main() {
       'FAMILIAR',
     ], perfil: perfil);
 
-    expect(find.text('Pego C.F.'), findsOneWidget);
+    expect(find.text('Pego'), findsOneWidget);
   });
 
   // ---- pull-to-refresh y recargas solapadas ------------------------------------------------------
@@ -662,7 +662,7 @@ void main() {
       diaInicial: _enDias(3),
     );
 
-    expect(find.text('Pego C.F.'), findsOneWidget);
+    expect(find.text('Pego'), findsOneWidget);
 
     // La recarga tarda: mientras tanto el calendario sigue en su día.
     final espera = Completer<void>();
@@ -676,7 +676,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(calendario.jugadoresConsultados, hasLength(2));
-    expect(find.text('Pego C.F.'), findsOneWidget);
+    expect(find.text('Pego'), findsOneWidget);
     // Solo el indicador del propio pull-to-refresh, no la pantalla de carga.
     expect(find.byType(CalendarioPage), findsOneWidget);
     expect(find.text('Campo Municipal'), findsNothing);
@@ -685,7 +685,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Terminada la recarga, sigue en el mismo día.
-    expect(find.text('Pego C.F.'), findsOneWidget);
+    expect(find.text('Pego'), findsOneWidget);
     expect(find.text('Campo Municipal'), findsNothing);
   });
 
@@ -813,7 +813,7 @@ void main() {
       diaInicial: _enDias(3),
     );
 
-    expect(find.text('Pego C.F.'), findsOneWidget);
+    expect(find.text('Pego'), findsOneWidget);
     expect(calendario.jugadoresConsultados, hasLength(1));
 
     // La recarga tras justificar se queda esperando al servidor...
@@ -830,14 +830,14 @@ void main() {
     expect(calendario.jugadoresConsultados, hasLength(2));
 
     // ...y mientras tanto el calendario sigue ahí, en su día, sin spinner.
-    expect(find.text('Pego C.F.'), findsOneWidget);
+    expect(find.text('Pego'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
 
     calendario.bloquearSiguiente?.complete();
     await tester.pumpAndSettle();
 
     // Al terminar, sigue en el mismo día (no vuelve a hoy).
-    expect(find.text('Pego C.F.'), findsOneWidget);
+    expect(find.text('Pego'), findsOneWidget);
     expect(find.text('Campo Municipal'), findsNothing);
   });
 
@@ -865,7 +865,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // Sin pantalla de error: el calendario y su día siguen.
-    expect(find.text('Pego C.F.'), findsOneWidget);
+    expect(find.text('Pego'), findsOneWidget);
     expect(find.byIcon(Icons.error_outline), findsNothing);
   });
 }

@@ -1,3 +1,4 @@
+import '../../../core/utils/nombre_equipo.dart';
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -516,7 +517,7 @@ class _TarjetaPartido extends StatelessWidget {
         EscudoRival(url: partido.escudoRivalUrl, tamano: 64),
         const SizedBox(height: 4),
         Text(
-          partido.rival,
+          nombreRivalVisible(partido.rival),
           key: ValueKey(k('cartel-rival')),
           textAlign: TextAlign.center,
           style: const TextStyle(fontWeight: FontWeight.w600),

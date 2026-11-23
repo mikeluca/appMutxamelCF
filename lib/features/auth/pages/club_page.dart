@@ -374,12 +374,20 @@ class _ClubPageState extends State<ClubPage> {
           contador: _reportesPendientes,
           onTap: _abrirModeracion,
         );
-      case OpcionClub.cuentasPendientes:
+      case OpcionClub.usuarios:
         return _construirOpcion(
           context,
-          icono: Icons.mark_email_unread_outlined,
-          titulo: t.clubPagePendingAccounts,
-          descripcion: t.clubPagePendingAccountsDesc,
+          icono: Icons.manage_accounts_outlined,
+          titulo: t.clubPageUsers,
+          descripcion: t.clubPageUsersDesc,
+          onTap: () => _navegar(opcion),
+        );
+      case OpcionClub.subirDatosFfcv:
+        return _construirOpcion(
+          context,
+          icono: Icons.upload_file_outlined,
+          titulo: t.clubPageFfcvUpload,
+          descripcion: t.clubPageFfcvUploadDesc,
           onTap: () => _navegar(opcion),
         );
       case OpcionClub.estadoApp:

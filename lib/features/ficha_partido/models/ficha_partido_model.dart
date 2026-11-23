@@ -1,3 +1,4 @@
+import '../../../core/utils/nombre_equipo.dart';
 import 'reloj_directo.dart';
 
 /// Estado del partido en la cabecera de la ficha pública.
@@ -172,8 +173,14 @@ class CabeceraFicha {
   bool get mutxamelEsLocal => mutxamelLocal ?? esNombreClub(equipoLocal);
 
   /// Los nombres tal como se pintan: nuestro lado siempre "Mutxamel C.F.", aunque el backend mande "Mutxamel CF".
-  String get nombreLocal => mutxamelEsLocal ? nombreClub : equipoLocal;
-  String get nombreVisitante => mutxamelEsLocal ? equipoVisitante : nombreClub;
+  /// El rival sin las siglas de la entidad ("C.D. Altea" → "Altea"); los equipos de nuestro club (rivalEsPropio) siguen
+  /// como vienen.
+  String get nombreLocal => mutxamelEsLocal
+      ? nombreClub
+      : nombreRivalVisible(equipoLocal, esPropio: rivalEsPropio);
+  String get nombreVisitante => mutxamelEsLocal
+      ? nombreRivalVisible(equipoVisitante, esPropio: rivalEsPropio)
+      : nombreClub;
 
   String get rival => mutxamelEsLocal ? equipoVisitante : equipoLocal;
 

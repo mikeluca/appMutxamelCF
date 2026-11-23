@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:app_mutxamel_cf/core/network/api_client.dart';
 import 'package:app_mutxamel_cf/features/admin/models/admin_model.dart';
-import 'package:app_mutxamel_cf/features/admin/pages/cuentas_pendientes_page.dart';
+import 'package:app_mutxamel_cf/features/admin/pages/usuarios_admin_page.dart';
 import 'package:app_mutxamel_cf/features/admin/pages/estado_app_page.dart';
 import 'package:app_mutxamel_cf/features/admin/pages/invitar_usuario_page.dart';
 import 'package:app_mutxamel_cf/features/admin/pages/moderacion_page.dart';
@@ -54,6 +54,7 @@ class _FakeAdmin extends AdminService {
     roles: [
       RolDisponibleModel(codigo: 'COORDINADOR', nombre: 'Coordinador'),
       RolDisponibleModel(codigo: 'RETRANSMISION', nombre: 'Retransmisión'),
+      RolDisponibleModel(codigo: 'RRSS', nombre: 'Redes sociales'),
     ],
   );
 
@@ -74,7 +75,7 @@ class _FakeAdmin extends AdminService {
   final List<FiltroEstado> filtrosPedidos = [];
   List<ReporteModel> resueltos = [];
   final List<String> llamadas = [];
-  List<UsuarioPendienteModel> pendientes = [];
+  List<UsuarioAdminModel> pendientes = [];
 
   @override
   Future<VinculosDisponiblesModel> obtenerVinculosDisponibles() async =>
@@ -123,8 +124,7 @@ class _FakeAdmin extends AdminService {
   }
 
   @override
-  Future<List<UsuarioPendienteModel>> obtenerUsuariosPendientes() async =>
-      pendientes;
+  Future<List<UsuarioAdminModel>> obtenerUsuarios() async => pendientes;
 }
 
 Widget _app(Widget home) => MaterialApp(
@@ -148,16 +148,11 @@ Future<void> _pintar(WidgetTester tester, Widget home) async {
   await tester.pumpAndSettle();
 }
 
-UsuarioPendienteModel _pendiente(int id, String email) => UsuarioPendienteModel(
+UsuarioAdminModel _pendiente(int id, String email) => UsuarioAdminModel(
   id: id,
   email: email,
-  nombre: null,
-  apellidos: null,
-  roles: const ['COORDINADOR'],
-  vinculos: const [],
-  fechaAlta: DateTime(2026, 10, 26),
-  tokenCaducado: false,
-  intentosActivacion: 0,
+  estado: EstadoCuenta.pendiente,
+  roles: const [RolCuentaModel(codigo: 'COORDINADOR', nombre: 'Coordinador')],
 );
 
 ReporteModel _reporte(
@@ -303,6 +298,42 @@ void main() {
       expect(find.byKey(const ValueKey('rol-RETRANSMISION')), findsOneWidget);
       expect(find.byKey(const ValueKey('rol-ADMIN_APP')), findsNothing);
     });
+
+    testWidgets('Redes sociales y Retransmisión llevan su descripción', (
+      tester,
+    ) async {
+      await abrir(tester);
+
+      await tester.ensureVisible(find.byKey(const ValueKey('rol-RRSS')));
+
+      expect(find.text('Redes sociales'), findsWidgets);
+      expect(find.text('Imágenes para redes'), findsOneWidget);
+      expect(find.text('Solo el partido en directo'), findsOneWidget);
+    });
+
+    testWidgets(
+      'invitar con el rol Redes sociales (RRSS) sin ficha manda el rol',
+      (tester) async {
+        final servicio = await abrir(tester);
+
+        await tester.enterText(nombre, 'Ana');
+        await tester.enterText(email, 'rrss@x.es');
+        await tester.ensureVisible(find.byKey(const ValueKey('rol-RRSS')));
+        await tester.tap(find.byKey(const ValueKey('rol-RRSS')));
+        await tester.pumpAndSettle();
+
+        // El resumen enseña el rol con su nombre.
+        expect(find.byKey(const ValueKey('resumen-RRSS')), findsOneWidget);
+
+        await tester.ensureVisible(enviar);
+        await tester.tap(enviar);
+        await tester.pumpAndSettle();
+
+        expect(servicio.invitaciones.single.email, 'rrss@x.es');
+        expect(servicio.invitaciones.single.roles, ['RRSS']);
+        expect(servicio.invitaciones.single.vinculos, isEmpty);
+      },
+    );
 
     testWidgets('sin vínculos ni roles no se envía', (tester) async {
       final servicio = await abrir(tester);
@@ -453,14 +484,14 @@ void main() {
     });
   });
 
-  group('Invitar desde Cuentas pendientes', () {
+  group('Invitar desde Usuarios', () {
     testWidgets('el botón Invitar abre el formulario; al invitar avisa y la '
         'lista incluye la nueva cuenta', (tester) async {
       final servicio = _FakeAdmin()..pendientes = [_pendiente(1, 'ana@x.es')];
 
       await _pintar(
         tester,
-        CuentasPendientesPage(
+        UsuariosAdminPage(
           servicio: servicio,
           constructorInvitar: () => Builder(
             builder: (context) => Scaffold(
@@ -491,7 +522,7 @@ void main() {
       await tester.tap(find.text('invitar ya'));
       await tester.pumpAndSettle();
 
-      expect(find.byType(CuentasPendientesPage), findsOneWidget);
+      expect(find.byType(UsuariosAdminPage), findsOneWidget);
       expect(find.text('Invitación enviada a nuevo@x.es'), findsOneWidget);
       expect(find.text('nuevo@x.es'), findsWidgets);
     });
@@ -501,7 +532,7 @@ void main() {
 
       await _pintar(
         tester,
-        CuentasPendientesPage(
+        UsuariosAdminPage(
           servicio: servicio,
           constructorInvitar: () => const Scaffold(body: Text('formulario')),
         ),
@@ -770,6 +801,39 @@ void main() {
       expect(v.roles.single.codigo, 'COORDINADOR');
     });
 
+    test(
+      'las opciones del backend nuevo leen personas y roles, sin ADMIN_APP',
+      () {
+        final v = VinculosDisponiblesModel.fromOpcionesJson({
+          'roles': [
+            {'codigo': 'COORDINADOR', 'nombre': 'Coordinador'},
+            {'codigo': 'RRSS', 'nombre': 'Redes sociales'},
+            {'codigo': 'ADMIN_APP', 'nombre': 'Administrador'},
+          ],
+          'personas': {
+            'jugadores': [
+              {'id': 1, 'nombreCompleto': 'Pablo Garcia', 'equipo': 'Cadete A'},
+            ],
+            'familiares': [
+              {'id': 2, 'nombreCompleto': 'Marta Gil', 'email': 'm@x.es'},
+            ],
+            'cuerpoTecnico': [
+              {'id': 3, 'nombreCompleto': 'Ana Ruiz', 'equipo': 'Alevín'},
+            ],
+          },
+        });
+
+        expect(v.de(TipoVinculo.jugador).single.nombre, 'Pablo Garcia');
+        expect(v.de(TipoVinculo.jugador).single.detalle, 'Cadete A');
+        expect(v.de(TipoVinculo.familiar).single.detalle, 'm@x.es');
+        expect(
+          v.de(TipoVinculo.cuerpoTecnico).single.tipo.codigo,
+          'ENTRENADOR',
+        );
+        expect(v.roles.map((r) => r.codigo), ['COORDINADOR', 'RRSS']);
+      },
+    );
+
     test('el estado lee totales, versiones y mínimas', () {
       final e = EstadoAppModel.fromJson({
         'cuentas': {'activas': 4, 'pendientes': 1, 'desactivadas': 2},
@@ -813,12 +877,12 @@ void main() {
     });
 
     test(
-      'invitar hace POST /app/admin/invitaciones con vínculos y roles',
+      'invitar hace POST /app/admin/usuarios/invitar con vínculos y roles',
       () async {
         final r = await conMockHttp(
           (request) async {
             expect(request.method, 'POST');
-            expect(request.url.path, endsWith('/app/admin/invitaciones'));
+            expect(request.url.path, endsWith('/app/admin/usuarios/invitar'));
             expect(request.headers['Authorization'], 'Bearer tok');
             expect(jsonDecode(request.body), {
               'email': 'a@x.es',

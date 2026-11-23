@@ -1,3 +1,4 @@
+import '../../../core/utils/nombre_equipo.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:intl/intl.dart';
 
@@ -131,7 +132,10 @@ class _FilaForma extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                [fecha, partido.rival].where((p) => p.isNotEmpty).join(' · '),
+                [
+                  fecha,
+                  nombreRivalVisible(partido.rival),
+                ].where((p) => p.isNotEmpty).join(' · '),
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

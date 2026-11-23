@@ -35,7 +35,7 @@ const _primerEquipo = MatchModel(
   equipoId: 1,
   categoria: 'Primer Equipo',
   equipo: 'Primer Equipo',
-  rival: 'Pego C.F.',
+  rival: 'Pego',
   hora: '17:00',
 );
 
@@ -103,7 +103,7 @@ void main() {
           id: 9,
           categoria: 'Cadete',
           equipo: 'Cadete A',
-          rival: 'Pego C.F.',
+          rival: 'Pego',
         ).tieneFicha,
         isFalse,
       );
@@ -128,7 +128,7 @@ void main() {
           'id': 30,
           'equipo': 'Primer Equipo',
           'categoria': 'Primer Equipo',
-          'rival': 'Pego C.F.',
+          'rival': 'Pego',
         });
 
         expect(partido.id, 30);
@@ -217,7 +217,7 @@ void main() {
           equipoId: 7,
           categoria: 'Cadete',
           equipo: 'Cadete A',
-          rival: 'Pego C.F.',
+          rival: 'Pego',
         ),
       );
 

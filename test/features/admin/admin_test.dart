@@ -6,7 +6,6 @@ import 'package:app_mutxamel_cf/core/notifications/services/local_notification_s
 import 'package:app_mutxamel_cf/core/notifications/services/push_notification_service.dart';
 import 'package:app_mutxamel_cf/core/notifications/utils/convocatoria_notificacion.dart';
 import 'package:app_mutxamel_cf/features/admin/models/admin_model.dart';
-import 'package:app_mutxamel_cf/features/admin/pages/cuentas_pendientes_page.dart';
 import 'package:app_mutxamel_cf/features/admin/pages/moderacion_page.dart';
 import 'package:app_mutxamel_cf/features/admin/services/admin_service.dart';
 import 'package:app_mutxamel_cf/features/auth/models/auth_user.dart';
@@ -24,10 +23,6 @@ class _FakeAdmin extends AdminService {
   List<ReporteModel> pendientes = [_reporte(1), _reporte(2, otros: 2)];
   List<ReporteModel> resueltos = [
     _reporte(3, estado: estadoReporteDescartado, nota: 'Era una broma'),
-  ];
-  List<UsuarioPendienteModel> usuarios = [
-    _usuario(1, 'pablo@x.es', 'Pablo Garcia', caducado: true),
-    _usuario(2, 'ana@x.es', 'Ana Ruiz'),
   ];
 
   final List<String> llamadas = [];
@@ -60,17 +55,6 @@ class _FakeAdmin extends AdminService {
   }) async {
     llamadas.add('desactivar:$reporteId:$nota:$borrarMensaje');
   }
-
-  @override
-  Future<List<UsuarioPendienteModel>> obtenerUsuariosPendientes() async =>
-      usuarios;
-
-  @override
-  Future<String> reenviarActivacion(int usuarioId) async {
-    llamadas.add('reenviar:$usuarioId');
-    if (fallo != null) throw fallo!;
-    return usuarios.firstWhere((u) => u.id == usuarioId).email;
-  }
 }
 
 ReporteModel _reporte(
@@ -98,23 +82,6 @@ ReporteModel _reporte(
       : DateTime(2026, 10, 21, 13, 0),
   nota: nota,
   otrosReportesDelAutor: otros,
-);
-
-UsuarioPendienteModel _usuario(
-  int id,
-  String email,
-  String nombre, {
-  bool caducado = false,
-}) => UsuarioPendienteModel(
-  id: id,
-  email: email,
-  nombre: null,
-  apellidos: null,
-  roles: const ['JUGADOR'],
-  vinculos: [nombre],
-  fechaAlta: DateTime(2026, 10, 18),
-  tokenCaducado: caducado,
-  intentosActivacion: 0,
 );
 
 Widget _app(Widget home, {GlobalKey<NavigatorState>? navigatorKey}) =>
@@ -530,136 +497,6 @@ void main() {
     });
   });
 
-  group('Cuentas pendientes', () {
-    testWidgets('lista nombre, email, roles, fecha de invitación y la etiqueta '
-        '"Código caducado" solo si corresponde', (tester) async {
-      _pantallaGrande(tester);
-
-      await tester.pumpWidget(
-        _app(CuentasPendientesPage(servicio: _FakeAdmin())),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.text('Pablo Garcia'), findsWidgets);
-      expect(find.text('pablo@x.es'), findsOneWidget);
-      expect(find.text('JUGADOR'), findsNWidgets(2));
-      expect(find.text('Invitado el 18/10'), findsNWidgets(2));
-      expect(find.text('Código caducado'), findsOneWidget);
-    });
-
-    testWidgets('el buscador filtra por nombre o email', (tester) async {
-      _pantallaGrande(tester);
-
-      await tester.pumpWidget(
-        _app(CuentasPendientesPage(servicio: _FakeAdmin())),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.enterText(find.byType(TextField), 'ana@');
-      await tester.pumpAndSettle();
-
-      expect(find.text('ana@x.es'), findsOneWidget);
-      expect(find.text('pablo@x.es'), findsNothing);
-
-      await tester.enterText(find.byType(TextField), 'PABLO');
-      await tester.pumpAndSettle();
-
-      expect(find.text('pablo@x.es'), findsOneWidget);
-      expect(find.text('ana@x.es'), findsNothing);
-    });
-
-    testWidgets('reenviar pide confirmación, avisa con SnackBar y refresca', (
-      tester,
-    ) async {
-      _pantallaGrande(tester);
-
-      final servicio = _FakeAdmin();
-
-      await tester.pumpWidget(_app(CuentasPendientesPage(servicio: servicio)));
-      await tester.pumpAndSettle();
-
-      await tester.tap(
-        find.descendant(
-          of: find.byKey(const ValueKey('pendiente-1')),
-          matching: find.text('Reenviar activación'),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(
-        find.text('¿Reenviar la invitación de activación a pablo@x.es?'),
-        findsOneWidget,
-      );
-
-      // Cancelar no envía nada.
-      await tester.tap(find.text('Cancelar'));
-      await tester.pumpAndSettle();
-
-      expect(servicio.llamadas, isEmpty);
-
-      await tester.tap(
-        find.descendant(
-          of: find.byKey(const ValueKey('pendiente-1')),
-          matching: find.text('Reenviar activación'),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // El tercero es el botón del diálogo.
-      await tester.tap(
-        find.widgetWithText(FilledButton, 'Reenviar activación'),
-      );
-      await tester.pumpAndSettle();
-
-      expect(servicio.llamadas, ['reenviar:1']);
-      expect(find.text('Invitación reenviada a pablo@x.es'), findsOneWidget);
-    });
-
-    testWidgets(
-      'si el servidor limita el reenvío (429) se muestra su mensaje',
-      (tester) async {
-        _pantallaGrande(tester);
-
-        final servicio = _FakeAdmin()
-          ..fallo = const ApiException(
-            'Ya se reenvió la activación a este usuario hace poco. '
-            'Inténtalo de nuevo en 10 minutos.',
-            statusCode: 429,
-          );
-
-        await tester.pumpWidget(
-          _app(CuentasPendientesPage(servicio: servicio)),
-        );
-        await tester.pumpAndSettle();
-
-        await tester.tap(
-          find.descendant(
-            of: find.byKey(const ValueKey('pendiente-2')),
-            matching: find.text('Reenviar activación'),
-          ),
-        );
-        await tester.pumpAndSettle();
-        await tester.tap(
-          find.widgetWithText(FilledButton, 'Reenviar activación'),
-        );
-        await tester.pumpAndSettle();
-
-        expect(find.textContaining('en 10 minutos'), findsOneWidget);
-      },
-    );
-
-    testWidgets('sin cuentas pendientes muestra el estado vacío', (
-      tester,
-    ) async {
-      final servicio = _FakeAdmin()..usuarios = [];
-
-      await tester.pumpWidget(_app(CuentasPendientesPage(servicio: servicio)));
-      await tester.pumpAndSettle();
-
-      expect(find.text('No hay cuentas pendientes'), findsOneWidget);
-    });
-  });
-
   group('Menú del Área club por rol', () {
     Future<void> pintarClub(WidgetTester tester, List<String> roles) async {
       _pantallaGrande(tester);
@@ -675,15 +512,19 @@ void main() {
     tearDown(AuthManager.olvidarUsuario);
 
     testWidgets(
-      'ADMIN_APP ve Moderación con su contador y Cuentas pendientes',
+      'ADMIN_APP ve Moderación con su contador, Usuarios y Subir datos FFCV',
       (tester) async {
         await pintarClub(tester, ['ADMIN_APP']);
 
         expect(find.text('Moderación'), findsOneWidget);
         expect(find.byIcon(Icons.shield_outlined), findsOneWidget);
         expect(find.text('4'), findsOneWidget);
-        expect(find.text('Cuentas pendientes'), findsOneWidget);
-        expect(find.byIcon(Icons.mark_email_unread_outlined), findsOneWidget);
+        expect(find.text('Usuarios'), findsOneWidget);
+        expect(find.byIcon(Icons.manage_accounts_outlined), findsOneWidget);
+        expect(find.text('Subir datos FFCV'), findsOneWidget);
+        expect(find.byIcon(Icons.upload_file_outlined), findsOneWidget);
+        // "Cuentas pendientes" ya no existe: es Usuarios filtrado por Pendiente.
+        expect(find.text('Cuentas pendientes'), findsNothing);
       },
     );
 
@@ -692,7 +533,8 @@ void main() {
         await pintarClub(tester, [rol]);
 
         expect(find.text('Moderación'), findsNothing);
-        expect(find.text('Cuentas pendientes'), findsNothing);
+        expect(find.text('Usuarios'), findsNothing);
+        expect(find.text('Subir datos FFCV'), findsNothing);
       });
     }
   });

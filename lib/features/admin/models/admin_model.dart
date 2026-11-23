@@ -77,53 +77,135 @@ class ReporteModel {
   }
 }
 
-/// Una cuenta invitada que todavía no se ha activado.
-class UsuarioPendienteModel {
+// ---------------------------------------------------------------------------
+// Usuarios de la app (ADMIN_APP)
+// ---------------------------------------------------------------------------
+
+/// El estado de una cuenta, con la misma regla que las insignias del panel web (el backend lo calcula).
+enum EstadoCuenta {
+  activa('ACTIVA'),
+  pendiente('PENDIENTE'),
+  caducada('CADUCADA'),
+  desactivada('DESACTIVADA');
+
+  final String codigo;
+
+  const EstadoCuenta(this.codigo);
+
+  static EstadoCuenta desdeTexto(String? texto) =>
+      EstadoCuenta.values.firstWhere(
+        (e) => e.codigo == texto,
+        orElse: () => EstadoCuenta.desactivada,
+      );
+}
+
+/// Un rol de una cuenta, con su nombre ("Redes sociales").
+class RolCuentaModel {
+  final String codigo;
+  final String nombre;
+
+  const RolCuentaModel({required this.codigo, required this.nombre});
+
+  /// El rol de administrador: solo se asigna y se quita desde el panel web.
+  bool get esAdmin => codigo == 'ADMIN_APP';
+
+  /// Los roles de persona (jugador, familiar, entrenador) salen de un vínculo con su ficha; el resto (coordinador,
+  /// retransmisión, redes sociales...) son roles sin persona.
+  bool get esDePersona =>
+      codigo == 'JUGADOR' || codigo == 'FAMILIAR' || codigo == 'ENTRENADOR';
+}
+
+/// Un vínculo de la cuenta con una persona del club (su ficha).
+class VinculoCuentaModel {
+  /// JUGADOR, FAMILIAR o ENTRENADOR.
+  final String tipo;
+  final int? personaId;
+  final String nombre;
+  final String detalle;
+
+  const VinculoCuentaModel({
+    required this.tipo,
+    this.personaId,
+    this.nombre = '',
+    this.detalle = '',
+  });
+}
+
+/// Una cuenta en el listado de GET /app/admin/usuarios.
+class UsuarioAdminModel {
   final int id;
   final String email;
-  final String? nombre;
-  final String? apellidos;
-  final List<String> roles;
-  final List<String> vinculos;
-  final DateTime? fechaAlta;
-  final bool tokenCaducado;
-  final int intentosActivacion;
 
-  const UsuarioPendienteModel({
+  /// El nombre que muestra el panel (el de la ficha o el propio de la cuenta); null si no tiene.
+  final String? nombre;
+  final EstadoCuenta estado;
+  final List<RolCuentaModel> roles;
+  final List<VinculoCuentaModel> vinculos;
+  final DateTime? ultimoAcceso;
+
+  const UsuarioAdminModel({
     required this.id,
     required this.email,
-    required this.nombre,
-    required this.apellidos,
-    required this.roles,
-    required this.vinculos,
-    required this.fechaAlta,
-    required this.tokenCaducado,
-    required this.intentosActivacion,
+    this.nombre,
+    this.estado = EstadoCuenta.activa,
+    this.roles = const [],
+    this.vinculos = const [],
+    this.ultimoAcceso,
   });
 
-  /// El nombre de la persona vinculada; si no hay, el de la cuenta; si no, el email.
-  String get nombreMostrable {
-    if (vinculos.isNotEmpty) return vinculos.first;
+  bool get activa => estado == EstadoCuenta.activa;
 
-    final propio = '${nombre ?? ''} ${apellidos ?? ''}'.trim();
+  /// Con ficha vinculada el nombre sale de ella y no se edita aquí (como en el panel).
+  bool get tieneFicha => vinculos.isNotEmpty;
 
-    return propio.isEmpty ? email : propio;
-  }
+  bool get esAdmin => roles.any((r) => r.esAdmin);
 
-  factory UsuarioPendienteModel.fromJson(Map<String, dynamic> json) {
-    List<String> textos(String clave) =>
-        (json[clave] as List<dynamic>? ?? []).map((e) => e.toString()).toList();
+  /// El nombre para pintar: el de la cuenta o, si no tiene, el email.
+  String get nombreVisible =>
+      (nombre ?? '').trim().isEmpty ? email : nombre!.trim();
 
-    return UsuarioPendienteModel(
+  /// Los roles sin persona (los que se añaden y quitan sin ficha).
+  List<RolCuentaModel> get rolesSinPersona =>
+      roles.where((r) => !r.esDePersona && !r.esAdmin).toList();
+
+  /// Una copia con otros datos cambiados.
+  UsuarioAdminModel conNombre(String? nuevo) => UsuarioAdminModel(
+    id: id,
+    email: email,
+    nombre: nuevo,
+    estado: estado,
+    roles: roles,
+    vinculos: vinculos,
+    ultimoAcceso: ultimoAcceso,
+  );
+
+  factory UsuarioAdminModel.fromJson(Map<String, dynamic> json) {
+    return UsuarioAdminModel(
       id: (json['id'] as num).toInt(),
       email: json['email']?.toString() ?? '',
       nombre: json['nombre']?.toString(),
-      apellidos: json['apellidos']?.toString(),
-      roles: textos('roles'),
-      vinculos: textos('vinculos'),
-      fechaAlta: _fechaHora(json['fechaAlta']),
-      tokenCaducado: json['tokenCaducado'] as bool? ?? false,
-      intentosActivacion: (json['intentosActivacion'] as num?)?.toInt() ?? 0,
+      estado: EstadoCuenta.desdeTexto(json['estado']?.toString()),
+      roles: (json['roles'] as List<dynamic>? ?? const [])
+          .whereType<Map<String, dynamic>>()
+          .map(
+            (r) => RolCuentaModel(
+              codigo: r['codigo']?.toString() ?? '',
+              nombre: r['nombre']?.toString() ?? r['codigo']?.toString() ?? '',
+            ),
+          )
+          .toList(),
+      vinculos: (json['vinculos'] as List<dynamic>? ?? const [])
+          .whereType<Map<String, dynamic>>()
+          .map(
+            (v) => VinculoCuentaModel(
+              tipo: v['tipo']?.toString() ?? '',
+              personaId: (v['personaId'] as num?)?.toInt(),
+              nombre: v['nombre']?.toString() ?? '',
+              detalle: v['detalle']?.toString() ?? '',
+            ),
+          )
+          .toList(),
+      ultimoAcceso: _fechaHora(json['ultimoAcceso']),
     );
   }
 }
@@ -195,6 +277,44 @@ class VinculosDisponiblesModel {
     TipoVinculo.familiar => familiares,
     TipoVinculo.cuerpoTecnico => cuerpoTecnico,
   };
+
+  /// GET /app/admin/usuarios/opciones: los roles asignables (nunca ADMIN_APP) y las personas sin cuenta por tipo.
+  factory VinculosDisponiblesModel.fromOpcionesJson(Map<String, dynamic> json) {
+    final personas = (json['personas'] as Map<String, dynamic>?) ?? const {};
+
+    List<PersonaDisponibleModel> lista(String clave, TipoVinculo tipo) {
+      return (personas[clave] as List<dynamic>? ?? const [])
+          .whereType<Map<String, dynamic>>()
+          .map((m) {
+            final equipo = m['equipo']?.toString() ?? '';
+            final email = m['email']?.toString() ?? '';
+
+            return PersonaDisponibleModel(
+              tipo: tipo,
+              id: (m['id'] as num).toInt(),
+              nombre: m['nombreCompleto']?.toString() ?? '',
+              detalle: equipo.isNotEmpty ? equipo : email,
+            );
+          })
+          .toList();
+    }
+
+    return VinculosDisponiblesModel(
+      jugadores: lista('jugadores', TipoVinculo.jugador),
+      familiares: lista('familiares', TipoVinculo.familiar),
+      cuerpoTecnico: lista('cuerpoTecnico', TipoVinculo.cuerpoTecnico),
+      roles: (json['roles'] as List<dynamic>? ?? const [])
+          .whereType<Map<String, dynamic>>()
+          .map(
+            (e) => RolDisponibleModel(
+              codigo: e['codigo'].toString(),
+              nombre: e['nombre']?.toString() ?? '',
+            ),
+          )
+          .where((r) => r.codigo != 'ADMIN_APP')
+          .toList(),
+    );
+  }
 
   factory VinculosDisponiblesModel.fromJson(Map<String, dynamic> json) {
     List<PersonaDisponibleModel> personas(

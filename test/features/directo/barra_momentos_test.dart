@@ -182,8 +182,8 @@ void main() {
     }) => FichaPartido(
       cabecera: CabeceraFicha(
         partidoId: 30,
-        equipoLocal: local ? 'Mutxamel CF' : 'Pego C.F.',
-        equipoVisitante: local ? 'Pego C.F.' : 'Mutxamel CF',
+        equipoLocal: local ? 'Mutxamel CF' : 'Pego',
+        equipoVisitante: local ? 'Pego' : 'Mutxamel CF',
         estado: reloj == null ? EstadoFicha.finalizado : EstadoFicha.enJuego,
         minutosParte: minutosParte,
         reloj: reloj,

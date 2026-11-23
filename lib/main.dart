@@ -29,7 +29,9 @@ import 'features/auth/pages/mis_clasificaciones_page.dart';
 import 'features/auth/pages/mis_partidos_page.dart';
 import 'features/calendario/pages/calendario_page.dart';
 import 'features/auth/pages/mis_equipos_page.dart';
-import 'features/admin/pages/cuentas_pendientes_page.dart';
+import 'features/admin/models/admin_model.dart';
+import 'features/admin/pages/subir_datos_ffcv_page.dart';
+import 'features/admin/pages/usuarios_admin_page.dart';
 import 'features/admin/pages/estado_app_page.dart';
 import 'features/admin/pages/moderacion_page.dart';
 import 'features/coordinacion/pages/fin_de_semana_page.dart';
@@ -242,7 +244,11 @@ class _MutxamelCfAppState extends State<MutxamelCfApp>
         AppRoutes.calendar: (context) => const CalendarioPage(),
         AppRoutes.myTeams: (context) => const MisEquiposPage(),
         AppRoutes.moderation: (context) => const ModeracionPage(),
-        AppRoutes.pendingAccounts: (context) => const CuentasPendientesPage(),
+        // "Cuentas pendientes" ya es Usuarios; la ruta antigua se abre filtrada por Pendiente.
+        AppRoutes.pendingAccounts: (context) =>
+            const UsuariosAdminPage(estadoInicial: EstadoCuenta.pendiente),
+        AppRoutes.users: (context) => const UsuariosAdminPage(),
+        AppRoutes.ffcvUpload: (context) => const SubirDatosFfcvPage(),
         AppRoutes.appStatus: (context) => const EstadoAppPage(),
         AppRoutes.weekend: (context) => const FinDeSemanaPage(),
         AppRoutes.playerTracking: (context) => const SeguimientoJugadoresPage(),

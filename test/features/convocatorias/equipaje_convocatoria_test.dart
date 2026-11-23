@@ -157,7 +157,7 @@ class _FakeMatchService extends MatchService {
       equipoId: 5,
       categoria: 'Cadete',
       equipo: 'Cadete A',
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       // Siempre en el futuro: un partido pasado no se puede preseleccionar.
       dia: DateTime.now().add(const Duration(days: 30)),
       hora: '11:00',
@@ -185,7 +185,7 @@ ConvocatoriaModel _convocatoria({
   equipoId: 5,
   equipo: 'Cadete A',
   partidoId: 30,
-  rival: 'Pego C.F.',
+  rival: 'Pego',
   campo: 'Campo Municipal',
   fechaPartido: '2026-10-24',
   horaPartido: '11:00',
@@ -242,7 +242,7 @@ ConvocatoriaPartidoModel _paraFamilia({
   EquipacionModel? mochila,
 }) => ConvocatoriaPartidoModel(
   convocatoriaId: 20,
-  rival: 'Pego C.F.',
+  rival: 'Pego',
   fecha: DateTime(2026, 10, 24),
   hora: '11:00',
   campo: 'Municipal',

@@ -11,7 +11,7 @@ import '../directo/harness.dart';
 
 Map<String, dynamic> _json({
   String local = 'Mutxamel CF',
-  String visitante = 'Pego C.F.',
+  String visitante = 'Pego',
   Object? mutxamelLocal = _sinCampo,
 }) => {
   'partidoId': 30,
@@ -126,11 +126,7 @@ void main() {
         expect(local.mutxamelEsLocal, isTrue);
 
         final visitante = CabeceraFicha.fromJson(
-          _json(
-            local: 'Pego C.F.',
-            visitante: 'Mutxamel CF',
-            mutxamelLocal: false,
-          ),
+          _json(local: 'Pego', visitante: 'Mutxamel CF', mutxamelLocal: false),
         );
         expect(visitante.mutxamelEsLocal, isFalse);
 
@@ -157,7 +153,7 @@ void main() {
       }
 
       final visitante = CabeceraFicha.fromJson(
-        _json(local: 'Pego C.F.', visitante: 'Mutxamel CF'),
+        _json(local: 'Pego', visitante: 'Mutxamel CF'),
       );
 
       expect(visitante.mutxamelEsLocal, isFalse);
@@ -178,17 +174,13 @@ void main() {
         final local = CabeceraFicha.fromJson(_json());
 
         expect(local.nombreLocal, 'Mutxamel C.F.');
-        expect(local.nombreVisitante, 'Pego C.F.');
+        expect(local.nombreVisitante, 'Pego');
 
         final visitante = CabeceraFicha.fromJson(
-          _json(
-            local: 'Pego C.F.',
-            visitante: 'Mutxamel CF',
-            mutxamelLocal: false,
-          ),
+          _json(local: 'Pego', visitante: 'Mutxamel CF', mutxamelLocal: false),
         );
 
-        expect(visitante.nombreLocal, 'Pego C.F.');
+        expect(visitante.nombreLocal, 'Pego');
         expect(visitante.nombreVisitante, 'Mutxamel C.F.');
       },
     );
@@ -206,7 +198,7 @@ void main() {
 
           expect(find.text('Mutxamel C.F.'), findsOneWidget);
           expect(find.text('Mutxamel CF'), findsNothing);
-          expect(find.text('Pego C.F.'), findsOneWidget);
+          expect(find.text('Pego'), findsOneWidget);
         }
 
         // De visitante, el nuestro a la derecha.
@@ -215,7 +207,7 @@ void main() {
             FichaCabecera(
               cabecera: CabeceraFicha.fromJson(
                 _json(
-                  local: 'Pego C.F.',
+                  local: 'Pego',
                   visitante: 'Mutxamel CF',
                   mutxamelLocal: false,
                 ),

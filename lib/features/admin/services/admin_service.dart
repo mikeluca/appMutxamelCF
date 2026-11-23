@@ -56,26 +56,91 @@ class AdminService {
     );
   }
 
-  Future<List<UsuarioPendienteModel>> obtenerUsuariosPendientes() async {
+  // ---- usuarios de la app (GET/POST /app/admin/usuarios/**, solo ADMIN_APP) ----------------------
+
+  /// Todas las cuentas de la app (sin las que borró su titular). Los filtros se aplican en el móvil.
+  Future<List<UsuarioAdminModel>> obtenerUsuarios() async {
     final data =
-        await ApiClient.get('/app/admin/usuarios-pendientes', autenticado: true)
+        await ApiClient.get('/app/admin/usuarios', autenticado: true)
             as List<dynamic>;
 
     return data
-        .map((e) => UsuarioPendienteModel.fromJson(e as Map<String, dynamic>))
+        .whereType<Map<String, dynamic>>()
+        .map(UsuarioAdminModel.fromJson)
         .toList();
   }
 
-  /// Reenvía la activación y devuelve el email al que se envió.
-  Future<String> reenviarActivacion(int usuarioId) async {
-    final data =
-        await ApiClient.post(
-              '/app/admin/usuarios/$usuarioId/reenviar-activacion',
-              autenticado: true,
-            )
-            as Map<String, dynamic>;
+  /// Cambia el nombre de una cuenta sin ficha vinculada.
+  Future<void> actualizarNombreUsuario(
+    int id, {
+    required String nombre,
+    String? apellidos,
+  }) => _accionUsuario(
+    id,
+    'nombre',
+    body: {'nombre': nombre.trim(), 'apellidos': ?_limpio(apellidos)},
+  );
 
-    return data['email']?.toString() ?? '';
+  /// Vincula la cuenta a una persona del club (jugador, familiar o cuerpo técnico).
+  Future<void> anadirVinculoUsuario(int id, PersonaDisponibleModel persona) =>
+      _accionUsuario(
+        id,
+        'vinculos',
+        body: {
+          'vinculos': [
+            {'tipo': persona.tipo.codigo, 'personaId': persona.id},
+          ],
+        },
+      );
+
+  /// Añade un rol sin persona (COORDINADOR, RETRANSMISION, RRSS...).
+  Future<void> anadirRolUsuario(int id, String codigoRol) => _accionUsuario(
+    id,
+    'vinculos',
+    body: {
+      'vinculos': [
+        {'tipo': codigoRol},
+      ],
+    },
+  );
+
+  /// Quita un vínculo con una persona (tipo + personaId) o un rol sin persona (solo el tipo).
+  Future<void> quitarVinculoUsuario(
+    int id, {
+    required String tipo,
+    int? personaId,
+  }) => _accionUsuario(
+    id,
+    'vinculos/quitar',
+    body: {'tipo': tipo, 'personaId': ?personaId},
+  );
+
+  /// Reenvía la invitación; devuelve el email al que se mandó. Un 429 es "inténtalo en N min".
+  Future<String> reenviarUsuario(int id) async {
+    final data = await _accionUsuario(id, 'reenviar');
+
+    return data?['email']?.toString() ?? '';
+  }
+
+  Future<void> activarUsuario(int id) => _accionUsuario(id, 'activar');
+
+  Future<void> desactivarUsuario(int id) => _accionUsuario(id, 'desactivar');
+
+  /// Solo invitaciones sin activar.
+  Future<void> eliminarUsuario(int id) => _accionUsuario(id, 'eliminar');
+
+  Future<Map<String, dynamic>?> _accionUsuario(
+    int id,
+    String accion, {
+    Map<String, dynamic>? body,
+  }) async {
+    final data = await ApiClient.post(
+      '/app/admin/usuarios/$id/$accion',
+      autenticado: true,
+      body: body,
+    );
+
+    return data is Map<String, dynamic> ? data : null;
   }
 
   // ---- reactivar al autor de un reporte --------------------------------------------------------
@@ -91,11 +156,13 @@ class AdminService {
 
   Future<VinculosDisponiblesModel> obtenerVinculosDisponibles() async {
     final data = await ApiClient.get(
-      '/app/admin/vinculos-disponibles',
+      '/app/admin/usuarios/opciones',
       autenticado: true,
     );
 
-    return VinculosDisponiblesModel.fromJson(data as Map<String, dynamic>);
+    return VinculosDisponiblesModel.fromOpcionesJson(
+      data as Map<String, dynamic>,
+    );
   }
 
   /// Invita a una persona. Errores del servidor: 400 (datos no válidos, o el rol ADMIN_APP),
@@ -108,7 +175,7 @@ class AdminService {
     List<String> roles = const [],
   }) async {
     final data = await ApiClient.post(
-      '/app/admin/invitaciones',
+      '/app/admin/usuarios/invitar',
       autenticado: true,
       body: {
         'email': email.trim(),

@@ -35,7 +35,7 @@ const _datosResultado = {
   'partidoId': '31',
   'equipoId': '5',
   'equipo': 'Cadete A',
-  'rival': 'Pego C.F.',
+  'rival': 'Pego',
   'fecha': '2026-10-18',
   'hora': '11:00',
   'local': 'false',
@@ -148,7 +148,7 @@ void main() {
           partidoId: 31,
           equipoId: 5,
           equipo: 'Cadete A',
-          rival: 'Pego C.F.',
+          rival: 'Pego',
           dia: DateTime(2026, 10, 18),
           hora: '11:00',
           local: false,
@@ -264,7 +264,7 @@ void main() {
       final partido = formulariosResultado.single;
       expect(partido.id, 31);
       expect(partido.equipoId, 5);
-      expect(partido.rival, 'Pego C.F.');
+      expect(partido.rival, 'Pego');
       expect(partido.dia, DateTime(2026, 10, 18));
       expect(partido.hora, '11:00');
       expect(partido.local, isFalse);

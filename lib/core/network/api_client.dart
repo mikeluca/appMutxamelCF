@@ -39,6 +39,9 @@ class ApiClient {
 
   static const Duration _timeout = Duration(seconds: 15);
 
+  /// Subir un fichero y que el servidor lo procese tarda más que una consulta.
+  static const Duration _timeoutSubida = Duration(seconds: 90);
+
   /// [headers] añade cabeceras (p. ej. Accept-Language) a las de siempre.
   static Future<dynamic> get(
     String path, {
@@ -112,6 +115,51 @@ class ApiClient {
       body: body,
       autenticado: autenticado,
     );
+  }
+
+  /// Sube un fichero (multipart/form-data, campo [campo]) y decodifica la respuesta JSON como [post]. El tiempo
+  /// máximo es mayor: el servidor lee y procesa el fichero antes de contestar. Los errores se traducen igual que en
+  /// [post] (el [ApiException.message] es el texto del servidor).
+  static Future<dynamic> postArchivo(
+    String path, {
+    required String campo,
+    required List<int> bytes,
+    required String nombreArchivo,
+    bool autenticado = false,
+  }) async {
+    final cabeceras = <String, String>{...jsonHeaders};
+
+    if (autenticado) {
+      final token = await AuthSession.obtenerToken();
+
+      if (token == null || token.isEmpty) {
+        throw const ApiException('No hay una sesión activa.');
+      }
+
+      cabeceras['Authorization'] = 'Bearer $token';
+    }
+
+    final peticion = http.MultipartRequest('POST', Uri.parse('$baseUrl$path'))
+      ..headers.addAll(cabeceras)
+      ..files.add(
+        http.MultipartFile.fromBytes(campo, bytes, filename: nombreArchivo),
+      );
+
+    http.Response response;
+
+    try {
+      final respuesta = await peticion.send().timeout(_timeoutSubida);
+
+      response = await http.Response.fromStream(respuesta);
+    } on TimeoutException {
+      throw const ApiException('El servidor no responde. Inténtalo de nuevo.');
+    } on SocketException {
+      throw const ApiException('No hay conexión a internet.');
+    } on http.ClientException catch (e) {
+      throw ApiException('Error de red: ${e.message}');
+    }
+
+    return _resolver(response, autenticado: autenticado);
   }
 
   static Future<dynamic> put(
@@ -210,6 +258,14 @@ class ApiClient {
       throw ApiException('Error de red: ${e.message}');
     }
 
+    return _resolver(response, autenticado: autenticado);
+  }
+
+  /// La respuesta ya recibida: 401 (sesión caducada), 2xx (JSON decodificado) o el error del servidor.
+  static Future<dynamic> _resolver(
+    http.Response response, {
+    required bool autenticado,
+  }) async {
     if (response.statusCode == 401) {
       if (autenticado) {
         // N-01: el token ya no es válido, así que el backend tampoco

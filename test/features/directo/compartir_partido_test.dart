@@ -32,7 +32,7 @@ FichaPartido _ficha({
   List<GoleadorFicha> goleadores = const [],
   List<FormaFicha>? forma,
   String? campo,
-  String rival = 'Pego C.F.',
+  String rival = 'Pego',
   bool? mutxamelLocal,
   String? escudoRivalUrl,
   String nombreClub = 'Mutxamel CF',
@@ -146,10 +146,7 @@ void main() {
         expect(d.fecha, '14/11/2026');
         // El nombre del club sale siempre con puntos, aunque el backend mande "Mutxamel CF".
         expect(d.local, 'Mutxamel C.F.');
-        expect(
-          d.textoCompartir(),
-          'Mutxamel C.F. 2-1 Pego C.F. · Final $_hashtags',
-        );
+        expect(d.textoCompartir(), 'Mutxamel C.F. 2-1 Pego · Final $_hashtags');
       },
     );
 
@@ -168,12 +165,12 @@ void main() {
 
         expect(
           d.textoCompartir(),
-          'Mutxamel C.F. 3-1 Pego C.F. · Final ⚽ Pepe (2), Juanma $_hashtags',
+          'Mutxamel C.F. 3-1 Pego · Final ⚽ Pepe (2), Juanma $_hashtags',
         );
         // Con el interruptor de goleadores apagado, sin ellos.
         expect(
           d.textoCompartir(conGoleadores: false),
-          'Mutxamel C.F. 3-1 Pego C.F. · Final $_hashtags',
+          'Mutxamel C.F. 3-1 Pego · Final $_hashtags',
         );
       },
     );
@@ -184,10 +181,7 @@ void main() {
       final d = await _datos(tester, _final(2, 1, local: false));
 
       expect(d.marcador, '1 - 2');
-      expect(
-        d.textoCompartir(),
-        'Pego C.F. 1-2 Mutxamel C.F. · Final $_hashtags',
-      );
+      expect(d.textoCompartir(), 'Pego 1-2 Mutxamel C.F. · Final $_hashtags');
       expect(d.mutxamelEsLocal, isFalse);
       expect(d.visitante, 'Mutxamel C.F.');
       expect(d.resultado, ResultadoCompartir.victoria);
@@ -225,7 +219,7 @@ void main() {
       expect(d.etiqueta, 'DESCANSO');
       expect(
         d.textoCompartir(),
-        'Mutxamel C.F. 1-1 Pego C.F. · Descanso $_hashtags',
+        'Mutxamel C.F. 1-1 Pego · Descanso $_hashtags',
       );
     });
 
@@ -246,10 +240,7 @@ void main() {
       );
 
       expect(d.etiqueta, "EN DIRECTO · 67'");
-      expect(
-        d.textoCompartir(),
-        "Mutxamel C.F. 2-1 Pego C.F. · 67' $_hashtags",
-      );
+      expect(d.textoCompartir(), "Mutxamel C.F. 2-1 Pego · 67' $_hashtags");
 
       // Un rato después, otro minuto.
       final despues = await _datos(
@@ -289,7 +280,7 @@ void main() {
       expect(d.hora, '18:00');
       expect(
         d.textoCompartir(),
-        'Mutxamel C.F. - Pego C.F. · 14/11/2026 · 18:00 $_hashtags',
+        'Mutxamel C.F. - Pego · 14/11/2026 · 18:00 $_hashtags',
       );
     });
 
@@ -327,15 +318,12 @@ void main() {
       expect(en.etiqueta, 'FULL TIME');
       expect(
         en.textoCompartir(),
-        'Mutxamel C.F. 2-1 Pego C.F. · Full time $_hashtags',
+        'Mutxamel C.F. 2-1 Pego · Full time $_hashtags',
       );
 
       final ca = await _datos(tester, f, locale: const Locale('ca'));
       expect(ca.etiqueta, 'FINAL');
-      expect(
-        ca.textoCompartir(),
-        'Mutxamel C.F. 2-1 Pego C.F. · Final $_hashtags',
-      );
+      expect(ca.textoCompartir(), 'Mutxamel C.F. 2-1 Pego · Final $_hashtags');
 
       expect(
         (await _datos(tester, _ficha(), locale: const Locale('en'))).etiqueta,
@@ -420,7 +408,7 @@ void main() {
           '#somMTX #mareaAzul #MutxamelCF',
         );
         expect(_texto(tester, 'compartir-local'), 'Mutxamel C.F.');
-        expect(_texto(tester, 'compartir-visitante'), 'Pego C.F.');
+        expect(_texto(tester, 'compartir-visitante'), 'Pego');
         expect(_clave('compartir-cinta-victoria'), findsOneWidget);
         expect(find.text('¡VICTORIA!'), findsOneWidget);
         expect(_clave('compartir-marca-de-agua'), findsOneWidget);
@@ -444,7 +432,7 @@ void main() {
 
       expect(escudo.dx, greaterThan(generico.dx));
       expect(_texto(tester, 'compartir-marcador'), '1 - 2');
-      expect(_texto(tester, 'compartir-local'), 'Pego C.F.');
+      expect(_texto(tester, 'compartir-local'), 'Pego');
       expect(_texto(tester, 'compartir-visitante'), 'Mutxamel C.F.');
     });
 
@@ -1123,12 +1111,9 @@ void main() {
         expect(compartidos, hasLength(2));
         expect(
           compartidos[0].$2,
-          'Mutxamel C.F. 3-1 Pego C.F. · Final ⚽ Pepe (2), Juanma $_hashtags',
+          'Mutxamel C.F. 3-1 Pego · Final ⚽ Pepe (2), Juanma $_hashtags',
         );
-        expect(
-          compartidos[1].$2,
-          'Mutxamel C.F. 3-1 Pego C.F. · Final $_hashtags',
-        );
+        expect(compartidos[1].$2, 'Mutxamel C.F. 3-1 Pego · Final $_hashtags');
         expect(compartidos[0].$1.length, greaterThan(1000));
       },
     );
@@ -1359,7 +1344,7 @@ void main() {
       // Sin goleadores porque se apagó el interruptor.
       expect(
         compartidos.single.$2,
-        'Mutxamel C.F. 3-1 Pego C.F. · Final $_hashtags',
+        'Mutxamel C.F. 3-1 Pego · Final $_hashtags',
       );
 
       final imagen = (await tester.runAsync(

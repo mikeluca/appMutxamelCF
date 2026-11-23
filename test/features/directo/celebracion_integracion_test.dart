@@ -45,7 +45,7 @@ FichaPartido _ficha(
   cabecera: CabeceraFicha(
     partidoId: 30,
     equipoLocal: 'Mutxamel CF',
-    equipoVisitante: 'Pego C.F.',
+    equipoVisitante: 'Pego',
     dia: DateTime(2026, 11, 14),
     hora: '18:00',
     golesFavor: favor,
@@ -287,7 +287,7 @@ void main() {
       id: id,
       categoria: 'Primer Equipo',
       equipo: 'Primer Equipo',
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       enJuego: true,
       fase: 'PRIMERA_PARTE',
       golesFavor: favor,

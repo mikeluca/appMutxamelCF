@@ -46,7 +46,7 @@ void main() {
       const MatchModel(
         categoria: 'Primer Equipo',
         equipo: 'Primer Equipo',
-        rival: 'Pego C.F.',
+        rival: 'Pego',
         campo: 'Camp Municipal de Mutxamel',
         local: false,
       ),
@@ -67,7 +67,7 @@ void main() {
       const MatchModel(
         categoria: 'Primer Equipo',
         equipo: 'Primer Equipo',
-        rival: 'Pego C.F.',
+        rival: 'Pego',
       ),
     );
 
@@ -82,13 +82,13 @@ void main() {
       const MatchModel(
         categoria: 'Primer Equipo',
         equipo: 'Primer Equipo',
-        rival: 'Pego C.F.',
+        rival: 'Pego',
         local: true,
       ),
     );
 
     final izquierda = tester.getCenter(find.text('Primer Equipo')).dx;
-    final derecha = tester.getCenter(find.text('Pego C.F.')).dx;
+    final derecha = tester.getCenter(find.text('Pego')).dx;
 
     expect(izquierda, lessThan(derecha));
   });
@@ -101,12 +101,12 @@ void main() {
       const MatchModel(
         categoria: 'Primer Equipo',
         equipo: 'Primer Equipo',
-        rival: 'Pego C.F.',
+        rival: 'Pego',
         local: false,
       ),
     );
 
-    final izquierda = tester.getCenter(find.text('Pego C.F.')).dx;
+    final izquierda = tester.getCenter(find.text('Pego')).dx;
     final derecha = tester.getCenter(find.text('Primer Equipo')).dx;
 
     expect(izquierda, lessThan(derecha));
@@ -120,7 +120,7 @@ void main() {
       const MatchModel(
         categoria: 'Primer Equipo',
         equipo: 'Primer Equipo',
-        rival: 'Pego C.F.',
+        rival: 'Pego',
         resultado: '1-2',
         local: false,
       ),
@@ -129,7 +129,7 @@ void main() {
     expect(find.text('2-1'), findsOneWidget);
     expect(find.text('1-2'), findsNothing);
     expect(
-      tester.getCenter(find.text('Pego C.F.')).dx,
+      tester.getCenter(find.text('Pego')).dx,
       lessThan(tester.getCenter(find.text('Primer Equipo')).dx),
     );
   });
@@ -140,7 +140,7 @@ void main() {
       const MatchModel(
         categoria: 'Primer Equipo',
         equipo: 'Primer Equipo',
-        rival: 'Pego C.F.',
+        rival: 'Pego',
         resultado: '2-1',
       ),
     );
@@ -156,7 +156,7 @@ void main() {
         const MatchModel(
           categoria: 'Primer Equipo',
           equipo: 'Primer Equipo',
-          rival: 'Pego C.F.',
+          rival: 'Pego',
           pendienteResultado: true,
           local: false,
         ),
@@ -165,7 +165,7 @@ void main() {
       expect(find.text('Pendiente de resultado'), findsOneWidget);
       expect(find.text('-'), findsNothing);
 
-      final izquierda = tester.getCenter(find.text('Pego C.F.')).dx;
+      final izquierda = tester.getCenter(find.text('Pego')).dx;
       final derecha = tester.getCenter(find.text('Primer Equipo')).dx;
 
       expect(izquierda, lessThan(derecha));
@@ -176,7 +176,7 @@ void main() {
     const enJuego = MatchModel(
       categoria: 'Primer Equipo',
       equipo: 'Primer Equipo',
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       hora: '17:00',
       enJuego: true,
       fase: 'PRIMERA_PARTE',
@@ -196,7 +196,7 @@ void main() {
         );
         expect(encuentraMarcador('2 - 1'), findsOneWidget);
         expect(find.text('Descanso'), findsNothing);
-        expect(find.text('Pego C.F.'), findsOneWidget);
+        expect(find.text('Pego'), findsOneWidget);
       },
     );
 
@@ -208,7 +208,7 @@ void main() {
           const MatchModel(
             categoria: 'Primer Equipo',
             equipo: 'Primer Equipo',
-            rival: 'Pego C.F.',
+            rival: 'Pego',
             local: false,
             enJuego: true,
             fase: 'SEGUNDA_PARTE',
@@ -229,7 +229,7 @@ void main() {
         const MatchModel(
           categoria: 'Primer Equipo',
           equipo: 'Primer Equipo',
-          rival: 'Pego C.F.',
+          rival: 'Pego',
           enJuego: true,
           fase: 'DESCANSO',
           golesFavor: 0,
@@ -263,7 +263,7 @@ void main() {
                   match: MatchModel(
                     categoria: 'Primer Equipo',
                     equipo: 'Primer Equipo',
-                    rival: 'Pego C.F.',
+                    rival: 'Pego',
                     enJuego: true,
                     fase: 'DESCANSO',
                     golesFavor: 1,
@@ -288,7 +288,7 @@ void main() {
           const MatchModel(
             categoria: 'Primer Equipo',
             equipo: 'Primer Equipo',
-            rival: 'Pego C.F.',
+            rival: 'Pego',
             resultado: '3-1',
             golesFavor: 3,
             golesContra: 1,
@@ -313,7 +313,7 @@ void main() {
         const MatchModel(
           categoria: 'Primer Equipo',
           equipo: 'Primer Equipo',
-          rival: 'Pego C.F.',
+          rival: 'Pego',
           resultado: '0-1',
           fase: 'FINALIZADO',
         ),
@@ -328,7 +328,7 @@ void main() {
         final match = MatchModel.fromJson({
           'categoria': 'Primer Equipo',
           'equipo': 'Primer Equipo',
-          'rival': 'Pego C.F.',
+          'rival': 'Pego',
           'resultado': '2-1',
           'golesFavor': 2,
           'golesContra': 1,
@@ -348,7 +348,7 @@ void main() {
 
     test('el modelo lee enJuego, fase y goleadores del backend', () {
       final match = MatchModel.fromJson({
-        'rival': 'Pego C.F.',
+        'rival': 'Pego',
         'enJuego': true,
         'fase': 'SEGUNDA_PARTE',
         'golesFavor': 1,

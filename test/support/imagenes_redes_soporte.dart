@@ -63,7 +63,7 @@ PartidoPrimerEquipoModel partidoDePrueba({bool local = true}) {
     disponible: true,
     partidoId: 30,
     local: local,
-    rival: 'C.D. Salesianos Alicante',
+    rival: 'Salesianos Alicante',
     dia: DateTime(2026, 11, 21),
     hora: '17:30',
     campo: 'Camp Nou Los Olmos (Mutxamel)',

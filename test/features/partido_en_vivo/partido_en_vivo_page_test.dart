@@ -75,7 +75,7 @@ class _ServicioFalso extends PartidoEnVivoService {
 
     return EstadoPartidoEnVivo(
       partidoId: partidoId,
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       local: local,
       fase: fase,
       golesFavor: _favor,
@@ -393,21 +393,11 @@ class _ServicioFalso extends PartidoEnVivoService {
 }
 
 const _unPartido = [
-  PartidoEnVivoDisponible(
-    id: 30,
-    rival: 'Pego C.F.',
-    hora: '11:00',
-    local: true,
-  ),
+  PartidoEnVivoDisponible(id: 30, rival: 'Pego', hora: '11:00', local: true),
 ];
 
 const _dosPartidos = [
-  PartidoEnVivoDisponible(
-    id: 30,
-    rival: 'Pego C.F.',
-    hora: '11:00',
-    local: true,
-  ),
+  PartidoEnVivoDisponible(id: 30, rival: 'Pego', hora: '11:00', local: true),
   PartidoEnVivoDisponible(
     id: 31,
     rival: 'Villena',
@@ -479,7 +469,7 @@ void main() {
 
       await _pintar(tester, servicio, reloj);
 
-      expect(find.text('Mutxamel 0 - 0 Pego C.F.'), findsOneWidget);
+      expect(find.text('Mutxamel 0 - 0 Pego'), findsOneWidget);
       expect(find.text('Sin empezar'), findsOneWidget);
       expect(servicio.llamadas, contains('estado:30'));
       // Con uno solo no hay nada que cambiar.
@@ -497,7 +487,7 @@ void main() {
         find.text('Elige el partido que vas a retransmitir'),
         findsOneWidget,
       );
-      expect(find.text('Pego C.F.'), findsOneWidget);
+      expect(find.text('Pego'), findsOneWidget);
       expect(find.text('11:00 · Local'), findsOneWidget);
       expect(find.text('Villena'), findsOneWidget);
       expect(find.text('18:00 · Visitante'), findsOneWidget);
@@ -541,7 +531,7 @@ void main() {
       reloj.avanzar(const Duration(minutes: 3));
       await _pulsarYConfirmar(tester, 'Gol en contra');
 
-      expect(find.text('Mutxamel 2 - 1 Pego C.F.'), findsOneWidget);
+      expect(find.text('Mutxamel 2 - 1 Pego'), findsOneWidget);
       expect(find.text('1ª parte'), findsOneWidget);
       expect(find.text('⚽ Pablo Garcia'), findsOneWidget);
       expect(find.text('⚽ Luis Lopez'), findsOneWidget);
@@ -554,7 +544,7 @@ void main() {
       await _pulsarYConfirmar(tester, 'Inicio de partido');
       await _pulsarYConfirmar(tester, 'Gol en contra');
 
-      expect(find.text('Pego C.F. 1 - 0 Mutxamel'), findsOneWidget);
+      expect(find.text('Pego 1 - 0 Mutxamel'), findsOneWidget);
     });
   });
 
@@ -719,7 +709,7 @@ void main() {
 
       expect(servicio.llamadas, contains('autor:null/p.p.'));
       expect(find.text('⚽ p.p. (propia puerta del rival)'), findsOneWidget);
-      expect(find.text('Mutxamel 1 - 0 Pego C.F.'), findsOneWidget);
+      expect(find.text('Mutxamel 1 - 0 Pego'), findsOneWidget);
     });
 
     testWidgets('el botón de gol está deshabilitado mientras cargan los '
@@ -820,13 +810,13 @@ void main() {
       await _pulsarYConfirmar(tester, 'Inicio de partido');
       await _pulsarYConfirmar(tester, 'Gol en contra');
 
-      expect(find.text('Mutxamel 0 - 1 Pego C.F.'), findsOneWidget);
+      expect(find.text('Mutxamel 0 - 1 Pego'), findsOneWidget);
 
       await tester.tap(find.byIcon(Icons.undo));
       await tester.pumpAndSettle();
 
       expect(servicio.llamadas.any((l) => l.startsWith('deshacer:')), isTrue);
-      expect(find.text('Mutxamel 0 - 0 Pego C.F.'), findsOneWidget);
+      expect(find.text('Mutxamel 0 - 0 Pego'), findsOneWidget);
       expect(find.text('Aviso deshecho.'), findsOneWidget);
       expect(find.byIcon(Icons.undo), findsNothing);
     });

@@ -18,7 +18,7 @@ CabeceraFicha _cabecera({
 }) => CabeceraFicha(
   partidoId: 30,
   equipoLocal: 'Mutxamel CF',
-  equipoVisitante: 'Pego C.F.',
+  equipoVisitante: 'Pego',
   dia: DateTime(2026, 11, 14),
   hora: hora,
   estado: estado,
@@ -100,7 +100,7 @@ void main() {
       id: 30,
       categoria: equipo,
       equipo: equipo,
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       dia: DateTime(2026, 11, 14),
       hora: hora,
     );
@@ -120,7 +120,26 @@ void main() {
         ),
       );
 
-      expect(_cuenta(tester), 'Empieza en 3 h 15 min');
+      // En la portada, la cuenta atrás va en bloques (con menos de 24 h, sin Días): 03 h, 15 min, 00 s.
+      expect(
+        find.byKey(const ValueKey('cuenta-atras-bloques')),
+        findsOneWidget,
+      );
+      expect(find.byKey(const ValueKey('bloque-dias')), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('bloque-horas')),
+          matching: find.text('03'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('bloque-minutos')),
+          matching: find.text('15'),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('sin hora, solo el día', (tester) async {

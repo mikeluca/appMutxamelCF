@@ -20,7 +20,7 @@ class _Partidos extends MatchService {
   Future<MatchModel?> obtenerResultadoPrimerEquipo() async => const MatchModel(
     categoria: 'Primer Equipo',
     equipo: 'Primer Equipo',
-    rival: 'Pego C.F.',
+    rival: 'Pego',
     hora: '17:00',
   );
 }

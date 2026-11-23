@@ -42,14 +42,14 @@ class _NoticiasFalsas extends NewsService {
 const _proximo = MatchModel(
   categoria: 'Primer Equipo',
   equipo: 'Primer Equipo',
-  rival: 'Pego C.F.',
+  rival: 'Pego',
   hora: '17:00',
 );
 
 MatchModel _enJuego(int favor, {String fase = 'PRIMERA_PARTE'}) => MatchModel(
   categoria: 'Primer Equipo',
   equipo: 'Primer Equipo',
-  rival: 'Pego C.F.',
+  rival: 'Pego',
   enJuego: true,
   fase: fase,
   golesFavor: favor,
@@ -189,7 +189,7 @@ void main() {
       const MatchModel(
         categoria: 'Primer Equipo',
         equipo: 'Primer Equipo',
-        rival: 'Pego C.F.',
+        rival: 'Pego',
         resultado: '2-0',
         fase: 'FINALIZADO',
         goleadores: ['Pepe (2)'],
@@ -337,7 +337,7 @@ void main() {
         MatchModel.fromJson({
           'categoria': 'Primer Equipo',
           'equipo': 'Primer Equipo',
-          'rival': 'Pego C.F.',
+          'rival': 'Pego',
           'resultado': '1-0',
         }),
       ]);

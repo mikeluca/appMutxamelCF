@@ -15,7 +15,7 @@ const String _textoFilialEs =
 PartidoPrimerEquipoModel _partidoFilial() => const PartidoPrimerEquipoModel(
   disponible: true,
   partidoId: 40,
-  rival: 'Pego C.F.',
+  rival: 'Pego',
   campo: 'Camp Nou Los Olmos (Mutxamel)',
   competicion: 'Segona FFCV, Grup 7',
   textoEs: _textoFilialEs,
@@ -111,7 +111,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(_clave('filial-cartel-tarjeta-partido'), findsOneWidget);
-        expect(find.text('Pego C.F.'), findsOneWidget);
+        expect(find.text('Pego'), findsOneWidget);
         expect(find.text('Segona FFCV, Grup 7'), findsOneWidget);
         expect(_clave('filial-cartel-generar'), findsOneWidget);
         expect(_clave('filial-cartel-compartir'), findsOneWidget);

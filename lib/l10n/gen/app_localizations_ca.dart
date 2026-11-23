@@ -1426,9 +1426,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String get matchResultPending => 'Pendent de resultat';
 
   @override
-  String get viewStandings => 'Veure classificació';
-
-  @override
   String seasonTitle(String name) {
     return 'Temporada $name';
   }
@@ -4048,4 +4045,376 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get familyRejectedSnack => 'Sol·licitud rebutjada';
+
+  @override
+  String get viewStandings => 'Classificació';
+
+  @override
+  String get countdownBlockDays => 'Dies';
+
+  @override
+  String get countdownBlockHours => 'Hores';
+
+  @override
+  String get countdownBlockMinutes => 'Minuts';
+
+  @override
+  String get countdownBlockSeconds => 'Segons';
+
+  @override
+  String get clockFirstHalf => '1T';
+
+  @override
+  String get clockSecondHalf => '2T';
+
+  @override
+  String get clubPageFfcvUpload => 'Pujar dades FFCV';
+
+  @override
+  String get clubPageFfcvUploadDesc =>
+      'Importa els partits i les classificacions de la FFCV';
+
+  @override
+  String get clubPageUsers => 'Usuaris';
+
+  @override
+  String get clubPageUsersDesc =>
+      'Comptes de l\'app: convidar, editar rols, activar i desactivar';
+
+  @override
+  String get ffcvTabMatches => 'Partits';
+
+  @override
+  String get ffcvTabStandings => 'Classificacions';
+
+  @override
+  String get ffcvMatchesHelp =>
+      'Descarrega el llistat LstPartidos.csv de la intranet de la FFCV i puja\'l ací. Primer veuràs una vista prèvia; no es guarda res fins que premes «Confirmar».';
+
+  @override
+  String get ffcvStandingsHelp =>
+      'Descarrega ListadoClasificaciones.xlsx de la intranet de la FFCV i puja\'l ací. L\'arxiu porta totes les classificacions de la Comunitat: només s\'importen els grups dels equips relacionats a Equips FFCV. Abans de guardar res veuràs una vista prèvia.';
+
+  @override
+  String get ffcvChooseFile => 'Triar fitxer';
+
+  @override
+  String get ffcvChangeFile => 'Canviar fitxer';
+
+  @override
+  String get ffcvNoFile => 'Cap fitxer triat';
+
+  @override
+  String get ffcvPreview => 'Previsualitzar';
+
+  @override
+  String get ffcvConfirm => 'Confirmar la importació';
+
+  @override
+  String get ffcvUploading => 'Pujant i processant el fitxer…';
+
+  @override
+  String get ffcvSaving => 'Guardant la importació…';
+
+  @override
+  String get ffcvNewImport => 'Pujar un altre fitxer';
+
+  @override
+  String get ffcvStatusNew => 'Nou';
+
+  @override
+  String get ffcvStatusUpdated => 'Actualitzat';
+
+  @override
+  String get ffcvStatusUnchanged => 'Sense canvis';
+
+  @override
+  String get ffcvStatusNoTeam => 'Sense equip';
+
+  @override
+  String get ffcvStatusConflict => 'Conflicte manual';
+
+  @override
+  String ffcvCountNew(int n) {
+    return '$n nous';
+  }
+
+  @override
+  String ffcvCountUpdated(int n) {
+    return '$n actualitzats';
+  }
+
+  @override
+  String ffcvCountUnchanged(int n) {
+    return '$n sense canvis';
+  }
+
+  @override
+  String ffcvCountNoTeam(int n) {
+    return '$n sense equip';
+  }
+
+  @override
+  String ffcvCountConflict(int n) {
+    return '$n conflictes manuals';
+  }
+
+  @override
+  String ffcvWeekendSummary(String desde, String hasta, String resumen) {
+    return 'Cap de setmana $desde – $hasta: $resumen';
+  }
+
+  @override
+  String get ffcvNoMatchesFound =>
+      'No s\'ha trobat cap partit del Mutxamel a l\'arxiu';
+
+  @override
+  String ffcvHomeVs(String rival) {
+    return 'Local · $rival';
+  }
+
+  @override
+  String ffcvAwayVs(String rival) {
+    return 'Visitant · $rival';
+  }
+
+  @override
+  String get ffcvChooseTeam => '— Triar equip —';
+
+  @override
+  String ffcvAssignTeamFor(String grupo) {
+    return 'Equip per a $grupo';
+  }
+
+  @override
+  String get ffcvRests => 'Descansen';
+
+  @override
+  String get ffcvVanished => 'Ja no apareixen a la FFCV (ajornat?)';
+
+  @override
+  String get ffcvVanishedNote =>
+      'No s\'esborren ni es modifiquen automàticament.';
+
+  @override
+  String get ffcvHasCallup => 'té convocatòria';
+
+  @override
+  String get ffcvErrorsTitle => 'Línies que no s\'han pogut llegir';
+
+  @override
+  String ffcvErrorLine(int n, String mensaje) {
+    return 'Línia $n: $mensaje';
+  }
+
+  @override
+  String ffcvConfirmMatchesBody(int n, int nuevos, int actualizados) {
+    return 'S\'importaran $n partits ($nuevos nous i $actualizados actualitzats). Continuar?';
+  }
+
+  @override
+  String ffcvResultMatches(int c, int a, int s, int m, int e, int dc, int de) {
+    return 'Importació guardada: $c nous, $a actualitzats, $s sense canvis, $m conflictes manuals, $e sense equip. Descansos: +$dc / −$de.';
+  }
+
+  @override
+  String get ffcvWarnings => 'Avisos';
+
+  @override
+  String ffcvStandingsSummary(int filas, int grupos) {
+    return '$filas files llegides en $grupos grups. Marca els equips la classificació dels quals vols actualitzar: se substitueix per complet la taula guardada de cadascun.';
+  }
+
+  @override
+  String get ffcvFound => 'Trobat';
+
+  @override
+  String get ffcvNotFound => 'No trobat';
+
+  @override
+  String ffcvStandingsLine(String jornada, String pos, String pts, String pj) {
+    return 'Jornada $jornada · Pos. $pos · $pts pts · PJ $pj';
+  }
+
+  @override
+  String ffcvOldFileWarning(String jornada, String guardada) {
+    return 'Avís: l\'arxiu és de la jornada $jornada i el guardat és de la jornada $guardada (arxiu antic?). Desmarcat per defecte.';
+  }
+
+  @override
+  String get ffcvNoTeamsRelated =>
+      'No hi ha cap equip relacionat. Afegeix-los a Equips FFCV, al panell web.';
+
+  @override
+  String get ffcvUnmappedTitle => 'Equips del club sense grup assignat';
+
+  @override
+  String get ffcvUnmappedBody =>
+      'Aquestes files del Mutxamel C.F. són a l\'arxiu, però cap relació d\'Equips FFCV les reconeix, així que no s\'importen. Afegeix la relació (competició i lletra) al panell web.';
+
+  @override
+  String ffcvConfirmStandingsBody(int n) {
+    return 'S\'actualitzarà la classificació de $n equips: se substitueix per complet la taula guardada de cadascun. Continuar?';
+  }
+
+  @override
+  String get ffcvNothingSelected => 'Marca almenys un equip.';
+
+  @override
+  String ffcvResultStandings(int equipos, int filas) {
+    return '$equipos equip(s) actualitzat(s), $filas files de classificació guardades.';
+  }
+
+  @override
+  String get usersSearchHint => 'Cerca per nom o email…';
+
+  @override
+  String get usersFilterRole => 'Rol';
+
+  @override
+  String get usersAllRoles => 'Tots els rols';
+
+  @override
+  String get usersNoRoles => 'Sense rols';
+
+  @override
+  String get usersFilterState => 'Estat';
+
+  @override
+  String get usersAllStates => 'Tots els estats';
+
+  @override
+  String get usersStateActive => 'Activa';
+
+  @override
+  String get usersStatePending => 'Pendent d\'activar';
+
+  @override
+  String get usersStateExpired => 'Invitació caducada';
+
+  @override
+  String get usersStateDisabled => 'Desactivada';
+
+  @override
+  String usersCount(int x, int y) {
+    return '$x de $y comptes';
+  }
+
+  @override
+  String get usersNoneMatch => 'Cap compte compleix els filtres';
+
+  @override
+  String get usersEmpty => 'Encara no hi ha cap compte de l\'app.';
+
+  @override
+  String get usersClearFilters => 'Netejar filtres';
+
+  @override
+  String usersLastAccess(String fecha) {
+    return 'Últim accés: $fecha';
+  }
+
+  @override
+  String get usersNeverAccessed => 'Encara no ha entrat';
+
+  @override
+  String get usersDetailTitle => 'Compte';
+
+  @override
+  String get usersName => 'Nom';
+
+  @override
+  String get usersSurname => 'Cognoms';
+
+  @override
+  String get usersEditName => 'Editar nom';
+
+  @override
+  String get usersNameFromProfile => 'El nom ix de la seua fitxa vinculada.';
+
+  @override
+  String get usersSave => 'Guardar';
+
+  @override
+  String get usersNameSaved => 'Nom actualitzat.';
+
+  @override
+  String get usersLinksTitle => 'Vincles i rols';
+
+  @override
+  String get usersNoLinks =>
+      'Aquest compte encara no té cap vincle ni rol de club.';
+
+  @override
+  String get usersAddLink => 'Afegir vincle o rol';
+
+  @override
+  String get usersAddPersonTitle => 'Vincular a una persona';
+
+  @override
+  String get usersAddRoleTitle => 'Afegir un rol';
+
+  @override
+  String get usersChoosePerson => 'Tria una persona';
+
+  @override
+  String get usersNoPeople => 'No hi ha persones sense compte d\'aquest tipus.';
+
+  @override
+  String usersRemoveConfirm(String nombre) {
+    return 'Llevar «$nombre» d\'aquest compte?';
+  }
+
+  @override
+  String get usersRemove => 'Llevar';
+
+  @override
+  String get usersLinkAdded => 'Vincle o rol afegit.';
+
+  @override
+  String get usersLinkRemoved => 'Vincle o rol llevat.';
+
+  @override
+  String get usersActivate => 'Activar';
+
+  @override
+  String get usersDeactivate => 'Desactivar';
+
+  @override
+  String get usersDelete => 'Eliminar invitació';
+
+  @override
+  String usersActivateConfirm(String email) {
+    return 'Activar el compte de $email? Podrà entrar a l\'app.';
+  }
+
+  @override
+  String usersDeactivateConfirm(String email) {
+    return 'Desactivar el compte de $email? Deixarà de poder entrar a l\'app.';
+  }
+
+  @override
+  String usersDeleteConfirm(String email) {
+    return 'Eliminar la invitació de $email? S\'esborra el compte sense activar.';
+  }
+
+  @override
+  String get usersActivated => 'Compte activat.';
+
+  @override
+  String get usersDeactivated => 'Compte desactivat.';
+
+  @override
+  String get usersDeleted => 'Invitació eliminada.';
+
+  @override
+  String get usersReadOnlyOwn =>
+      'És el teu compte: no es pot modificar des d\'ací.';
+
+  @override
+  String get usersReadOnlyAdmin =>
+      'És un compte d\'administrador: no es pot modificar des de l\'app.';
+
+  @override
+  String get usersSavingError => 'No s\'ha pogut completar l\'acció.';
 }

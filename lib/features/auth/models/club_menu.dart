@@ -31,7 +31,8 @@ enum OpcionClub {
   altaPrueba,
   invitaciones,
   moderacion,
-  cuentasPendientes,
+  usuarios,
+  subirDatosFfcv,
   estadoApp,
   partidoEnDirecto,
   imagenesRedes,
@@ -79,8 +80,10 @@ String? rutaDeOpcionClub(OpcionClub opcion) {
       return AppRoutes.invitations;
     case OpcionClub.moderacion:
       return AppRoutes.moderation;
-    case OpcionClub.cuentasPendientes:
-      return AppRoutes.pendingAccounts;
+    case OpcionClub.usuarios:
+      return AppRoutes.users;
+    case OpcionClub.subirDatosFfcv:
+      return AppRoutes.ffcvUpload;
     case OpcionClub.estadoApp:
       return AppRoutes.appStatus;
     case OpcionClub.partidoEnDirecto:
@@ -192,7 +195,8 @@ List<SeccionClub> construirSeccionesClub(
     ]),
     SeccionClub(SeccionClubId.administracion, [
       if (esAdmin) OpcionClub.moderacion,
-      if (esAdmin) OpcionClub.cuentasPendientes,
+      if (esAdmin) OpcionClub.usuarios,
+      if (esAdmin) OpcionClub.subirDatosFfcv,
       if (esAdmin) OpcionClub.estadoApp,
     ]),
     SeccionClub(SeccionClubId.retransmision, _opcionesDirectoYRrss(usuario)),

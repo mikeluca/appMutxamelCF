@@ -114,7 +114,7 @@ PartidoPanelModel _partido(
 FinDeSemanaModel _panel({bool vacio = false}) => FinDeSemanaModel(
   desde: DateTime(2026, 10, 23),
   hasta: DateTime(2026, 10, 25),
-  sinConvocatoria: vacio ? [] : [_partido(2, 'Cadete A', 'Pego C.F.')],
+  sinConvocatoria: vacio ? [] : [_partido(2, 'Cadete A', 'Pego')],
   resultadosPendientes: vacio
       ? []
       : [_partido(1, 'Primer Equipo', 'Elx', retraso: 3)],
@@ -198,7 +198,7 @@ void main() {
       }
 
       expect(find.text('¿Falta importar la jornada?'), findsOneWidget);
-      expect(find.text('Cadete A - Pego C.F.'), findsOneWidget);
+      expect(find.text('Cadete A - Pego'), findsOneWidget);
       expect(find.text('Primer Equipo - Elx'), findsOneWidget);
       expect(find.textContaining('Hace 3 días'), findsOneWidget);
       expect(find.text('Jornada 8'), findsOneWidget);
@@ -242,7 +242,7 @@ void main() {
       await tester.tap(find.text('Sin convocatoria'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Cadete A - Pego C.F.'), findsNothing);
+      expect(find.text('Cadete A - Pego'), findsNothing);
       expect(find.text('Primer Equipo - Elx'), findsOneWidget);
     });
 
@@ -316,7 +316,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        await tester.tap(find.text('Cadete A - Pego C.F.'));
+        await tester.tap(find.text('Cadete A - Pego'));
         await tester.pumpAndSettle();
 
         expect(find.text('CONVOCATORIA'), findsOneWidget);
@@ -373,7 +373,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Cadete A - Pego C.F.'));
+      await tester.tap(find.text('Cadete A - Pego'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('VOLVER'));
       await tester.pumpAndSettle();
@@ -875,7 +875,7 @@ class _FakeMatches extends MatchService {
       equipoId: 5,
       categoria: 'Cadete',
       equipo: 'Cadete A',
-      rival: 'Pego C.F.',
+      rival: 'Pego',
       dia: DateTime(2099, 10, 24),
       hora: '11:00',
     ),

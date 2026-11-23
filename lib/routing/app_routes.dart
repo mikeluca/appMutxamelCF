@@ -15,6 +15,8 @@ class AppRoutes {
   static const String myTeams = '/my-teams';
   static const String moderation = '/admin/moderation';
   static const String pendingAccounts = '/admin/pending-accounts';
+  static const String users = '/admin/users';
+  static const String ffcvUpload = '/admin/ffcv-upload';
   static const String appStatus = '/admin/app-status';
   static const String weekend = '/coordination/weekend';
   static const String playerTracking = '/coordination/player-tracking';
