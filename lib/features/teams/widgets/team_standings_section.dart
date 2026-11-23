@@ -44,7 +44,14 @@ class TeamStandingsSection extends StatelessWidget {
           return _mensaje(t.standingsEmpty);
         }
 
-        return _buildTabla(context, t, clasificacion);
+        if (clasificacion.pestanas.isEmpty) {
+          return _buildTabla(context, t, clasificacion);
+        }
+
+        return _VariasCompeticiones(
+          competiciones: clasificacion.pestanas,
+          construir: (c) => _buildTabla(context, t, c),
+        );
       },
     );
   }
@@ -122,7 +129,7 @@ class TeamStandingsSection extends StatelessWidget {
     StandingsModel clasificacion,
   ) {
     final fecha = clasificacion.fechaImportacion;
-    final jornada = clasificacion.jornada;
+    final jornada = clasificacion.jornadaFiable ? clasificacion.jornada : null;
 
     if (fecha == null) {
       return '';
@@ -252,6 +259,52 @@ class TeamStandingsSection extends StatelessWidget {
           celda(puntos, 38),
         ],
       ),
+    );
+  }
+}
+
+/// Un selector con el nombre de cada competición (la Liga y la Copa de Veteranos) y la tabla de la elegida. Los nombres
+/// largos pasan a la línea siguiente (Wrap): con letra grande o un iPhone pequeño no se cortan.
+class _VariasCompeticiones extends StatefulWidget {
+  final List<StandingsModel> competiciones;
+  final Widget Function(StandingsModel) construir;
+
+  const _VariasCompeticiones({
+    required this.competiciones,
+    required this.construir,
+  });
+
+  @override
+  State<_VariasCompeticiones> createState() => _VariasCompeticionesState();
+}
+
+class _VariasCompeticionesState extends State<_VariasCompeticiones> {
+  int _elegida = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final indice = _elegida.clamp(0, widget.competiciones.length - 1);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          key: const ValueKey('selector-competiciones'),
+          spacing: 8,
+          runSpacing: 4,
+          children: [
+            for (var i = 0; i < widget.competiciones.length; i++)
+              ChoiceChip(
+                key: ValueKey('competicion-$i'),
+                label: Text(widget.competiciones[i].competicion),
+                selected: i == indice,
+                onSelected: (_) => setState(() => _elegida = i),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        widget.construir(widget.competiciones[indice]),
+      ],
     );
   }
 }

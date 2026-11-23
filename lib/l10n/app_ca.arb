@@ -1575,5 +1575,19 @@
   "usersDeleted": "Invitació eliminada.",
   "usersReadOnlyOwn": "És el teu compte: no es pot modificar des d'ací.",
   "usersReadOnlyAdmin": "És un compte d'administrador: no es pot modificar des de l'app.",
-  "usersSavingError": "No s'ha pogut completar l'acció."
+  "usersSavingError": "No s'ha pogut completar l'acció.",
+  "ffcvTabVeterans": "Classificació veterans (LVCA)",
+  "ffcvVeteransHelp": "Obri ligaveteranosalicante.es/scoretable al navegador, guarda-la com a pàgina web i puja-la ací",
+  "ffcvVeteransSummary": "{n} classificació(ns) on apareix el Mutxamel",
+  "@ffcvVeteransSummary": { "placeholders": { "n": { "type": "int" } } },
+  "ffcvVeteransRound": "Jornada {n} (màxim de PJ)",
+  "@ffcvVeteransRound": { "placeholders": { "n": { "type": "int" } } },
+  "ffcvVeteransNewClubs": "Clubs que es crearan (sense escut)",
+  "ffcvVeteransNewClubsBody": "No existeixen a Escuts de rivals: es creen en confirmar i l'escut es puja després.",
+  "ffcvConfirmVeteransBody": "Es guardaran {n} classificacions: se substitueix la guardada de cadascuna d'aquestes competicions. Continuar?",
+  "@ffcvConfirmVeteransBody": { "placeholders": { "n": { "type": "int" } } },
+  "ffcvResultVeterans": "{n} classificació(ns) guardada(es), {filas} files.",
+  "@ffcvResultVeterans": { "placeholders": { "n": { "type": "int" }, "filas": { "type": "int" } } },
+  "ffcvCreatedClubs": "Clubs creats sense escut: {clubes}",
+  "@ffcvCreatedClubs": { "placeholders": { "clubes": { "type": "String" } } }
 }

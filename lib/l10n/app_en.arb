@@ -1575,5 +1575,19 @@
   "usersDeleted": "Invitation deleted.",
   "usersReadOnlyOwn": "This is your account: it can’t be changed from here.",
   "usersReadOnlyAdmin": "This is an administrator account: it can’t be changed from the app.",
-  "usersSavingError": "The action could not be completed."
+  "usersSavingError": "The action could not be completed.",
+  "ffcvTabVeterans": "Veterans standings (LVCA)",
+  "ffcvVeteransHelp": "Open ligaveteranosalicante.es/scoretable in your browser, save it as a web page and upload it here",
+  "ffcvVeteransSummary": "{n} standing(s) where Mutxamel appears",
+  "@ffcvVeteransSummary": { "placeholders": { "n": { "type": "int" } } },
+  "ffcvVeteransRound": "Round {n} (highest played)",
+  "@ffcvVeteransRound": { "placeholders": { "n": { "type": "int" } } },
+  "ffcvVeteransNewClubs": "Clubs that will be created (no crest)",
+  "ffcvVeteransNewClubsBody": "They are not in Rival crests yet: they are created on confirm and the crest is uploaded afterwards.",
+  "ffcvConfirmVeteransBody": "{n} standings will be saved: the saved one of each of those competitions is replaced. Continue?",
+  "@ffcvConfirmVeteransBody": { "placeholders": { "n": { "type": "int" } } },
+  "ffcvResultVeterans": "{n} standing(s) saved, {filas} rows.",
+  "@ffcvResultVeterans": { "placeholders": { "n": { "type": "int" }, "filas": { "type": "int" } } },
+  "ffcvCreatedClubs": "Clubs created without a crest: {clubes}",
+  "@ffcvCreatedClubs": { "placeholders": { "clubes": { "type": "String" } } }
 }

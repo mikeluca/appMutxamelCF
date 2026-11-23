@@ -382,3 +382,126 @@ class ResultadoClasificacionesModel {
     );
   }
 }
+
+// ---------------------------------------------------------------------------
+// Clasificación de veteranos (LVCA)
+// ---------------------------------------------------------------------------
+
+class FilaVeteranosModel {
+  final int posicion;
+  final String equipo;
+  final int pj;
+  final int pg;
+  final int pe;
+  final int pp;
+  final int gf;
+  final int gc;
+  final int dif;
+  final int puntos;
+  final bool esNuestro;
+
+  const FilaVeteranosModel({
+    this.posicion = 0,
+    this.equipo = '',
+    this.pj = 0,
+    this.pg = 0,
+    this.pe = 0,
+    this.pp = 0,
+    this.gf = 0,
+    this.gc = 0,
+    this.dif = 0,
+    this.puntos = 0,
+    this.esNuestro = false,
+  });
+
+  factory FilaVeteranosModel.fromJson(Map<String, dynamic> json) {
+    return FilaVeteranosModel(
+      posicion: _entero(json['posicion']) ?? 0,
+      equipo: json['equipo']?.toString() ?? '',
+      pj: _entero(json['pj']) ?? 0,
+      pg: _entero(json['pg']) ?? 0,
+      pe: _entero(json['pe']) ?? 0,
+      pp: _entero(json['pp']) ?? 0,
+      gf: _entero(json['gf']) ?? 0,
+      gc: _entero(json['gc']) ?? 0,
+      dif: _entero(json['dif']) ?? 0,
+      puntos: _entero(json['puntos']) ?? 0,
+      esNuestro: json['esNuestro'] as bool? ?? false,
+    );
+  }
+}
+
+/// Una competición de la LVCA en la que aparece el Mutxamel, con su tabla y los clubes que se crearían.
+class CompeticionVeteranosModel {
+  final String nombre;
+  final int jornada;
+  final int posicionNuestra;
+  final List<FilaVeteranosModel> tabla;
+  final List<String> clubesACrear;
+
+  const CompeticionVeteranosModel({
+    this.nombre = '',
+    this.jornada = 0,
+    this.posicionNuestra = 0,
+    this.tabla = const [],
+    this.clubesACrear = const [],
+  });
+
+  factory CompeticionVeteranosModel.fromJson(Map<String, dynamic> json) {
+    return CompeticionVeteranosModel(
+      nombre: json['nombre']?.toString() ?? '',
+      jornada: _entero(json['jornada']) ?? 0,
+      posicionNuestra: _entero(json['posicionNuestra']) ?? 0,
+      tabla: _lista(json['tabla'], FilaVeteranosModel.fromJson),
+      clubesACrear: _textos(json['clubesACrear']),
+    );
+  }
+}
+
+/// POST /app/admin/ffcv/veteranos/previsualizar.
+class PrevisualizacionVeteranosModel {
+  final String equipoNombre;
+  final List<CompeticionVeteranosModel> competiciones;
+  final List<String> clubesACrear;
+
+  const PrevisualizacionVeteranosModel({
+    this.equipoNombre = '',
+    this.competiciones = const [],
+    this.clubesACrear = const [],
+  });
+
+  factory PrevisualizacionVeteranosModel.fromJson(Map<String, dynamic> json) {
+    return PrevisualizacionVeteranosModel(
+      equipoNombre: json['equipoNombre']?.toString() ?? '',
+      competiciones: _lista(
+        json['competiciones'],
+        CompeticionVeteranosModel.fromJson,
+      ),
+      clubesACrear: _textos(json['clubesACrear']),
+    );
+  }
+}
+
+/// POST /app/admin/ffcv/veteranos/confirmar.
+class ResultadoVeteranosModel {
+  final int competiciones;
+  final int filas;
+  final List<String> nombres;
+  final List<String> clubesCreados;
+
+  const ResultadoVeteranosModel({
+    this.competiciones = 0,
+    this.filas = 0,
+    this.nombres = const [],
+    this.clubesCreados = const [],
+  });
+
+  factory ResultadoVeteranosModel.fromJson(Map<String, dynamic> json) {
+    return ResultadoVeteranosModel(
+      competiciones: _entero(json['competiciones']) ?? 0,
+      filas: _entero(json['filas']) ?? 0,
+      nombres: _textos(json['nombres']),
+      clubesCreados: _textos(json['clubesCreados']),
+    );
+  }
+}

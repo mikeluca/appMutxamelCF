@@ -4426,4 +4426,43 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get usersSavingError => 'No se ha podido completar la acción.';
+
+  @override
+  String get ffcvTabVeterans => 'Clasificación veteranos (LVCA)';
+
+  @override
+  String get ffcvVeteransHelp =>
+      'Abre ligaveteranosalicante.es/scoretable en el navegador, guárdala como página web y súbela aquí';
+
+  @override
+  String ffcvVeteransSummary(int n) {
+    return '$n clasificación(es) en las que aparece el Mutxamel';
+  }
+
+  @override
+  String ffcvVeteransRound(int n) {
+    return 'Jornada $n (máximo de PJ)';
+  }
+
+  @override
+  String get ffcvVeteransNewClubs => 'Clubes que se crearán (sin escudo)';
+
+  @override
+  String get ffcvVeteransNewClubsBody =>
+      'No existen en Escudos de rivales: se crean al confirmar y el escudo se sube después.';
+
+  @override
+  String ffcvConfirmVeteransBody(int n) {
+    return 'Se guardarán $n clasificaciones: se sustituye la guardada de cada una de esas competiciones. ¿Continuar?';
+  }
+
+  @override
+  String ffcvResultVeterans(int n, int filas) {
+    return '$n clasificación(es) guardada(s), $filas filas.';
+  }
+
+  @override
+  String ffcvCreatedClubs(String clubes) {
+    return 'Clubes creados sin escudo: $clubes';
+  }
 }

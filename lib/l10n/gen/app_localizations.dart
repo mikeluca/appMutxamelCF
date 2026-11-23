@@ -7682,6 +7682,60 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No se ha podido completar la acción.'**
   String get usersSavingError;
+
+  /// No description provided for @ffcvTabVeterans.
+  ///
+  /// In es, this message translates to:
+  /// **'Clasificación veteranos (LVCA)'**
+  String get ffcvTabVeterans;
+
+  /// No description provided for @ffcvVeteransHelp.
+  ///
+  /// In es, this message translates to:
+  /// **'Abre ligaveteranosalicante.es/scoretable en el navegador, guárdala como página web y súbela aquí'**
+  String get ffcvVeteransHelp;
+
+  /// No description provided for @ffcvVeteransSummary.
+  ///
+  /// In es, this message translates to:
+  /// **'{n} clasificación(es) en las que aparece el Mutxamel'**
+  String ffcvVeteransSummary(int n);
+
+  /// No description provided for @ffcvVeteransRound.
+  ///
+  /// In es, this message translates to:
+  /// **'Jornada {n} (máximo de PJ)'**
+  String ffcvVeteransRound(int n);
+
+  /// No description provided for @ffcvVeteransNewClubs.
+  ///
+  /// In es, this message translates to:
+  /// **'Clubes que se crearán (sin escudo)'**
+  String get ffcvVeteransNewClubs;
+
+  /// No description provided for @ffcvVeteransNewClubsBody.
+  ///
+  /// In es, this message translates to:
+  /// **'No existen en Escudos de rivales: se crean al confirmar y el escudo se sube después.'**
+  String get ffcvVeteransNewClubsBody;
+
+  /// No description provided for @ffcvConfirmVeteransBody.
+  ///
+  /// In es, this message translates to:
+  /// **'Se guardarán {n} clasificaciones: se sustituye la guardada de cada una de esas competiciones. ¿Continuar?'**
+  String ffcvConfirmVeteransBody(int n);
+
+  /// No description provided for @ffcvResultVeterans.
+  ///
+  /// In es, this message translates to:
+  /// **'{n} clasificación(es) guardada(s), {filas} filas.'**
+  String ffcvResultVeterans(int n, int filas);
+
+  /// No description provided for @ffcvCreatedClubs.
+  ///
+  /// In es, this message translates to:
+  /// **'Clubes creados sin escudo: {clubes}'**
+  String ffcvCreatedClubs(String clubes);
 }
 
 class _AppLocalizationsDelegate

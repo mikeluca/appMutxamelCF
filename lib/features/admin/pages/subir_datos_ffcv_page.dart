@@ -34,11 +34,12 @@ class SubirDatosFfcvPage extends StatelessWidget {
     final elegir = selector ?? const SelectorFicherosSistema();
 
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: ClubAppBarTitle(titulo: t.clubPageFfcvUpload),
           bottom: TabBar(
+            isScrollable: true,
             tabs: [
               Tab(
                 key: const ValueKey('pestana-partidos'),
@@ -47,6 +48,10 @@ class SubirDatosFfcvPage extends StatelessWidget {
               Tab(
                 key: const ValueKey('pestana-clasificaciones'),
                 text: t.ffcvTabStandings,
+              ),
+              Tab(
+                key: const ValueKey('pestana-veteranos'),
+                text: t.ffcvTabVeterans,
               ),
             ],
           ),
@@ -59,6 +64,7 @@ class SubirDatosFfcvPage extends StatelessWidget {
               equipos: equipos ?? TeamService().obtenerEquipos,
             ),
             _PestanaClasificaciones(servicio: ffcv, selector: elegir),
+            _PestanaVeteranos(servicio: ffcv, selector: elegir),
           ],
         ),
       ),
@@ -1036,6 +1042,293 @@ class _PestanaClasificacionesState extends State<_PestanaClasificaciones>
             icono: Icons.warning_amber_rounded,
             titulo: _t.ffcvWarnings,
             lineas: r.avisos,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Clasificación de veteranos (LVCA)
+// ---------------------------------------------------------------------------
+
+class _PestanaVeteranos extends StatefulWidget {
+  final FfcvService servicio;
+  final SelectorFicheros selector;
+
+  const _PestanaVeteranos({required this.servicio, required this.selector});
+
+  @override
+  State<_PestanaVeteranos> createState() => _PestanaVeteranosState();
+}
+
+class _PestanaVeteranosState extends State<_PestanaVeteranos>
+    with AutomaticKeepAliveClientMixin {
+  FicheroElegido? _fichero;
+  PrevisualizacionVeteranosModel? _previa;
+  ResultadoVeteranosModel? _resultado;
+  String? _trabajando;
+  String? _error;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  AppLocalizations get _t => AppLocalizations.of(context);
+
+  Future<void> _elegir() async {
+    try {
+      final elegido = await widget.selector.elegir(
+        extensiones: const ['html', 'htm'],
+      );
+
+      if (elegido == null || !mounted) return;
+
+      setState(() {
+        _fichero = elegido;
+        _previa = null;
+        _resultado = null;
+        _error = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() => _error = mensajeDeAdmin(_t, e));
+    }
+  }
+
+  Future<void> _previsualizar() async {
+    final fichero = _fichero;
+
+    if (fichero == null) {
+      await _elegir();
+
+      return;
+    }
+
+    setState(() {
+      _trabajando = _t.ffcvUploading;
+      _error = null;
+      _previa = null;
+      _resultado = null;
+    });
+
+    try {
+      final previa = await widget.servicio.previsualizarVeteranos(
+        bytes: fichero.bytes,
+        nombreArchivo: fichero.nombre,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _previa = previa;
+        _trabajando = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _trabajando = null;
+        _error = mensajeDeAdmin(_t, e);
+      });
+    }
+  }
+
+  Future<void> _confirmarImportacion() async {
+    final previa = _previa;
+
+    if (previa == null) return;
+
+    final ok = await _confirmar(
+      context,
+      titulo: _t.ffcvConfirm,
+      cuerpo: _t.ffcvConfirmVeteransBody(previa.competiciones.length),
+      boton: _t.ffcvConfirm,
+    );
+
+    if (!ok || !mounted) return;
+
+    setState(() {
+      _trabajando = _t.ffcvSaving;
+      _error = null;
+    });
+
+    try {
+      final resultado = await widget.servicio.confirmarVeteranos();
+
+      if (!mounted) return;
+
+      setState(() {
+        _resultado = resultado;
+        _previa = null;
+        _fichero = null;
+        _trabajando = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _trabajando = null;
+        _error = mensajeDeAdmin(_t, e);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+
+    final ocupado = _trabajando != null;
+    final previa = _previa;
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        _ElegirFichero(
+          ayuda: _t.ffcvVeteransHelp,
+          fichero: _fichero,
+          ocupado: ocupado,
+          alElegir: _elegir,
+          alPrevisualizar: _fichero == null ? null : _previsualizar,
+        ),
+        const SizedBox(height: 16),
+        if (_error != null)
+          _Destacado(
+            key: const ValueKey('ffcv-error'),
+            color: _rojo,
+            icono: Icons.error_outline,
+            lineas: [_error!],
+          ),
+        if (_trabajando != null) _Trabajando(texto: _trabajando!),
+        if (previa != null && !ocupado) ..._construirPrevia(previa),
+        if (_resultado != null && !ocupado) _construirResultado(_resultado!),
+      ],
+    );
+  }
+
+  List<Widget> _construirPrevia(PrevisualizacionVeteranosModel previa) {
+    return [
+      Text(
+        _t.ffcvVeteransSummary(previa.competiciones.length),
+        key: const ValueKey('ffcv-resumen'),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+      const SizedBox(height: 10),
+      for (final c in previa.competiciones) _construirCompeticion(c),
+      if (previa.clubesACrear.isNotEmpty) ...[
+        _Destacado(
+          key: const ValueKey('ffcv-clubes-nuevos'),
+          color: _naranja,
+          icono: Icons.shield_outlined,
+          titulo: '${_t.ffcvVeteransNewClubs}\n${_t.ffcvVeteransNewClubsBody}',
+          lineas: previa.clubesACrear,
+        ),
+        const SizedBox(height: 12),
+      ],
+      FilledButton.icon(
+        key: const ValueKey('ffcv-confirmar'),
+        onPressed: _confirmarImportacion,
+        icon: const Icon(Icons.check_circle_outline),
+        label: Text(_t.ffcvConfirm),
+      ),
+    ];
+  }
+
+  Widget _construirCompeticion(CompeticionVeteranosModel c) {
+    final colores = Theme.of(context).colorScheme;
+
+    Widget celda(String texto, double ancho, TextStyle estilo) => SizedBox(
+      width: ancho,
+      child: Text(texto, textAlign: TextAlign.center, style: estilo),
+    );
+
+    return Card(
+      key: ValueKey('competicion-veteranos-${c.nombre}'),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              c.nombre,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              _t.ffcvVeteransRound(c.jornada),
+              style: TextStyle(fontSize: 12, color: colores.onSurfaceVariant),
+            ),
+            const SizedBox(height: 8),
+            for (final f in c.tabla)
+              Container(
+                key: ValueKey('fila-veteranos-${c.nombre}-${f.posicion}'),
+                padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 4),
+                decoration: BoxDecoration(
+                  color: f.esNuestro
+                      ? colores.primary.withValues(alpha: 0.16)
+                      : null,
+                  border: f.esNuestro
+                      ? Border(
+                          left: BorderSide(color: colores.primary, width: 3),
+                        )
+                      : null,
+                ),
+                child: Row(
+                  children: [
+                    celda(
+                      '${f.posicion}',
+                      28,
+                      const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        f.equipo,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontWeight: f.esNuestro
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                    celda('${f.pj}', 28, const TextStyle()),
+                    celda(
+                      '${f.puntos}',
+                      34,
+                      const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _construirResultado(ResultadoVeteranosModel r) {
+    return Column(
+      key: const ValueKey('ffcv-resultado'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _Destacado(
+          color: _verde,
+          icono: Icons.check_circle_outline,
+          lineas: [
+            _t.ffcvResultVeterans(r.competiciones, r.filas),
+            ...r.nombres.map((n) => '• $n'),
+          ],
+        ),
+        if (r.clubesCreados.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          _Destacado(
+            key: const ValueKey('ffcv-clubes-creados'),
+            color: _naranja,
+            icono: Icons.shield_outlined,
+            lineas: [_t.ffcvCreatedClubs(r.clubesCreados.join(', '))],
           ),
         ],
       ],

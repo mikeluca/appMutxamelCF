@@ -65,6 +65,35 @@ class FfcvService {
     );
   }
 
+  /// Sube la página guardada de la clasificación de la Liga Veteranos (.html) y devuelve la vista previa; el servidor la
+  /// guarda (30 minutos) para confirmarla.
+  Future<PrevisualizacionVeteranosModel> previsualizarVeteranos({
+    required List<int> bytes,
+    required String nombreArchivo,
+  }) async {
+    final data = await ApiClient.postArchivo(
+      '/app/admin/ffcv/veteranos/previsualizar',
+      campo: 'archivo',
+      bytes: bytes,
+      nombreArchivo: nombreArchivo,
+      autenticado: true,
+    );
+
+    return PrevisualizacionVeteranosModel.fromJson(
+      data as Map<String, dynamic>,
+    );
+  }
+
+  /// Confirma la vista previa guardada de veteranos (sin cuerpo).
+  Future<ResultadoVeteranosModel> confirmarVeteranos() async {
+    final data = await ApiClient.post(
+      '/app/admin/ffcv/veteranos/confirmar',
+      autenticado: true,
+    );
+
+    return ResultadoVeteranosModel.fromJson(data as Map<String, dynamic>);
+  }
+
   /// Confirma la vista previa guardada para los equipos marcados.
   Future<ResultadoClasificacionesModel> confirmarClasificaciones(
     List<int> equipoIds,

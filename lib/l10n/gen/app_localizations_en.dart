@@ -4385,4 +4385,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usersSavingError => 'The action could not be completed.';
+
+  @override
+  String get ffcvTabVeterans => 'Veterans standings (LVCA)';
+
+  @override
+  String get ffcvVeteransHelp =>
+      'Open ligaveteranosalicante.es/scoretable in your browser, save it as a web page and upload it here';
+
+  @override
+  String ffcvVeteransSummary(int n) {
+    return '$n standing(s) where Mutxamel appears';
+  }
+
+  @override
+  String ffcvVeteransRound(int n) {
+    return 'Round $n (highest played)';
+  }
+
+  @override
+  String get ffcvVeteransNewClubs => 'Clubs that will be created (no crest)';
+
+  @override
+  String get ffcvVeteransNewClubsBody =>
+      'They are not in Rival crests yet: they are created on confirm and the crest is uploaded afterwards.';
+
+  @override
+  String ffcvConfirmVeteransBody(int n) {
+    return '$n standings will be saved: the saved one of each of those competitions is replaced. Continue?';
+  }
+
+  @override
+  String ffcvResultVeterans(int n, int filas) {
+    return '$n standing(s) saved, $filas rows.';
+  }
+
+  @override
+  String ffcvCreatedClubs(String clubes) {
+    return 'Clubs created without a crest: $clubes';
+  }
 }

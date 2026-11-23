@@ -56,16 +56,34 @@ class StandingsModel {
   final DateTime? fechaImportacion;
   final List<StandingsRowModel> filas;
 
+  /// false si el backend marca la jornada como no fiable (`jornadaFiable: false`): no se enseña. Sin la marca, true.
+  final bool jornadaFiable;
+
+  /// Todas las competiciones del equipo (la Liga y la Copa de Veteranos), la principal la primera. Vacía si el equipo
+  /// tiene una sola o el backend es antiguo: entonces se ve como siempre, sin pestañas.
+  final List<StandingsModel> competiciones;
+
   const StandingsModel({
     required this.competicion,
     required this.jornada,
     required this.fechaImportacion,
     required this.filas,
+    this.jornadaFiable = true,
+    this.competiciones = const [],
   });
+
+  /// Las competiciones que se ofrecen en pestañas: solo con más de una.
+  List<StandingsModel> get pestanas =>
+      competiciones.length > 1 ? competiciones : const [];
 
   factory StandingsModel.fromJson(Map<String, dynamic> json) {
     final filas = (json['clasificacion'] as List<dynamic>? ?? [])
         .map((f) => StandingsRowModel.fromJson(f as Map<String, dynamic>))
+        .toList();
+
+    final varias = (json['competiciones'] as List<dynamic>? ?? [])
+        .whereType<Map<String, dynamic>>()
+        .map(StandingsModel.fromJson)
         .toList();
 
     return StandingsModel(
@@ -73,6 +91,8 @@ class StandingsModel {
       jornada: (json['jornada'] as num?)?.toInt(),
       fechaImportacion: DateTime.tryParse(json['fechaImportacion'] ?? ''),
       filas: filas,
+      jornadaFiable: json['jornadaFiable'] != false,
+      competiciones: varias,
     );
   }
 }
