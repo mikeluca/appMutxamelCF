@@ -300,7 +300,7 @@ void main() {
       },
     );
 
-    testWidgets('la etiqueta del tipo de partido no tapa el pie', (
+    testWidgets('la etiqueta del tipo de partido va dentro de la tarjeta y no tapa el pie', (
       tester,
     ) async {
       await _pintar(

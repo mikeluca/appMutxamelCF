@@ -362,4 +362,121 @@ void main() {
       expect(match.goleadores, ['Pepe']);
     });
   });
+
+  group('etiqueta del tipo de partido', () {
+    const etiqueta = ValueKey('etiqueta-tipo-partido');
+
+    const liga = MatchModel(
+      categoria: 'Primer Equipo',
+      equipo: 'Primer Equipo',
+      rival: 'Pego',
+      campo: 'Camp Municipal de Mutxamel',
+      tipo: 'LIGA',
+      local: true,
+    );
+
+    testWidgets(
+      'con tipo Liga está encima del marcador y no se solapa con Cómo llegar',
+      (tester) async {
+        await _pintar(tester, liga);
+
+        expect(find.text('Liga'), findsOneWidget);
+        final rectEtiqueta = tester.getRect(find.byKey(etiqueta));
+        final rectVs = tester.getRect(find.text('VS'));
+        final rectComoLlegar = tester.getRect(find.byType(BotonComoLlegar));
+
+        expect(rectEtiqueta.top, lessThan(rectVs.top));
+        expect(rectEtiqueta.bottom, lessThanOrEqualTo(rectVs.top));
+        expect(rectEtiqueta.overlaps(rectComoLlegar), isFalse);
+      },
+    );
+
+    testWidgets('también en un partido jugado: encima del resultado', (
+      tester,
+    ) async {
+      await _pintar(
+        tester,
+        MatchModel(
+          categoria: liga.categoria,
+          equipo: liga.equipo,
+          rival: liga.rival,
+          campo: liga.campo,
+          tipo: 'COPA',
+          local: true,
+          resultado: '2-1',
+        ),
+      );
+
+      expect(find.text('Copa'), findsOneWidget);
+      expect(
+        tester.getRect(find.byKey(etiqueta)).bottom,
+        lessThanOrEqualTo(tester.getRect(find.text('2-1')).top),
+      );
+    });
+
+    testWidgets('sin tipo no hay etiqueta', (tester) async {
+      await _pintar(
+        tester,
+        const MatchModel(
+          categoria: 'Primer Equipo',
+          equipo: 'Primer Equipo',
+          rival: 'Pego',
+          campo: 'Camp Municipal de Mutxamel',
+        ),
+      );
+
+      expect(find.byKey(etiqueta), findsNothing);
+    });
+
+    testWidgets(
+      'en Mis partidos no se solapa con el botón de editar (arriba a la derecha)',
+      (tester) async {
+        // Replica de MisPartidosPage._construirTarjetaPartido: la tarjeta con el botón de editar superpuesto.
+        for (final ancho in [320.0, 390.0]) {
+          tester.view.physicalSize = Size(ancho, 800);
+          tester.view.devicePixelRatio = 1;
+          addTearDown(tester.view.reset);
+
+          await tester.pumpWidget(
+            MaterialApp(
+              locale: const Locale('es'),
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: Scaffold(
+                body: SingleChildScrollView(
+                  child: Stack(
+                    children: [
+                      MatchCard(match: liga),
+                      Positioned(
+                        top: 4,
+                        right: 4,
+                        child: IconButton(
+                          key: const ValueKey('editar'),
+                          icon: const Icon(Icons.edit, size: 20),
+                          onPressed: () {},
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+
+          expect(
+            tester
+                .getRect(find.byKey(etiqueta))
+                .overlaps(tester.getRect(find.byKey(const ValueKey('editar')))),
+            isFalse,
+            reason: 'ancho $ancho',
+          );
+        }
+      },
+    );
+  });
 }

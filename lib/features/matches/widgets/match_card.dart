@@ -38,23 +38,12 @@ class MatchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Widget tarjeta;
+    if (match.estaDescansando) return _buildRestCard(context);
+    if (match.enJuego) return _buildLiveMatchCard(context);
+    if (match.estaJugado) return _buildPlayedMatchCard(context);
+    if (match.pendienteResultado) return _buildPendingResultCard(context);
 
-    if (match.estaDescansando) {
-      tarjeta = _buildRestCard(context);
-    } else if (match.enJuego) {
-      tarjeta = _buildLiveMatchCard(context);
-    } else if (match.estaJugado) {
-      tarjeta = _buildPlayedMatchCard(context);
-    } else if (match.pendienteResultado) {
-      tarjeta = _buildPendingResultCard(context);
-    } else {
-      tarjeta = _buildUpcomingMatchCard(context);
-    }
-
-    final envuelta = _envolverConEtiquetaTipo(context, tarjeta);
-
-    return envuelta;
+    return _buildUpcomingMatchCard(context);
   }
 
   /// El partido aun no se ha jugado, no esta cancelado y tiene dia: se puede anadir al calendario.
@@ -139,52 +128,44 @@ class MatchCard extends StatelessWidget {
     );
   }
 
-  /// Superpone una pequeña etiqueta con el tipo de partido (Liga,
-  /// Amistoso, Copa, Torneo) en la esquina de la tarjeta, para no
-  /// depender solo del color del borde. No se muestra si el tipo
-  /// es desconocido/no informado.
-  ///
-  /// Se coloca en la esquina INFERIOR derecha (y no en la superior,
-  /// como en la pestaña "Partidos") porque en "Mis Partidos" esta
-  /// misma tarjeta se envuelve, desde fuera, en un botón de editar
-  /// superpuesto arriba a la derecha (ver
-  /// `_EquipoSeccion._construirTarjetaPartido` en mis_partidos_page.dart);
-  /// dejando el globo del tipo abajo se evita que ambos se solapen.
-  Widget _envolverConEtiquetaTipo(BuildContext context, Widget tarjeta) {
+  /// La etiqueta con el tipo de partido (Liga, Amistoso, Copa, Torneo): una píldora centrada justo encima de la fila del
+  /// marcador, dentro de la tarjeta, para no depender solo del color del borde. Va en el flujo de la columna (no
+  /// superpuesta), así que nunca tapa el botón Cómo llegar ni el botón de editar de Mis partidos. Null (sin hueco) si el
+  /// tipo es desconocido/no informado.
+  Widget? _etiquetaTipo() {
     final etiqueta = AppColors.etiquetaTipoPartido(match.tipo);
     final color = AppColors.colorTipoPartido(match.tipo);
 
-    if (etiqueta == null || color == null) {
-      return tarjeta;
-    }
+    if (etiqueta == null || color == null) return null;
 
-    return Stack(
-      children: [
-        tarjeta,
-        Positioned(
-          // Con ficha hay un pie debajo: la etiqueta se sube para no taparlo.
-          bottom: _abreFicha ? 48 : 8,
-          right: 8,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              etiqueta,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-              ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Center(
+        child: Container(
+          key: const ValueKey('etiqueta-tipo-partido'),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(
+            etiqueta,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 
+  /// El relleno del cuerpo: con etiqueta se recorta el hueco de arriba (10 -> 4) para que la etiqueta quepa en él y la
+  /// tarjeta apenas crezca.
+  EdgeInsets get _relleno => AppColors.colorTipoPartido(match.tipo) == null
+      ? _rellenoCuerpo
+      : const EdgeInsets.fromLTRB(14, 4, 14, 8);
   // ============================================================
   // PRÓXIMO PARTIDO
   // ============================================================
@@ -205,9 +186,11 @@ class MatchCard extends StatelessWidget {
             ),
 
             Padding(
-              padding: _rellenoCuerpo,
+              padding: _relleno,
               child: Column(
                 children: [
+                  ?_etiquetaTipo(),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -303,9 +286,11 @@ class MatchCard extends StatelessWidget {
             ),
 
             Padding(
-              padding: _rellenoCuerpo,
+              padding: _relleno,
               child: Column(
                 children: [
+                  ?_etiquetaTipo(),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -417,9 +402,11 @@ class MatchCard extends StatelessWidget {
             ),
 
             Padding(
-              padding: _rellenoCuerpo,
+              padding: _relleno,
               child: Column(
                 children: [
+                  ?_etiquetaTipo(),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -481,9 +468,11 @@ class MatchCard extends StatelessWidget {
             ),
 
             Padding(
-              padding: _rellenoCuerpo,
+              padding: _relleno,
               child: Column(
                 children: [
+                  ?_etiquetaTipo(),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -576,6 +565,8 @@ class MatchCard extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
+                  ?_etiquetaTipo(),
+
                   if (match.descansa)
                     const Icon(
                       Icons.bedtime_outlined,
