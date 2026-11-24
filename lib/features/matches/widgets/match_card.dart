@@ -64,6 +64,12 @@ class MatchCard extends StatelessWidget {
     );
   }
 
+  /// En la tarjeta del próximo partido de Inicio los escudos son los protagonistas: más grandes que en las listas.
+  static const double escudoGrandeAncho = 84;
+  static const double escudoGrandeAlto = 100;
+
+  bool get _escudosGrandes => mostrarPrimerEquipo;
+
   /// La tarjeta del Primer Equipo de la portada abre la ficha del partido.
   bool get _abreFicha => mostrarPrimerEquipo && match.tieneFicha;
 
@@ -139,7 +145,7 @@ class MatchCard extends StatelessWidget {
     if (etiqueta == null || color == null) return null;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Center(
         child: Container(
           key: const ValueKey('etiqueta-tipo-partido'),
@@ -165,7 +171,7 @@ class MatchCard extends StatelessWidget {
   /// tarjeta apenas crezca.
   EdgeInsets get _relleno => AppColors.colorTipoPartido(match.tipo) == null
       ? _rellenoCuerpo
-      : const EdgeInsets.fromLTRB(14, 4, 14, 8);
+      : const EdgeInsets.fromLTRB(14, 4, 14, 4);
   // ============================================================
   // PRÓXIMO PARTIDO
   // ============================================================
@@ -198,6 +204,7 @@ class MatchCard extends StatelessWidget {
                         context,
                         match.local ? match.equipo : match.rivalVisible,
                         isHomeTeam: match.local,
+                        grande: _escudosGrandes,
                       ),
 
                       Padding(
@@ -216,6 +223,7 @@ class MatchCard extends StatelessWidget {
                         context,
                         match.local ? match.rivalVisible : match.equipo,
                         isHomeTeam: !match.local,
+                        grande: _escudosGrandes,
                       ),
                     ],
                   ),
@@ -225,7 +233,7 @@ class MatchCard extends StatelessWidget {
                   if (mostrarPrimerEquipo &&
                       CuentaAtrasTexto.aplica(match.dia, match.hora))
                     Padding(
-                      padding: const EdgeInsets.only(top: 10),
+                      padding: const EdgeInsets.only(top: 4),
                       child: CuentaAtrasBloques(
                         dia: match.dia,
                         hora: match.hora,
@@ -234,7 +242,7 @@ class MatchCard extends StatelessWidget {
                       ),
                     ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 4),
 
                   _buildMatchInformation(context),
 
@@ -638,35 +646,38 @@ class MatchCard extends StatelessWidget {
     BuildContext context,
     String name, {
     required bool isHomeTeam,
+    bool grande = false,
   }) {
     // Hasta 105 de ancho, y menos si no cabe (iPhone pequeño o letra grande): sin desbordar.
     return Flexible(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 105),
+        constraints: BoxConstraints(maxWidth: grande ? 120 : 105),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (isHomeTeam)
-              Image.asset(
-                'assets/images/escudo.png',
-                width: 44,
-                height: 54,
-                fit: BoxFit.contain,
+              Center(
+                child: Image.asset(
+                  'assets/images/escudo.png',
+                  width: grande ? escudoGrandeAncho : 44,
+                  height: grande ? escudoGrandeAlto : 54,
+                  fit: BoxFit.contain,
+                ),
               )
             else
               // El rival: su escudo de la red, el nuestro si es un filial, o el genérico.
               SizedBox(
-                height: 54,
+                height: grande ? escudoGrandeAlto : 54,
                 child: Center(
                   child: EscudoRival(
                     url: match.escudoRivalUrl,
                     esPropio: match.rivalEsPropio,
-                    tamano: 44,
+                    tamano: grande ? escudoGrandeAncho : 44,
                   ),
                 ),
               ),
 
-            const SizedBox(height: 4),
+            SizedBox(height: grande ? 0 : 4),
 
             Text(
               name,

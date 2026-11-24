@@ -7,7 +7,7 @@ import '../models/cuenta_atras.dart';
 import 'cuenta_atras_texto.dart' show CrearTemporizadorCuentaAtras;
 import 'visibilidad_en_pantalla.dart';
 
-/// La cuenta atrás de la tarjeta de Inicio en bloques: cuatro números grandes con su etiqueta debajo (Días, Horas,
+/// La cuenta atrás de la tarjeta de Inicio en bloques: cuatro números pequeños (18 sp) con su etiqueta debajo (10 sp) (Días, Horas,
 /// Minutos, Segundos), con los segundos bajando cada segundo. Siempre con dos cifras salvo los días; con menos de 24 h
 /// se oculta el bloque de Días y quedan tres.
 ///
@@ -16,6 +16,9 @@ import 'visibilidad_en_pantalla.dart';
 /// solo corre con la app en primer plano y el widget a la vista y se recalcula al volver (la hora se calcula siempre
 /// de la hora de inicio, no se acumula). Sin hora válida no pinta nada.
 class CuentaAtrasBloques extends StatefulWidget {
+  /// El ancho máximo de la fila con 4 bloques (con 3, proporcionalmente menos).
+  static const double anchoMaximo = 230;
+
   final DateTime? dia;
   final String? hora;
 
@@ -150,20 +153,30 @@ class _CuentaAtrasBloquesState extends State<CuentaAtrasBloques>
         _ => t.countdownMinutes(cuenta.minutos),
       },
       excludeSemantics: true,
-      child: Row(
-        key: const ValueKey('cuenta-atras-bloques'),
-        children: [
-          for (var i = 0; i < bloques.length; i++) ...[
-            if (i > 0) const SizedBox(width: 6),
-            Expanded(
-              child: _Bloque(
-                key: ValueKey('bloque-${bloques[i].$1}'),
-                numero: bloques[i].$2,
-                etiqueta: bloques[i].$3,
-              ),
-            ),
-          ],
-        ],
+      // Un dato secundario: una fila centrada que no ocupa todo el ancho.
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: CuentaAtrasBloques.anchoMaximo * bloques.length / 4,
+          ),
+          child: Row(
+            key: const ValueKey('cuenta-atras-bloques'),
+            // Arriba: los números quedan a la misma altura aunque una etiqueta se encoja más que otra.
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (var i = 0; i < bloques.length; i++) ...[
+                if (i > 0) const SizedBox(width: 4),
+                Expanded(
+                  child: _Bloque(
+                    key: ValueKey('bloque-${bloques[i].$1}'),
+                    numero: bloques[i].$2,
+                    etiqueta: bloques[i].$3,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -186,9 +199,9 @@ class _Bloque extends StatelessWidget {
       children: [
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
           decoration: BoxDecoration(
-            color: colores.primaryContainer,
+            color: colores.primaryContainer.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(8),
           ),
           child: FittedBox(
@@ -197,7 +210,8 @@ class _Bloque extends StatelessWidget {
               numero,
               key: const ValueKey('bloque-numero'),
               style: TextStyle(
-                fontSize: 26,
+                fontSize: 18,
+                height: 1.15,
                 fontWeight: FontWeight.bold,
                 color: colores.onPrimaryContainer,
                 fontFeatures: const [FontFeature.tabularFigures()],
@@ -205,13 +219,17 @@ class _Bloque extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 3),
+        const SizedBox(height: 2),
         FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
             etiqueta,
             maxLines: 1,
-            style: TextStyle(fontSize: 12, color: colores.onSurfaceVariant),
+            style: TextStyle(
+              fontSize: 10,
+              height: 1.1,
+              color: colores.onSurfaceVariant,
+            ),
           ),
         ),
       ],

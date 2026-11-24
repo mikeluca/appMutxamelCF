@@ -324,5 +324,136 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets('es un dato secundario: la fila no pasa de 230 dp (menos con 3 bloques) y va centrada', (
+      tester,
+    ) async {
+      pantalla(tester); // 400 dp de ancho
+
+      ahora = DateTime.utc(2026, 11, 12, 12); // con días: cuatro bloques
+
+      await tester.pumpWidget(cuenta());
+
+      final fila = find.byKey(const ValueKey('cuenta-atras-bloques'));
+
+      expect(tester.getSize(fila).width, lessThanOrEqualTo(230));
+      expect(tester.getSize(fila).width, closeTo(230, 0.5));
+      expect(tester.getCenter(fila).dx, closeTo(200, 0.5));
+
+      ahora = DateTime.utc(2026, 11, 14, 13, 44, 20); // menos de 24 h: tres bloques
+
+      await tester.pumpWidget(cuenta());
+      await tester.pump();
+
+      expect(tester.getSize(fila).width, lessThanOrEqualTo(230 * 3 / 4 + 0.5));
+      expect(tester.getCenter(fila).dx, closeTo(200, 0.5));
+    });
+
+    testWidgets('números de 18 sp en negrita y etiquetas de 10 sp debajo', (
+      tester,
+    ) async {
+      pantalla(tester);
+
+      ahora = DateTime.utc(2026, 11, 12, 12);
+
+      await tester.pumpWidget(cuenta());
+
+      final numeroTexto = tester.widget<Text>(
+        find.descendant(
+          of: find.byKey(const ValueKey('bloque-horas')),
+          matching: find.byKey(const ValueKey('bloque-numero')),
+        ),
+      );
+      final etiqueta = tester.widget<Text>(find.text('Horas'));
+
+      expect(numeroTexto.style!.fontSize, 18);
+      expect(numeroTexto.style!.fontWeight, FontWeight.bold);
+      expect(etiqueta.style!.fontSize, 10);
+      // La etiqueta va debajo del número.
+      expect(
+        tester.getTopLeft(find.text('Horas')).dy,
+        greaterThanOrEqualTo(
+          tester
+              .getBottomLeft(
+                find.descendant(
+                  of: find.byKey(const ValueKey('bloque-horas')),
+                  matching: find.byKey(const ValueKey('bloque-numero')),
+                ),
+              )
+              .dy,
+        ),
+      );
+
+      // Bajo: el bloque entero (número y etiqueta) mide poco (antes, unos 68 dp).
+      expect(
+        tester.getSize(find.byKey(const ValueKey('bloque-horas'))).height,
+        lessThan(56),
+      );
+    });
+
+    testWidgets('con letra a 1,6 y 320 dp de ancho caben los 4 bloques en una fila, sin cortarse', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(320, 640);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      ahora = DateTime.utc(2026, 11, 12, 12);
+
+      await tester.pumpWidget(
+        appCon(
+          Builder(
+            builder: (context) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: const TextScaler.linear(1.6)),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: CuentaAtrasBloques(
+                  dia: DateTime(2026, 11, 14),
+                  hora: '18:00',
+                  ahora: () => ahora,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+
+      final fila = find.byKey(const ValueKey('cuenta-atras-bloques'));
+      final ancho = tester.getSize(fila).width;
+
+      expect(ancho, lessThanOrEqualTo(230));
+
+      // Los cuatro bloques en una sola fila (misma posición vertical) y dentro de la fila.
+      final tops = [
+        for (final b in ['dias', 'horas', 'minutos', 'segundos'])
+          tester.getTopLeft(find.byKey(ValueKey('bloque-$b'))).dy,
+      ];
+
+      expect(tops.toSet(), hasLength(1));
+
+      final rectFila = tester.getRect(fila);
+
+      for (final etiqueta in ['Días', 'Horas', 'Minutos', 'Segundos']) {
+        final rect = tester.getRect(find.text(etiqueta));
+
+        expect(rect.left, greaterThanOrEqualTo(rectFila.left - 0.5), reason: etiqueta);
+        expect(rect.right, lessThanOrEqualTo(rectFila.right + 0.5), reason: etiqueta);
+      }
+
+      for (final bloque in ['dias', 'horas', 'minutos', 'segundos']) {
+        final rect = tester.getRect(
+          find.descendant(
+            of: find.byKey(ValueKey('bloque-$bloque')),
+            matching: find.byKey(const ValueKey('bloque-numero')),
+          ),
+        );
+
+        expect(rect.right, lessThanOrEqualTo(rectFila.right + 0.5), reason: bloque);
+      }
+    });
   });
 }

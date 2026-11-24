@@ -204,7 +204,7 @@ class PartidoListaCard extends StatelessWidget {
   static const EdgeInsets _relleno = EdgeInsets.fromLTRB(14, 12, 14, 8);
 
   /// El cuerpo de la tarjeta. Los partidos del Primer Equipo con ficha son pulsables (el efecto cae dentro de la
-  /// tarjeta) y llevan un chevron al final de la fila; los demás equipos, como siempre.
+  /// tarjeta) y llevan un chevron al final de la cabecera; los demás equipos, como siempre.
   Widget _cuerpo(BuildContext context, {required Widget child}) {
     if (!partido.tieneFicha) {
       return Padding(padding: _relleno, child: child);
@@ -219,26 +219,8 @@ class PartidoListaCard extends StatelessWidget {
         key: const ValueKey('abrir-ficha'),
         borderRadius: BorderRadius.circular(8),
         onTap: () => FichaPartidoPage.abrir(context, partido.id!),
-        child: Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(14, 12, 36, 8),
-              child: child,
-            ),
-            Positioned(
-              top: 0,
-              bottom: 0,
-              right: 8,
-              child: Center(
-                child: Icon(
-                  Icons.chevron_right,
-                  key: const ValueKey('chevron-ficha'),
-                  color: _colors(context).primary,
-                ),
-              ),
-            ),
-          ],
-        ),
+        // El mismo relleno que las demás tarjetas (el contenido mide lo mismo); el chevron va en la cabecera.
+        child: Padding(padding: _relleno, child: child),
       ),
     );
   }
@@ -276,7 +258,8 @@ class PartidoListaCard extends StatelessWidget {
         tarjeta,
         Positioned(
           top: 8,
-          right: 8,
+          // Con ficha, el chevron ocupa el borde derecho de la cabecera: la etiqueta se pone a su izquierda.
+          right: partido.tieneFicha ? 36 : 8,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
@@ -636,15 +619,28 @@ class PartidoListaCard extends StatelessWidget {
 
         const SizedBox(width: 8),
 
-        Text(
-          texto,
-          style: TextStyle(
-            color: _colors(context).onSurface,
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-            letterSpacing: 0.8,
+        Expanded(
+          child: Text(
+            texto,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: _colors(context).onSurface,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              letterSpacing: 0.8,
+            ),
           ),
         ),
+
+        // El partido tiene ficha: el chevron va pegado a la derecha, alineado con el texto de la cabecera.
+        if (partido.tieneFicha) ...[
+          Icon(
+            Icons.chevron_right,
+            key: const ValueKey('chevron-ficha'),
+            color: _colors(context).primary,
+          ),
+        ],
       ],
     );
   }
