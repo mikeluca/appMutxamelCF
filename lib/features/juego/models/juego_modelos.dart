@@ -42,6 +42,9 @@ enum Equipacion {
 
   static Equipacion desdeCodigo(String? codigo) =>
       codigo?.toUpperCase() == 'ROSA' ? Equipacion.rosa : Equipacion.azul;
+
+  /// La otra equipación del club (los defensas de Cabezazos la llevan).
+  Equipacion get opuesta => this == Equipacion.azul ? Equipacion.rosa : Equipacion.azul;
 }
 
 /// Las poses de Mutxigol (un .webp por equipación). [salto] es de perfil, mirando a

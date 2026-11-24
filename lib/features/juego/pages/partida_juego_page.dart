@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -36,6 +37,7 @@ class PartidaJuegoPage extends StatefulWidget {
     this.conSesion = false,
     this.servicio = const JuegoService(),
     this.crearLogica,
+    this.random,
   });
 
   final Juego juego;
@@ -48,6 +50,9 @@ class PartidaJuegoPage extends StatefulWidget {
 
   /// Solo para tests: la lógica con la que jugar (recibe el alto del campo).
   final LogicaJuego Function(double alto)? crearLogica;
+
+  /// Solo para tests: el azar de la lógica del juego (el reparto de las cartas de Parejas, por ejemplo).
+  final math.Random? random;
 
   /// La cuenta atrás de antes de empezar.
   static const Duration cuentaAtras = Duration(seconds: 3);
@@ -175,7 +180,11 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
         switch (widget.juego) {
           Juego.atrapa => AtrapaLogica(alto: alto),
           Juego.cabezazos => CabezazosLogica(alto: alto),
-          Juego.parejas => ParejasLogica(alto: alto, escudos: _escudos!),
+          Juego.parejas => ParejasLogica(
+            alto: alto,
+            escudos: _escudos!,
+            random: widget.random,
+          ),
         };
 
     logica.alEvento = (evento) => switch (evento) {

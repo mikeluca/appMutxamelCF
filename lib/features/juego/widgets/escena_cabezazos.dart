@@ -1,9 +1,9 @@
-import 'dart:math' as math;
-
+import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../l10n/gen/app_localizations.dart';
 import '../logica/cabezazos_logica.dart';
+import '../logica/formas_choque.dart';
 import '../logica/logica_juego.dart';
 import '../models/juego_modelos.dart';
 import 'siluetas_juego.dart';
@@ -94,7 +94,46 @@ class _FondoCabezazos extends CustomPainter {
       oldDelegate.recorrido != recorrido || oldDelegate.suelo != suelo;
 }
 
-/// Cabezazos: Mutxigol de perfil que salta con cada toque, entre columnas de defensas.
+/// Solo en debug y apagado por defecto: dibuja encima de la escena las formas de choque (los círculos de Mutxigol y las
+/// formas de los defensas) para comprobar que coinciden con lo que se ve.
+const bool depurarChoqueCabezazos = false;
+
+/// Las formas de choque dibujadas (solo se usa con [depurarChoqueCabezazos] en debug).
+class _FormasDeChoque extends CustomPainter {
+  const _FormasDeChoque(this.circulos, this.defensas);
+
+  final List<CirculoChoque> circulos;
+  final List<FormaDefensa> defensas;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final relleno = Paint()..color = const Color(0x55FF1744);
+    final borde = Paint()
+      ..color = const Color(0xFFFF1744)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+
+    for (final c in circulos) {
+      canvas.drawCircle(c.centro, c.r, relleno);
+      canvas.drawCircle(c.centro, c.r, borde);
+    }
+
+    for (final d in defensas) {
+      canvas.drawCircle(d.cabeza.centro, d.cabeza.r, relleno);
+      canvas.drawCircle(d.cabeza.centro, d.cabeza.r, borde);
+
+      final rr = RRect.fromRectAndRadius(d.cuerpo.rect, Radius.circular(d.cuerpo.radio));
+
+      canvas.drawRRect(rr, relleno);
+      canvas.drawRRect(rr, borde);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_FormasDeChoque oldDelegate) => true;
+}
+
+/// Cabezazos: Mutxigol de perfil que salta con cada toque, entre columnas de defensas con la otra equipación.
 class EscenaCabezazos extends StatelessWidget {
   const EscenaCabezazos({
     super.key,
@@ -104,41 +143,17 @@ class EscenaCabezazos extends StatelessWidget {
   });
 
   final CabezazosLogica logica;
+
+  /// La equipación de Mutxigol; los defensas llevan la otra.
   final Equipacion equipacion;
   final bool activa;
-
-  /// El alto aproximado de cada defensa de la columna (se ajusta para llenarla entera).
-  static const double altoDefensa = 68;
-
-  /// Una columna de defensas que llena de [desde] a [hasta] sin huecos ni defensas cortadas: se reparte el alto entre
-  /// un número entero de defensas.
-  Widget _columna(double desde, double hasta) {
-    final total = hasta - desde;
-
-    if (total <= 0) return const SizedBox.shrink();
-
-    final cuantas = math.max(1, (total / altoDefensa).round());
-    final alto = total / cuantas;
-
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        for (var i = 0; i < cuantas; i++)
-          Positioned(
-            left: 0,
-            top: desde + i * alto,
-            width: CabezazosLogica.anchoBarrera,
-            height: alto,
-            child: const CustomPaint(painter: DefensaPainter()),
-          ),
-      ],
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final l = logica;
+    final defensa = DefensaPainter(equipacion: equipacion.opuesta);
+    const tam = CabezazosLogica.tamanoImagen;
 
     return Listener(
       behavior: HitTestBehavior.opaque,
@@ -156,51 +171,43 @@ class EscenaCabezazos extends StatelessWidget {
                 child: CustomPaint(painter: _FondoCabezazos(l.recorrido, l.suelo)),
               ),
               for (final b in l.barreras)
-                Positioned(
-                  key: ObjectKey(b),
-                  left: b.x,
-                  top: 0,
-                  width: CabezazosLogica.anchoBarrera,
-                  height: l.suelo,
-                  child: ClipRect(
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Positioned.fill(
-                          child: _columna(0, b.techoDelHueco),
-                        ),
-                        Positioned.fill(
-                          child: _columna(b.sueloDelHueco, l.suelo),
-                        ),
-                      ],
-                    ),
+                for (final r in b.recuadros)
+                  Positioned(
+                    left: r.left,
+                    top: r.top,
+                    width: r.width,
+                    height: r.height,
+                    child: CustomPaint(painter: defensa),
                   ),
-                ),
               MutxigolEnEscena(
                 equipacion: equipacion,
                 pose: PoseMutxigol.salto,
-                // El centro del cuerpo (el círculo de choque) está en ([xMutxigol], [y]).
-                centroX:
-                    CabezazosLogica.xMutxigol -
-                    CabezazosLogica.cuerpoDx * CabezazosLogica.tamanoImagen,
-                base:
-                    l.y -
-                    CabezazosLogica.cuerpoDy * CabezazosLogica.tamanoImagen +
-                    CabezazosLogica.tamanoImagen / 2,
-                tamano: CabezazosLogica.tamanoImagen,
+                // El pivote (centro del tronco) está en ([xMutxigol], [y]); la imagen gira alrededor de él.
+                centroX: CabezazosLogica.xMutxigol - CabezazosLogica.pivoteDx * tam,
+                base: l.y - CabezazosLogica.pivoteDy * tam + tam / 2,
+                tamano: tam,
+                giro: l.angulo,
                 alineacionGiro: Alignment(
-                  2 * CabezazosLogica.cuerpoDx,
-                  2 * CabezazosLogica.cuerpoDy,
+                  2 * CabezazosLogica.pivoteDx,
+                  2 * CabezazosLogica.pivoteDy,
                 ),
-                // La inclinación: hacia arriba (positiva) gira en sentido contrario a las agujas del reloj.
-                giro: -l.inclinacionGrados * math.pi / 180,
               ),
+              if (kDebugMode && depurarChoqueCabezazos)
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: CustomPaint(
+                      painter: _FormasDeChoque(l.circulosEnMundo, [
+                        for (final b in l.barreras) ...b.formas,
+                      ]),
+                    ),
+                  ),
+                ),
               if (l.esperando)
                 Positioned(
                   key: const ValueKey('toca-para-saltar'),
                   left: 20,
                   right: 20,
-                  top: l.y + CabezazosLogica.radio + 40,
+                  top: l.y + CabezazosLogica.altoDeLaForma / 2 + 40,
                   child: TextoJuego(t.gameHeadHint, tamano: 22),
                 ),
             ],

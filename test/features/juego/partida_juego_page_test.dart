@@ -1,5 +1,6 @@
 import 'package:app_mutxamel_cf/core/widget/escudo_rival.dart';
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:app_mutxamel_cf/features/juego/estado_mutxigol.dart';
 import 'package:app_mutxamel_cf/features/juego/logica/atrapa_logica.dart';
@@ -384,6 +385,15 @@ void main() {
   });
 
   group('Atrapa balones', () {
+    testWidgets('Mutxigol se pinta con el tamaño nuevo (125 en vez de 150)', (tester) async {
+      await _pintar(tester, Juego.atrapa, real: true);
+      await _avanzar(tester, 3.2);
+
+      final imagen = imagenDe(ImagenesMutxigol.pose(Equipacion.azul, PoseMutxigol.atrapando));
+
+      expect(tester.getSize(imagen), const Size(125, 125));
+    });
+
     testWidgets('arrastrar mueve a Mutxigol y se atrapa lo que cae', (tester) async {
       late AtrapaLogica logica;
 
@@ -401,7 +411,7 @@ void main() {
       expect(logica.x, greaterThan(250));
 
       logica.soltar(TipoCaida.balon, logica.x);
-      await _avanzar(tester, 4);
+      await _avanzar(tester, 6);
 
       expect(logica.puntos, 1);
       expect(find.text('Puntos: 1'), findsOneWidget);
@@ -424,7 +434,7 @@ void main() {
       expect(find.text('Silbato: Mutxigol se queda quieto 2 segundos.'), findsOneWidget);
 
       // Hasta que se cierra, no hay cuenta atrás ni la partida corre.
-      await _avanzar(tester, 4);
+      await _avanzar(tester, 6);
 
       expect(find.byKey(const ValueKey('cuenta-atras')), findsNothing);
       expect(find.byKey(const ValueKey('leyenda-atrapa')), findsOneWidget);
@@ -473,12 +483,12 @@ void main() {
       expect(_amarillas('vacia'), findsNWidgets(2));
 
       logica.soltar(TipoCaida.tarjetaAmarilla, logica.x);
-      await _avanzar(tester, 4);
+      await _avanzar(tester, 6);
 
       expect(_amarillas('llena'), findsOneWidget);
 
       logica.soltar(TipoCaida.tarjetaAmarilla, logica.x);
-      await _avanzar(tester, 4);
+      await _avanzar(tester, 6);
 
       expect(logica.vidas, 2);
       expect(_amarillas('llena'), findsNothing);
@@ -496,7 +506,7 @@ void main() {
       await _avanzar(tester, 3.2);
 
       logica.soltar(TipoCaida.silbato, logica.x);
-      await _avanzar(tester, 4);
+      await _avanzar(tester, 6);
 
       expect(logica.congelado, isTrue);
       expect(find.byKey(const ValueKey('aviso-silbato')), findsOneWidget);
@@ -528,7 +538,7 @@ void main() {
       expect(find.text('Toca para saltar'), findsOneWidget);
       expect(logica.esperando, isTrue);
 
-      await _avanzar(tester, 4);
+      await _avanzar(tester, 6);
 
       expect(find.byKey(const ValueKey('cuenta-atras')), findsNothing);
       expect(find.text('1'), findsNothing);
@@ -560,7 +570,7 @@ void main() {
       expect(logica.tiempoJugado.inMilliseconds, inInclusiveRange(400, 600));
     });
 
-    testWidgets('Mutxigol se pinta con el tamaño nuevo (~86 de alto visible)', (tester) async {
+    testWidgets('Mutxigol se pinta con el tamaño nuevo (108, ~73 de alto visible)', (tester) async {
       await _pintar(
         tester,
         Juego.cabezazos,
@@ -575,20 +585,28 @@ void main() {
       // Pantalla de 360 de ancho = 1 unidad de juego por punto.
       final tamano = tester.getSize(imagen);
 
-      expect(tamano.width, CabezazosLogica.tamanoImagen);
+      expect(tamano.width, 108);
+      expect(tamano.height, 108);
       expect(
         tamano.height * CabezazosLogica.alturaVisibleEnImagen,
-        inInclusiveRange(80, 90),
+        inInclusiveRange(72, 75),
       );
     });
   });
 
   group('Parejas', () {
-    Future<void> sinCrearLogica(WidgetTester tester, JuegoServiceFalso servicio, {double alto = 800}) async {
+    Future<void> sinCrearLogica(
+      WidgetTester tester,
+      JuegoServiceFalso servicio, {
+      double alto = 800,
+      math.Random? random,
+    }) async {
       pantallaDeMovil(tester, alto: alto);
 
       await tester.pumpWidget(
-        appDePrueba(PartidaJuegoPage(juego: Juego.parejas, servicio: servicio)),
+        appDePrueba(
+          PartidaJuegoPage(juego: Juego.parejas, servicio: servicio, random: random),
+        ),
       );
       await tester.pump();
       await tester.pump();
@@ -645,13 +663,14 @@ void main() {
       EscudoRival.precargadorDeRed = (contexto, url) async =>
           !['/2?', '/5?', '/9?'].any(url.contains);
 
-      await sinCrearLogica(tester, servicio);
+      await sinCrearLogica(tester, servicio, random: math.Random(7));
       await tester.pump();
 
       expect(find.byKey(const ValueKey('sin-escudos')), findsNothing);
 
-      final posiciones = await _descubrir(tester);
-      final usados = posiciones.values.toSet();
+      // El reparto es el de la semilla con los 8 escudos buenos: se juega con él y se recogen los nombres que salen.
+      final buenos = [for (final n in [1, 3, 4, 6, 7, 8, 10, 11]) escudosDePrueba(12)[n - 1]];
+      final usados = await _jugarParejas(tester, _reparto(buenos, 7));
 
       expect(usados, hasLength(8));
       expect(usados.intersection({'Club 2', 'Club 5', 'Club 9'}), isEmpty, reason: 'ninguno de los que fallaron');
@@ -817,20 +836,11 @@ void main() {
     testWidgets('Otra vez pide una tanda nueva de escudos y la precarga antes de enseñar el tablero', (tester) async {
       final servicio = JuegoServiceFalso()..escudosRespuesta = escudosDePrueba(12);
 
-      await sinCrearLogica(tester, servicio);
+      await sinCrearLogica(tester, servicio, random: math.Random(3));
       await tester.pump();
 
-      // Se descubre el tablero y se acaban las parejas.
-      final posiciones = await _descubrir(tester);
-
-      for (final nombre in posiciones.values.toSet()) {
-        final pareja = [for (final e in posiciones.entries) if (e.value == nombre) e.key];
-
-        await tester.tap(find.byKey(ValueKey('carta-${pareja[0]}')));
-        await tester.pump();
-        await tester.tap(find.byKey(ValueKey('carta-${pareja[1]}')));
-        await _avanzar(tester, 1.5);
-      }
+      // Se acaban las parejas (el reparto es el de la semilla con los 8 primeros escudos).
+      await _jugarParejas(tester, _reparto(escudosDePrueba(8), 3));
 
       await _avanzar(tester, 0.5);
 
@@ -862,27 +872,30 @@ void main() {
   });
 }
 
-/// Descubre las 16 cartas de una en una (esperando a que se vuelvan a girar las que no son pareja) y devuelve el
-/// nombre del club de cada posición.
-Future<Map<int, String>> _descubrir(WidgetTester tester) async {
-  final posiciones = <int, String>{};
+/// El reparto del tablero con ese azar: la posición de cada carta y el nombre de su club.
+Map<int, String> _reparto(List<EscudoJuego> escudos, int semilla) => {
+  for (final c in ParejasLogica(alto: 640, escudos: escudos, random: math.Random(semilla)).cartas)
+    c.posicion: c.escudo.nombre,
+};
 
-  for (var i = 0; i < 16; i++) {
-    await tester.tap(find.byKey(ValueKey('carta-$i')));
-    await _avanzar(tester, 0.4);
+/// Juega las 8 parejas del [reparto] y devuelve los nombres de club que se vieron en las cartas.
+Future<Set<String>> _jugarParejas(WidgetTester tester, Map<int, String> reparto) async {
+  final vistos = <String>{};
 
-    final carta = find.descendant(
-      of: find.byKey(ValueKey('carta-$i')),
-      matching: find.textContaining('Club '),
-    );
+  for (final nombre in reparto.values.toSet()) {
+    final pareja = [for (final e in reparto.entries) if (e.value == nombre) e.key];
 
-    if (carta.evaluate().isNotEmpty) {
-      posiciones[i] = (carta.evaluate().single.widget as Text).data!;
+    await tester.tap(find.byKey(ValueKey('carta-${pareja[0]}')));
+    await tester.pump();
+    await tester.tap(find.byKey(ValueKey('carta-${pareja[1]}')));
+    await _avanzar(tester, 0.5);
+
+    for (final e in find.textContaining('Club ').evaluate()) {
+      final texto = (e.widget as Text).data!;
+
+      if (RegExp(r"^Club [0-9]+$").hasMatch(texto)) vistos.add(texto);
     }
-
-    // Cada dos cartas, a esperar a que el par que no coincide se vuelva a girar.
-    if (i.isOdd) await _avanzar(tester, 1.4);
   }
 
-  return posiciones;
+  return vistos;
 }

@@ -89,8 +89,24 @@ class AtrapaLogica extends LogicaJuego {
 
   static const int vidasIniciales = 3;
 
-  /// La mitad del ancho de lo que atrapa Mutxigol.
-  static const double mitadCaptura = 52;
+  /// El tamaño con el que se dibuja la imagen cuadrada (768 px) de Mutxigol atrapando, con su base a [baseMutxigol] del
+  /// fondo del campo.
+  static const double tamanoMutxigol = 125;
+  static const double baseMutxigol = 20;
+
+  /// La mitad del ancho de sus manos visibles: las dos manos llegan de x 140 a 627 de los 768 px de la imagen (medido sobre
+  /// el canal alfa de mutxigol_atrapando.webp), es decir ±0,317 del tamaño desde el centro.
+  static const double mitadManos = 0.317 * tamanoMutxigol;
+
+  /// La mitad del ancho de lo que atrapa Mutxigol: la de sus manos y un poco más (lo que se agarra del balón, que mide ~42
+  /// de ancho, ya está sobre la mano). 43 es lo que eran los 52 de antes con la imagen de 150, en proporción.
+  static const double mitadCaptura = 43;
+
+  /// La altura de las manos (el centro de la zona de captura), medida desde el fondo del campo: las manos están al 35–52 %
+  /// del alto de la imagen. La zona va de [capturaArriba] por encima a [capturaAbajo] por debajo (la cabeza hasta la cintura).
+  static const double alturaManos = 93;
+  static const double capturaArriba = 25;
+  static const double capturaAbajo = 21;
 
   /// El margen de los lados por el que no se mueve Mutxigol ni cae nada.
   static const double margen = 40;
@@ -169,7 +185,7 @@ class AtrapaLogica extends LogicaJuego {
   double get x => _x;
 
   /// La altura a la que se atrapa.
-  double get yCaptura => alto - 110;
+  double get yCaptura => alto - alturaManos;
 
   /// La altura del suelo: un balón que llega aquí se pierde.
   double get suelo => alto - 70;
@@ -309,8 +325,8 @@ class AtrapaLogica extends LogicaJuego {
       _mover(objeto, s);
 
       final enLaZonaDeCaptura =
-          objeto.y >= yCaptura - 30 &&
-          objeto.y <= yCaptura + 25 &&
+          objeto.y >= yCaptura - capturaArriba &&
+          objeto.y <= yCaptura + capturaAbajo &&
           (objeto.x - _x).abs() <= mitadCaptura;
 
       if (enLaZonaDeCaptura) {

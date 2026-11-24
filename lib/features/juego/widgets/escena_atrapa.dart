@@ -71,8 +71,8 @@ class EscenaAtrapa extends StatelessWidget {
               equipacion: equipacion,
               pose: PoseMutxigol.atrapando,
               centroX: l.x,
-              base: l.alto - 20,
-              tamano: 150,
+              base: l.alto - AtrapaLogica.baseMutxigol,
+              tamano: AtrapaLogica.tamanoMutxigol,
               opacidad: l.congelado ? 0.75 : 1,
             ),
             // El aviso visual del silbato: Mutxigol quieto.
@@ -80,7 +80,7 @@ class EscenaAtrapa extends StatelessWidget {
               Positioned(
                 key: const ValueKey('aviso-silbato'),
                 left: l.x - 40,
-                top: l.alto - 190,
+                top: l.alto - 165,
                 width: 80,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

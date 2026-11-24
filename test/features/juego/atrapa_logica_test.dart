@@ -571,4 +571,60 @@ void main() {
       }
     });
   });
+
+  group('el tamaño de Mutxigol y lo que atrapa', () {
+    test('la imagen mide 125 (antes 150) y la zona de captura va en proporción: 43 (antes 52)', () {
+      expect(AtrapaLogica.tamanoMutxigol, 125);
+      expect(AtrapaLogica.mitadCaptura, 43);
+      expect(AtrapaLogica.mitadCaptura / AtrapaLogica.tamanoMutxigol, closeTo(52 / 150, 0.003));
+    });
+
+    test('se atrapa con las manos que se ven: la captura llega justo un poco más allá del borde visible de la mano', () {
+      // Las manos llegan a ±0,317 de la imagen (x 140–627 de 768 px del canal alfa) = ±39,6.
+      expect(AtrapaLogica.mitadManos, closeTo(39.6, 0.1));
+      expect(AtrapaLogica.mitadCaptura, greaterThanOrEqualTo(AtrapaLogica.mitadManos));
+      expect(AtrapaLogica.mitadCaptura - AtrapaLogica.mitadManos, lessThan(5));
+    });
+
+    test('en el borde de la mano visible se atrapa, a ambos lados; fuera no', () {
+      for (final lado in [-1, 1]) {
+        final dentro = _manual();
+
+        dentro.soltar(TipoCaida.balon, dentro.x + lado * AtrapaLogica.mitadManos);
+        _hastaQueCaiga(dentro);
+
+        expect(dentro.puntos, 1, reason: 'lado $lado en el borde de la mano');
+        expect(dentro.vidas, 3);
+
+        final justo = _manual();
+
+        justo.soltar(TipoCaida.balon, justo.x + lado * (AtrapaLogica.mitadCaptura - 1));
+        _hastaQueCaiga(justo);
+
+        expect(justo.puntos, 1, reason: 'lado $lado casi en el límite');
+
+        final fuera = _manual();
+
+        fuera.soltar(TipoCaida.balon, fuera.x + lado * (AtrapaLogica.mitadCaptura + 4));
+        _hastaQueCaiga(fuera);
+
+        expect(fuera.puntos, 0, reason: 'lado $lado fuera de la mano');
+        expect(fuera.vidas, 2);
+      }
+    });
+
+    test('la altura de captura es la de las manos: un objeto a la altura de las manos se atrapa; muy por encima, no', () {
+      final l = _manual();
+
+      expect(l.yCaptura, _alto - AtrapaLogica.alturaManos);
+      // Las manos están al 35–52 % del alto de la imagen (base a 20 del fondo, imagen de 125).
+      final arribaManos = _alto - AtrapaLogica.baseMutxigol - AtrapaLogica.tamanoMutxigol * (1 - 0.35);
+      final abajoManos = _alto - AtrapaLogica.baseMutxigol - AtrapaLogica.tamanoMutxigol * (1 - 0.52);
+
+      expect(l.yCaptura, inInclusiveRange(arribaManos, abajoManos));
+      // La zona va de la cabeza a la cintura: dentro de la imagen.
+      expect(l.yCaptura - AtrapaLogica.capturaArriba, greaterThan(_alto - AtrapaLogica.baseMutxigol - AtrapaLogica.tamanoMutxigol));
+      expect(l.yCaptura + AtrapaLogica.capturaAbajo, lessThan(l.suelo));
+    });
+  });
 }

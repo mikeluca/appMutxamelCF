@@ -1,4 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:app_mutxamel_cf/core/widget/escudo_rival.dart';
+import 'package:app_mutxamel_cf/features/juego/logica/parejas_logica.dart';
 import 'package:app_mutxamel_cf/features/juego/estado_mutxigol.dart';
 import 'package:app_mutxamel_cf/features/juego/models/juego_modelos.dart';
 import 'package:app_mutxamel_cf/features/juego/pages/partida_juego_page.dart';
@@ -18,30 +21,14 @@ Future<void> _avanzar(WidgetTester tester, double segundos) async {
   }
 }
 
-Future<Map<int, String>> _descubrir(WidgetTester tester) async {
-  final posiciones = <int, String>{};
-
-  for (var i = 0; i < 16; i++) {
-    await tester.tap(find.byKey(ValueKey('carta-$i')));
-    await _avanzar(tester, 0.4);
-
-    final carta = find.descendant(
-      of: find.byKey(ValueKey('carta-$i')),
-      matching: find.textContaining('Club '),
-    );
-
-    if (carta.evaluate().isNotEmpty) {
-      posiciones[i] = (carta.evaluate().single.widget as Text).data!;
-    }
-
-    if (i.isOdd) await _avanzar(tester, 1.4);
-  }
-
-  return posiciones;
-}
+/// El reparto del tablero con ese azar: la posición de cada carta y el nombre de su club.
+Map<int, String> _reparto(math.Random azar) => {
+  for (final c in ParejasLogica(alto: 640, escudos: escudosDePrueba(8), random: azar).cartas)
+    c.posicion: c.escudo.nombre,
+};
 
 /// Juega la partida de [juego] hasta que sale el fin de partida.
-Future<void> _jugarHastaElFin(WidgetTester tester, Juego juego) async {
+Future<void> _jugarHastaElFin(WidgetTester tester, Juego juego, math.Random azar) async {
   switch (juego) {
     case Juego.atrapa:
       // Sin mover a Mutxigol: los balones llegan al suelo y se pierden las 3 vidas.
@@ -63,7 +50,8 @@ Future<void> _jugarHastaElFin(WidgetTester tester, Juego juego) async {
     case Juego.parejas:
       await _avanzar(tester, 0.2);
 
-      final posiciones = await _descubrir(tester);
+      // El reparto de esta partida (el mismo azar que el de la página).
+      final posiciones = _reparto(azar);
 
       for (final nombre in posiciones.values.toSet()) {
         final pareja = [for (final e in posiciones.entries) if (e.value == nombre) e.key];
@@ -104,6 +92,8 @@ void main() {
           addTearDown(tester.view.reset);
 
           final servicio = JuegoServiceFalso()..escudosRespuesta = escudosDePrueba(12);
+          // El mismo azar que la página para saber dónde está cada pareja.
+          final replica = math.Random(11);
 
           await tester.pumpWidget(
             appDePrueba(
@@ -113,7 +103,7 @@ void main() {
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => PartidaJuegoPage(juego: juego, servicio: servicio),
+                        builder: (_) => PartidaJuegoPage(juego: juego, servicio: servicio, random: math.Random(11)),
                       ),
                     ),
                     child: const Text('Jugar'),
@@ -127,7 +117,7 @@ void main() {
           await tester.pump(const Duration(milliseconds: 400));
           await tester.pump();
 
-          await _jugarHastaElFin(tester, juego);
+          await _jugarHastaElFin(tester, juego, replica);
 
           expect(tester.takeException(), isNull, reason: 'durante la partida');
           expect(find.byKey(const ValueKey('fin-puntos')), findsOneWidget);
@@ -157,7 +147,7 @@ void main() {
           expect(find.byKey(const ValueKey('fin-puntos')), findsNothing);
 
           // Y se vuelve a jugar hasta el final y se sale.
-          await _jugarHastaElFin(tester, juego);
+          await _jugarHastaElFin(tester, juego, replica);
 
           expect(tester.takeException(), isNull, reason: 'segunda partida');
           expect(find.byKey(const ValueKey('fin-puntos')), findsOneWidget);
