@@ -4473,36 +4473,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String get gameKitPink => 'Rosa';
 
   @override
-  String get gamePenaltiesName => 'Penals';
-
-  @override
-  String get gameTouchesName => 'Tocs';
-
-  @override
-  String get gameCatchName => 'Atrapa pilotes';
-
-  @override
-  String get gamePenaltiesShort => 'Penals';
-
-  @override
-  String get gameTouchesShort => 'Tocs';
-
-  @override
-  String get gameCatchShort => 'Atrapa';
-
-  @override
-  String get gamePenaltiesHow =>
-      'Llisca el dit des de la pilota cap a la porteria. Tens 3 vides.';
-
-  @override
-  String get gameTouchesHow =>
-      'Toca la pilota perquè no caiga a terra. Cada toc suma un punt.';
-
-  @override
-  String get gameCatchHow =>
-      'Arrossega Mutxigol i atrapa les pilotes. Esquiva les targetes roges.';
-
-  @override
   String gameYourRecord(int points) {
     return 'El teu rècord: $points';
   }
@@ -4569,17 +4539,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String gameScoreLabel(int points) {
     return 'Punts: $points';
   }
-
-  @override
-  String gameLivesLabel(int lives) {
-    return 'Vides: $lives';
-  }
-
-  @override
-  String get gamePenaltiesHint => 'Llisca des de la pilota cap a la porteria';
-
-  @override
-  String get gameTouchesHint => 'Toca la pilota!';
 
   @override
   String get gameCatchHint => 'Arrossega per moure\'t';
@@ -4699,19 +4658,122 @@ class AppLocalizationsCa extends AppLocalizations {
   String get gameModDone => 'Fet';
 
   @override
-  String gameModMarks(int penalties, int touches, int catches) {
-    return 'Penals $penalties · Tocs $touches · Atrapa $catches';
+  String get gameCatchName => 'Atrapa pilotes';
+
+  @override
+  String get gameRunName => 'Regatea';
+
+  @override
+  String get gameHeadName => 'Cabdellades';
+
+  @override
+  String get gamePairsName => 'Parelles d\'escuts';
+
+  @override
+  String get gameCatchShort => 'Atrapa';
+
+  @override
+  String get gameRunShort => 'Regatea';
+
+  @override
+  String get gameHeadShort => 'Cabdellades';
+
+  @override
+  String get gamePairsShort => 'Parelles';
+
+  @override
+  String get gameCatchHow =>
+      'Arrossega Mutxigol i atrapa les pilotes. Deixa caure el que siga roín.';
+
+  @override
+  String get gameRunHow =>
+      'Llisca per canviar de carril. Esquiva els defenses i arreplega pilotes.';
+
+  @override
+  String get gameHeadHow =>
+      'Toca per botar i passa entre les columnes de defenses.';
+
+  @override
+  String get gamePairsHow =>
+      'Troba les 8 parelles d\'escuts en el menor temps.';
+
+  @override
+  String get gameRunHint => 'Llisca per canviar de carril';
+
+  @override
+  String get gameHeadHint => 'Toca per botar';
+
+  @override
+  String get gameHowToPlay => 'Com es juga?';
+
+  @override
+  String get gameLegendTitle => 'Com es juga?';
+
+  @override
+  String get gameLegendGotIt => 'Entés';
+
+  @override
+  String get gameLegendStart => 'A jugar!';
+
+  @override
+  String get gameLegendBall =>
+      'Pilota: +1 punt. Si arriba a terra, perds una vida.';
+
+  @override
+  String get gameLegendEffect => 'Pilota amb efecte: cau en corba. +1 punt.';
+
+  @override
+  String get gameLegendGolden => 'Pilota daurada: +5 punts.';
+
+  @override
+  String get gameLegendShield => 'Escut del club: +1 vida (màxim 3).';
+
+  @override
+  String get gameLegendFlat =>
+      'Pilota punxada: deixa-la caure. Si l\'atrapes, perds una vida.';
+
+  @override
+  String get gameLegendRed => 'Targeta roja: perds una vida.';
+
+  @override
+  String get gameLegendYellow => 'Targeta groga: amb dues perds una vida.';
+
+  @override
+  String get gameLegendBoot =>
+      'Bota de tacs: cau ràpid i rebota. Si l\'atrapes, perds una vida.';
+
+  @override
+  String get gameLegendWhistle => 'Xiulet: Mutxigol es queda quiet 2 segons.';
+
+  @override
+  String gameCatchFrozen(int seconds) {
+    return 'Quiet! $seconds s';
   }
 
   @override
-  String get gameResultGoal => 'Gol!';
+  String get gameYellowCards => 'Grogues';
 
   @override
-  String get gameResultSaved => 'Parada!';
+  String get gamePairsNoShields =>
+      'Encara no hi ha escuts suficients per a jugar';
 
   @override
-  String get gameResultWeak => 'Massa fluix';
+  String gameFinalTime(String time) {
+    return 'Temps: $time';
+  }
 
   @override
-  String get gameResultOut => 'Fora';
+  String gameYourBestTime(String time) {
+    return 'El teu millor temps: $time';
+  }
+
+  @override
+  String gameAttempts(int count) {
+    return 'Intents: $count';
+  }
+
+  @override
+  String gameModMarks(int catches, int run, int heads, String pairs) {
+    return 'Atrapa $catches · Regatea $run · Cabdellades $heads · Parelles $pairs';
+  }
 }

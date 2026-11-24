@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../envio_puntuacion.dart';
 import '../models/juego_modelos.dart';
+import '../tiempo_juego.dart';
 
 /// La pantalla del fin de partida: Mutxigol celebrando (récord personal) o triste, los puntos, el récord y lo que ha
 /// pasado con el envío de la puntuación (guardada, sin sesión, sin alias, enviando o con error).
@@ -10,7 +11,9 @@ class FinDePartida extends StatelessWidget {
   const FinDePartida({
     super.key,
     required this.equipacion,
+    this.juego = Juego.atrapa,
     required this.puntos,
+    this.tiempoMs = 0,
     required this.recordAnterior,
     required this.envio,
     required this.onOtraVez,
@@ -20,9 +23,14 @@ class FinDePartida extends StatelessWidget {
   });
 
   final Equipacion equipacion;
+  final Juego juego;
   final int puntos;
 
-  /// El mejor resultado anterior (0 si no había): para saber si es récord mientras no hay respuesta del servidor.
+  /// El tiempo de la partida en ms (lo que cuenta en Parejas).
+  final int tiempoMs;
+
+  /// El mejor resultado anterior (0 si no había): los puntos o, en Parejas, el mejor tiempo en ms. Sirve para saber si
+  /// es récord mientras no hay respuesta del servidor.
   final int recordAnterior;
 
   final EnvioPuntuacion envio;
@@ -34,6 +42,8 @@ class FinDePartida extends StatelessWidget {
   /// Récord personal: lo que dice el servidor y, hasta que conteste (o sin sesión), la comparación con lo conocido.
   bool get esRecord => envio.resultado != null
       ? envio.resultado!.esRecord
+      : juego.esDeTiempo
+      ? tiempoMs > 0 && (recordAnterior == 0 || tiempoMs < recordAnterior)
       : puntos > 0 && puntos > recordAnterior;
 
   @override
@@ -70,7 +80,9 @@ class FinDePartida extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              t.gameFinalScore(puntos),
+              juego.esDeTiempo
+                  ? t.gameFinalTime(formatearTiempo(tiempoMs))
+                  : t.gameFinalScore(puntos),
               key: const ValueKey('fin-puntos'),
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -79,7 +91,9 @@ class FinDePartida extends StatelessWidget {
             ),
             if (recordAnterior > 0 && !record)
               Text(
-                t.gameYourRecord(recordAnterior),
+                juego.esDeTiempo
+                    ? t.gameYourBestTime(formatearTiempo(recordAnterior))
+                    : t.gameYourRecord(recordAnterior),
                 key: const ValueKey('fin-record'),
               ),
             const SizedBox(height: 12),

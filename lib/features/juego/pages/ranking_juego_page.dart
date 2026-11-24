@@ -6,13 +6,14 @@ import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/services/auth_manager.dart';
 import '../models/juego_modelos.dart';
 import '../services/juego_service.dart';
+import '../tiempo_juego.dart';
 
 /// El ranking de Mutxigol: una pestaña por juego, "Esta semana" / "Histórico" y los 50 mejores (posición, alias y
 /// puntos). Se ve sin sesión. Con sesión, tu fila sale resaltada y, si estás fuera del top 50, tu posición al final.
 class RankingJuegoPage extends StatefulWidget {
   const RankingJuegoPage({
     super.key,
-    this.juegoInicial = Juego.penaltis,
+    this.juegoInicial = Juego.atrapa,
     this.servicio = const JuegoService(),
     this.conSesion,
     this.perfil,
@@ -85,9 +86,10 @@ class _RankingJuegoPageState extends State<RankingJuegoPage>
     final t = AppLocalizations.of(context);
 
     String nombre(Juego j) => switch (j) {
-      Juego.penaltis => t.gamePenaltiesShort,
-      Juego.toques => t.gameTouchesShort,
       Juego.atrapa => t.gameCatchShort,
+      Juego.regatea => t.gameRunShort,
+      Juego.cabezazos => t.gameHeadShort,
+      Juego.parejas => t.gamePairsShort,
     };
 
     return Scaffold(
@@ -95,6 +97,8 @@ class _RankingJuegoPageState extends State<RankingJuegoPage>
         title: ClubAppBarTitle(titulo: t.gameRankingTitle),
         bottom: TabBar(
           controller: _pestanas,
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
           tabs: [for (final j in Juego.values) Tab(text: nombre(j))],
         ),
       ),
@@ -172,7 +176,12 @@ class _RankingJuegoPageState extends State<RankingJuegoPage>
 
         final filas = snapshot.data ?? const [];
         final alias = _perfil?.alias?.trim().toLowerCase();
-        final tuMarca = _perfil?.marcas(juego).dePeriodo(_periodo);
+        final marcas = _perfil?.marcas(juego);
+        final tuMarca = marcas?.dePeriodo(_periodo);
+
+        // Puntos o tiempo según lo que diga el backend (campo `marca`).
+        String texto(bool esTiempo, int puntos, int tiempoMs) =>
+            esTiempo ? formatearTiempo(tiempoMs) : '$puntos';
 
         final estaEnElTop =
             alias != null &&
@@ -202,7 +211,7 @@ class _RankingJuegoPageState extends State<RankingJuegoPage>
               _FilaDeRanking(
                 posicion: fila.posicion,
                 alias: fila.alias,
-                puntos: fila.puntos,
+                valor: texto(fila.esTiempo, fila.puntos, fila.tiempoMs),
                 esTuya:
                     alias != null && fila.alias.trim().toLowerCase() == alias,
               ),
@@ -215,7 +224,11 @@ class _RankingJuegoPageState extends State<RankingJuegoPage>
                 key: const ValueKey('tu-posicion'),
                 posicion: tuMarca.posicion!,
                 alias: _perfil!.alias!,
-                puntos: tuMarca.puntos,
+                valor: texto(
+                  marcas!.esTiempo,
+                  tuMarca.puntos,
+                  tuMarca.tiempoMs,
+                ),
                 esTuya: true,
               ),
             ],
@@ -231,13 +244,13 @@ class _FilaDeRanking extends StatelessWidget {
     super.key,
     required this.posicion,
     required this.alias,
-    required this.puntos,
+    required this.valor,
     required this.esTuya,
   });
 
   final int posicion;
   final String alias;
-  final int puntos;
+  final String valor;
   final bool esTuya;
 
   @override
@@ -270,7 +283,7 @@ class _FilaDeRanking extends StatelessWidget {
                 ),
               ),
             ),
-            Text('$puntos', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(valor, style: const TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
       ),

@@ -6,21 +6,27 @@ import '../../../l10n/gen/app_localizations.dart';
 import '../envio_puntuacion.dart';
 import '../estado_mutxigol.dart';
 import '../logica/atrapa_logica.dart';
+import '../logica/cabezazos_logica.dart';
 import '../logica/logica_juego.dart';
-import '../logica/penaltis_logica.dart';
-import '../logica/toques_logica.dart';
+import '../logica/parejas_logica.dart';
+import '../logica/regatea_logica.dart';
 import '../models/juego_modelos.dart';
 import '../services/juego_service.dart';
+import '../tiempo_juego.dart';
 import '../widgets/dialogo_alias.dart';
-import '../widgets/escenas_juego.dart';
+import '../widgets/escena_atrapa.dart';
+import '../widgets/escena_cabezazos.dart';
+import '../widgets/escena_parejas.dart';
+import '../widgets/escena_regatea.dart';
 import '../widgets/fin_de_partida.dart';
+import '../widgets/leyenda_atrapa.dart';
 import 'ranking_juego_page.dart';
 
-enum _FasePartida { cuentaAtras, jugando, pausa, fin }
+enum _FasePartida { leyenda, cuentaAtras, jugando, pausa, fin }
 
-/// Una partida de uno de los minijuegos, en vertical y a pantalla completa: cuenta atrás de 3 segundos, botón de
-/// pausa y de salir, vibración ligera al marcar o perder y, al acabar, el fin de partida con el envío de la puntuación.
-/// Se pausa sola con la app en segundo plano y se para al salir de la pantalla.
+/// Una partida de uno de los minijuegos, en vertical y a pantalla completa: cuenta atrás de 3 segundos (menos en Parejas,
+/// que empieza con la primera carta), botón de pausa y de salir, vibración ligera al marcar o perder y, al acabar, el fin
+/// de partida con el envío de la puntuación. Se pausa sola con la app en segundo plano y se para al salir de la pantalla.
 class PartidaJuegoPage extends StatefulWidget {
   const PartidaJuegoPage({
     super.key,
@@ -60,8 +66,8 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
   final ValueNotifier<int> _fotograma = ValueNotifier<int>(0);
 
   LogicaJuego? _logica;
-  _FasePartida _fase = _FasePartida.cuentaAtras;
-  _FasePartida _faseAntesDePausa = _FasePartida.cuentaAtras;
+  late _FasePartida _fase;
+  late _FasePartida _faseAntesDePausa;
   Duration _cuenta = PartidaJuegoPage.cuentaAtras;
   Duration _ultimo = Duration.zero;
 
@@ -69,7 +75,25 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
   late int _recordAnterior;
   late String? _alias;
 
+  // Parejas: los escudos del tablero (vienen del backend).
+  List<EscudoJuego>? _escudos;
+  bool _cargandoEscudos = false;
+  bool _errorDeEscudos = false;
+
   Equipacion get _equipacion => EstadoMutxigol.equipacion.value;
+
+  bool get _esParejas => widget.juego == Juego.parejas;
+
+  /// Atrapa enseña su leyenda antes de la primera partida de la sesión de la app.
+  bool get _hayLeyendaInicial =>
+      widget.juego == Juego.atrapa && !EstadoMutxigol.leyendaAtrapaVista;
+
+  /// La fase en la que empieza (o vuelve a empezar) una partida.
+  _FasePartida get _faseInicial => _esParejas
+      ? _FasePartida.jugando
+      : _hayLeyendaInicial
+      ? _FasePartida.leyenda
+      : _FasePartida.cuentaAtras;
 
   @override
   void initState() {
@@ -77,16 +101,24 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
 
     WidgetsBinding.instance.addObserver(this);
 
+    _fase = _faseInicial;
+    _faseAntesDePausa = _fase;
     _alias = widget.perfil?.alias;
     _recordAnterior = _recordConocido();
   }
 
-  /// El mejor resultado que se conoce en este juego: el del perfil (con sesión) o el de esta sesión de la app.
+  /// El mejor resultado que se conoce en este juego: el del perfil (con sesión) o el de esta sesión de la app (puntos
+  /// o, en Parejas, el menor tiempo).
   int _recordConocido() {
     final delPerfil = widget.perfil?.record(widget.juego) ?? 0;
     final deLaSesion = EstadoMutxigol.recordDeLaSesion(widget.juego);
 
-    return delPerfil > deLaSesion ? delPerfil : deLaSesion;
+    if (delPerfil == 0) return deLaSesion;
+    if (deLaSesion == 0) return delPerfil;
+
+    return widget.juego.esDeTiempo
+        ? (delPerfil < deLaSesion ? delPerfil : deLaSesion)
+        : (delPerfil > deLaSesion ? delPerfil : deLaSesion);
   }
 
   @override
@@ -94,14 +126,18 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
     super.didChangeDependencies();
 
     // Las imágenes del juego, listas antes de empezar para que no parpadeen.
-    for (final pose in [
-      PoseMutxigol.portero,
-      PoseMutxigol.parada,
-      PoseMutxigol.toques,
-      PoseMutxigol.atrapando,
-      PoseMutxigol.celebrando,
-      PoseMutxigol.triste,
-    ]) {
+    final poses = switch (widget.juego) {
+      Juego.atrapa => [PoseMutxigol.atrapando],
+      Juego.regatea => [
+        PoseMutxigol.corriendo1,
+        PoseMutxigol.corriendo2,
+        PoseMutxigol.corriendo3,
+      ],
+      Juego.cabezazos => [PoseMutxigol.salto],
+      Juego.parejas => <PoseMutxigol>[],
+    };
+
+    for (final pose in [...poses, PoseMutxigol.celebrando, PoseMutxigol.triste]) {
       precacheImage(
         AssetImage(ImagenesMutxigol.pose(_equipacion, pose)),
         context,
@@ -133,9 +169,10 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
     final logica =
         widget.crearLogica?.call(alto) ??
         switch (widget.juego) {
-          Juego.penaltis => PenaltisLogica(alto: alto),
-          Juego.toques => ToquesLogica(alto: alto),
           Juego.atrapa => AtrapaLogica(alto: alto),
+          Juego.regatea => RegateaLogica(alto: alto),
+          Juego.cabezazos => CabezazosLogica(alto: alto),
+          Juego.parejas => ParejasLogica(alto: alto, escudos: _escudos!),
         };
 
     logica.alEvento = (evento) => switch (evento) {
@@ -147,7 +184,7 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
   }
 
   void _arrancar() {
-    if (!mounted || _ticker.isActive) return;
+    if (!mounted || _ticker.isActive || _fase == _FasePartida.leyenda) return;
 
     _ultimo = Duration.zero;
     _ticker.start();
@@ -184,8 +221,12 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
     _ticker.stop();
 
     final logica = _logica!;
+    final tiempoMs = logica.tiempoJugado.inMilliseconds;
 
-    EstadoMutxigol.anotarPuntuacion(widget.juego, logica.puntos);
+    EstadoMutxigol.anotarPuntuacion(
+      widget.juego,
+      widget.juego.esDeTiempo ? tiempoMs : logica.puntos,
+    );
 
     final envio = EnvioPuntuacion(
       servicio: widget.servicio,
@@ -213,10 +254,45 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
     setState(() {
       _envio = null;
       _logica = null;
-      _fase = _FasePartida.cuentaAtras;
+      _escudos = null;
+      _errorDeEscudos = false;
+      _fase = _faseInicial;
+      _faseAntesDePausa = _fase;
       _cuenta = PartidaJuegoPage.cuentaAtras;
       _recordAnterior = _recordConocido();
     });
+  }
+
+  /// Parejas: pide los 8 escudos del tablero. Con menos de 8 (o si falla) no se puede jugar.
+  Future<void> _cargarEscudos() async {
+    if (_cargandoEscudos) return;
+
+    setState(() {
+      _cargandoEscudos = true;
+      _errorDeEscudos = false;
+    });
+
+    try {
+      final escudos = await widget.servicio.escudos(
+        cantidad: ParejasLogica.parejas,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _cargandoEscudos = false;
+        _escudos = escudos;
+        _errorDeEscudos = escudos.length < ParejasLogica.parejas;
+      });
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        _cargandoEscudos = false;
+        _escudos = null;
+        _errorDeEscudos = true;
+      });
+    }
   }
 
   void _pausar() {
@@ -238,6 +314,21 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
     setState(() => _fase = _faseAntesDePausa);
 
     _arrancar();
+  }
+
+  void _cerrarLeyendaInicial() {
+    EstadoMutxigol.leyendaAtrapaVista = true;
+
+    setState(() => _fase = _FasePartida.cuentaAtras);
+
+    _arrancar();
+  }
+
+  /// "¿Cómo se juega?" durante la partida: la pausa y enseña la leyenda.
+  Future<void> _verLeyenda() async {
+    _pausar();
+
+    await LeyendaAtrapa.mostrar(context);
   }
 
   Future<void> _elegirAlias() async {
@@ -283,6 +374,20 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
               child: LayoutBuilder(builder: _construirJuego),
             ),
           ),
+          if (_fase == _FasePartida.leyenda)
+            Positioned.fill(
+              child: ColoredBox(
+                color: Colors.black54,
+                child: SafeArea(
+                  child: Center(
+                    child: LeyendaAtrapa(
+                      textoBoton: t.gameLegendStart,
+                      onCerrar: _cerrarLeyendaInicial,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           if (_fase == _FasePartida.fin && _envio != null)
             Positioned.fill(
               child: ColoredBox(
@@ -292,7 +397,9 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
                     child: SingleChildScrollView(
                       child: FinDePartida(
                         equipacion: _equipacion,
+                        juego: widget.juego,
                         puntos: _logica!.puntos,
+                        tiempoMs: _logica!.tiempoJugado.inMilliseconds,
                         recordAnterior: _recordAnterior,
                         envio: _envio!,
                         onOtraVez: _otraVez,
@@ -327,6 +434,14 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
                             onPressed: _reanudar,
                             child: Text(t.gameResume),
                           ),
+                          if (widget.juego == Juego.atrapa) ...[
+                            const SizedBox(height: 8),
+                            TextButton(
+                              key: const ValueKey('como-se-juega-pausa'),
+                              onPressed: () => LeyendaAtrapa.mostrar(context),
+                              child: Text(t.gameHowToPlay),
+                            ),
+                          ],
                           const SizedBox(height: 8),
                           OutlinedButton(
                             key: const ValueKey('salir-pausa'),
@@ -350,6 +465,19 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
     final alto = restricciones.maxHeight / escala;
 
     if (_logica == null) {
+      // Parejas necesita antes los escudos del backend.
+      if (_esParejas && widget.crearLogica == null) {
+        if (_escudos == null && !_errorDeEscudos && !_cargandoEscudos) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && _escudos == null) _cargarEscudos();
+          });
+        }
+
+        if (_escudos == null || _errorDeEscudos) {
+          return _esperandoEscudos(context);
+        }
+      }
+
       _logica = _nuevaLogica(alto);
 
       WidgetsBinding.instance.addPostFrameCallback((_) => _arrancar());
@@ -363,17 +491,22 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
         final equipacion = _equipacion;
 
         final escena = switch (logica) {
-          PenaltisLogica() => EscenaPenaltis(
-            logica: logica,
-            equipacion: equipacion,
-            activa: activa,
-          ),
-          ToquesLogica() => EscenaToques(
-            logica: logica,
-            equipacion: equipacion,
-            activa: activa,
-          ),
           AtrapaLogica() => EscenaAtrapa(
+            logica: logica,
+            equipacion: equipacion,
+            activa: activa,
+          ),
+          RegateaLogica() => EscenaRegatea(
+            logica: logica,
+            equipacion: equipacion,
+            activa: activa,
+          ),
+          CabezazosLogica() => EscenaCabezazos(
+            logica: logica,
+            equipacion: equipacion,
+            activa: activa,
+          ),
+          ParejasLogica() => EscenaParejas(
             logica: logica,
             equipacion: equipacion,
             activa: activa,
@@ -394,11 +527,78 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
     );
   }
 
+  /// Parejas: cargando los escudos o, si no hay suficientes (o falló), el aviso con el botón de reintentar.
+  Widget _esperandoEscudos(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
+    return Stack(
+      children: [
+        Center(
+          child: _cargandoEscudos || (!_errorDeEscudos && _escudos == null)
+              ? const CircularProgressIndicator(
+                  key: ValueKey('cargando-escudos'),
+                  color: Colors.white,
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        t.gamePairsNoShields,
+                        key: const ValueKey('sin-escudos'),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          shadows: [Shadow(blurRadius: 4, color: Colors.black87)],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      FilledButton(
+                        key: const ValueKey('reintentar-escudos'),
+                        onPressed: () {
+                          setState(() {
+                            _escudos = null;
+                            _errorDeEscudos = false;
+                          });
+                          _cargarEscudos();
+                        },
+                        child: Text(t.retry),
+                      ),
+                    ],
+                  ),
+                ),
+        ),
+        SafeArea(
+          child: Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+              key: const ValueKey('salir'),
+              tooltip: t.gameExit,
+              color: Colors.white,
+              onPressed: () => Navigator.maybePop(context),
+              icon: const Icon(Icons.close, size: 30),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _marcador(BuildContext context, LogicaJuego logica) {
     final t = AppLocalizations.of(context);
     final vidas = logica.vidas;
 
     const sombra = [Shadow(blurRadius: 4, color: Colors.black87)];
+
+    TextStyle estilo(double tamano) => TextStyle(
+      color: Colors.white,
+      fontSize: tamano,
+      fontWeight: FontWeight.bold,
+      shadows: sombra,
+    );
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
@@ -415,16 +615,23 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  t.gameScoreLabel(logica.puntos),
-                  key: const ValueKey('marcador-puntos'),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    shadows: sombra,
+                if (logica is ParejasLogica) ...[
+                  Text(
+                    formatearTiempo(logica.tiempoJugado.inMilliseconds),
+                    key: const ValueKey('marcador-tiempo'),
+                    style: estilo(24),
                   ),
-                ),
+                  Text(
+                    t.gameAttempts(logica.intentos),
+                    key: const ValueKey('marcador-intentos'),
+                    style: estilo(14),
+                  ),
+                ] else
+                  Text(
+                    t.gameScoreLabel(logica.puntos),
+                    key: const ValueKey('marcador-puntos'),
+                    style: estilo(20),
+                  ),
                 if (vidas != null)
                   Row(
                     key: const ValueKey('marcador-vidas'),
@@ -438,9 +645,18 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
                         ),
                     ],
                   ),
+                if (logica is AtrapaLogica) _amarillas(logica, t),
               ],
             ),
           ),
+          if (widget.juego == Juego.atrapa)
+            IconButton(
+              key: const ValueKey('como-se-juega'),
+              tooltip: t.gameHowToPlay,
+              color: Colors.white,
+              onPressed: _fase == _FasePartida.fin ? null : _verLeyenda,
+              icon: const Icon(Icons.help_outline, size: 28),
+            ),
           IconButton(
             key: const ValueKey('salir'),
             tooltip: t.gameExit,
@@ -450,6 +666,32 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
           ),
         ],
       ),
+    );
+  }
+
+  /// El marcador de tarjetas amarillas de Atrapa (2 hacen perder una vida; se reinicia al perderla).
+  Widget _amarillas(AtrapaLogica logica, AppLocalizations t) {
+    return Row(
+      key: const ValueKey('marcador-amarillas'),
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (var i = 0; i < AtrapaLogica.amarillasPorVida; i++)
+          Container(
+            key: ValueKey(
+              'amarilla-$i-${i < logica.amarillas ? 'llena' : 'vacia'}',
+            ),
+            width: 12,
+            height: 17,
+            margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+            decoration: BoxDecoration(
+              color: i < logica.amarillas
+                  ? const Color(0xFFFFEB3B)
+                  : Colors.transparent,
+              border: Border.all(color: const Color(0xFFFFEB3B), width: 1.5),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+      ],
     );
   }
 

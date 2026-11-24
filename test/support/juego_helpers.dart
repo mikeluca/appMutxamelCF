@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:app_mutxamel_cf/core/network/api_client.dart';
+import 'package:app_mutxamel_cf/features/juego/logica/logica_juego.dart';
 import 'package:app_mutxamel_cf/features/juego/models/juego_modelos.dart';
 import 'package:app_mutxamel_cf/features/juego/services/juego_service.dart';
 import 'package:app_mutxamel_cf/l10n/gen/app_localizations.dart';
@@ -56,6 +57,11 @@ class JuegoServiceFalso extends JuegoService {
 
   ResultadoPuntuacion resultado = const ResultadoPuntuacion();
 
+  /// Los escudos que devuelve `escudos()` (Parejas) y, si no es null, el error con el que falla.
+  List<EscudoJuego> escudosRespuesta = [];
+  Object? errorDeEscudos;
+  final List<int> escudosPedidos = [];
+
   final List<(Juego, int, int)> guardadas = [];
   final List<(String?, Equipacion?)> actualizaciones = [];
   final List<(Juego, PeriodoRanking)> rankingsPedidos = [];
@@ -106,6 +112,15 @@ class JuegoServiceFalso extends JuegoService {
     guardadas.add((juego, puntos, duracionMs));
 
     return resultado;
+  }
+
+  @override
+  Future<List<EscudoJuego>> escudos({int cantidad = 8}) async {
+    escudosPedidos.add(cantidad);
+
+    if (errorDeEscudos != null) throw errorDeEscudos!;
+
+    return escudosRespuesta;
   }
 
   // ---- Moderación ----
@@ -209,4 +224,43 @@ void pantallaDeMovil(WidgetTester tester, {double alto = 1500}) {
   tester.view.physicalSize = Size(360, alto);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
+}
+
+/// Unos escudos de prueba para Parejas: `Club 1`, `Club 2`...
+List<EscudoJuego> escudosDePrueba([int cuantos = 8]) => [
+  for (var i = 1; i <= cuantos; i++)
+    EscudoJuego(id: i, nombre: 'Club $i', escudoUrl: '/api/public/escudos-rivales/$i?v=1'),
+];
+
+/// Una lógica de juego mínima para probar la página de la partida sin depender de ningún juego: a los 0,5 s de partida
+/// suma 1 punto (aviso de punto) y a los 2 s termina (aviso de fallo).
+class LogicaDePrueba extends LogicaJuego {
+  LogicaDePrueba({required super.alto, this.conVidas = false});
+
+  final bool conVidas;
+
+  int _puntos = 0;
+  bool _terminado = false;
+
+  @override
+  int get puntos => _puntos;
+
+  @override
+  int? get vidas => conVidas ? 3 : null;
+
+  @override
+  bool get terminado => _terminado;
+
+  @override
+  void avanzar(Duration dt) {
+    if (_puntos == 0 && segundos >= 0.5) {
+      _puntos = 1;
+      alEvento?.call(EventoJuego.punto);
+    }
+
+    if (segundos >= 2) {
+      _terminado = true;
+      alEvento?.call(EventoJuego.fallo);
+    }
+  }
 }

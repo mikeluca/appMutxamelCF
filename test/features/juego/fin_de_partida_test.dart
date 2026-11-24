@@ -13,7 +13,7 @@ EnvioPuntuacion _envio(
   Duration duracion = const Duration(seconds: 40),
   bool conSesion = true,
   String? alias = 'Ana',
-  Juego juego = Juego.penaltis,
+  Juego juego = Juego.cabezazos,
 }) => EnvioPuntuacion(
   servicio: servicio,
   juego: juego,
@@ -31,11 +31,11 @@ void main() {
           recordSemana: true,
           posicionSemana: 3,
         );
-      final envio = _envio(servicio, juego: Juego.toques, puntos: 12);
+      final envio = _envio(servicio, juego: Juego.regatea, puntos: 12);
 
       await envio.iniciar();
 
-      expect(servicio.guardadas, [(Juego.toques, 12, 40000)]);
+      expect(servicio.guardadas, [(Juego.regatea, 12, 40000)]);
       expect(envio.estado, EstadoEnvio.enviado);
       expect(envio.resultado!.recordSemana, isTrue);
       expect(envio.resultado!.posicionSemana, 3);
@@ -288,7 +288,7 @@ void main() {
 
       await pintar(tester, servicio, puntos: 7);
 
-      expect(servicio.guardadas, [(Juego.penaltis, 7, 40000)]);
+      expect(servicio.guardadas, [(Juego.cabezazos, 7, 40000)]);
     });
 
     testWidgets('error de red: mensaje discreto y botón para reintentar', (tester) async {

@@ -19,7 +19,21 @@ class JuegoService {
     );
 
     return (datos as List)
-        .map((f) => FilaRanking.fromJson(Map<String, dynamic>.from(f as Map)))
+        .map(
+          (f) => FilaRanking.fromJson(
+            Map<String, dynamic>.from(f as Map),
+            tiempoPorDefecto: juego.esDeTiempo,
+          ),
+        )
+        .toList();
+  }
+
+  /// GET /public/juego/escudos?cantidad=: clubes con escudo, al azar, para las cartas de Parejas (sin sesión).
+  Future<List<EscudoJuego>> escudos({int cantidad = 8}) async {
+    final datos = await ApiClient.get('/public/juego/escudos?cantidad=$cantidad');
+
+    return (datos as List)
+        .map((e) => EscudoJuego.fromJson(Map<String, dynamic>.from(e as Map)))
         .toList();
   }
 

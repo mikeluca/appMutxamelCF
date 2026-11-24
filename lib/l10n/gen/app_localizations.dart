@@ -7767,60 +7767,6 @@ abstract class AppLocalizations {
   /// **'Rosa'**
   String get gameKitPink;
 
-  /// No description provided for @gamePenaltiesName.
-  ///
-  /// In es, this message translates to:
-  /// **'Penaltis'**
-  String get gamePenaltiesName;
-
-  /// No description provided for @gameTouchesName.
-  ///
-  /// In es, this message translates to:
-  /// **'Toques'**
-  String get gameTouchesName;
-
-  /// No description provided for @gameCatchName.
-  ///
-  /// In es, this message translates to:
-  /// **'Atrapa balones'**
-  String get gameCatchName;
-
-  /// No description provided for @gamePenaltiesShort.
-  ///
-  /// In es, this message translates to:
-  /// **'Penaltis'**
-  String get gamePenaltiesShort;
-
-  /// No description provided for @gameTouchesShort.
-  ///
-  /// In es, this message translates to:
-  /// **'Toques'**
-  String get gameTouchesShort;
-
-  /// No description provided for @gameCatchShort.
-  ///
-  /// In es, this message translates to:
-  /// **'Atrapa'**
-  String get gameCatchShort;
-
-  /// No description provided for @gamePenaltiesHow.
-  ///
-  /// In es, this message translates to:
-  /// **'Desliza el dedo desde el balón hacia la portería. Tienes 3 vidas.'**
-  String get gamePenaltiesHow;
-
-  /// No description provided for @gameTouchesHow.
-  ///
-  /// In es, this message translates to:
-  /// **'Toca el balón para que no caiga al suelo. Cada toque suma un punto.'**
-  String get gameTouchesHow;
-
-  /// No description provided for @gameCatchHow.
-  ///
-  /// In es, this message translates to:
-  /// **'Arrastra a Mutxigol y atrapa los balones. Esquiva las tarjetas rojas.'**
-  String get gameCatchHow;
-
   /// No description provided for @gameYourRecord.
   ///
   /// In es, this message translates to:
@@ -7940,24 +7886,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Puntos: {points}'**
   String gameScoreLabel(int points);
-
-  /// No description provided for @gameLivesLabel.
-  ///
-  /// In es, this message translates to:
-  /// **'Vidas: {lives}'**
-  String gameLivesLabel(int lives);
-
-  /// No description provided for @gamePenaltiesHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Desliza desde el balón hacia la portería'**
-  String get gamePenaltiesHint;
-
-  /// No description provided for @gameTouchesHint.
-  ///
-  /// In es, this message translates to:
-  /// **'¡Toca el balón!'**
-  String get gameTouchesHint;
 
   /// No description provided for @gameCatchHint.
   ///
@@ -8169,35 +8097,209 @@ abstract class AppLocalizations {
   /// **'Hecho'**
   String get gameModDone;
 
+  /// No description provided for @gameCatchName.
+  ///
+  /// In es, this message translates to:
+  /// **'Atrapa balones'**
+  String get gameCatchName;
+
+  /// No description provided for @gameRunName.
+  ///
+  /// In es, this message translates to:
+  /// **'Regatea'**
+  String get gameRunName;
+
+  /// No description provided for @gameHeadName.
+  ///
+  /// In es, this message translates to:
+  /// **'Cabezazos'**
+  String get gameHeadName;
+
+  /// No description provided for @gamePairsName.
+  ///
+  /// In es, this message translates to:
+  /// **'Parejas de escudos'**
+  String get gamePairsName;
+
+  /// No description provided for @gameCatchShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Atrapa'**
+  String get gameCatchShort;
+
+  /// No description provided for @gameRunShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Regatea'**
+  String get gameRunShort;
+
+  /// No description provided for @gameHeadShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Cabezazos'**
+  String get gameHeadShort;
+
+  /// No description provided for @gamePairsShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Parejas'**
+  String get gamePairsShort;
+
+  /// No description provided for @gameCatchHow.
+  ///
+  /// In es, this message translates to:
+  /// **'Arrastra a Mutxigol y atrapa los balones. Deja caer lo que sea malo.'**
+  String get gameCatchHow;
+
+  /// No description provided for @gameRunHow.
+  ///
+  /// In es, this message translates to:
+  /// **'Desliza para cambiar de carril. Esquiva a los defensas y recoge balones.'**
+  String get gameRunHow;
+
+  /// No description provided for @gameHeadHow.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca para saltar y pasa entre las columnas de defensas.'**
+  String get gameHeadHow;
+
+  /// No description provided for @gamePairsHow.
+  ///
+  /// In es, this message translates to:
+  /// **'Encuentra las 8 parejas de escudos en el menor tiempo.'**
+  String get gamePairsHow;
+
+  /// No description provided for @gameRunHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Desliza para cambiar de carril'**
+  String get gameRunHint;
+
+  /// No description provided for @gameHeadHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca para saltar'**
+  String get gameHeadHint;
+
+  /// No description provided for @gameHowToPlay.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo se juega?'**
+  String get gameHowToPlay;
+
+  /// No description provided for @gameLegendTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo se juega?'**
+  String get gameLegendTitle;
+
+  /// No description provided for @gameLegendGotIt.
+  ///
+  /// In es, this message translates to:
+  /// **'Entendido'**
+  String get gameLegendGotIt;
+
+  /// No description provided for @gameLegendStart.
+  ///
+  /// In es, this message translates to:
+  /// **'¡A jugar!'**
+  String get gameLegendStart;
+
+  /// No description provided for @gameLegendBall.
+  ///
+  /// In es, this message translates to:
+  /// **'Balón: +1 punto. Si llega al suelo, pierdes una vida.'**
+  String get gameLegendBall;
+
+  /// No description provided for @gameLegendEffect.
+  ///
+  /// In es, this message translates to:
+  /// **'Balón con efecto: cae en curva. +1 punto.'**
+  String get gameLegendEffect;
+
+  /// No description provided for @gameLegendGolden.
+  ///
+  /// In es, this message translates to:
+  /// **'Balón dorado: +5 puntos.'**
+  String get gameLegendGolden;
+
+  /// No description provided for @gameLegendShield.
+  ///
+  /// In es, this message translates to:
+  /// **'Escudo del club: +1 vida (máximo 3).'**
+  String get gameLegendShield;
+
+  /// No description provided for @gameLegendFlat.
+  ///
+  /// In es, this message translates to:
+  /// **'Balón pinchado: déjalo caer. Si lo atrapas, pierdes una vida.'**
+  String get gameLegendFlat;
+
+  /// No description provided for @gameLegendRed.
+  ///
+  /// In es, this message translates to:
+  /// **'Tarjeta roja: pierdes una vida.'**
+  String get gameLegendRed;
+
+  /// No description provided for @gameLegendYellow.
+  ///
+  /// In es, this message translates to:
+  /// **'Tarjeta amarilla: con dos pierdes una vida.'**
+  String get gameLegendYellow;
+
+  /// No description provided for @gameLegendBoot.
+  ///
+  /// In es, this message translates to:
+  /// **'Bota de tacos: cae rápido y rebota. Si la atrapas, pierdes una vida.'**
+  String get gameLegendBoot;
+
+  /// No description provided for @gameLegendWhistle.
+  ///
+  /// In es, this message translates to:
+  /// **'Silbato: Mutxigol se queda quieto 2 segundos.'**
+  String get gameLegendWhistle;
+
+  /// No description provided for @gameCatchFrozen.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Quieto! {seconds} s'**
+  String gameCatchFrozen(int seconds);
+
+  /// No description provided for @gameYellowCards.
+  ///
+  /// In es, this message translates to:
+  /// **'Amarillas'**
+  String get gameYellowCards;
+
+  /// No description provided for @gamePairsNoShields.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hay escudos suficientes para jugar'**
+  String get gamePairsNoShields;
+
+  /// No description provided for @gameFinalTime.
+  ///
+  /// In es, this message translates to:
+  /// **'Tiempo: {time}'**
+  String gameFinalTime(String time);
+
+  /// No description provided for @gameYourBestTime.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu mejor tiempo: {time}'**
+  String gameYourBestTime(String time);
+
+  /// No description provided for @gameAttempts.
+  ///
+  /// In es, this message translates to:
+  /// **'Intentos: {count}'**
+  String gameAttempts(int count);
+
   /// No description provided for @gameModMarks.
   ///
   /// In es, this message translates to:
-  /// **'Penaltis {penalties} · Toques {touches} · Atrapa {catches}'**
-  String gameModMarks(int penalties, int touches, int catches);
-
-  /// No description provided for @gameResultGoal.
-  ///
-  /// In es, this message translates to:
-  /// **'¡Gol!'**
-  String get gameResultGoal;
-
-  /// No description provided for @gameResultSaved.
-  ///
-  /// In es, this message translates to:
-  /// **'¡Parada!'**
-  String get gameResultSaved;
-
-  /// No description provided for @gameResultWeak.
-  ///
-  /// In es, this message translates to:
-  /// **'Muy flojo'**
-  String get gameResultWeak;
-
-  /// No description provided for @gameResultOut.
-  ///
-  /// In es, this message translates to:
-  /// **'Fuera'**
-  String get gameResultOut;
+  /// **'Atrapa {catches} · Regatea {run} · Cabezazos {heads} · Parejas {pairs}'**
+  String gameModMarks(int catches, int run, int heads, String pairs);
 }
 
 class _AppLocalizationsDelegate

@@ -4,6 +4,7 @@ import '../../../core/utils/mensaje_error.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../models/juego_modelos.dart';
 import '../services/juego_service.dart';
+import '../tiempo_juego.dart';
 
 /// "Juego Mutxigol" dentro de Moderación (solo ADMIN_APP): busca perfiles por alias, cambia un alias, oculta o muestra
 /// del ranking y borra puntuaciones (una o todas), siempre con confirmación. Aquí sí salen el nombre y el email de la
@@ -294,7 +295,14 @@ class _JuegoModeracionViewState extends State<JuegoModeracionView> {
             ),
             Text('${p.nombre} · ${p.email}'),
             Text(
-              t.gameModMarks(p.mejorPenaltis, p.mejorToques, p.mejorAtrapa),
+              t.gameModMarks(
+                p.mejorAtrapa,
+                p.mejorRegatea,
+                p.mejorCabezazos,
+                p.mejorParejasMs > 0
+                    ? formatearTiempo(p.mejorParejasMs)
+                    : '—',
+              ),
             ),
             const SizedBox(height: 4),
             Wrap(
@@ -359,9 +367,10 @@ class _PuntuacionesDelPerfilState extends State<_PuntuacionesDelPerfil> {
   }
 
   String _nombreDelJuego(AppLocalizations t, Juego? juego) => switch (juego) {
-    Juego.penaltis => t.gamePenaltiesShort,
-    Juego.toques => t.gameTouchesShort,
     Juego.atrapa => t.gameCatchShort,
+    Juego.regatea => t.gameRunShort,
+    Juego.cabezazos => t.gameHeadShort,
+    Juego.parejas => t.gamePairsShort,
     null => '',
   };
 
@@ -435,7 +444,7 @@ class _PuntuacionesDelPerfilState extends State<_PuntuacionesDelPerfil> {
                         ListTile(
                           key: ValueKey('puntuacion-${p.id}'),
                           title: Text(
-                            '${_nombreDelJuego(t, p.juego)} · ${p.puntos}',
+                            '${_nombreDelJuego(t, p.juego)} · ${p.juego == Juego.parejas ? formatearTiempo(p.duracionMs) : p.puntos}',
                           ),
                           subtitle: Text(
                             p.fecha == null

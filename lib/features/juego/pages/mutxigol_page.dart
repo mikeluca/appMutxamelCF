@@ -7,7 +7,9 @@ import '../../auth/services/auth_manager.dart';
 import '../estado_mutxigol.dart';
 import '../models/juego_modelos.dart';
 import '../services/juego_service.dart';
+import '../tiempo_juego.dart';
 import '../widgets/dialogo_alias.dart';
+import '../widgets/leyenda_atrapa.dart';
 import 'partida_juego_page.dart';
 import 'ranking_juego_page.dart';
 
@@ -346,7 +348,7 @@ class _TarjetaDeJuego extends StatelessWidget {
   final Juego juego;
   final Equipacion equipacion;
 
-  /// El récord histórico (null sin sesión: no se enseña).
+  /// El récord histórico (null sin sesión: no se enseña): los puntos o, en Parejas, el mejor tiempo en ms.
   final int? record;
   final VoidCallback onJugar;
 
@@ -355,16 +357,25 @@ class _TarjetaDeJuego extends StatelessWidget {
     final t = AppLocalizations.of(context);
 
     final (titulo, como, pose) = switch (juego) {
-      Juego.penaltis => (
-        t.gamePenaltiesName,
-        t.gamePenaltiesHow,
-        PoseMutxigol.chutando,
-      ),
-      Juego.toques => (t.gameTouchesName, t.gameTouchesHow, PoseMutxigol.toques),
       Juego.atrapa => (
         t.gameCatchName,
         t.gameCatchHow,
         PoseMutxigol.atrapando,
+      ),
+      Juego.regatea => (
+        t.gameRunName,
+        t.gameRunHow,
+        PoseMutxigol.corriendo2,
+      ),
+      Juego.cabezazos => (
+        t.gameHeadName,
+        t.gameHeadHow,
+        PoseMutxigol.salto,
+      ),
+      Juego.parejas => (
+        t.gamePairsName,
+        t.gamePairsHow,
+        PoseMutxigol.cara,
       ),
     };
 
@@ -400,12 +411,28 @@ class _TarjetaDeJuego extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         record! > 0
-                            ? t.gameYourRecord(record!)
+                            ? (juego.esDeTiempo
+                                  ? t.gameYourBestTime(formatearTiempo(record!))
+                                  : t.gameYourRecord(record!))
                             : t.gameNoRecordYet,
                         key: ValueKey('record-${juego.codigo}'),
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
+                    if (juego == Juego.atrapa)
+                      Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: TextButton(
+                          key: const ValueKey('como-se-juega-atrapa'),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size(0, 32),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          onPressed: () => LeyendaAtrapa.mostrar(context),
+                          child: Text(t.gameHowToPlay),
+                        ),
+                      ),
                   ],
                 ),
               ),

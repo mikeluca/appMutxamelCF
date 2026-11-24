@@ -14,11 +14,22 @@ class EstadoMutxigol {
 
   static final Map<Juego, int> _recordsDeLaSesion = {};
 
-  /// El mejor resultado de esta sesión de la app en ese juego (0 si no hay).
+  /// Si ya se ha enseñado la leyenda de Atrapa balones en esta sesión de la app (sale antes de la primera partida).
+  static bool leyendaAtrapaVista = false;
+
+  /// El mejor resultado de esta sesión de la app en ese juego (0 si no hay): puntos o, en Parejas, el menor tiempo en
+  /// ms.
   static int recordDeLaSesion(Juego juego) => _recordsDeLaSesion[juego] ?? 0;
 
-  static void anotarPuntuacion(Juego juego, int puntos) {
-    if (puntos > recordDeLaSesion(juego)) _recordsDeLaSesion[juego] = puntos;
+  /// Anota una partida: [valor] son los puntos o, en Parejas, el tiempo en ms (menos es mejor).
+  static void anotarPuntuacion(Juego juego, int valor) {
+    if (valor <= 0) return;
+
+    final actual = recordDeLaSesion(juego);
+
+    final mejora = juego.esDeTiempo ? (actual == 0 || valor < actual) : valor > actual;
+
+    if (mejora) _recordsDeLaSesion[juego] = valor;
   }
 
   /// Solo para tests: vuelve al estado de recién abierta la app.
@@ -26,5 +37,6 @@ class EstadoMutxigol {
   static void reiniciar() {
     equipacion.value = Equipacion.azul;
     _recordsDeLaSesion.clear();
+    leyendaAtrapaVista = false;
   }
 }

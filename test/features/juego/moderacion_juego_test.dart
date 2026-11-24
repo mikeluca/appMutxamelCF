@@ -14,9 +14,10 @@ const _ana = PerfilJuegoAdmin(
   nombre: 'Ana Pérez',
   email: 'ana@example.com',
   partidas: 5,
-  mejorPenaltis: 12,
-  mejorToques: 40,
   mejorAtrapa: 9,
+  mejorRegatea: 12,
+  mejorCabezazos: 40,
+  mejorParejasMs: 83450,
 );
 
 const _oculto = PerfilJuegoAdmin(
@@ -58,7 +59,7 @@ void main() {
 
       expect(find.text('Mutxigol10'), findsOneWidget);
       expect(find.text('Ana Pérez · ana@example.com'), findsOneWidget);
-      expect(find.text('Penaltis 12 · Toques 40 · Atrapa 9'), findsOneWidget);
+      expect(find.text('Atrapa 9 · Regatea 12 · Cabezazos 40 · Parejas 1:23,4'), findsOneWidget);
       expect(find.text('Escondido'), findsOneWidget);
       expect(find.byKey(const ValueKey('oculto-8')), findsOneWidget);
       expect(find.byKey(const ValueKey('oculto-7')), findsNothing);
@@ -179,11 +180,11 @@ void main() {
         ..puntuacionesAdmin = [
           PuntuacionAdmin(
             id: 11,
-            juego: Juego.penaltis,
+            juego: Juego.cabezazos,
             puntos: 12,
             fecha: DateTime(2026, 11, 24),
           ),
-          const PuntuacionAdmin(id: 12, juego: Juego.toques, puntos: 40),
+          const PuntuacionAdmin(id: 12, juego: Juego.regatea, puntos: 40),
         ];
 
       await tester.tap(find.byKey(const ValueKey('puntuaciones-7')));
@@ -203,10 +204,25 @@ void main() {
       expect(servicio.accionesAdmin, ['borrar 11']);
     });
 
+    testWidgets('en las puntuaciones de Parejas se ve el tiempo y no los 8 puntos', (tester) async {
+      final servicio = await _pintar(tester);
+
+      servicio.puntuacionesAdmin = const [
+          PuntuacionAdmin(id: 21, juego: Juego.parejas, puntos: 8, duracionMs: 41300),
+          PuntuacionAdmin(id: 22, juego: Juego.atrapa, puntos: 15, duracionMs: 30000),
+      ];
+
+      await tester.tap(find.byKey(const ValueKey('puntuaciones-7')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Parejas · 0:41,3'), findsOneWidget);
+      expect(find.text('Atrapa · 15'), findsOneWidget);
+    });
+
     testWidgets('borrar todas las puntuaciones del perfil, con confirmación', (tester) async {
       final servicio = await _pintar(tester)
         ..puntuacionesAdmin = const [
-          PuntuacionAdmin(id: 11, juego: Juego.penaltis, puntos: 12),
+          PuntuacionAdmin(id: 11, juego: Juego.cabezazos, puntos: 12),
         ];
 
       await tester.tap(find.byKey(const ValueKey('puntuaciones-7')));

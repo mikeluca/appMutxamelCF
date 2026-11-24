@@ -21,14 +21,20 @@ Future<void> _iniciarSesion() => AuthManager.establecerUsuario(
 PerfilJuego _perfil({
   String? alias,
   Equipacion equipacion = Equipacion.azul,
-  int penaltis = 0,
+  int atrapa = 0,
+  int parejasMs = 0,
 }) => PerfilJuego(
   alias: alias,
   equipacion: equipacion,
   juegos: {
-    if (penaltis > 0)
-      Juego.penaltis: MarcasDeJuego(
-        historico: MarcaJuego(puntos: penaltis, posicion: 4),
+    if (atrapa > 0)
+      Juego.atrapa: MarcasDeJuego(
+        historico: MarcaJuego(puntos: atrapa, posicion: 4),
+      ),
+    if (parejasMs > 0)
+      Juego.parejas: MarcasDeJuego(
+        esTiempo: true,
+        historico: MarcaJuego(puntos: 8, tiempoMs: parejasMs, posicion: 2),
       ),
   },
 );
@@ -45,22 +51,53 @@ void main() {
   });
 
   group('sin sesión', () {
-    testWidgets('Mutxigol parado con la equipación azul, las 3 tarjetas y el botón Ranking', (tester) async {
-      pantallaDeMovil(tester);
+    testWidgets('Mutxigol parado con la equipación azul, las 4 tarjetas en orden y el botón Ranking', (tester) async {
+      pantallaDeMovil(tester, alto: 2000);
       await tester.pumpWidget(appDePrueba(MutxigolPage(servicio: JuegoServiceFalso())));
       await tester.pump();
 
       expect(imagenDe(_parado(Equipacion.azul)), findsOneWidget);
-      expect(find.byKey(const ValueKey('tarjeta-PENALTIS')), findsOneWidget);
-      expect(find.byKey(const ValueKey('tarjeta-TOQUES')), findsOneWidget);
-      expect(find.byKey(const ValueKey('tarjeta-ATRAPA')), findsOneWidget);
-      expect(find.text('Desliza el dedo desde el balón hacia la portería. Tienes 3 vidas.'), findsOneWidget);
+
+      const codigos = ['ATRAPA', 'REGATEA', 'CABEZAZOS', 'PAREJAS'];
+
+      for (final c in codigos) {
+        expect(find.byKey(ValueKey('tarjeta-$c')), findsOneWidget, reason: c);
+      }
+
+      // En este orden, de arriba abajo.
+      final ys = [for (final c in codigos) tester.getTopLeft(find.byKey(ValueKey('tarjeta-$c'))).dy];
+
+      expect(ys, [...ys]..sort());
+      expect(find.text('Atrapa balones'), findsOneWidget);
+      expect(find.text('Regatea'), findsOneWidget);
+      expect(find.text('Cabezazos'), findsOneWidget);
+      expect(find.text('Parejas de escudos'), findsOneWidget);
+      expect(find.text('Penaltis'), findsNothing);
+      expect(find.text('Toques'), findsNothing);
       expect(find.byKey(const ValueKey('boton-ranking')), findsOneWidget);
 
       // Cada tarjeta lleva su pose.
-      expect(imagenDe(ImagenesMutxigol.pose(Equipacion.azul, PoseMutxigol.chutando)), findsOneWidget);
-      expect(imagenDe(ImagenesMutxigol.pose(Equipacion.azul, PoseMutxigol.toques)), findsOneWidget);
       expect(imagenDe(ImagenesMutxigol.pose(Equipacion.azul, PoseMutxigol.atrapando)), findsOneWidget);
+      expect(imagenDe(ImagenesMutxigol.pose(Equipacion.azul, PoseMutxigol.corriendo2)), findsOneWidget);
+      expect(imagenDe(ImagenesMutxigol.pose(Equipacion.azul, PoseMutxigol.salto)), findsOneWidget);
+      expect(imagenDe(ImagenesMutxigol.pose(Equipacion.azul, PoseMutxigol.cara)), findsOneWidget);
+    });
+
+    testWidgets('la tarjeta de Atrapa tiene el botón "¿Cómo se juega?" con la leyenda', (tester) async {
+      pantallaDeMovil(tester, alto: 2000);
+      await tester.pumpWidget(appDePrueba(MutxigolPage(servicio: JuegoServiceFalso())));
+      await tester.pump();
+
+      await tester.tap(find.byKey(const ValueKey('como-se-juega-atrapa')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('leyenda-atrapa')), findsOneWidget);
+      expect(find.text('Balón dorado: +5 puntos.'), findsOneWidget);
+
+      await tester.tap(find.byKey(const ValueKey('cerrar-leyenda')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('leyenda-atrapa')), findsNothing);
     });
 
     testWidgets('dice que hay que iniciar sesión para guardar y no enseña récords', (tester) async {
@@ -74,7 +111,7 @@ void main() {
         find.text('Inicia sesión en el Área Club para guardar tus puntuaciones'),
         findsOneWidget,
       );
-      expect(find.byKey(const ValueKey('record-PENALTIS')), findsNothing);
+      expect(find.byKey(const ValueKey('record-ATRAPA')), findsNothing);
       expect(servicio.perfilesPedidos, 0);
     });
 
@@ -90,7 +127,7 @@ void main() {
 
       expect(imagenDe(_parado(Equipacion.rosa)), findsOneWidget);
       expect(imagenDe(_parado(Equipacion.azul)), findsNothing);
-      expect(imagenDe(ImagenesMutxigol.pose(Equipacion.rosa, PoseMutxigol.chutando)), findsOneWidget);
+      expect(imagenDe(ImagenesMutxigol.pose(Equipacion.rosa, PoseMutxigol.corriendo2)), findsOneWidget);
       expect(EstadoMutxigol.equipacion.value, Equipacion.rosa);
       expect(servicio.actualizaciones, isEmpty);
 
@@ -123,7 +160,8 @@ void main() {
         perfilInicial: _perfil(
           alias: 'Mutxigol10',
           equipacion: Equipacion.rosa,
-          penaltis: 12,
+          atrapa: 12,
+          parejasMs: 83450,
         ),
       );
 
@@ -133,6 +171,9 @@ void main() {
       expect(imagenDe(_parado(Equipacion.rosa)), findsOneWidget);
       expect(find.text('Tu alias: Mutxigol10'), findsOneWidget);
       expect(find.text('Tu récord: 12'), findsOneWidget);
+      // En Parejas el récord es el mejor tiempo.
+      expect(find.text('Tu mejor tiempo: 1:23,4'), findsOneWidget);
+      expect(find.byKey(const ValueKey('record-PAREJAS')), findsOneWidget);
       expect(find.text('Aún sin récord'), findsNWidgets(2));
       expect(
         find.text('Inicia sesión en el Área Club para guardar tus puntuaciones'),
@@ -275,7 +316,7 @@ void main() {
       await _iniciarSesion();
 
       final servicio = JuegoServiceFalso(
-        perfilInicial: _perfil(alias: 'Ana', penaltis: 5),
+        perfilInicial: _perfil(alias: 'Ana', atrapa: 5),
       );
 
       await tester.pumpWidget(appDePrueba(MutxigolPage(servicio: servicio)));
@@ -310,7 +351,7 @@ void main() {
       tester.state<NavigatorState>(find.byType(Navigator)).pop();
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const ValueKey('tarjeta-TOQUES')));
+      await tester.tap(find.byKey(const ValueKey('tarjeta-REGATEA')));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 

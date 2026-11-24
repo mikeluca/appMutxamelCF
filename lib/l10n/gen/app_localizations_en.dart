@@ -4441,36 +4441,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameKitPink => 'Pink';
 
   @override
-  String get gamePenaltiesName => 'Penalties';
-
-  @override
-  String get gameTouchesName => 'Keepie-uppie';
-
-  @override
-  String get gameCatchName => 'Catch the balls';
-
-  @override
-  String get gamePenaltiesShort => 'Penalties';
-
-  @override
-  String get gameTouchesShort => 'Touches';
-
-  @override
-  String get gameCatchShort => 'Catch';
-
-  @override
-  String get gamePenaltiesHow =>
-      'Swipe from the ball towards the goal. You have 3 lives.';
-
-  @override
-  String get gameTouchesHow =>
-      'Tap the ball to keep it off the ground. Each touch is a point.';
-
-  @override
-  String get gameCatchHow =>
-      'Drag Mutxigol and catch the balls. Dodge the red cards.';
-
-  @override
   String gameYourRecord(int points) {
     return 'Your record: $points';
   }
@@ -4537,17 +4507,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String gameScoreLabel(int points) {
     return 'Score: $points';
   }
-
-  @override
-  String gameLivesLabel(int lives) {
-    return 'Lives: $lives';
-  }
-
-  @override
-  String get gamePenaltiesHint => 'Swipe from the ball towards the goal';
-
-  @override
-  String get gameTouchesHint => 'Tap the ball!';
 
   @override
   String get gameCatchHint => 'Drag to move';
@@ -4667,19 +4626,120 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameModDone => 'Done';
 
   @override
-  String gameModMarks(int penalties, int touches, int catches) {
-    return 'Penalties $penalties · Touches $touches · Catch $catches';
+  String get gameCatchName => 'Catch the balls';
+
+  @override
+  String get gameRunName => 'Dribble';
+
+  @override
+  String get gameHeadName => 'Headers';
+
+  @override
+  String get gamePairsName => 'Crest pairs';
+
+  @override
+  String get gameCatchShort => 'Catch';
+
+  @override
+  String get gameRunShort => 'Dribble';
+
+  @override
+  String get gameHeadShort => 'Headers';
+
+  @override
+  String get gamePairsShort => 'Pairs';
+
+  @override
+  String get gameCatchHow =>
+      'Drag Mutxigol and catch the balls. Let the bad stuff fall.';
+
+  @override
+  String get gameRunHow =>
+      'Swipe to change lane. Dodge the defenders and collect balls.';
+
+  @override
+  String get gameHeadHow =>
+      'Tap to jump and fly between the columns of defenders.';
+
+  @override
+  String get gamePairsHow => 'Find the 8 pairs of crests in the shortest time.';
+
+  @override
+  String get gameRunHint => 'Swipe to change lane';
+
+  @override
+  String get gameHeadHint => 'Tap to jump';
+
+  @override
+  String get gameHowToPlay => 'How to play';
+
+  @override
+  String get gameLegendTitle => 'How to play';
+
+  @override
+  String get gameLegendGotIt => 'Got it';
+
+  @override
+  String get gameLegendStart => 'Let\'s play!';
+
+  @override
+  String get gameLegendBall =>
+      'Ball: +1 point. If it hits the ground, you lose a life.';
+
+  @override
+  String get gameLegendEffect => 'Curve ball: it falls in a curve. +1 point.';
+
+  @override
+  String get gameLegendGolden => 'Golden ball: +5 points.';
+
+  @override
+  String get gameLegendShield => 'Club crest: +1 life (maximum 3).';
+
+  @override
+  String get gameLegendFlat =>
+      'Flat ball: let it fall. If you catch it, you lose a life.';
+
+  @override
+  String get gameLegendRed => 'Red card: you lose a life.';
+
+  @override
+  String get gameLegendYellow => 'Yellow card: two of them cost you a life.';
+
+  @override
+  String get gameLegendBoot =>
+      'Football boot: falls fast and bounces. If you catch it, you lose a life.';
+
+  @override
+  String get gameLegendWhistle => 'Whistle: Mutxigol freezes for 2 seconds.';
+
+  @override
+  String gameCatchFrozen(int seconds) {
+    return 'Frozen! $seconds s';
   }
 
   @override
-  String get gameResultGoal => 'Goal!';
+  String get gameYellowCards => 'Yellows';
 
   @override
-  String get gameResultSaved => 'Saved!';
+  String get gamePairsNoShields => 'There are not enough crests to play yet';
 
   @override
-  String get gameResultWeak => 'Too weak';
+  String gameFinalTime(String time) {
+    return 'Time: $time';
+  }
 
   @override
-  String get gameResultOut => 'Wide';
+  String gameYourBestTime(String time) {
+    return 'Your best time: $time';
+  }
+
+  @override
+  String gameAttempts(int count) {
+    return 'Attempts: $count';
+  }
+
+  @override
+  String gameModMarks(int catches, int run, int heads, String pairs) {
+    return 'Catch $catches · Dribble $run · Headers $heads · Pairs $pairs';
+  }
 }

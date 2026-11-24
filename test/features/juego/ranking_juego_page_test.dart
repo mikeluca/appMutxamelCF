@@ -12,11 +12,13 @@ List<FilaRanking> _top(String prefijo, {int n = 3, int base = 20}) => [
 ];
 
 void main() {
+  _pruebasDeParejas();
+
   testWidgets('se ve sin sesión: pestañas, "Esta semana" por defecto y alias, posición y puntos', (tester) async {
     pantallaDeMovil(tester);
 
     final servicio = JuegoServiceFalso(
-      filas: {(Juego.penaltis, PeriodoRanking.semana): _top('Sem')},
+      filas: {(Juego.atrapa, PeriodoRanking.semana): _top('Sem')},
     );
 
     await tester.pumpWidget(
@@ -24,13 +26,14 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Penaltis'), findsOneWidget);
-    expect(find.text('Toques'), findsOneWidget);
     expect(find.text('Atrapa'), findsOneWidget);
+    expect(find.text('Regatea'), findsOneWidget);
+    expect(find.text('Cabezazos'), findsOneWidget);
+    expect(find.text('Parejas'), findsOneWidget);
     expect(find.text('Esta semana'), findsOneWidget);
     expect(find.text('Histórico'), findsOneWidget);
 
-    expect(servicio.rankingsPedidos.first, (Juego.penaltis, PeriodoRanking.semana));
+    expect(servicio.rankingsPedidos.first, (Juego.atrapa, PeriodoRanking.semana));
     expect(find.text('Sem1'), findsOneWidget);
     expect(find.text('#1'), findsOneWidget);
     expect(find.text('19'), findsOneWidget);
@@ -46,8 +49,8 @@ void main() {
 
     final servicio = JuegoServiceFalso(
       filas: {
-        (Juego.penaltis, PeriodoRanking.semana): _top('Sem'),
-        (Juego.penaltis, PeriodoRanking.historico): _top('His', base: 90),
+        (Juego.atrapa, PeriodoRanking.semana): _top('Sem'),
+        (Juego.atrapa, PeriodoRanking.historico): _top('His', base: 90),
       },
     );
 
@@ -62,7 +65,7 @@ void main() {
     await tester.tap(find.text('Histórico'));
     await tester.pumpAndSettle();
 
-    expect(servicio.rankingsPedidos, contains((Juego.penaltis, PeriodoRanking.historico)));
+    expect(servicio.rankingsPedidos, contains((Juego.atrapa, PeriodoRanking.historico)));
     expect(find.text('His1'), findsOneWidget);
     expect(find.text('Sem1'), findsNothing);
 
@@ -77,7 +80,7 @@ void main() {
 
     final servicio = JuegoServiceFalso(
       filas: {
-        (Juego.toques, PeriodoRanking.semana): _top('Toc'),
+        (Juego.regatea, PeriodoRanking.semana): _top('Toc'),
         (Juego.atrapa, PeriodoRanking.semana): _top('Atr'),
       },
     );
@@ -87,7 +90,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Toques'));
+    await tester.tap(find.text('Regatea'));
     await tester.pumpAndSettle();
 
     expect(find.text('Toc1'), findsOneWidget);
@@ -124,7 +127,7 @@ void main() {
 
     final servicio = JuegoServiceFalso(
       perfilInicial: const PerfilJuego(alias: 'sem2'),
-      filas: {(Juego.penaltis, PeriodoRanking.semana): _top('Sem')},
+      filas: {(Juego.atrapa, PeriodoRanking.semana): _top('Sem')},
     );
 
     await tester.pumpWidget(
@@ -145,15 +148,15 @@ void main() {
       perfilInicial: const PerfilJuego(
         alias: 'Zeta',
         juegos: {
-          Juego.penaltis: MarcasDeJuego(
+          Juego.atrapa: MarcasDeJuego(
             semana: MarcaJuego(puntos: 3, posicion: 80),
             historico: MarcaJuego(puntos: 9, posicion: 120),
           ),
         },
       ),
       filas: {
-        (Juego.penaltis, PeriodoRanking.semana): _top('Top', n: 50, base: 100),
-        (Juego.penaltis, PeriodoRanking.historico): _top('Top', n: 50, base: 100),
+        (Juego.atrapa, PeriodoRanking.semana): _top('Top', n: 50, base: 100),
+        (Juego.atrapa, PeriodoRanking.historico): _top('Top', n: 50, base: 100),
       },
     );
 
@@ -184,14 +187,14 @@ void main() {
         alias: 'Zeta',
         oculto: true,
         juegos: {
-          Juego.penaltis: MarcasDeJuego(semana: MarcaJuego(puntos: 3)),
+          Juego.atrapa: MarcasDeJuego(semana: MarcaJuego(puntos: 3)),
         },
       ),
       PerfilJuego(),
     ]) {
       final servicio = JuegoServiceFalso(
         perfilInicial: perfil,
-        filas: {(Juego.penaltis, PeriodoRanking.semana): _top('Sem')},
+        filas: {(Juego.atrapa, PeriodoRanking.semana): _top('Sem')},
       );
 
       await tester.pumpWidget(
@@ -265,4 +268,74 @@ class _ServicioQueFalla extends JuegoServiceFalso {
 
     return const [];
   }
+}
+
+void _pruebasDeParejas() {
+  testWidgets('Parejas enseña el tiempo (m:ss,d) porque la marca es TIEMPO, y Atrapa los puntos', (tester) async {
+    pantallaDeMovil(tester);
+
+    final servicio = JuegoServiceFalso(
+      filas: {
+        (Juego.parejas, PeriodoRanking.semana): const [
+          FilaRanking(posicion: 1, alias: 'Rapido', puntos: 8, tiempoMs: 31400, esTiempo: true),
+          FilaRanking(posicion: 2, alias: 'Lento', puntos: 8, tiempoMs: 83450, esTiempo: true),
+        ],
+        (Juego.atrapa, PeriodoRanking.semana): const [
+          FilaRanking(posicion: 1, alias: 'Manos', puntos: 33, tiempoMs: 40000),
+        ],
+      },
+    );
+
+    await tester.pumpWidget(
+      appDePrueba(RankingJuegoPage(juegoInicial: Juego.parejas, servicio: servicio, conSesion: false)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Rapido'), findsOneWidget);
+    expect(find.text('0:31,4'), findsOneWidget);
+    expect(find.text('1:23,4'), findsOneWidget);
+    // En el ranking de tiempo no salen los 8 puntos.
+    expect(find.text('8'), findsNothing);
+
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpWidget(
+      appDePrueba(RankingJuegoPage(servicio: servicio, conSesion: false)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Manos'), findsOneWidget);
+    expect(find.text('33'), findsOneWidget);
+    expect(find.text('0:40,0'), findsNothing);
+  });
+
+  testWidgets('Parejas: tu posición fuera del top 50 sale como tiempo', (tester) async {
+    pantallaDeMovil(tester, alto: 4000);
+
+    final servicio = JuegoServiceFalso(
+      perfilInicial: const PerfilJuego(
+        alias: 'Zeta',
+        juegos: {
+          Juego.parejas: MarcasDeJuego(
+            esTiempo: true,
+            semana: MarcaJuego(puntos: 8, tiempoMs: 95200, posicion: 80),
+          ),
+        },
+      ),
+      filas: {
+        (Juego.parejas, PeriodoRanking.semana): [
+          for (var i = 1; i <= 50; i++)
+            FilaRanking(posicion: i, alias: 'Top$i', puntos: 8, tiempoMs: 20000 + i * 100, esTiempo: true),
+        ],
+      },
+    );
+
+    await tester.pumpWidget(
+      appDePrueba(RankingJuegoPage(juegoInicial: Juego.parejas, servicio: servicio, conSesion: true)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const ValueKey('tu-posicion')), findsOneWidget);
+    expect(find.text('#80'), findsOneWidget);
+    expect(find.text('1:35,2'), findsOneWidget);
+  });
 }

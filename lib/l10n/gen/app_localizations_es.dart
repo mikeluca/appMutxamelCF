@@ -4482,36 +4482,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get gameKitPink => 'Rosa';
 
   @override
-  String get gamePenaltiesName => 'Penaltis';
-
-  @override
-  String get gameTouchesName => 'Toques';
-
-  @override
-  String get gameCatchName => 'Atrapa balones';
-
-  @override
-  String get gamePenaltiesShort => 'Penaltis';
-
-  @override
-  String get gameTouchesShort => 'Toques';
-
-  @override
-  String get gameCatchShort => 'Atrapa';
-
-  @override
-  String get gamePenaltiesHow =>
-      'Desliza el dedo desde el balón hacia la portería. Tienes 3 vidas.';
-
-  @override
-  String get gameTouchesHow =>
-      'Toca el balón para que no caiga al suelo. Cada toque suma un punto.';
-
-  @override
-  String get gameCatchHow =>
-      'Arrastra a Mutxigol y atrapa los balones. Esquiva las tarjetas rojas.';
-
-  @override
   String gameYourRecord(int points) {
     return 'Tu récord: $points';
   }
@@ -4578,17 +4548,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String gameScoreLabel(int points) {
     return 'Puntos: $points';
   }
-
-  @override
-  String gameLivesLabel(int lives) {
-    return 'Vidas: $lives';
-  }
-
-  @override
-  String get gamePenaltiesHint => 'Desliza desde el balón hacia la portería';
-
-  @override
-  String get gameTouchesHint => '¡Toca el balón!';
 
   @override
   String get gameCatchHint => 'Arrastra para moverte';
@@ -4708,19 +4667,122 @@ class AppLocalizationsEs extends AppLocalizations {
   String get gameModDone => 'Hecho';
 
   @override
-  String gameModMarks(int penalties, int touches, int catches) {
-    return 'Penaltis $penalties · Toques $touches · Atrapa $catches';
+  String get gameCatchName => 'Atrapa balones';
+
+  @override
+  String get gameRunName => 'Regatea';
+
+  @override
+  String get gameHeadName => 'Cabezazos';
+
+  @override
+  String get gamePairsName => 'Parejas de escudos';
+
+  @override
+  String get gameCatchShort => 'Atrapa';
+
+  @override
+  String get gameRunShort => 'Regatea';
+
+  @override
+  String get gameHeadShort => 'Cabezazos';
+
+  @override
+  String get gamePairsShort => 'Parejas';
+
+  @override
+  String get gameCatchHow =>
+      'Arrastra a Mutxigol y atrapa los balones. Deja caer lo que sea malo.';
+
+  @override
+  String get gameRunHow =>
+      'Desliza para cambiar de carril. Esquiva a los defensas y recoge balones.';
+
+  @override
+  String get gameHeadHow =>
+      'Toca para saltar y pasa entre las columnas de defensas.';
+
+  @override
+  String get gamePairsHow =>
+      'Encuentra las 8 parejas de escudos en el menor tiempo.';
+
+  @override
+  String get gameRunHint => 'Desliza para cambiar de carril';
+
+  @override
+  String get gameHeadHint => 'Toca para saltar';
+
+  @override
+  String get gameHowToPlay => '¿Cómo se juega?';
+
+  @override
+  String get gameLegendTitle => '¿Cómo se juega?';
+
+  @override
+  String get gameLegendGotIt => 'Entendido';
+
+  @override
+  String get gameLegendStart => '¡A jugar!';
+
+  @override
+  String get gameLegendBall =>
+      'Balón: +1 punto. Si llega al suelo, pierdes una vida.';
+
+  @override
+  String get gameLegendEffect => 'Balón con efecto: cae en curva. +1 punto.';
+
+  @override
+  String get gameLegendGolden => 'Balón dorado: +5 puntos.';
+
+  @override
+  String get gameLegendShield => 'Escudo del club: +1 vida (máximo 3).';
+
+  @override
+  String get gameLegendFlat =>
+      'Balón pinchado: déjalo caer. Si lo atrapas, pierdes una vida.';
+
+  @override
+  String get gameLegendRed => 'Tarjeta roja: pierdes una vida.';
+
+  @override
+  String get gameLegendYellow => 'Tarjeta amarilla: con dos pierdes una vida.';
+
+  @override
+  String get gameLegendBoot =>
+      'Bota de tacos: cae rápido y rebota. Si la atrapas, pierdes una vida.';
+
+  @override
+  String get gameLegendWhistle =>
+      'Silbato: Mutxigol se queda quieto 2 segundos.';
+
+  @override
+  String gameCatchFrozen(int seconds) {
+    return '¡Quieto! $seconds s';
   }
 
   @override
-  String get gameResultGoal => '¡Gol!';
+  String get gameYellowCards => 'Amarillas';
 
   @override
-  String get gameResultSaved => '¡Parada!';
+  String get gamePairsNoShields => 'Aún no hay escudos suficientes para jugar';
 
   @override
-  String get gameResultWeak => 'Muy flojo';
+  String gameFinalTime(String time) {
+    return 'Tiempo: $time';
+  }
 
   @override
-  String get gameResultOut => 'Fuera';
+  String gameYourBestTime(String time) {
+    return 'Tu mejor tiempo: $time';
+  }
+
+  @override
+  String gameAttempts(int count) {
+    return 'Intentos: $count';
+  }
+
+  @override
+  String gameModMarks(int catches, int run, int heads, String pairs) {
+    return 'Atrapa $catches · Regatea $run · Cabezazos $heads · Parejas $pairs';
+  }
 }
