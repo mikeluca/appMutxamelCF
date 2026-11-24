@@ -32,7 +32,7 @@ class EscenaParejas extends StatelessWidget {
   static const double alturaCarta = 100;
 
   /// Lo que dura el giro de una carta.
-  static const Duration duracionDelGiro = Duration(milliseconds: 250);
+  static const Duration duracionDelGiro = ParejasLogica.duracionDelGiro;
 
   /// Dónde empieza el tablero (por debajo del marcador).
   static const double arriba = 96;
@@ -193,7 +193,7 @@ class _CartaEnTableroState extends State<CartaEnTablero>
       padding: const EdgeInsets.fromLTRB(4, 6, 4, 4),
       child: Column(
         children: [
-          EscudoRival(url: escudo.escudoUrl, tamano: 46),
+          EscudoRival(url: escudo.escudoUrl, tamano: 46, sinGenerico: true),
           const SizedBox(height: 2),
           Expanded(
             child: Center(

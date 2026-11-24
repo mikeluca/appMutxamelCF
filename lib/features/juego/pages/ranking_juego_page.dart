@@ -87,7 +87,6 @@ class _RankingJuegoPageState extends State<RankingJuegoPage>
 
     String nombre(Juego j) => switch (j) {
       Juego.atrapa => t.gameCatchShort,
-      Juego.regatea => t.gameRunShort,
       Juego.cabezazos => t.gameHeadShort,
       Juego.parejas => t.gamePairsShort,
     };

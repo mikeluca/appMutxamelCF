@@ -31,11 +31,11 @@ void main() {
           recordSemana: true,
           posicionSemana: 3,
         );
-      final envio = _envio(servicio, juego: Juego.regatea, puntos: 12);
+      final envio = _envio(servicio, juego: Juego.cabezazos, puntos: 12);
 
       await envio.iniciar();
 
-      expect(servicio.guardadas, [(Juego.regatea, 12, 40000)]);
+      expect(servicio.guardadas, [(Juego.cabezazos, 12, 40000)]);
       expect(envio.estado, EstadoEnvio.enviado);
       expect(envio.resultado!.recordSemana, isTrue);
       expect(envio.resultado!.posicionSemana, 3);

@@ -91,7 +91,7 @@ void main() {
   });
 
   group('la pareja incorrecta', () {
-    test('se vuelven a girar a los 0,8 s y cuenta como intento', () {
+    test('se quedan visibles 0,8 s desde que la segunda termina de girarse (no desde el toque) y cuenta como intento', () {
       final l = _logica();
       final eventos = <EventoJuego>[];
 
@@ -109,11 +109,19 @@ void main() {
       expect(l.cartas[b].estado, EstadoCarta.descubierta);
       expect(eventos, [EventoJuego.fallo]);
 
-      l.tick(const Duration(milliseconds: 700));
+      // 0,25 s de giro + 0,8 s visibles = 1,05 s desde el toque.
+      expect(ParejasLogica.duracionDelGiro, const Duration(milliseconds: 250));
+      expect(ParejasLogica.tiempoDeError, const Duration(milliseconds: 800));
 
-      expect(l.cartas[a].estado, EstadoCarta.descubierta, reason: 'aún no');
+      l.tick(const Duration(milliseconds: 900));
 
-      l.tick(const Duration(milliseconds: 150));
+      expect(l.cartas[a].estado, EstadoCarta.descubierta, reason: 'a los 0,9 s del toque (más de 0,8) sigue visible');
+
+      l.tick(const Duration(milliseconds: 100));
+
+      expect(l.cartas[a].estado, EstadoCarta.descubierta, reason: 'a 1,0 s aún');
+
+      l.tick(const Duration(milliseconds: 60));
 
       expect(l.cartas[a].estado, EstadoCarta.oculta);
       expect(l.cartas[b].estado, EstadoCarta.oculta);
@@ -208,7 +216,7 @@ void main() {
 
       l.tocar(a);
       l.tocar(b);
-      l.tick(const Duration(seconds: 1));
+      l.tick(const Duration(seconds: 2));
 
       for (var id = 1; id <= 8; id++) {
         final par = _pareja(l, id);

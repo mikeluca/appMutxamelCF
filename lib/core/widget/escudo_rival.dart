@@ -24,17 +24,53 @@ class EscudoRival extends StatelessWidget {
   /// El color del genérico (según el fondo: claro sobre la cabecera oscura, gris en las listas...).
   final Color? colorGenerico;
 
+  /// true: mientras carga (y si falla) no se pinta la silueta genérica sino un hueco vacío (las cartas de Parejas solo
+  /// enseñan el escudo ya cargado).
+  final bool sinGenerico;
+
   const EscudoRival({
     super.key,
     this.url,
     this.esPropio = false,
     this.tamano = 56,
     this.colorGenerico,
+    this.sinGenerico = false,
   });
 
   /// Solo para tests: la imagen de red.
   @visibleForTesting
   static ConstructorEscudoRed? constructorDeRed;
+
+  /// Solo para tests: cómo se precarga un escudo (true si se ha cargado).
+  @visibleForTesting
+  static Future<bool> Function(BuildContext contexto, String url)?
+  precargadorDeRed;
+
+  /// Descarga el escudo y lo deja en la caché de imágenes con el mismo proveedor que usa el widget, de modo que luego
+  /// sale al instante. false si no se ha podido cargar.
+  static Future<bool> precargar(BuildContext contexto, String? ruta) async {
+    final completa = urlCompleta(ruta);
+
+    if (completa == null) return false;
+
+    final falso = precargadorDeRed;
+
+    if (falso != null) return falso(contexto, completa);
+
+    var bien = true;
+
+    try {
+      await precacheImage(
+        CachedNetworkImageProvider(completa),
+        contexto,
+        onError: (_, _) => bien = false,
+      );
+    } catch (_) {
+      return false;
+    }
+
+    return bien;
+  }
 
   /// La URL completa: la ruta relativa del backend ("/api/public/escudos-rivales/7?v=3") sobre la URL base del
   /// servidor. Null si no hay ruta.
@@ -75,9 +111,15 @@ class EscudoRival extends StatelessWidget {
 
     final completa = urlCompleta(url);
 
-    if (completa == null) return _generico(context);
+    if (completa == null) {
+      return sinGenerico
+          ? SizedBox(width: tamano, height: tamano)
+          : _generico(context);
+    }
 
-    final generico = _generico(context);
+    final generico = sinGenerico
+        ? SizedBox(width: tamano, height: tamano)
+        : _generico(context);
     final construir = constructorDeRed;
 
     if (construir != null) return construir(completa, tamano, generico);

@@ -6,7 +6,7 @@ import '../../../l10n/gen/app_localizations.dart';
 import '../logica/cabezazos_logica.dart';
 import '../logica/logica_juego.dart';
 import '../models/juego_modelos.dart';
-import 'dibujos_juego.dart';
+import 'siluetas_juego.dart';
 import 'escenas_comunes.dart';
 
 /// El fondo de Cabezazos: cielo, nubes y grada con desplazamiento paralaje suave, y el césped de abajo.
@@ -107,18 +107,18 @@ class EscenaCabezazos extends StatelessWidget {
   final Equipacion equipacion;
   final bool activa;
 
-  /// El alto de cada defensa de la columna.
+  /// El alto aproximado de cada defensa de la columna (se ajusta para llenarla entera).
   static const double altoDefensa = 68;
 
-  /// El tamaño con el que se dibuja a Mutxigol (su caja de choque es algo menor).
-  static const double tamanoMutxigol = 92;
-
-  Widget _columna(double desde, double hasta, {required bool haciaArriba}) {
+  /// Una columna de defensas que llena de [desde] a [hasta] sin huecos ni defensas cortadas: se reparte el alto entre
+  /// un número entero de defensas.
+  Widget _columna(double desde, double hasta) {
     final total = hasta - desde;
 
     if (total <= 0) return const SizedBox.shrink();
 
-    final cuantas = (total / altoDefensa).ceil();
+    final cuantas = math.max(1, (total / altoDefensa).round());
+    final alto = total / cuantas;
 
     return Stack(
       clipBehavior: Clip.none,
@@ -126,11 +126,9 @@ class EscenaCabezazos extends StatelessWidget {
         for (var i = 0; i < cuantas; i++)
           Positioned(
             left: 0,
-            top: haciaArriba
-                ? hasta - (i + 1) * altoDefensa
-                : desde + i * altoDefensa,
+            top: desde + i * alto,
             width: CabezazosLogica.anchoBarrera,
-            height: altoDefensa,
+            height: alto,
             child: const CustomPaint(painter: DefensaPainter()),
           ),
       ],
@@ -159,7 +157,7 @@ class EscenaCabezazos extends StatelessWidget {
               ),
               for (final b in l.barreras)
                 Positioned(
-                  key: const ValueKey('barrera'),
+                  key: ObjectKey(b),
                   left: b.x,
                   top: 0,
                   width: CabezazosLogica.anchoBarrera,
@@ -169,10 +167,10 @@ class EscenaCabezazos extends StatelessWidget {
                       clipBehavior: Clip.none,
                       children: [
                         Positioned.fill(
-                          child: _columna(0, b.techoDelHueco, haciaArriba: true),
+                          child: _columna(0, b.techoDelHueco),
                         ),
                         Positioned.fill(
-                          child: _columna(b.sueloDelHueco, l.suelo, haciaArriba: false),
+                          child: _columna(b.sueloDelHueco, l.suelo),
                         ),
                       ],
                     ),
@@ -181,9 +179,19 @@ class EscenaCabezazos extends StatelessWidget {
               MutxigolEnEscena(
                 equipacion: equipacion,
                 pose: PoseMutxigol.salto,
-                centroX: CabezazosLogica.xMutxigol,
-                base: l.y + tamanoMutxigol / 2,
-                tamano: tamanoMutxigol,
+                // El centro del cuerpo (el círculo de choque) está en ([xMutxigol], [y]).
+                centroX:
+                    CabezazosLogica.xMutxigol -
+                    CabezazosLogica.cuerpoDx * CabezazosLogica.tamanoImagen,
+                base:
+                    l.y -
+                    CabezazosLogica.cuerpoDy * CabezazosLogica.tamanoImagen +
+                    CabezazosLogica.tamanoImagen / 2,
+                tamano: CabezazosLogica.tamanoImagen,
+                alineacionGiro: Alignment(
+                  2 * CabezazosLogica.cuerpoDx,
+                  2 * CabezazosLogica.cuerpoDy,
+                ),
                 // La inclinación: hacia arriba (positiva) gira en sentido contrario a las agujas del reloj.
                 giro: -l.inclinacionGrados * math.pi / 180,
               ),
@@ -192,7 +200,7 @@ class EscenaCabezazos extends StatelessWidget {
                   key: const ValueKey('toca-para-saltar'),
                   left: 20,
                   right: 20,
-                  top: l.alto * 0.4 + 64,
+                  top: l.y + CabezazosLogica.radio + 40,
                   child: TextoJuego(t.gameHeadHint, tamano: 22),
                 ),
             ],

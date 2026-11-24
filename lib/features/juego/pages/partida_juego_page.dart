@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
+import '../../../core/widget/escudo_rival.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../envio_puntuacion.dart';
 import '../estado_mutxigol.dart';
@@ -9,7 +12,6 @@ import '../logica/atrapa_logica.dart';
 import '../logica/cabezazos_logica.dart';
 import '../logica/logica_juego.dart';
 import '../logica/parejas_logica.dart';
-import '../logica/regatea_logica.dart';
 import '../models/juego_modelos.dart';
 import '../services/juego_service.dart';
 import '../tiempo_juego.dart';
@@ -17,7 +19,6 @@ import '../widgets/dialogo_alias.dart';
 import '../widgets/escena_atrapa.dart';
 import '../widgets/escena_cabezazos.dart';
 import '../widgets/escena_parejas.dart';
-import '../widgets/escena_regatea.dart';
 import '../widgets/fin_de_partida.dart';
 import '../widgets/leyenda_atrapa.dart';
 import 'ranking_juego_page.dart';
@@ -50,6 +51,10 @@ class PartidaJuegoPage extends StatefulWidget {
 
   /// La cuenta atrás de antes de empezar.
   static const Duration cuentaAtras = Duration(seconds: 3);
+
+  /// Parejas pide más escudos de los que usa, por si alguno no carga, y espera como mucho esto a que se descarguen.
+  static const int escudosPedidos = 12;
+  static const Duration tiempoMaximoDePrecarga = Duration(seconds: 10);
 
   /// Un fotograma largo (por un tirón) no hace saltar el juego: como mucho avanza esto de una vez.
   static const Duration fotogramaMaximo = Duration(milliseconds: 50);
@@ -84,12 +89,16 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
 
   bool get _esParejas => widget.juego == Juego.parejas;
 
+  /// Parejas (empieza con la primera carta) y Cabezazos (con el primer toque) no llevan cuenta atrás.
+  bool get _sinCuentaAtras =>
+      widget.juego == Juego.parejas || widget.juego == Juego.cabezazos;
+
   /// Atrapa enseña su leyenda antes de la primera partida de la sesión de la app.
   bool get _hayLeyendaInicial =>
       widget.juego == Juego.atrapa && !EstadoMutxigol.leyendaAtrapaVista;
 
   /// La fase en la que empieza (o vuelve a empezar) una partida.
-  _FasePartida get _faseInicial => _esParejas
+  _FasePartida get _faseInicial => _sinCuentaAtras
       ? _FasePartida.jugando
       : _hayLeyendaInicial
       ? _FasePartida.leyenda
@@ -128,11 +137,6 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
     // Las imágenes del juego, listas antes de empezar para que no parpadeen.
     final poses = switch (widget.juego) {
       Juego.atrapa => [PoseMutxigol.atrapando],
-      Juego.regatea => [
-        PoseMutxigol.corriendo1,
-        PoseMutxigol.corriendo2,
-        PoseMutxigol.corriendo3,
-      ],
       Juego.cabezazos => [PoseMutxigol.salto],
       Juego.parejas => <PoseMutxigol>[],
     };
@@ -170,7 +174,6 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
         widget.crearLogica?.call(alto) ??
         switch (widget.juego) {
           Juego.atrapa => AtrapaLogica(alto: alto),
-          Juego.regatea => RegateaLogica(alto: alto),
           Juego.cabezazos => CabezazosLogica(alto: alto),
           Juego.parejas => ParejasLogica(alto: alto, escudos: _escudos!),
         };
@@ -273,16 +276,21 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
     });
 
     try {
-      final escudos = await widget.servicio.escudos(
-        cantidad: ParejasLogica.parejas,
+      final lista = await widget.servicio.escudos(
+        cantidad: PartidaJuegoPage.escudosPedidos,
       );
+
+      if (!mounted) return;
+
+      // Antes de enseñar el tablero se descargan: las cartas los sacan luego de la caché al instante.
+      final buenos = await _precargarEscudos(lista);
 
       if (!mounted) return;
 
       setState(() {
         _cargandoEscudos = false;
-        _escudos = escudos;
-        _errorDeEscudos = escudos.length < ParejasLogica.parejas;
+        _escudos = buenos;
+        _errorDeEscudos = buenos.length < ParejasLogica.parejas;
       });
     } catch (_) {
       if (!mounted) return;
@@ -293,6 +301,49 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
         _errorDeEscudos = true;
       });
     }
+  }
+
+  /// Descarga los escudos a la vez y se queda con los [ParejasLogica.parejas] primeros (por orden) que cargan bien. En
+  /// cuanto hay suficientes buenos, o cuando han terminado todos, o a los 10 s, devuelve los que haya.
+  Future<List<EscudoJuego>> _precargarEscudos(List<EscudoJuego> lista) async {
+    if (lista.isEmpty) return const [];
+
+    final resultados = List<bool?>.filled(lista.length, null);
+    final listo = Completer<void>();
+
+    void revisar() {
+      final buenos = resultados.where((r) => r == true).length;
+      final terminados = resultados.where((r) => r != null).length;
+
+      if ((buenos >= ParejasLogica.parejas || terminados == lista.length) &&
+          !listo.isCompleted) {
+        listo.complete();
+      }
+    }
+
+    for (var i = 0; i < lista.length; i++) {
+      EscudoRival.precargar(context, lista[i].escudoUrl).then(
+        (bien) {
+          resultados[i] = bien;
+          revisar();
+        },
+        onError: (_) {
+          resultados[i] = false;
+          revisar();
+        },
+      );
+    }
+
+    try {
+      await listo.future.timeout(PartidaJuegoPage.tiempoMaximoDePrecarga);
+    } on TimeoutException {
+      // Se usan los que hayan cargado hasta ahora.
+    }
+
+    return [
+      for (var i = 0; i < lista.length; i++)
+        if (resultados[i] == true) lista[i],
+    ].take(ParejasLogica.parejas).toList();
   }
 
   void _pausar() {
@@ -377,7 +428,7 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
           if (_fase == _FasePartida.leyenda)
             Positioned.fill(
               child: ColoredBox(
-                color: Colors.black54,
+                color: const Color(0x80000000),
                 child: SafeArea(
                   child: Center(
                     child: LeyendaAtrapa(
@@ -391,7 +442,7 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
           if (_fase == _FasePartida.fin && _envio != null)
             Positioned.fill(
               child: ColoredBox(
-                color: Colors.black54,
+                color: const Color(0x80000000),
                 child: SafeArea(
                   child: Center(
                     child: SingleChildScrollView(
@@ -415,7 +466,7 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
           if (_fase == _FasePartida.pausa)
             Positioned.fill(
               child: ColoredBox(
-                color: Colors.black54,
+                color: const Color(0x80000000),
                 child: Center(
                   child: Card(
                     margin: const EdgeInsets.all(24),
@@ -496,11 +547,6 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
             equipacion: equipacion,
             activa: activa,
           ),
-          RegateaLogica() => EscenaRegatea(
-            logica: logica,
-            equipacion: equipacion,
-            activa: activa,
-          ),
           CabezazosLogica() => EscenaCabezazos(
             logica: logica,
             equipacion: equipacion,
@@ -535,9 +581,22 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
       children: [
         Center(
           child: _cargandoEscudos || (!_errorDeEscudos && _escudos == null)
-              ? const CircularProgressIndicator(
-                  key: ValueKey('cargando-escudos'),
-                  color: Colors.white,
+              ? Column(
+                  key: const ValueKey('cargando-escudos'),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const CircularProgressIndicator(color: Colors.white),
+                    const SizedBox(height: 16),
+                    Text(
+                      t.gamePairsLoading,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        shadows: [Shadow(blurRadius: 4, color: Colors.black87)],
+                      ),
+                    ),
+                  ],
                 )
               : Padding(
                   padding: const EdgeInsets.all(24),

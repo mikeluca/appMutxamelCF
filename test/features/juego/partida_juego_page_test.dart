@@ -1,10 +1,11 @@
 import 'package:app_mutxamel_cf/core/widget/escudo_rival.dart';
+import 'dart:async';
+
 import 'package:app_mutxamel_cf/features/juego/estado_mutxigol.dart';
 import 'package:app_mutxamel_cf/features/juego/logica/atrapa_logica.dart';
 import 'package:app_mutxamel_cf/features/juego/logica/cabezazos_logica.dart';
 import 'package:app_mutxamel_cf/features/juego/logica/logica_juego.dart';
 import 'package:app_mutxamel_cf/features/juego/logica/parejas_logica.dart';
-import 'package:app_mutxamel_cf/features/juego/logica/regatea_logica.dart';
 import 'package:app_mutxamel_cf/features/juego/models/juego_modelos.dart';
 import 'package:app_mutxamel_cf/features/juego/pages/partida_juego_page.dart';
 import 'package:app_mutxamel_cf/features/juego/pages/ranking_juego_page.dart';
@@ -70,6 +71,8 @@ void main() {
     EstadoMutxigol.leyendaAtrapaVista = true;
     vibraciones.clear();
 
+    EscudoRival.precargadorDeRed = (contexto, url) async => true;
+
     EscudoRival.constructorDeRed = (url, tamano, generico) =>
         SizedBox(key: ValueKey('escudo-$url'), width: tamano, height: tamano);
 
@@ -86,6 +89,7 @@ void main() {
   tearDown(() {
     EstadoMutxigol.reiniciar();
     EscudoRival.constructorDeRed = null;
+    EscudoRival.precargadorDeRed = null;
 
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(SystemChannels.platform, null);
@@ -119,13 +123,12 @@ void main() {
     });
 
     testWidgets('durante la cuenta atrás el juego no avanza ni admite toques', (tester) async {
-      await _pintar(tester, Juego.cabezazos, real: true);
+      await _pintar(tester, Juego.atrapa, real: true);
 
       await tester.tapAt(const Offset(180, 150));
       await _avanzar(tester, 1.0);
 
       expect(find.text('Puntos: 0'), findsOneWidget);
-      expect(find.byKey(const ValueKey('toca-para-saltar')), findsOneWidget);
     });
 
     testWidgets('con la equipación rosa se pintan las poses rosas', (tester) async {
@@ -144,7 +147,7 @@ void main() {
     });
 
     testWidgets('el botón de pausa para el juego y Continuar lo reanuda', (tester) async {
-      await _pintar(tester, Juego.cabezazos);
+      await _pintar(tester, Juego.atrapa);
       await _avanzar(tester, 3.2);
 
       await tester.tap(find.byKey(const ValueKey('pausa')));
@@ -166,7 +169,7 @@ void main() {
     });
 
     testWidgets('la cuenta atrás también se puede pausar y sigue donde estaba', (tester) async {
-      await _pintar(tester, Juego.cabezazos);
+      await _pintar(tester, Juego.atrapa);
       await _avanzar(tester, 1.0);
 
       await tester.tap(find.byKey(const ValueKey('pausa')));
@@ -179,7 +182,7 @@ void main() {
     });
 
     testWidgets('con la app en segundo plano el juego se pausa solo', (tester) async {
-      await _pintar(tester, Juego.cabezazos);
+      await _pintar(tester, Juego.atrapa);
       await _avanzar(tester, 3.2);
 
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
@@ -206,7 +209,7 @@ void main() {
                   context,
                   MaterialPageRoute(
                     builder: (_) => PartidaJuegoPage(
-                      juego: Juego.regatea,
+                      juego: Juego.atrapa,
                       servicio: JuegoServiceFalso(),
                     ),
                   ),
@@ -232,21 +235,11 @@ void main() {
       expect(find.byType(PartidaJuegoPage), findsNothing);
     });
 
-    testWidgets('Atrapa y Regatea enseñan las 3 vidas; Cabezazos (1 vida) y Parejas no', (tester) async {
+    testWidgets('Atrapa enseña las 3 vidas; Cabezazos (1 vida) y Parejas no', (tester) async {
       await _pintar(tester, Juego.atrapa, real: true);
 
       expect(find.byKey(const ValueKey('marcador-vidas')), findsOneWidget);
       expect(find.byIcon(Icons.favorite), findsNWidgets(3));
-
-      await tester.pumpWidget(const SizedBox());
-      await _pintar(tester, Juego.regatea, real: true);
-
-      expect(find.byIcon(Icons.favorite), findsNWidgets(3));
-      // Corriendo: empieza por la primera imagen de correr.
-      expect(
-        imagenDe(ImagenesMutxigol.pose(Equipacion.azul, PoseMutxigol.corriendo1)),
-        findsOneWidget,
-      );
 
       await tester.pumpWidget(const SizedBox());
       await _pintar(tester, Juego.cabezazos, real: true);
@@ -263,7 +256,7 @@ void main() {
     testWidgets('sin sesión: fin de partida, no se envía nada y se pide iniciar sesión', (tester) async {
       final servicio = JuegoServiceFalso();
 
-      await _pintar(tester, Juego.cabezazos, servicio: servicio);
+      await _pintar(tester, Juego.atrapa, servicio: servicio);
       await _avanzar(tester, 6);
 
       expect(find.byKey(const ValueKey('fin-puntos')), findsOneWidget);
@@ -271,7 +264,7 @@ void main() {
       expect(find.byKey(const ValueKey('aviso-sin-sesion')), findsOneWidget);
       expect(servicio.guardadas, isEmpty);
       // El récord de esta sesión (solo en memoria) se recuerda.
-      expect(EstadoMutxigol.recordDeLaSesion(Juego.cabezazos), 1);
+      expect(EstadoMutxigol.recordDeLaSesion(Juego.atrapa), 1);
     });
 
     testWidgets('con sesión y alias: se envía sola con juego, puntos y duración, y se enseña la respuesta', (tester) async {
@@ -285,7 +278,7 @@ void main() {
 
       await _pintar(
         tester,
-        Juego.regatea,
+        Juego.atrapa,
         servicio: servicio,
         conSesion: true,
         perfil: const PerfilJuego(alias: 'Ana'),
@@ -296,7 +289,7 @@ void main() {
 
       final (juego, puntos, duracionMs) = servicio.guardadas.single;
 
-      expect(juego, Juego.regatea);
+      expect(juego, Juego.atrapa);
       expect(puntos, 1);
       expect(duracionMs, greaterThanOrEqualTo(3000));
 
@@ -313,7 +306,7 @@ void main() {
 
       await _pintar(
         tester,
-        Juego.cabezazos,
+        Juego.atrapa,
         servicio: servicio,
         conSesion: true,
         perfil: const PerfilJuego(),
@@ -340,7 +333,7 @@ void main() {
 
       await _pintar(
         tester,
-        Juego.cabezazos,
+        Juego.atrapa,
         servicio: servicio,
         conSesion: true,
         perfil: const PerfilJuego(alias: 'Ana'),
@@ -357,7 +350,7 @@ void main() {
     });
 
     testWidgets('Otra vez empieza una partida nueva con su cuenta atrás', (tester) async {
-      await _pintar(tester, Juego.cabezazos);
+      await _pintar(tester, Juego.atrapa);
       await _avanzar(tester, 6);
 
       await tester.tap(find.byKey(const ValueKey('otra-vez')));
@@ -370,7 +363,7 @@ void main() {
     });
 
     testWidgets('el botón Ranking abre el ranking de ese juego', (tester) async {
-      await _pintar(tester, Juego.cabezazos);
+      await _pintar(tester, Juego.atrapa);
       await _avanzar(tester, 6);
 
       await tester.tap(find.byKey(const ValueKey('ver-ranking')));
@@ -380,7 +373,7 @@ void main() {
     });
 
     testWidgets('vibra ligeramente al marcar y al perder', (tester) async {
-      await _pintar(tester, Juego.cabezazos);
+      await _pintar(tester, Juego.atrapa);
       await _avanzar(tester, 6);
 
       // Un punto y el final (fallo).
@@ -517,60 +510,9 @@ void main() {
     });
   });
 
-  group('Regatea', () {
-    testWidgets('deslizar a un lado y a otro cambia de carril', (tester) async {
-      late RegateaLogica logica;
-
-      await _pintar(
-        tester,
-        Juego.regatea,
-        crearLogica: (alto) =>
-            logica = RegateaLogica(alto: alto, generarSolo: false),
-      );
-      await _avanzar(tester, 3.2);
-
-      expect(logica.carril, 1);
-
-      await tester.dragFrom(const Offset(180, 400), const Offset(-90, 0));
-      await tester.pump();
-
-      expect(logica.carril, 0);
-
-      await tester.dragFrom(const Offset(180, 400), const Offset(90, 0));
-      await tester.pump();
-      await tester.dragFrom(const Offset(180, 400), const Offset(90, 0));
-      await tester.pump();
-
-      expect(logica.carril, 2);
-    });
-
-    testWidgets('Mutxigol corre alternando las poses de correr y delante lleva el balón', (tester) async {
-      await _pintar(tester, Juego.regatea, real: true);
-      await _avanzar(tester, 3.2);
-
-      final vistas = <String>{};
-
-      for (var i = 0; i < 40; i++) {
-        await tester.pump(const Duration(milliseconds: 40));
-
-        for (final pose in [
-          PoseMutxigol.corriendo1,
-          PoseMutxigol.corriendo2,
-          PoseMutxigol.corriendo3,
-        ]) {
-          if (imagenDe(ImagenesMutxigol.pose(Equipacion.azul, pose)).evaluate().isNotEmpty) {
-            vistas.add(pose.name);
-          }
-        }
-      }
-
-      expect(vistas, {'corriendo1', 'corriendo2', 'corriendo3'});
-      expect(imagenDe(ImagenesMutxigol.balon), findsWidgets);
-    });
-  });
 
   group('Cabezazos', () {
-    testWidgets('espera con "Toca para saltar" hasta el primer toque', (tester) async {
+    testWidgets('no lleva cuenta atrás: empieza en espera con "Toca para saltar" y nada de "1"', (tester) async {
       late CabezazosLogica logica;
 
       await _pintar(
@@ -578,15 +520,33 @@ void main() {
         Juego.cabezazos,
         crearLogica: (alto) => logica = CabezazosLogica(alto: alto),
       );
-      await _avanzar(tester, 3.2);
+      await tester.pump();
 
+      expect(find.byKey(const ValueKey('cuenta-atras')), findsNothing);
+      expect(find.text('3'), findsNothing);
+      expect(find.text('1'), findsNothing);
       expect(find.text('Toca para saltar'), findsOneWidget);
       expect(logica.esperando, isTrue);
 
-      await _avanzar(tester, 3);
+      await _avanzar(tester, 4);
 
+      expect(find.byKey(const ValueKey('cuenta-atras')), findsNothing);
+      expect(find.text('1'), findsNothing);
+      expect(logica.esperando, isTrue);
       expect(logica.terminado, isFalse);
       expect(logica.barreras, isEmpty);
+      expect(logica.tiempoJugado, Duration.zero, reason: 'el tiempo no corre hasta el primer toque');
+    });
+
+    testWidgets('el primer toque arranca la partida y el tiempo', (tester) async {
+      late CabezazosLogica logica;
+
+      await _pintar(
+        tester,
+        Juego.cabezazos,
+        crearLogica: (alto) => logica = CabezazosLogica(alto: alto),
+      );
+      await _avanzar(tester, 2);
 
       await tester.tapAt(const Offset(200, 300));
       await tester.pump();
@@ -594,12 +554,38 @@ void main() {
       expect(logica.esperando, isFalse);
       expect(logica.velocidadVertical, lessThan(0));
       expect(find.text('Toca para saltar'), findsNothing);
+
+      await _avanzar(tester, 0.5);
+
+      expect(logica.tiempoJugado.inMilliseconds, inInclusiveRange(400, 600));
+    });
+
+    testWidgets('Mutxigol se pinta con el tamaño nuevo (~86 de alto visible)', (tester) async {
+      await _pintar(
+        tester,
+        Juego.cabezazos,
+        crearLogica: (alto) => CabezazosLogica(alto: alto),
+      );
+      await tester.pump();
+
+      final imagen = imagenDe(ImagenesMutxigol.pose(Equipacion.azul, PoseMutxigol.salto));
+
+      expect(imagen, findsOneWidget);
+
+      // Pantalla de 360 de ancho = 1 unidad de juego por punto.
+      final tamano = tester.getSize(imagen);
+
+      expect(tamano.width, CabezazosLogica.tamanoImagen);
+      expect(
+        tamano.height * CabezazosLogica.alturaVisibleEnImagen,
+        inInclusiveRange(80, 90),
+      );
     });
   });
 
   group('Parejas', () {
-    Future<void> sinCrearLogica(WidgetTester tester, JuegoServiceFalso servicio) async {
-      pantallaDeMovil(tester, alto: 800);
+    Future<void> sinCrearLogica(WidgetTester tester, JuegoServiceFalso servicio, {double alto = 800}) async {
+      pantallaDeMovil(tester, alto: alto);
 
       await tester.pumpWidget(
         appDePrueba(PartidaJuegoPage(juego: Juego.parejas, servicio: servicio)),
@@ -608,12 +594,37 @@ void main() {
       await tester.pump();
     }
 
-    testWidgets('pide 8 escudos al backend y enseña el tablero 4×4 sin cuenta atrás', (tester) async {
-      final servicio = JuegoServiceFalso()..escudosRespuesta = escudosDePrueba();
+    testWidgets('pide 12 escudos, los precarga y solo entonces enseña el tablero 4×4 (sin cuenta atrás)', (tester) async {
+      final servicio = JuegoServiceFalso()..escudosRespuesta = escudosDePrueba(12);
+      final completadores = <String, Completer<bool>>{};
+
+      EscudoRival.precargadorDeRed = (contexto, url) =>
+          (completadores[url] = Completer<bool>()).future;
 
       await sinCrearLogica(tester, servicio);
 
-      expect(servicio.escudosPedidos, [8]);
+      // Cargando: indicador y texto, sin tablero y con el cronómetro parado.
+      expect(servicio.escudosPedidos, [12]);
+      expect(find.byKey(const ValueKey('cargando-escudos')), findsOneWidget);
+      expect(find.text('Cargando escudos…'), findsOneWidget);
+      expect(find.byKey(const ValueKey('carta-0')), findsNothing);
+      expect(find.byKey(const ValueKey('marcador-tiempo')), findsNothing);
+
+      await _avanzar(tester, 3);
+
+      expect(find.byKey(const ValueKey('carta-0')), findsNothing, reason: 'sigue descargando');
+
+      // Cargan 8: ya se puede jugar.
+      var cargados = 0;
+
+      for (final c in completadores.values) {
+        if (cargados++ < 8) c.complete(true);
+      }
+
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.byKey(const ValueKey('cargando-escudos')), findsNothing);
       expect(find.byKey(const ValueKey('cuenta-atras')), findsNothing);
 
       for (var i = 0; i < 16; i++) {
@@ -623,28 +634,83 @@ void main() {
       expect(find.byKey(const ValueKey('carta-reverso')), findsNWidgets(16));
       expect(find.text('0:00,0'), findsOneWidget);
       expect(find.text('Intentos: 0'), findsOneWidget);
-      // No lleva vidas ni puntos.
       expect(find.byKey(const ValueKey('marcador-vidas')), findsNothing);
       expect(find.byKey(const ValueKey('marcador-puntos')), findsNothing);
     });
 
-    testWidgets('con menos de 8 escudos avisa y deja reintentar', (tester) async {
-      final servicio = JuegoServiceFalso()..escudosRespuesta = escudosDePrueba(5);
+    testWidgets('con 12 pedidos y 3 que fallan, usa 8 de los buenos', (tester) async {
+      final servicio = JuegoServiceFalso()..escudosRespuesta = escudosDePrueba(12);
+
+      // Fallan los escudos 2, 5 y 9.
+      EscudoRival.precargadorDeRed = (contexto, url) async =>
+          !['/2?', '/5?', '/9?'].any(url.contains);
 
       await sinCrearLogica(tester, servicio);
+      await tester.pump();
+
+      expect(find.byKey(const ValueKey('sin-escudos')), findsNothing);
+
+      final posiciones = await _descubrir(tester);
+      final usados = posiciones.values.toSet();
+
+      expect(usados, hasLength(8));
+      expect(usados.intersection({'Club 2', 'Club 5', 'Club 9'}), isEmpty, reason: 'ninguno de los que fallaron');
+      // Los 8 primeros que cargan bien, por orden del backend.
+      expect(usados, {'Club 1', 'Club 3', 'Club 4', 'Club 6', 'Club 7', 'Club 8', 'Club 10', 'Club 11'});
+    });
+
+    testWidgets('con menos de 8 escudos buenos avisa y deja reintentar (y vuelve a pedir otra tanda)', (tester) async {
+      final servicio = JuegoServiceFalso()..escudosRespuesta = escudosDePrueba(12);
+
+      // Solo 5 de los 12 cargan.
+      EscudoRival.precargadorDeRed = (contexto, url) async =>
+          ['/1?', '/2?', '/3?', '/4?', '/5?'].any(url.contains);
+
+      await sinCrearLogica(tester, servicio);
+      await tester.pump();
 
       expect(find.text('Aún no hay escudos suficientes para jugar'), findsOneWidget);
       expect(find.byKey(const ValueKey('carta-0')), findsNothing);
 
-      servicio.escudosRespuesta = escudosDePrueba();
+      EscudoRival.precargadorDeRed = (contexto, url) async => true;
 
       await tester.tap(find.byKey(const ValueKey('reintentar-escudos')));
       await tester.pump();
       await tester.pump();
+      await tester.pump();
 
-      expect(servicio.escudosPedidos, [8, 8]);
+      expect(servicio.escudosPedidos, [12, 12]);
       expect(find.text('Aún no hay escudos suficientes para jugar'), findsNothing);
       expect(find.byKey(const ValueKey('carta-0')), findsOneWidget);
+    });
+
+    testWidgets('si el backend devuelve menos de 8 también avisa', (tester) async {
+      final servicio = JuegoServiceFalso()..escudosRespuesta = escudosDePrueba(5);
+
+      await sinCrearLogica(tester, servicio);
+      await tester.pump();
+
+      expect(find.text('Aún no hay escudos suficientes para jugar'), findsOneWidget);
+    });
+
+    testWidgets('si no cargan 8 en 10 s, sale el aviso con Reintentar', (tester) async {
+      final servicio = JuegoServiceFalso()..escudosRespuesta = escudosDePrueba(12);
+
+      // Solo 3 cargan; el resto se queda descargando para siempre.
+      EscudoRival.precargadorDeRed = (contexto, url) => ['/1?', '/2?', '/3?'].any(url.contains)
+          ? Future.value(true)
+          : Completer<bool>().future;
+
+      await sinCrearLogica(tester, servicio);
+      await _avanzar(tester, 9);
+
+      expect(find.byKey(const ValueKey('cargando-escudos')), findsOneWidget);
+
+      await _avanzar(tester, 1.5);
+      await tester.pump();
+
+      expect(find.text('Aún no hay escudos suficientes para jugar'), findsOneWidget);
+      expect(find.byKey(const ValueKey('reintentar-escudos')), findsOneWidget);
     });
 
     testWidgets('si falla la red avisa igual y se puede salir', (tester) async {
@@ -655,6 +721,27 @@ void main() {
       expect(find.text('Aún no hay escudos suficientes para jugar'), findsOneWidget);
       expect(find.byKey(const ValueKey('reintentar-escudos')), findsOneWidget);
       expect(find.byKey(const ValueKey('salir')), findsOneWidget);
+    });
+
+    testWidgets('la cara de la carta nunca pinta la silueta genérica del escudo', (tester) async {
+      final servicio = JuegoServiceFalso()..escudosRespuesta = escudosDePrueba(12);
+
+      await sinCrearLogica(tester, servicio);
+      await tester.pump();
+
+      // Ni cargando ni con las cartas boca arriba (sale el escudo cargado o un hueco, nunca la silueta).
+      expect(find.byKey(const ValueKey('escudo-rival')), findsNothing);
+
+      await tester.tap(find.byKey(const ValueKey('carta-0')));
+      await tester.pump();
+      await _avanzar(tester, 0.1);
+
+      expect(find.byKey(const ValueKey('escudo-rival')), findsNothing);
+
+      await _avanzar(tester, 0.4);
+
+      expect(find.byKey(const ValueKey('carta-frente')), findsOneWidget);
+      expect(find.byKey(const ValueKey('escudo-rival')), findsNothing);
     });
 
     testWidgets('una partida entera: cronómetro, pareja mala que se vuelve a girar, fin y envío con 8 puntos y el tiempo', (tester) async {
@@ -681,7 +768,7 @@ void main() {
 
       expect(find.text('0:00,0'), findsOneWidget);
 
-      // Un par que no coincide: se enseñan y a los 0,8 s se vuelven a girar.
+      // Un par que no coincide: se enseñan y, tras girarse, se quedan 0,8 s antes de volver a girarse.
       final cartas = logica.cartas;
       final a = cartas.first;
       final b = cartas.firstWhere((c) => c.escudo.id != a.escudo.id);
@@ -696,7 +783,7 @@ void main() {
       // El cronómetro corre desde la primera carta.
       expect(find.text('0:00,0'), findsNothing);
 
-      await _avanzar(tester, 0.8);
+      await _avanzar(tester, 1.3);
 
       expect(find.byKey(const ValueKey('carta-frente')), findsNothing);
 
@@ -726,5 +813,76 @@ void main() {
       expect(duracionMs, logica.tiempoJugado.inMilliseconds);
       expect(duracionMs, greaterThan(3000));
     });
+
+    testWidgets('Otra vez pide una tanda nueva de escudos y la precarga antes de enseñar el tablero', (tester) async {
+      final servicio = JuegoServiceFalso()..escudosRespuesta = escudosDePrueba(12);
+
+      await sinCrearLogica(tester, servicio);
+      await tester.pump();
+
+      // Se descubre el tablero y se acaban las parejas.
+      final posiciones = await _descubrir(tester);
+
+      for (final nombre in posiciones.values.toSet()) {
+        final pareja = [for (final e in posiciones.entries) if (e.value == nombre) e.key];
+
+        await tester.tap(find.byKey(ValueKey('carta-${pareja[0]}')));
+        await tester.pump();
+        await tester.tap(find.byKey(ValueKey('carta-${pareja[1]}')));
+        await _avanzar(tester, 1.5);
+      }
+
+      await _avanzar(tester, 0.5);
+
+      expect(find.byKey(const ValueKey('fin-puntos')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+
+      // La nueva tanda se descarga antes de enseñar nada.
+      final pendiente = Completer<bool>();
+
+      EscudoRival.precargadorDeRed = (contexto, url) => pendiente.future;
+
+      await tester.tap(find.byKey(const ValueKey('otra-vez')));
+      await tester.pump();
+      await tester.pump();
+
+      expect(servicio.escudosPedidos, [12, 12]);
+      expect(find.byKey(const ValueKey('cargando-escudos')), findsOneWidget);
+      expect(find.byKey(const ValueKey('carta-0')), findsNothing);
+      expect(find.byKey(const ValueKey('fin-puntos')), findsNothing);
+
+      pendiente.complete(true);
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.byKey(const ValueKey('carta-0')), findsOneWidget);
+      expect(find.text('0:00,0'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
   });
+}
+
+/// Descubre las 16 cartas de una en una (esperando a que se vuelvan a girar las que no son pareja) y devuelve el
+/// nombre del club de cada posición.
+Future<Map<int, String>> _descubrir(WidgetTester tester) async {
+  final posiciones = <int, String>{};
+
+  for (var i = 0; i < 16; i++) {
+    await tester.tap(find.byKey(ValueKey('carta-$i')));
+    await _avanzar(tester, 0.4);
+
+    final carta = find.descendant(
+      of: find.byKey(ValueKey('carta-$i')),
+      matching: find.textContaining('Club '),
+    );
+
+    if (carta.evaluate().isNotEmpty) {
+      posiciones[i] = (carta.evaluate().single.widget as Text).data!;
+    }
+
+    // Cada dos cartas, a esperar a que el par que no coincide se vuelva a girar.
+    if (i.isOdd) await _avanzar(tester, 1.4);
+  }
+
+  return posiciones;
 }

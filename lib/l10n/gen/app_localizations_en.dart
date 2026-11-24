@@ -4629,9 +4629,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameCatchName => 'Catch the balls';
 
   @override
-  String get gameRunName => 'Dribble';
-
-  @override
   String get gameHeadName => 'Headers';
 
   @override
@@ -4639,9 +4636,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameCatchShort => 'Catch';
-
-  @override
-  String get gameRunShort => 'Dribble';
 
   @override
   String get gameHeadShort => 'Headers';
@@ -4654,18 +4648,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Drag Mutxigol and catch the balls. Let the bad stuff fall.';
 
   @override
-  String get gameRunHow =>
-      'Swipe to change lane. Dodge the defenders and collect balls.';
-
-  @override
   String get gameHeadHow =>
       'Tap to jump and fly between the columns of defenders.';
 
   @override
   String get gamePairsHow => 'Find the 8 pairs of crests in the shortest time.';
-
-  @override
-  String get gameRunHint => 'Swipe to change lane';
 
   @override
   String get gameHeadHint => 'Tap to jump';
@@ -4724,6 +4711,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gamePairsNoShields => 'There are not enough crests to play yet';
 
   @override
+  String get gamePairsLoading => 'Loading crests…';
+
+  @override
   String gameFinalTime(String time) {
     return 'Time: $time';
   }
@@ -4739,7 +4729,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String gameModMarks(int catches, int run, int heads, String pairs) {
-    return 'Catch $catches · Dribble $run · Headers $heads · Pairs $pairs';
+  String gameModMarks(int catches, int heads, String pairs) {
+    return 'Catch $catches · Headers $heads · Pairs $pairs';
   }
 }

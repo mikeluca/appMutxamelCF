@@ -362,11 +362,6 @@ class _TarjetaDeJuego extends StatelessWidget {
         t.gameCatchHow,
         PoseMutxigol.atrapando,
       ),
-      Juego.regatea => (
-        t.gameRunName,
-        t.gameRunHow,
-        PoseMutxigol.corriendo2,
-      ),
       Juego.cabezazos => (
         t.gameHeadName,
         t.gameHeadHow,

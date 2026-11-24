@@ -45,6 +45,10 @@ class ParejasLogica extends LogicaJuego {
   /// Lo que tarda en volver a girarse un par que no coincide.
   static const Duration tiempoDeError = Duration(milliseconds: 800);
 
+  /// Lo que tarda en girarse una carta (la vista lo anima igual): el par que no coincide se queda visible [tiempoDeError]
+  /// desde que la segunda carta termina de girarse, no desde el toque.
+  static const Duration duracionDelGiro = Duration(milliseconds: 250);
+
   final List<CartaParejas> _cartas = [];
 
   Duration _cronometro = Duration.zero;
@@ -109,7 +113,7 @@ class ParejasLogica extends LogicaJuego {
         _descubiertas.clear();
         alEvento?.call(EventoJuego.punto);
       } else {
-        _hastaVolverAGirar = tiempoDeError;
+        _hastaVolverAGirar = duracionDelGiro + tiempoDeError;
         alEvento?.call(EventoJuego.fallo);
       }
     }

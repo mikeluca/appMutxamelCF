@@ -51,14 +51,14 @@ void main() {
   });
 
   group('sin sesión', () {
-    testWidgets('Mutxigol parado con la equipación azul, las 4 tarjetas en orden y el botón Ranking', (tester) async {
+    testWidgets('Mutxigol parado con la equipación azul, las 3 tarjetas en orden y el botón Ranking', (tester) async {
       pantallaDeMovil(tester, alto: 2000);
       await tester.pumpWidget(appDePrueba(MutxigolPage(servicio: JuegoServiceFalso())));
       await tester.pump();
 
       expect(imagenDe(_parado(Equipacion.azul)), findsOneWidget);
 
-      const codigos = ['ATRAPA', 'REGATEA', 'CABEZAZOS', 'PAREJAS'];
+      const codigos = ['ATRAPA', 'CABEZAZOS', 'PAREJAS'];
 
       for (final c in codigos) {
         expect(find.byKey(ValueKey('tarjeta-$c')), findsOneWidget, reason: c);
@@ -69,16 +69,16 @@ void main() {
 
       expect(ys, [...ys]..sort());
       expect(find.text('Atrapa balones'), findsOneWidget);
-      expect(find.text('Regatea'), findsOneWidget);
       expect(find.text('Cabezazos'), findsOneWidget);
       expect(find.text('Parejas de escudos'), findsOneWidget);
       expect(find.text('Penaltis'), findsNothing);
       expect(find.text('Toques'), findsNothing);
+      expect(find.text('Regatea'), findsNothing);
+      expect(find.byKey(const ValueKey('tarjeta-REGATEA')), findsNothing);
       expect(find.byKey(const ValueKey('boton-ranking')), findsOneWidget);
 
       // Cada tarjeta lleva su pose.
       expect(imagenDe(ImagenesMutxigol.pose(Equipacion.azul, PoseMutxigol.atrapando)), findsOneWidget);
-      expect(imagenDe(ImagenesMutxigol.pose(Equipacion.azul, PoseMutxigol.corriendo2)), findsOneWidget);
       expect(imagenDe(ImagenesMutxigol.pose(Equipacion.azul, PoseMutxigol.salto)), findsOneWidget);
       expect(imagenDe(ImagenesMutxigol.pose(Equipacion.azul, PoseMutxigol.cara)), findsOneWidget);
     });
@@ -127,7 +127,6 @@ void main() {
 
       expect(imagenDe(_parado(Equipacion.rosa)), findsOneWidget);
       expect(imagenDe(_parado(Equipacion.azul)), findsNothing);
-      expect(imagenDe(ImagenesMutxigol.pose(Equipacion.rosa, PoseMutxigol.corriendo2)), findsOneWidget);
       expect(EstadoMutxigol.equipacion.value, Equipacion.rosa);
       expect(servicio.actualizaciones, isEmpty);
 
@@ -174,7 +173,7 @@ void main() {
       // En Parejas el récord es el mejor tiempo.
       expect(find.text('Tu mejor tiempo: 1:23,4'), findsOneWidget);
       expect(find.byKey(const ValueKey('record-PAREJAS')), findsOneWidget);
-      expect(find.text('Aún sin récord'), findsNWidgets(2));
+      expect(find.text('Aún sin récord'), findsOneWidget);
       expect(
         find.text('Inicia sesión en el Área Club para guardar tus puntuaciones'),
         findsNothing,
@@ -351,7 +350,7 @@ void main() {
       tester.state<NavigatorState>(find.byType(Navigator)).pop();
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(const ValueKey('tarjeta-REGATEA')));
+      await tester.tap(find.byKey(const ValueKey('tarjeta-CABEZAZOS')));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
 

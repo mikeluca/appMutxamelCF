@@ -21,8 +21,47 @@ CabezazosLogica _enMarcha() {
 }
 
 void main() {
-  group('la espera del primer toque', () {
-    test('hasta el primer toque Mutxigol flota arriba y abajo: no cae, no hay barreras ni se acaba', () {
+  group('el tamaño de Mutxigol y su área de choque', () {
+    test('el personaje visible mide unas 80–90 unidades de alto (de 360 de ancho)', () {
+      final visible =
+          CabezazosLogica.tamanoImagen * CabezazosLogica.alturaVisibleEnImagen;
+
+      expect(visible, inInclusiveRange(80, 90));
+      expect(CabezazosLogica.tamanoImagen, greaterThan(100));
+    });
+
+    test('el área de choque es un círculo ajustado al cuerpo (cabeza y tronco), más pequeño que el personaje entero', () {
+      final visible =
+          CabezazosLogica.tamanoImagen * CabezazosLogica.alturaVisibleEnImagen;
+
+      expect(CabezazosLogica.diametro, CabezazosLogica.radio * 2);
+      // Sin los cuernos ni las puntas de los brazos: menos que el alto visible, pero casi todo el cuerpo.
+      expect(CabezazosLogica.diametro, lessThan(visible));
+      expect(CabezazosLogica.diametro, greaterThan(visible * 0.45));
+      // El cuerpo cae dentro de la imagen.
+      expect(CabezazosLogica.cuerpoDx.abs() * 2, lessThan(1));
+      expect(CabezazosLogica.cuerpoDy.abs() * 2, lessThan(1));
+      expect(
+        CabezazosLogica.radio / CabezazosLogica.tamanoImagen + CabezazosLogica.cuerpoDy.abs(),
+        lessThan(0.5),
+      );
+    });
+
+    test('el hueco mínimo es siempre jugable: al menos 2,6 diámetros de choque', () {
+      expect(CabezazosLogica.huecoMinimoJugable, 2.6 * CabezazosLogica.diametro);
+      expect(CabezazosLogica.huecoMinimo, greaterThanOrEqualTo(CabezazosLogica.huecoMinimoJugable));
+    });
+
+    test('el hueco inicial es generoso (~3,5 diámetros) y se estrecha hasta el mínimo de antes (140)', () {
+      expect(CabezazosLogica.huecoInicial, closeTo(3.5 * CabezazosLogica.diametro, 0.001));
+      expect(CabezazosLogica.huecoInicial, greaterThan(CabezazosLogica.huecoMinimo));
+      expect(CabezazosLogica.huecoMinimo, 140);
+      expect(CabezazosLogica.estrechamiento, greaterThan(0));
+    });
+  });
+
+  group('la espera del primer toque (sin cuenta atrás)', () {
+    test('hasta el primer toque Mutxigol flota arriba y abajo: no cae, no hay barreras ni se acaba ni corre el tiempo', () {
       final l = _logica();
       final alturas = <double>[];
 
@@ -37,8 +76,9 @@ void main() {
       expect(l.terminado, isFalse);
       expect(l.barreras, isEmpty);
       expect(l.puntos, 0);
+      expect(l.tiempoJugado, Duration.zero);
 
-      final centro = _alto * 0.4;
+      final centro = _alto * CabezazosLogica.alturaDeEspera;
 
       // Se mueve suave alrededor de su sitio.
       expect(alturas.reduce(math.min), lessThan(centro - 5));
@@ -49,21 +89,51 @@ void main() {
       );
     });
 
-    test('el primer toque empieza la partida con un impulso hacia arriba', () {
+    test('el primer toque empieza la partida (y el tiempo) con un impulso hacia arriba', () {
       final l = _logica();
+
+      l.tick(const Duration(seconds: 3));
+
+      expect(l.tiempoJugado, Duration.zero);
 
       l.tocar();
 
       expect(l.esperando, isFalse);
       expect(l.velocidadVertical, -CabezazosLogica.impulso);
 
-      l.tick(_fotograma);
+      l.tick(const Duration(milliseconds: 500));
 
-      expect(l.barreras, isNotEmpty, reason: 'la primera barrera entra enseguida');
+      expect(l.tiempoJugado, const Duration(milliseconds: 500));
+      expect(l.barreras, isNotEmpty);
+    });
+
+    test('la primera barrera llega a Mutxigol a los ~2 s del primer toque', () {
+      final l = _logica();
+
+      l.tocar();
+
+      var t = 0.0;
+
+      while (l.barreras.isEmpty || l.barreras.first.x > CabezazosLogica.xMutxigol + CabezazosLogica.radio) {
+        // Mutxigol se mantiene en el aire: lo que se mide es la barrera.
+        l.colocarY(_alto * 0.4);
+        l.tick(_fotograma);
+        t += 0.016;
+
+        expect(t, lessThan(3));
+      }
+
+      expect(t, closeTo(CabezazosLogica.segundosHastaLaPrimera, 0.1));
     });
   });
 
   group('el impulso y la gravedad', () {
+    test('la física es la nueva: gravedad ~1100, impulso ~380 y caída máxima ~550', () {
+      expect(CabezazosLogica.gravedad, 1100);
+      expect(CabezazosLogica.impulso, 380);
+      expect(CabezazosLogica.velocidadMaximaDeCaida, 550);
+    });
+
     test('un toque da un impulso hacia arriba y la gravedad lo va bajando', () {
       final l = _enMarcha();
       final y0 = l.y;
@@ -73,8 +143,6 @@ void main() {
 
       expect(l.y, lessThan(y0), reason: 'sube');
 
-      // Sigue subiendo un rato y luego cae.
-      var maxima = l.y;
       var bajaba = false;
 
       for (var i = 0; i < 60 && !l.terminado; i++) {
@@ -83,7 +151,6 @@ void main() {
         l.tick(_fotograma);
 
         if (l.y > antes) bajaba = true;
-        if (l.y < maxima) maxima = l.y;
       }
 
       expect(bajaba, isTrue);
@@ -99,13 +166,46 @@ void main() {
       expect(l.velocidadVertical, -CabezazosLogica.impulso);
     });
 
-    test('la gravedad acelera la caída a razón de 1500 por segundo', () {
+    test('la gravedad acelera la caída a razón de 1100 por segundo', () {
       final l = _enMarcha();
 
       l.colocarY(100);
       l.tick(const Duration(milliseconds: 100));
 
       expect(l.velocidadVertical, closeTo(CabezazosLogica.gravedad * 0.1, 0.5));
+    });
+
+    test('la velocidad de caída no pasa de 550', () {
+      final l = _enMarcha();
+
+      // Cae desde muy arriba, sin chocar con nada: el suelo está lejos.
+      var maxima = 0.0;
+
+      for (var i = 0; i < 200 && !l.terminado; i++) {
+        l.tick(_fotograma);
+        maxima = math.max(maxima, l.velocidadVertical);
+      }
+
+      expect(maxima, CabezazosLogica.velocidadMaximaDeCaida);
+    });
+
+    test('sin tocar más, desde el centro tarda más de 0,9 s en caer al suelo', () {
+      for (final alto in [640.0, 915.0]) {
+        final l = CabezazosLogica(alto: alto);
+
+        l.tocar(); // el toque que arranca la partida
+        l.colocarY(l.suelo / 2, velocidad: -CabezazosLogica.impulso);
+
+        var t = 0.0;
+
+        while (!l.terminado && t < 5) {
+          l.tick(_fotograma);
+          t += 0.016;
+        }
+
+        expect(l.terminado, isTrue);
+        expect(t, greaterThan(0.9), reason: 'alto $alto');
+      }
     });
 
     test('la inclinación va con la velocidad: hasta 20° hacia arriba y 60° hacia abajo', () {
@@ -123,15 +223,15 @@ void main() {
 
       expect(l.inclinacionGrados, 0);
 
-      l.colocarY(300, velocidad: 300);
+      l.colocarY(300, velocidad: CabezazosLogica.velocidadMaximaDeCaida / 2);
 
       expect(l.inclinacionGrados, closeTo(-30, 0.001));
 
-      l.colocarY(300, velocidad: 600);
+      l.colocarY(300, velocidad: CabezazosLogica.velocidadMaximaDeCaida);
 
       expect(l.inclinacionGrados, closeTo(-60, 0.001));
 
-      l.colocarY(300, velocidad: 2000);
+      l.colocarY(300, velocidad: 5000);
 
       expect(l.inclinacionGrados, closeTo(-60, 0.001));
     });
@@ -225,7 +325,7 @@ void main() {
       final barrera = l.barreras.first;
       final x0 = barrera.x;
 
-      expect(x0, greaterThan(LogicaJuego.ancho - 10));
+      expect(x0, greaterThan(LogicaJuego.ancho));
 
       l.colocarY(_alto * 0.4);
       l.tick(const Duration(milliseconds: 40));
@@ -256,7 +356,7 @@ void main() {
       expect(eventos.where((e) => e == EventoJuego.punto), hasLength(1));
     });
 
-    test('el hueco se va estrechando hasta un mínimo y su altura cambia siempre dentro de límites jugables', () {
+    test('el hueco se va estrechando hasta un mínimo jugable y su altura cambia siempre dentro de límites', () {
       final l = _logica(random: math.Random(4));
       final vistas = <BarreraCabezazos>[];
 
@@ -285,6 +385,7 @@ void main() {
 
         expect(b.hueco, lessThanOrEqualTo(CabezazosLogica.huecoInicial));
         expect(b.hueco, greaterThanOrEqualTo(CabezazosLogica.huecoMinimo));
+        expect(b.hueco, greaterThanOrEqualTo(2.6 * CabezazosLogica.diametro));
         expect(b.techoDelHueco, greaterThanOrEqualTo(CabezazosLogica.margenHueco - 0.001));
         expect(b.sueloDelHueco, lessThanOrEqualTo(l.suelo - CabezazosLogica.margenHueco + 0.001));
 

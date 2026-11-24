@@ -27,8 +27,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Atrapa'), findsOneWidget);
-    expect(find.text('Regatea'), findsOneWidget);
     expect(find.text('Cabezazos'), findsOneWidget);
+    expect(find.text('Regatea'), findsNothing);
     expect(find.text('Parejas'), findsOneWidget);
     expect(find.text('Esta semana'), findsOneWidget);
     expect(find.text('Histórico'), findsOneWidget);
@@ -80,7 +80,7 @@ void main() {
 
     final servicio = JuegoServiceFalso(
       filas: {
-        (Juego.regatea, PeriodoRanking.semana): _top('Toc'),
+        (Juego.cabezazos, PeriodoRanking.semana): _top('Toc'),
         (Juego.atrapa, PeriodoRanking.semana): _top('Atr'),
       },
     );
@@ -90,7 +90,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Regatea'));
+    await tester.tap(find.text('Cabezazos'));
     await tester.pumpAndSettle();
 
     expect(find.text('Toc1'), findsOneWidget);

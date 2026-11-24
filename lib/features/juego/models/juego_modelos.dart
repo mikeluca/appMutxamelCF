@@ -1,7 +1,6 @@
 /// Los cuatro minijuegos de Mutxigol, en el orden del menú y del ranking. [codigo] es el que entiende el backend.
 enum Juego {
   atrapa('ATRAPA'),
-  regatea('REGATEA'),
   cabezazos('CABEZAZOS'),
   parejas('PAREJAS');
 
@@ -45,7 +44,7 @@ enum Equipacion {
       codigo?.toUpperCase() == 'ROSA' ? Equipacion.rosa : Equipacion.azul;
 }
 
-/// Las poses de Mutxigol (un .webp por equipación). Las tres de correr son de espaldas; [salto] es de perfil, mirando a
+/// Las poses de Mutxigol (un .webp por equipación). [salto] es de perfil, mirando a
 /// la derecha.
 enum PoseMutxigol {
   parado('mutxigol_parado'),
@@ -53,11 +52,7 @@ enum PoseMutxigol {
   celebrando('mutxigol_celebrando'),
   triste('mutxigol_triste'),
   cara('mutxigol_cara'),
-  corriendo1('mutxigol_corriendo_1'),
-  corriendo2('mutxigol_corriendo_2'),
-  corriendo3('mutxigol_corriendo_3'),
-  salto('mutxigol_salto'),
-  espalda('mutxigol_espalda');
+  salto('mutxigol_salto');
 
   const PoseMutxigol(this.fichero);
 
@@ -269,7 +264,6 @@ class PerfilJuegoAdmin {
   final String email;
   final int partidas;
   final int mejorAtrapa;
-  final int mejorRegatea;
   final int mejorCabezazos;
 
   /// El menor tiempo en Parejas, en ms (0 si no ha jugado).
@@ -284,7 +278,6 @@ class PerfilJuegoAdmin {
     this.email = '',
     this.partidas = 0,
     this.mejorAtrapa = 0,
-    this.mejorRegatea = 0,
     this.mejorCabezazos = 0,
     this.mejorParejasMs = 0,
   });
@@ -299,7 +292,6 @@ class PerfilJuegoAdmin {
         email: '${json['email'] ?? ''}',
         partidas: (json['partidas'] as num?)?.toInt() ?? 0,
         mejorAtrapa: (json['mejorAtrapa'] as num?)?.toInt() ?? 0,
-        mejorRegatea: (json['mejorRegatea'] as num?)?.toInt() ?? 0,
         mejorCabezazos: (json['mejorCabezazos'] as num?)?.toInt() ?? 0,
         mejorParejasMs: (json['mejorParejasMs'] as num?)?.toInt() ?? 0,
       );

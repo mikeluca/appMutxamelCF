@@ -49,6 +49,7 @@ class MutxigolEnEscena extends StatelessWidget {
     this.tamano = 170,
     this.espejo = false,
     this.giro = 0,
+    this.alineacionGiro = Alignment.center,
     this.opacidad = 1,
   });
 
@@ -61,6 +62,9 @@ class MutxigolEnEscena extends StatelessWidget {
 
   /// Giro en radianes (Cabezazos lo inclina según la velocidad).
   final double giro;
+
+  /// El punto sobre el que gira (por defecto, el centro de la imagen).
+  final Alignment alineacionGiro;
   final double opacidad;
 
   @override
@@ -74,6 +78,7 @@ class MutxigolEnEscena extends StatelessWidget {
         opacity: opacidad,
         child: Transform.rotate(
           angle: giro,
+          alignment: alineacionGiro,
           child: Transform.flip(
             flipX: espejo,
             child: Image.asset(

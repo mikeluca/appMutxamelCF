@@ -4670,9 +4670,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get gameCatchName => 'Atrapa balones';
 
   @override
-  String get gameRunName => 'Regatea';
-
-  @override
   String get gameHeadName => 'Cabezazos';
 
   @override
@@ -4680,9 +4677,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get gameCatchShort => 'Atrapa';
-
-  @override
-  String get gameRunShort => 'Regatea';
 
   @override
   String get gameHeadShort => 'Cabezazos';
@@ -4695,19 +4689,12 @@ class AppLocalizationsEs extends AppLocalizations {
       'Arrastra a Mutxigol y atrapa los balones. Deja caer lo que sea malo.';
 
   @override
-  String get gameRunHow =>
-      'Desliza para cambiar de carril. Esquiva a los defensas y recoge balones.';
-
-  @override
   String get gameHeadHow =>
       'Toca para saltar y pasa entre las columnas de defensas.';
 
   @override
   String get gamePairsHow =>
       'Encuentra las 8 parejas de escudos en el menor tiempo.';
-
-  @override
-  String get gameRunHint => 'Desliza para cambiar de carril';
 
   @override
   String get gameHeadHint => 'Toca para saltar';
@@ -4767,6 +4754,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get gamePairsNoShields => 'Aún no hay escudos suficientes para jugar';
 
   @override
+  String get gamePairsLoading => 'Cargando escudos…';
+
+  @override
   String gameFinalTime(String time) {
     return 'Tiempo: $time';
   }
@@ -4782,7 +4772,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String gameModMarks(int catches, int run, int heads, String pairs) {
-    return 'Atrapa $catches · Regatea $run · Cabezazos $heads · Parejas $pairs';
+  String gameModMarks(int catches, int heads, String pairs) {
+    return 'Atrapa $catches · Cabezazos $heads · Parejas $pairs';
   }
 }

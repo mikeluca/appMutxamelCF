@@ -15,8 +15,7 @@ const _ana = PerfilJuegoAdmin(
   email: 'ana@example.com',
   partidas: 5,
   mejorAtrapa: 9,
-  mejorRegatea: 12,
-  mejorCabezazos: 40,
+  mejorCabezazos: 12,
   mejorParejasMs: 83450,
 );
 
@@ -59,7 +58,7 @@ void main() {
 
       expect(find.text('Mutxigol10'), findsOneWidget);
       expect(find.text('Ana Pérez · ana@example.com'), findsOneWidget);
-      expect(find.text('Atrapa 9 · Regatea 12 · Cabezazos 40 · Parejas 1:23,4'), findsOneWidget);
+      expect(find.text('Atrapa 9 · Cabezazos 12 · Parejas 1:23,4'), findsOneWidget);
       expect(find.text('Escondido'), findsOneWidget);
       expect(find.byKey(const ValueKey('oculto-8')), findsOneWidget);
       expect(find.byKey(const ValueKey('oculto-7')), findsNothing);
@@ -184,7 +183,7 @@ void main() {
             puntos: 12,
             fecha: DateTime(2026, 11, 24),
           ),
-          const PuntuacionAdmin(id: 12, juego: Juego.regatea, puntos: 40),
+          const PuntuacionAdmin(id: 12, juego: Juego.cabezazos, puntos: 40),
         ];
 
       await tester.tap(find.byKey(const ValueKey('puntuaciones-7')));

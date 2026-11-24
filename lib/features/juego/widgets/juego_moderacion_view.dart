@@ -297,7 +297,6 @@ class _JuegoModeracionViewState extends State<JuegoModeracionView> {
             Text(
               t.gameModMarks(
                 p.mejorAtrapa,
-                p.mejorRegatea,
                 p.mejorCabezazos,
                 p.mejorParejasMs > 0
                     ? formatearTiempo(p.mejorParejasMs)
@@ -368,7 +367,6 @@ class _PuntuacionesDelPerfilState extends State<_PuntuacionesDelPerfil> {
 
   String _nombreDelJuego(AppLocalizations t, Juego? juego) => switch (juego) {
     Juego.atrapa => t.gameCatchShort,
-    Juego.regatea => t.gameRunShort,
     Juego.cabezazos => t.gameHeadShort,
     Juego.parejas => t.gamePairsShort,
     null => '',

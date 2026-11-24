@@ -8103,12 +8103,6 @@ abstract class AppLocalizations {
   /// **'Atrapa balones'**
   String get gameCatchName;
 
-  /// No description provided for @gameRunName.
-  ///
-  /// In es, this message translates to:
-  /// **'Regatea'**
-  String get gameRunName;
-
   /// No description provided for @gameHeadName.
   ///
   /// In es, this message translates to:
@@ -8126,12 +8120,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Atrapa'**
   String get gameCatchShort;
-
-  /// No description provided for @gameRunShort.
-  ///
-  /// In es, this message translates to:
-  /// **'Regatea'**
-  String get gameRunShort;
 
   /// No description provided for @gameHeadShort.
   ///
@@ -8151,12 +8139,6 @@ abstract class AppLocalizations {
   /// **'Arrastra a Mutxigol y atrapa los balones. Deja caer lo que sea malo.'**
   String get gameCatchHow;
 
-  /// No description provided for @gameRunHow.
-  ///
-  /// In es, this message translates to:
-  /// **'Desliza para cambiar de carril. Esquiva a los defensas y recoge balones.'**
-  String get gameRunHow;
-
   /// No description provided for @gameHeadHow.
   ///
   /// In es, this message translates to:
@@ -8168,12 +8150,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Encuentra las 8 parejas de escudos en el menor tiempo.'**
   String get gamePairsHow;
-
-  /// No description provided for @gameRunHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Desliza para cambiar de carril'**
-  String get gameRunHint;
 
   /// No description provided for @gameHeadHint.
   ///
@@ -8277,6 +8253,12 @@ abstract class AppLocalizations {
   /// **'Aún no hay escudos suficientes para jugar'**
   String get gamePairsNoShields;
 
+  /// No description provided for @gamePairsLoading.
+  ///
+  /// In es, this message translates to:
+  /// **'Cargando escudos…'**
+  String get gamePairsLoading;
+
   /// No description provided for @gameFinalTime.
   ///
   /// In es, this message translates to:
@@ -8298,8 +8280,8 @@ abstract class AppLocalizations {
   /// No description provided for @gameModMarks.
   ///
   /// In es, this message translates to:
-  /// **'Atrapa {catches} · Regatea {run} · Cabezazos {heads} · Parejas {pairs}'**
-  String gameModMarks(int catches, int run, int heads, String pairs);
+  /// **'Atrapa {catches} · Cabezazos {heads} · Parejas {pairs}'**
+  String gameModMarks(int catches, int heads, String pairs);
 }
 
 class _AppLocalizationsDelegate

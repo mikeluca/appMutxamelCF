@@ -4,9 +4,9 @@ import 'package:app_mutxamel_cf/features/juego/models/juego_modelos.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Las imágenes del juego: las poses nuevas están (en las dos equipaciones) y las de los juegos que ya no existen
-/// (portero, parada, chutando, toques) ni están ni se referencian.
+/// (portero, parada, chutando, toques, corriendo, espalda) ni están ni se referencian.
 void main() {
-  const antiguas = ['portero', 'parada', 'chutando', 'toques'];
+  const antiguas = ['portero', 'parada', 'chutando', 'toques', 'corriendo', 'espalda'];
 
   final carpeta = Directory('assets/images/mutxigol');
 
@@ -25,18 +25,14 @@ void main() {
     expect(File(ImagenesMutxigol.escudoClub).existsSync(), isTrue);
   });
 
-  test('las poses son las 10 de siempre: parado, atrapando, celebrando, triste, cara, 3 de correr, salto y espalda', () {
+  test('las poses son las 6 de ahora: parado, atrapando, celebrando, triste, cara y salto', () {
     expect(PoseMutxigol.values.map((p) => p.fichero).toSet(), {
       'mutxigol_parado',
       'mutxigol_atrapando',
       'mutxigol_celebrando',
       'mutxigol_triste',
       'mutxigol_cara',
-      'mutxigol_corriendo_1',
-      'mutxigol_corriendo_2',
-      'mutxigol_corriendo_3',
       'mutxigol_salto',
-      'mutxigol_espalda',
     });
   });
 
@@ -78,6 +74,8 @@ void main() {
 
       expect(texto, isNot(contains('Juego.penaltis')), reason: f.path);
       expect(texto, isNot(contains('Juego.toques')), reason: f.path);
+      expect(texto, isNot(contains('Juego.regatea')), reason: f.path);
+      expect(texto.toLowerCase(), isNot(contains('regatea')), reason: f.path);
     }
   });
 

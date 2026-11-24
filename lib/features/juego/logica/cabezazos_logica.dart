@@ -23,51 +23,77 @@ class BarreraCabezazos {
 
 /// Cabezazos (estilo Flappy Bird): Mutxigol, de perfil, a un tercio del ancho. Tocar en cualquier sitio le da un impulso
 /// hacia arriba y la gravedad lo baja. Entran barreras por la derecha a ritmo constante, con un hueco que se va
-/// estrechando. +1 por barrera superada. 1 vida: tocar una barrera, el suelo o el techo acaba la partida. Hasta el primer
-/// toque, Mutxigol flota y no pasa nada.
+/// estrechando. +1 por barrera superada. 1 vida: tocar una barrera, el suelo o el techo acaba la partida.
+///
+/// No lleva cuenta atrás: empieza en espera (Mutxigol flota) y el primer toque arranca la partida y el tiempo.
 class CabezazosLogica extends LogicaJuego {
   CabezazosLogica({required super.alto, math.Random? random})
     : _random = random ?? math.Random(),
-      _y = alto * 0.4;
+      _y = alto * alturaDeEspera;
 
   final math.Random _random;
 
-  // ---- Reglas (unidades de juego) ----
+  // ---- Mutxigol (unidades de juego) ----
 
-  /// La posición horizontal de Mutxigol (un tercio del ancho).
+  /// La posición horizontal del centro de su cuerpo (un tercio del ancho).
   static const double xMutxigol = LogicaJuego.ancho / 3;
 
-  /// El radio de su "caja" (un poco menor que la imagen, para que sea justo).
-  static const double radio = 22;
+  /// El tamaño con el que se dibuja la imagen cuadrada de la pose de salto: el personaje visible mide ~86 de alto.
+  static const double tamanoImagen = 126;
 
-  static const double gravedad = 1500;
+  /// Lo que mide el personaje visible (cuernos y pies incluidos) dentro de la imagen, de 0 a 1.
+  static const double alturaVisibleEnImagen = 0.68;
+
+  /// Dónde está el centro del cuerpo (cabeza y tronco, sin cuernos ni puntas de los brazos) respecto al centro de la
+  /// imagen, en fracción de su tamaño.
+  static const double cuerpoDx = 0.053;
+  static const double cuerpoDy = -0.109;
+
+  /// El círculo de choque: ajustado al cuerpo visible (cabeza y tronco).
+  static const double radio = 24;
+  static const double diametro = radio * 2;
+
+  // ---- Física ----
+
+  static const double gravedad = 1100;
 
   /// El impulso de cada toque (velocidad vertical, hacia arriba).
-  static const double impulso = 440;
+  static const double impulso = 380;
+
+  /// La velocidad máxima de caída.
+  static const double velocidadMaximaDeCaida = 550;
+
+  // ---- Barreras ----
 
   /// La velocidad con la que entran las barreras (constante) y la distancia entre ellas.
   static const double velocidadBarreras = 150;
   static const double separacionBarreras = 210;
   static const double anchoBarrera = 62;
 
-  /// El hueco: empieza en 200, se estrecha 4 por barrera y no baja de 140.
-  static const double huecoInicial = 200;
+  /// La primera barrera llega a Mutxigol a los 2 s del primer toque.
+  static const double segundosHastaLaPrimera = 2;
+
+  /// El hueco: empieza en ~3,5 diámetros, se estrecha 4 por barrera y no baja de 140 (2,9 diámetros).
+  static const double huecoInicial = 3.5 * diametro;
   static const double huecoMinimo = 140;
   static const double estrechamiento = 4;
+
+  /// El hueco mínimo siempre es jugable: al menos 2,6 veces el diámetro de choque.
+  static const double huecoMinimoJugable = 2.6 * diametro;
 
   /// Lo que puede cambiar la altura del hueco de una barrera a la siguiente (que siempre sea alcanzable).
   static const double cambioMaximoDeAltura = 150;
 
   /// El suelo (el césped de abajo mide esto) y el margen mínimo del hueco con el techo y el suelo.
   static const double alturaCesped = 70;
-  static const double margenHueco = 40;
+  static const double margenHueco = 60;
 
   /// La inclinación de la imagen: hasta 20° hacia arriba y 60° hacia abajo.
   static const double inclinacionMaximaArriba = 20;
   static const double inclinacionMaximaAbajo = 60;
-  static const double velocidadParaInclinacionMaxima = 600;
 
   /// El movimiento de flotar mientras se espera el primer toque.
+  static const double alturaDeEspera = 0.4;
   static const double amplitudFlotar = 14;
   static const double frecuenciaFlotar = 2.4;
 
@@ -79,9 +105,9 @@ class CabezazosLogica extends LogicaJuego {
   bool _muerto = false;
   int _puntos = 0;
   double _recorrido = 0;
-  double _hastaLaSiguiente = 0;
   double? _ultimoCentro;
   int _creadas = 0;
+  Duration _cronometro = Duration.zero;
   final List<BarreraCabezazos> _barreras = [];
 
   @override
@@ -97,7 +123,11 @@ class CabezazosLogica extends LogicaJuego {
   /// true hasta el primer toque: Mutxigol flota y todavía no hay barreras.
   bool get esperando => _esperando;
 
-  /// La altura del centro de Mutxigol.
+  /// El tiempo de partida: empieza con el primer toque (la espera no cuenta).
+  @override
+  Duration get tiempoJugado => _cronometro;
+
+  /// La altura del centro del cuerpo de Mutxigol (el centro del círculo de choque).
   double get y => _y;
 
   double get velocidadVertical => _vy;
@@ -120,8 +150,7 @@ class CabezazosLogica extends LogicaJuego {
       return math.min(-_vy / impulso, 1) * inclinacionMaximaArriba;
     }
 
-    return -math.min(_vy / velocidadParaInclinacionMaxima, 1) *
-        inclinacionMaximaAbajo;
+    return -math.min(_vy / velocidadMaximaDeCaida, 1) * inclinacionMaximaAbajo;
   }
 
   /// Un toque: el primero empieza la partida; todos dan un impulso hacia arriba.
@@ -155,16 +184,18 @@ class CabezazosLogica extends LogicaJuego {
 
     if (_esperando) {
       // Flota suave arriba y abajo: no cae ni avanza nada.
-      _y = alto * 0.4 + amplitudFlotar * math.sin(segundos * frecuenciaFlotar);
+      _y =
+          alto * alturaDeEspera +
+          amplitudFlotar * math.sin(segundos * frecuenciaFlotar);
 
       return;
     }
 
-    _vy += gravedad * s;
+    _cronometro += dt;
+
+    _vy = math.min(_vy + gravedad * s, velocidadMaximaDeCaida);
     _y += _vy * s;
     _recorrido += velocidadBarreras * s;
-
-    _crearBarreras(s);
 
     for (final barrera in List.of(_barreras)) {
       barrera.x -= velocidadBarreras * s;
@@ -181,38 +212,46 @@ class CabezazosLogica extends LogicaJuego {
       }
     }
 
+    _crearBarreras();
+
     if (_choca()) {
       _muerto = true;
       alEvento?.call(EventoJuego.fallo);
     }
   }
 
-  void _crearBarreras(double s) {
-    _hastaLaSiguiente -= velocidadBarreras * s;
+  /// Mantiene las barreras que entran: la primera llega a los 2 s del primer toque y las demás a [separacionBarreras].
+  void _crearBarreras() {
+    while (_barreras.isEmpty && _creadas == 0 ||
+        (_barreras.isNotEmpty &&
+            _barreras.last.x + separacionBarreras <= LogicaJuego.ancho + 40)) {
+      final x = _barreras.isEmpty
+          ? xMutxigol + radio + velocidadBarreras * segundosHastaLaPrimera
+          : _barreras.last.x + separacionBarreras;
 
-    if (_hastaLaSiguiente > 0) return;
+      _crear(x);
+    }
+  }
 
-    _hastaLaSiguiente += separacionBarreras;
-
+  void _crear(double x) {
     final hueco = huecoActual;
     final minimo = margenHueco + hueco / 2;
     final maximo = suelo - margenHueco - hueco / 2;
 
     var centro = minimo + _random.nextDouble() * (maximo - minimo);
 
-    // Que no cambie demasiado respecto a la anterior: siempre se puede llegar.
-    final anterior = _ultimoCentro;
+    // Que no cambie demasiado respecto a la anterior: siempre se puede llegar. La primera, cerca de donde está él.
+    final anterior = _ultimoCentro ?? _y;
+    final cambio = _ultimoCentro == null ? 70.0 : cambioMaximoDeAltura;
 
-    if (anterior != null) {
-      centro = centro
-          .clamp(anterior - cambioMaximoDeAltura, anterior + cambioMaximoDeAltura)
-          .clamp(minimo, maximo)
-          .toDouble();
-    }
+    centro = centro
+        .clamp(anterior - cambio, anterior + cambio)
+        .clamp(minimo, maximo)
+        .toDouble();
 
     _ultimoCentro = centro;
     _creadas++;
-    _barreras.add(BarreraCabezazos(LogicaJuego.ancho + 20, centro, hueco));
+    _barreras.add(BarreraCabezazos(x, centro, hueco));
   }
 
   bool _choca() {

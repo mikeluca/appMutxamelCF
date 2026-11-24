@@ -4661,9 +4661,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String get gameCatchName => 'Atrapa pilotes';
 
   @override
-  String get gameRunName => 'Regatea';
-
-  @override
   String get gameHeadName => 'Cabdellades';
 
   @override
@@ -4671,9 +4668,6 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get gameCatchShort => 'Atrapa';
-
-  @override
-  String get gameRunShort => 'Regatea';
 
   @override
   String get gameHeadShort => 'Cabdellades';
@@ -4686,19 +4680,12 @@ class AppLocalizationsCa extends AppLocalizations {
       'Arrossega Mutxigol i atrapa les pilotes. Deixa caure el que siga roín.';
 
   @override
-  String get gameRunHow =>
-      'Llisca per canviar de carril. Esquiva els defenses i arreplega pilotes.';
-
-  @override
   String get gameHeadHow =>
       'Toca per botar i passa entre les columnes de defenses.';
 
   @override
   String get gamePairsHow =>
       'Troba les 8 parelles d\'escuts en el menor temps.';
-
-  @override
-  String get gameRunHint => 'Llisca per canviar de carril';
 
   @override
   String get gameHeadHint => 'Toca per botar';
@@ -4758,6 +4745,9 @@ class AppLocalizationsCa extends AppLocalizations {
       'Encara no hi ha escuts suficients per a jugar';
 
   @override
+  String get gamePairsLoading => 'Carregant escuts…';
+
+  @override
   String gameFinalTime(String time) {
     return 'Temps: $time';
   }
@@ -4773,7 +4763,7 @@ class AppLocalizationsCa extends AppLocalizations {
   }
 
   @override
-  String gameModMarks(int catches, int run, int heads, String pairs) {
-    return 'Atrapa $catches · Regatea $run · Cabdellades $heads · Parelles $pairs';
+  String gameModMarks(int catches, int heads, String pairs) {
+    return 'Atrapa $catches · Cabdellades $heads · Parelles $pairs';
   }
 }
