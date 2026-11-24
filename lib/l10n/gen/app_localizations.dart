@@ -106,12 +106,6 @@ abstract class AppLocalizations {
   /// **'Inicio'**
   String get navHome;
 
-  /// No description provided for @navNews.
-  ///
-  /// In es, this message translates to:
-  /// **'Noticias'**
-  String get navNews;
-
   /// No description provided for @navMatches.
   ///
   /// In es, this message translates to:
@@ -7736,6 +7730,474 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Clubes creados sin escudo: {clubes}'**
   String ffcvCreatedClubs(String clubes);
+
+  /// No description provided for @navGame.
+  ///
+  /// In es, this message translates to:
+  /// **'Mutxigol'**
+  String get navGame;
+
+  /// No description provided for @homeSeeAllNews.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver todas las noticias'**
+  String get homeSeeAllNews;
+
+  /// No description provided for @gameTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Mutxigol'**
+  String get gameTitle;
+
+  /// No description provided for @gameKitLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipación'**
+  String get gameKitLabel;
+
+  /// No description provided for @gameKitBlue.
+  ///
+  /// In es, this message translates to:
+  /// **'Azul'**
+  String get gameKitBlue;
+
+  /// No description provided for @gameKitPink.
+  ///
+  /// In es, this message translates to:
+  /// **'Rosa'**
+  String get gameKitPink;
+
+  /// No description provided for @gamePenaltiesName.
+  ///
+  /// In es, this message translates to:
+  /// **'Penaltis'**
+  String get gamePenaltiesName;
+
+  /// No description provided for @gameTouchesName.
+  ///
+  /// In es, this message translates to:
+  /// **'Toques'**
+  String get gameTouchesName;
+
+  /// No description provided for @gameCatchName.
+  ///
+  /// In es, this message translates to:
+  /// **'Atrapa balones'**
+  String get gameCatchName;
+
+  /// No description provided for @gamePenaltiesShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Penaltis'**
+  String get gamePenaltiesShort;
+
+  /// No description provided for @gameTouchesShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Toques'**
+  String get gameTouchesShort;
+
+  /// No description provided for @gameCatchShort.
+  ///
+  /// In es, this message translates to:
+  /// **'Atrapa'**
+  String get gameCatchShort;
+
+  /// No description provided for @gamePenaltiesHow.
+  ///
+  /// In es, this message translates to:
+  /// **'Desliza el dedo desde el balón hacia la portería. Tienes 3 vidas.'**
+  String get gamePenaltiesHow;
+
+  /// No description provided for @gameTouchesHow.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca el balón para que no caiga al suelo. Cada toque suma un punto.'**
+  String get gameTouchesHow;
+
+  /// No description provided for @gameCatchHow.
+  ///
+  /// In es, this message translates to:
+  /// **'Arrastra a Mutxigol y atrapa los balones. Esquiva las tarjetas rojas.'**
+  String get gameCatchHow;
+
+  /// No description provided for @gameYourRecord.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu récord: {points}'**
+  String gameYourRecord(int points);
+
+  /// No description provided for @gameNoRecordYet.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún sin récord'**
+  String get gameNoRecordYet;
+
+  /// No description provided for @gameRankingButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Ranking'**
+  String get gameRankingButton;
+
+  /// No description provided for @gameChooseAliasBanner.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige tu alias para salir en el ranking'**
+  String get gameChooseAliasBanner;
+
+  /// No description provided for @gameChooseAliasAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Elegir alias'**
+  String get gameChooseAliasAction;
+
+  /// No description provided for @gameChangeAliasAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar alias'**
+  String get gameChangeAliasAction;
+
+  /// No description provided for @gameLoginBanner.
+  ///
+  /// In es, this message translates to:
+  /// **'Inicia sesión en el Área Club para guardar tus puntuaciones'**
+  String get gameLoginBanner;
+
+  /// No description provided for @gameYourAlias.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu alias: {alias}'**
+  String gameYourAlias(String alias);
+
+  /// No description provided for @gameAliasTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu alias'**
+  String get gameAliasTitle;
+
+  /// No description provided for @gameAliasLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Alias'**
+  String get gameAliasLabel;
+
+  /// No description provided for @gameAliasRules.
+  ///
+  /// In es, this message translates to:
+  /// **'De 3 a 15 caracteres: letras, números, espacios, guiones y guiones bajos. Sin emails, teléfonos ni palabras malsonantes. Es lo único que verán los demás en el ranking, nunca tu nombre.'**
+  String get gameAliasRules;
+
+  /// No description provided for @gameAliasSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Alias guardado'**
+  String get gameAliasSaved;
+
+  /// No description provided for @gameKitSaveError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido guardar la equipación'**
+  String get gameKitSaveError;
+
+  /// No description provided for @gameLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido cargar tu perfil del juego'**
+  String get gameLoadError;
+
+  /// No description provided for @gamePause.
+  ///
+  /// In es, this message translates to:
+  /// **'Pausa'**
+  String get gamePause;
+
+  /// No description provided for @gameResume.
+  ///
+  /// In es, this message translates to:
+  /// **'Continuar'**
+  String get gameResume;
+
+  /// No description provided for @gameExit.
+  ///
+  /// In es, this message translates to:
+  /// **'Salir'**
+  String get gameExit;
+
+  /// No description provided for @gamePausedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Juego en pausa'**
+  String get gamePausedTitle;
+
+  /// No description provided for @gameGo.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Ya!'**
+  String get gameGo;
+
+  /// No description provided for @gameScoreLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntos: {points}'**
+  String gameScoreLabel(int points);
+
+  /// No description provided for @gameLivesLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Vidas: {lives}'**
+  String gameLivesLabel(int lives);
+
+  /// No description provided for @gamePenaltiesHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Desliza desde el balón hacia la portería'**
+  String get gamePenaltiesHint;
+
+  /// No description provided for @gameTouchesHint.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Toca el balón!'**
+  String get gameTouchesHint;
+
+  /// No description provided for @gameCatchHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Arrastra para moverte'**
+  String get gameCatchHint;
+
+  /// No description provided for @gameOverTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Fin de la partida'**
+  String get gameOverTitle;
+
+  /// No description provided for @gameNewRecord.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Nuevo récord!'**
+  String get gameNewRecord;
+
+  /// No description provided for @gameFinalScore.
+  ///
+  /// In es, this message translates to:
+  /// **'{points} puntos'**
+  String gameFinalScore(int points);
+
+  /// No description provided for @gamePlayAgain.
+  ///
+  /// In es, this message translates to:
+  /// **'Otra vez'**
+  String get gamePlayAgain;
+
+  /// No description provided for @gameSaving.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardando tu puntuación…'**
+  String get gameSaving;
+
+  /// No description provided for @gameRecordWeek.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Récord de la semana!'**
+  String get gameRecordWeek;
+
+  /// No description provided for @gameRecordAllTime.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Récord histórico!'**
+  String get gameRecordAllTime;
+
+  /// No description provided for @gamePositionWeek.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta semana: puesto {position}'**
+  String gamePositionWeek(int position);
+
+  /// No description provided for @gamePositionAllTime.
+  ///
+  /// In es, this message translates to:
+  /// **'Histórico: puesto {position}'**
+  String gamePositionAllTime(int position);
+
+  /// No description provided for @gameSendError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se ha podido guardar tu puntuación.'**
+  String get gameSendError;
+
+  /// No description provided for @gameAliasToSave.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige un alias para guardar esta puntuación'**
+  String get gameAliasToSave;
+
+  /// No description provided for @gameRankingTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ranking'**
+  String get gameRankingTitle;
+
+  /// No description provided for @gameThisWeek.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta semana'**
+  String get gameThisWeek;
+
+  /// No description provided for @gameAllTime.
+  ///
+  /// In es, this message translates to:
+  /// **'Histórico'**
+  String get gameAllTime;
+
+  /// No description provided for @gameRankingEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Todavía no hay puntuaciones'**
+  String get gameRankingEmpty;
+
+  /// No description provided for @gameYou.
+  ///
+  /// In es, this message translates to:
+  /// **'Tú'**
+  String get gameYou;
+
+  /// No description provided for @gameYourPosition.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu posición'**
+  String get gameYourPosition;
+
+  /// No description provided for @gameModTab.
+  ///
+  /// In es, this message translates to:
+  /// **'Juego Mutxigol'**
+  String get gameModTab;
+
+  /// No description provided for @gameModSearch.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar por alias'**
+  String get gameModSearch;
+
+  /// No description provided for @gameModNoProfiles.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay perfiles del juego'**
+  String get gameModNoProfiles;
+
+  /// No description provided for @gameModHiddenChip.
+  ///
+  /// In es, this message translates to:
+  /// **'Oculto'**
+  String get gameModHiddenChip;
+
+  /// No description provided for @gameModChangeAlias.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar alias'**
+  String get gameModChangeAlias;
+
+  /// No description provided for @gameModNewAlias.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo alias'**
+  String get gameModNewAlias;
+
+  /// No description provided for @gameModHide.
+  ///
+  /// In es, this message translates to:
+  /// **'Ocultar del ranking'**
+  String get gameModHide;
+
+  /// No description provided for @gameModShow.
+  ///
+  /// In es, this message translates to:
+  /// **'Mostrar en el ranking'**
+  String get gameModShow;
+
+  /// No description provided for @gameModScores.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntuaciones'**
+  String get gameModScores;
+
+  /// No description provided for @gameModDeleteAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Borrar todas'**
+  String get gameModDeleteAll;
+
+  /// No description provided for @gameModDelete.
+  ///
+  /// In es, this message translates to:
+  /// **'Borrar'**
+  String get gameModDelete;
+
+  /// No description provided for @gameModNoScores.
+  ///
+  /// In es, this message translates to:
+  /// **'Este perfil no tiene puntuaciones'**
+  String get gameModNoScores;
+
+  /// No description provided for @gameModConfirmHide.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Ocultar a {alias} del ranking?'**
+  String gameModConfirmHide(String alias);
+
+  /// No description provided for @gameModConfirmShow.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Mostrar a {alias} en el ranking?'**
+  String gameModConfirmShow(String alias);
+
+  /// No description provided for @gameModConfirmDeleteScore.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Borrar esta puntuación?'**
+  String get gameModConfirmDeleteScore;
+
+  /// No description provided for @gameModConfirmDeleteAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Se borrarán todas las puntuaciones de {alias}. ¿Seguro?'**
+  String gameModConfirmDeleteAll(String alias);
+
+  /// No description provided for @gameModDone.
+  ///
+  /// In es, this message translates to:
+  /// **'Hecho'**
+  String get gameModDone;
+
+  /// No description provided for @gameModMarks.
+  ///
+  /// In es, this message translates to:
+  /// **'Penaltis {penalties} · Toques {touches} · Atrapa {catches}'**
+  String gameModMarks(int penalties, int touches, int catches);
+
+  /// No description provided for @gameResultGoal.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Gol!'**
+  String get gameResultGoal;
+
+  /// No description provided for @gameResultSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Parada!'**
+  String get gameResultSaved;
+
+  /// No description provided for @gameResultWeak.
+  ///
+  /// In es, this message translates to:
+  /// **'Muy flojo'**
+  String get gameResultWeak;
+
+  /// No description provided for @gameResultOut.
+  ///
+  /// In es, this message translates to:
+  /// **'Fuera'**
+  String get gameResultOut;
 }
 
 class _AppLocalizationsDelegate

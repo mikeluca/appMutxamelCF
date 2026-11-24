@@ -3,6 +3,8 @@ import 'package:material_ui/material_ui.dart';
 import '../../../core/utils/mensaje_error.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
+import '../../juego/services/juego_service.dart';
+import '../../juego/widgets/juego_moderacion_view.dart';
 import '../models/admin_model.dart';
 import '../services/admin_service.dart';
 
@@ -11,7 +13,14 @@ import '../services/admin_service.dart';
 class ModeracionPage extends StatefulWidget {
   final AdminService? servicio;
 
-  const ModeracionPage({super.key, this.servicio});
+  /// El servicio del apartado "Juego Mutxigol" (solo se cambia en los tests).
+  final JuegoService servicioJuego;
+
+  const ModeracionPage({
+    super.key,
+    this.servicio,
+    this.servicioJuego = const JuegoService(),
+  });
 
   @override
   State<ModeracionPage> createState() => _ModeracionPageState();
@@ -159,7 +168,7 @@ class _ModeracionPageState extends State<ModeracionPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: ClubAppBarTitle(titulo: _t.clubPageModeration),
@@ -167,6 +176,7 @@ class _ModeracionPageState extends State<ModeracionPage> {
             tabs: [
               Tab(text: _t.moderationTabPending),
               Tab(text: _t.moderationTabResolved),
+              Tab(text: _t.gameModTab),
             ],
           ),
         ),
@@ -174,6 +184,7 @@ class _ModeracionPageState extends State<ModeracionPage> {
           children: [
             _construirLista(_pendientes, resueltos: false),
             _construirLista(_resueltos, resueltos: true),
+            JuegoModeracionView(servicio: widget.servicioJuego),
           ],
         ),
       ),

@@ -4,11 +4,18 @@ import '../../l10n/gen/app_localizations.dart';
 import '../club/pages/club_info_page.dart';
 import '../home/home_page.dart';
 import '../matches/pages/matches_page.dart';
-import '../news/pages/news_page.dart';
+import '../juego/estado_mutxigol.dart';
+import '../juego/models/juego_modelos.dart';
+import '../juego/pages/mutxigol_page.dart';
 import '../store/pages/store_page.dart';
 
 class PublicShellPage extends StatefulWidget {
-  const PublicShellPage({super.key});
+  /// Las pestañas (en este orden: Inicio, Mutxigol, Partidos, Tienda, Club). Solo se pasan en los tests, para no
+  /// levantar pantallas que necesitan red o WebView; sin ellas, las de siempre.
+  @visibleForTesting
+  final List<Widget>? paginas;
+
+  const PublicShellPage({super.key, this.paginas});
 
   @override
   State<PublicShellPage> createState() => _PublicShellPageState();
@@ -34,13 +41,15 @@ class _PublicShellPageState extends State<PublicShellPage> {
   void initState() {
     super.initState();
 
-    _pages = [
-      HomePage(key: _homeKey, visible: _homeVisible),
-      const NewsPage(),
-      const MatchesPage(),
-      const StorePage(),
-      const ClubInfoPage(),
-    ];
+    _pages =
+        widget.paginas ??
+        [
+          HomePage(key: _homeKey, visible: _homeVisible),
+          const MutxigolPage(),
+          const MatchesPage(),
+          const StorePage(),
+          const ClubInfoPage(),
+        ];
   }
 
   @override
@@ -77,12 +86,25 @@ class _PublicShellPageState extends State<PublicShellPage> {
   Widget _buildFloatingNavigationBar() {
     final t = AppLocalizations.of(context);
 
-    final items = [
-      (Icons.home_outlined, Icons.home, t.navHome),
-      (Icons.article_outlined, Icons.article, t.navNews),
-      (Icons.sports_soccer_outlined, Icons.sports_soccer, t.navMatches),
-      (Icons.storefront_outlined, Icons.storefront, t.navStore),
-      (Icons.info_outline, Icons.info, t.navClub),
+    final items = <(Widget, Widget, String)>[
+      (const Icon(Icons.home_outlined), const Icon(Icons.home), t.navHome),
+      // La pestaña de Mutxigol lleva su cara (con la equipación elegida) recortada en círculo.
+      (
+        const _CaraMutxigol(seleccionada: false),
+        const _CaraMutxigol(seleccionada: true),
+        t.navGame,
+      ),
+      (
+        const Icon(Icons.sports_soccer_outlined),
+        const Icon(Icons.sports_soccer),
+        t.navMatches,
+      ),
+      (
+        const Icon(Icons.storefront_outlined),
+        const Icon(Icons.storefront),
+        t.navStore,
+      ),
+      (const Icon(Icons.info_outline), const Icon(Icons.info), t.navClub),
     ];
 
     return SafeArea(
@@ -126,8 +148,8 @@ class _NavItem extends StatelessWidget {
     required this.onTap,
   });
 
-  final IconData icono;
-  final IconData iconoSeleccionado;
+  final Widget icono;
+  final Widget iconoSeleccionado;
   final String etiqueta;
   final bool seleccionado;
   final VoidCallback onTap;
@@ -152,7 +174,7 @@ class _NavItem extends StatelessWidget {
               color: seleccionado ? theme.indicatorColor : Colors.transparent,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(seleccionado ? iconoSeleccionado : icono),
+            child: seleccionado ? iconoSeleccionado : icono,
           ),
           const SizedBox(height: 4),
           Text(
@@ -162,6 +184,46 @@ class _NavItem extends StatelessWidget {
             style: estiloEtiqueta,
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// La cara de Mutxigol en pequeño, recortada en círculo, como icono de su pestaña. Si la imagen no carga, un icono de
+/// juego.
+class _CaraMutxigol extends StatelessWidget {
+  const _CaraMutxigol({required this.seleccionada});
+
+  final bool seleccionada;
+
+  @override
+  Widget build(BuildContext context) {
+    final colores = Theme.of(context).colorScheme;
+
+    return ValueListenableBuilder<Equipacion>(
+      valueListenable: EstadoMutxigol.equipacion,
+      builder: (context, equipacion, _) => Center(
+        child: Container(
+          key: const ValueKey('icono-mutxigol'),
+          width: 28,
+          height: 28,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: seleccionada ? colores.primary : Colors.transparent,
+              width: 2,
+            ),
+          ),
+          child: ClipOval(
+            child: Image.asset(
+              ImagenesMutxigol.pose(equipacion, PoseMutxigol.cara),
+              fit: BoxFit.cover,
+              gaplessPlayback: true,
+              errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.sports_esports, size: 22),
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -56,6 +56,9 @@ flutter:
     - assets/images/patrocinador_ayto.png
     - assets/images/patrocinador_frutas.png
     - assets/images/patrocinador_ud.png
+    - assets/images/mutxigol/balon.webp
+    - assets/images/mutxigol/azul/
+    - assets/images/mutxigol/rosa/
 
 flutter_launcher_icons:
   android: true

@@ -12,9 +12,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navHome => 'Home';
 
   @override
-  String get navNews => 'News';
-
-  @override
   String get navMatches => 'Matches';
 
   @override
@@ -4424,4 +4421,265 @@ class AppLocalizationsEn extends AppLocalizations {
   String ffcvCreatedClubs(String clubes) {
     return 'Clubs created without a crest: $clubes';
   }
+
+  @override
+  String get navGame => 'Mutxigol';
+
+  @override
+  String get homeSeeAllNews => 'See all news';
+
+  @override
+  String get gameTitle => 'Mutxigol';
+
+  @override
+  String get gameKitLabel => 'Kit';
+
+  @override
+  String get gameKitBlue => 'Blue';
+
+  @override
+  String get gameKitPink => 'Pink';
+
+  @override
+  String get gamePenaltiesName => 'Penalties';
+
+  @override
+  String get gameTouchesName => 'Keepie-uppie';
+
+  @override
+  String get gameCatchName => 'Catch the balls';
+
+  @override
+  String get gamePenaltiesShort => 'Penalties';
+
+  @override
+  String get gameTouchesShort => 'Touches';
+
+  @override
+  String get gameCatchShort => 'Catch';
+
+  @override
+  String get gamePenaltiesHow =>
+      'Swipe from the ball towards the goal. You have 3 lives.';
+
+  @override
+  String get gameTouchesHow =>
+      'Tap the ball to keep it off the ground. Each touch is a point.';
+
+  @override
+  String get gameCatchHow =>
+      'Drag Mutxigol and catch the balls. Dodge the red cards.';
+
+  @override
+  String gameYourRecord(int points) {
+    return 'Your record: $points';
+  }
+
+  @override
+  String get gameNoRecordYet => 'No record yet';
+
+  @override
+  String get gameRankingButton => 'Ranking';
+
+  @override
+  String get gameChooseAliasBanner =>
+      'Choose your alias to appear in the ranking';
+
+  @override
+  String get gameChooseAliasAction => 'Choose alias';
+
+  @override
+  String get gameChangeAliasAction => 'Change alias';
+
+  @override
+  String get gameLoginBanner => 'Sign in to the Club Area to save your scores';
+
+  @override
+  String gameYourAlias(String alias) {
+    return 'Your alias: $alias';
+  }
+
+  @override
+  String get gameAliasTitle => 'Your alias';
+
+  @override
+  String get gameAliasLabel => 'Alias';
+
+  @override
+  String get gameAliasRules =>
+      '3 to 15 characters: letters, numbers, spaces, hyphens and underscores. No emails, phone numbers or bad words. It is all that other players see in the ranking, never your name.';
+
+  @override
+  String get gameAliasSaved => 'Alias saved';
+
+  @override
+  String get gameKitSaveError => 'The kit could not be saved';
+
+  @override
+  String get gameLoadError => 'Your game profile could not be loaded';
+
+  @override
+  String get gamePause => 'Pause';
+
+  @override
+  String get gameResume => 'Resume';
+
+  @override
+  String get gameExit => 'Exit';
+
+  @override
+  String get gamePausedTitle => 'Game paused';
+
+  @override
+  String get gameGo => 'Go!';
+
+  @override
+  String gameScoreLabel(int points) {
+    return 'Score: $points';
+  }
+
+  @override
+  String gameLivesLabel(int lives) {
+    return 'Lives: $lives';
+  }
+
+  @override
+  String get gamePenaltiesHint => 'Swipe from the ball towards the goal';
+
+  @override
+  String get gameTouchesHint => 'Tap the ball!';
+
+  @override
+  String get gameCatchHint => 'Drag to move';
+
+  @override
+  String get gameOverTitle => 'Game over';
+
+  @override
+  String get gameNewRecord => 'New record!';
+
+  @override
+  String gameFinalScore(int points) {
+    return '$points points';
+  }
+
+  @override
+  String get gamePlayAgain => 'Play again';
+
+  @override
+  String get gameSaving => 'Saving your score…';
+
+  @override
+  String get gameRecordWeek => 'Record of the week!';
+
+  @override
+  String get gameRecordAllTime => 'All-time record!';
+
+  @override
+  String gamePositionWeek(int position) {
+    return 'This week: position $position';
+  }
+
+  @override
+  String gamePositionAllTime(int position) {
+    return 'All time: position $position';
+  }
+
+  @override
+  String get gameSendError => 'Your score could not be saved.';
+
+  @override
+  String get gameAliasToSave => 'Choose an alias to save this score';
+
+  @override
+  String get gameRankingTitle => 'Ranking';
+
+  @override
+  String get gameThisWeek => 'This week';
+
+  @override
+  String get gameAllTime => 'All time';
+
+  @override
+  String get gameRankingEmpty => 'There are no scores yet';
+
+  @override
+  String get gameYou => 'You';
+
+  @override
+  String get gameYourPosition => 'Your position';
+
+  @override
+  String get gameModTab => 'Mutxigol game';
+
+  @override
+  String get gameModSearch => 'Search by alias';
+
+  @override
+  String get gameModNoProfiles => 'There are no game profiles';
+
+  @override
+  String get gameModHiddenChip => 'Hidden';
+
+  @override
+  String get gameModChangeAlias => 'Change alias';
+
+  @override
+  String get gameModNewAlias => 'New alias';
+
+  @override
+  String get gameModHide => 'Hide from ranking';
+
+  @override
+  String get gameModShow => 'Show in ranking';
+
+  @override
+  String get gameModScores => 'Scores';
+
+  @override
+  String get gameModDeleteAll => 'Delete all';
+
+  @override
+  String get gameModDelete => 'Delete';
+
+  @override
+  String get gameModNoScores => 'This profile has no scores';
+
+  @override
+  String gameModConfirmHide(String alias) {
+    return 'Hide $alias from the ranking?';
+  }
+
+  @override
+  String gameModConfirmShow(String alias) {
+    return 'Show $alias in the ranking?';
+  }
+
+  @override
+  String get gameModConfirmDeleteScore => 'Delete this score?';
+
+  @override
+  String gameModConfirmDeleteAll(String alias) {
+    return 'All scores of $alias will be deleted. Are you sure?';
+  }
+
+  @override
+  String get gameModDone => 'Done';
+
+  @override
+  String gameModMarks(int penalties, int touches, int catches) {
+    return 'Penalties $penalties · Touches $touches · Catch $catches';
+  }
+
+  @override
+  String get gameResultGoal => 'Goal!';
+
+  @override
+  String get gameResultSaved => 'Saved!';
+
+  @override
+  String get gameResultWeak => 'Too weak';
+
+  @override
+  String get gameResultOut => 'Wide';
 }

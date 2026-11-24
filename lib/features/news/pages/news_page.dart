@@ -8,7 +8,10 @@ import 'news_detail_page.dart';
 import '../services/news_services.dart';
 
 class NewsPage extends StatefulWidget {
-  const NewsPage({super.key});
+  /// El servicio de noticias (solo se cambia en los tests).
+  final NewsService? newsService;
+
+  const NewsPage({super.key, this.newsService});
 
   @override
   State<NewsPage> createState() => _NewsPageState();
@@ -17,7 +20,7 @@ class NewsPage extends StatefulWidget {
 class _NewsPageState extends State<NewsPage> {
   static const int _noticiasPorPagina = 5;
 
-  final NewsService _newsService = NewsService();
+  late final NewsService _newsService = widget.newsService ?? NewsService();
 
   List<NewsModel> _noticias = [];
 

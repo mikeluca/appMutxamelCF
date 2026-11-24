@@ -12,9 +12,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String get navHome => 'Inici';
 
   @override
-  String get navNews => 'Notícies';
-
-  @override
   String get navMatches => 'Partits';
 
   @override
@@ -4456,4 +4453,265 @@ class AppLocalizationsCa extends AppLocalizations {
   String ffcvCreatedClubs(String clubes) {
     return 'Clubs creats sense escut: $clubes';
   }
+
+  @override
+  String get navGame => 'Mutxigol';
+
+  @override
+  String get homeSeeAllNews => 'Veure totes les notícies';
+
+  @override
+  String get gameTitle => 'Mutxigol';
+
+  @override
+  String get gameKitLabel => 'Equipació';
+
+  @override
+  String get gameKitBlue => 'Blava';
+
+  @override
+  String get gameKitPink => 'Rosa';
+
+  @override
+  String get gamePenaltiesName => 'Penals';
+
+  @override
+  String get gameTouchesName => 'Tocs';
+
+  @override
+  String get gameCatchName => 'Atrapa pilotes';
+
+  @override
+  String get gamePenaltiesShort => 'Penals';
+
+  @override
+  String get gameTouchesShort => 'Tocs';
+
+  @override
+  String get gameCatchShort => 'Atrapa';
+
+  @override
+  String get gamePenaltiesHow =>
+      'Llisca el dit des de la pilota cap a la porteria. Tens 3 vides.';
+
+  @override
+  String get gameTouchesHow =>
+      'Toca la pilota perquè no caiga a terra. Cada toc suma un punt.';
+
+  @override
+  String get gameCatchHow =>
+      'Arrossega Mutxigol i atrapa les pilotes. Esquiva les targetes roges.';
+
+  @override
+  String gameYourRecord(int points) {
+    return 'El teu rècord: $points';
+  }
+
+  @override
+  String get gameNoRecordYet => 'Encara sense rècord';
+
+  @override
+  String get gameRankingButton => 'Rànquing';
+
+  @override
+  String get gameChooseAliasBanner => 'Tria el teu àlies per eixir al rànquing';
+
+  @override
+  String get gameChooseAliasAction => 'Triar àlies';
+
+  @override
+  String get gameChangeAliasAction => 'Canviar àlies';
+
+  @override
+  String get gameLoginBanner =>
+      'Inicia sessió a l\'Àrea Club per a guardar les teues puntuacions';
+
+  @override
+  String gameYourAlias(String alias) {
+    return 'El teu àlies: $alias';
+  }
+
+  @override
+  String get gameAliasTitle => 'El teu àlies';
+
+  @override
+  String get gameAliasLabel => 'Àlies';
+
+  @override
+  String get gameAliasRules =>
+      'De 3 a 15 caràcters: lletres, números, espais, guions i guions baixos. Sense emails, telèfons ni paraules malsonants. És l\'únic que veuran els altres al rànquing, mai el teu nom.';
+
+  @override
+  String get gameAliasSaved => 'Àlies guardat';
+
+  @override
+  String get gameKitSaveError => 'No s\'ha pogut guardar l\'equipació';
+
+  @override
+  String get gameLoadError => 'No s\'ha pogut carregar el teu perfil del joc';
+
+  @override
+  String get gamePause => 'Pausa';
+
+  @override
+  String get gameResume => 'Continuar';
+
+  @override
+  String get gameExit => 'Eixir';
+
+  @override
+  String get gamePausedTitle => 'Joc en pausa';
+
+  @override
+  String get gameGo => 'Au!';
+
+  @override
+  String gameScoreLabel(int points) {
+    return 'Punts: $points';
+  }
+
+  @override
+  String gameLivesLabel(int lives) {
+    return 'Vides: $lives';
+  }
+
+  @override
+  String get gamePenaltiesHint => 'Llisca des de la pilota cap a la porteria';
+
+  @override
+  String get gameTouchesHint => 'Toca la pilota!';
+
+  @override
+  String get gameCatchHint => 'Arrossega per moure\'t';
+
+  @override
+  String get gameOverTitle => 'Fi de la partida';
+
+  @override
+  String get gameNewRecord => 'Nou rècord!';
+
+  @override
+  String gameFinalScore(int points) {
+    return '$points punts';
+  }
+
+  @override
+  String get gamePlayAgain => 'Una altra vegada';
+
+  @override
+  String get gameSaving => 'Guardant la teua puntuació…';
+
+  @override
+  String get gameRecordWeek => 'Rècord de la setmana!';
+
+  @override
+  String get gameRecordAllTime => 'Rècord històric!';
+
+  @override
+  String gamePositionWeek(int position) {
+    return 'Esta setmana: lloc $position';
+  }
+
+  @override
+  String gamePositionAllTime(int position) {
+    return 'Històric: lloc $position';
+  }
+
+  @override
+  String get gameSendError => 'No s\'ha pogut guardar la teua puntuació.';
+
+  @override
+  String get gameAliasToSave => 'Tria un àlies per a guardar esta puntuació';
+
+  @override
+  String get gameRankingTitle => 'Rànquing';
+
+  @override
+  String get gameThisWeek => 'Esta setmana';
+
+  @override
+  String get gameAllTime => 'Històric';
+
+  @override
+  String get gameRankingEmpty => 'Encara no hi ha puntuacions';
+
+  @override
+  String get gameYou => 'Tu';
+
+  @override
+  String get gameYourPosition => 'La teua posició';
+
+  @override
+  String get gameModTab => 'Joc Mutxigol';
+
+  @override
+  String get gameModSearch => 'Buscar per àlies';
+
+  @override
+  String get gameModNoProfiles => 'No hi ha perfils del joc';
+
+  @override
+  String get gameModHiddenChip => 'Ocult';
+
+  @override
+  String get gameModChangeAlias => 'Canviar àlies';
+
+  @override
+  String get gameModNewAlias => 'Nou àlies';
+
+  @override
+  String get gameModHide => 'Ocultar del rànquing';
+
+  @override
+  String get gameModShow => 'Mostrar al rànquing';
+
+  @override
+  String get gameModScores => 'Puntuacions';
+
+  @override
+  String get gameModDeleteAll => 'Esborrar totes';
+
+  @override
+  String get gameModDelete => 'Esborrar';
+
+  @override
+  String get gameModNoScores => 'Este perfil no té puntuacions';
+
+  @override
+  String gameModConfirmHide(String alias) {
+    return 'Ocultar $alias del rànquing?';
+  }
+
+  @override
+  String gameModConfirmShow(String alias) {
+    return 'Mostrar $alias al rànquing?';
+  }
+
+  @override
+  String get gameModConfirmDeleteScore => 'Esborrar esta puntuació?';
+
+  @override
+  String gameModConfirmDeleteAll(String alias) {
+    return 'S\'esborraran totes les puntuacions de $alias. Segur?';
+  }
+
+  @override
+  String get gameModDone => 'Fet';
+
+  @override
+  String gameModMarks(int penalties, int touches, int catches) {
+    return 'Penals $penalties · Tocs $touches · Atrapa $catches';
+  }
+
+  @override
+  String get gameResultGoal => 'Gol!';
+
+  @override
+  String get gameResultSaved => 'Parada!';
+
+  @override
+  String get gameResultWeak => 'Massa fluix';
+
+  @override
+  String get gameResultOut => 'Fora';
 }

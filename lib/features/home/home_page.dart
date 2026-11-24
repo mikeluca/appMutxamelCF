@@ -12,6 +12,7 @@ import '../matches/models/match_model.dart';
 import '../matches/services/match_service.dart';
 import '../news/models/news_model.dart';
 import '../news/pages/news_detail_page.dart';
+import '../news/pages/news_page.dart';
 import '../news/services/news_services.dart';
 import '../../../routing/app_routes.dart';
 import '../auth/services/auth_manager.dart';
@@ -462,14 +463,32 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         final noticiasMostrar = noticias.take(3).toList();
 
         return Column(
-          children: noticiasMostrar
-              .map(
-                (noticia) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: _buildNewsCard(noticia),
-                ),
-              )
-              .toList(),
+          children: [
+            ...noticiasMostrar.map(
+              (noticia) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _buildNewsCard(noticia),
+              ),
+            ),
+            // La pestaña Noticias ya no está en la barra: la lista completa se abre desde aquí.
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                key: const ValueKey('ver-todas-noticias'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => NewsPage(newsService: _newsService),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.arrow_forward),
+                iconAlignment: IconAlignment.end,
+                label: Text(_t.homeSeeAllNews),
+              ),
+            ),
+          ],
         );
       },
     );
