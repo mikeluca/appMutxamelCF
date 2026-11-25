@@ -36,7 +36,8 @@ if (hasKeystoreProperties) {
 
 android {
     namespace = "com.mutxamelcf.app"
-    compileSdk = flutter.compileSdkVersion
+    // flutter_local_notifications 23 exige compilar contra el SDK 37 (el de Flutter es el 36)
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

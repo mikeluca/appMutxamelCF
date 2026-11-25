@@ -1,10 +1,10 @@
 import 'dart:io' show Platform;
 
 import 'package:add_2_calendar/add_2_calendar.dart';
-import 'package:app_settings/app_settings.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../l10n/gen/app_localizations.dart';
+import 'ajustes_sistema.dart';
 import 'evento_partido.dart';
 
 /// "Añadir a mi calendario": abre el editor de eventos del sistema con el evento ya relleno (en Android, por el intent
@@ -21,7 +21,7 @@ class AnadirAlCalendario {
 
   @visibleForTesting
   static Future<void> Function() abrirAjustes = () =>
-      AppSettings.openAppSettings();
+      AjustesSistema.abrirApp();
 
   static Future<bool> _enviar(EventoCalendario e) {
     return Add2Calendar.addEvent2Cal(

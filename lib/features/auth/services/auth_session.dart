@@ -7,8 +7,8 @@ import '../models/login_response.dart';
 class AuthSession {
   AuthSession._();
 
-  // Sin opciones de Android: el paquete migra solo lo guardado con EncryptedSharedPreferences la primera vez que
-  // lo lee (migrateOnAlgorithmChange es true por defecto), así que nadie pierde la sesión al actualizar.
+  // Sin opciones: se mantienen las de la 1.0.16 (cifrado AES-GCM + RSA-OAEP en Android; Keychain por defecto en iOS), asi que
+  // la sesion guardada se sigue leyendo al actualizar. No anadir sharedPreferencesName ni cambiar los algoritmos.
   static const _storage = FlutterSecureStorage();
 
   static const String _tokenKey = 'auth_token';

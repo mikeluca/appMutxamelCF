@@ -1,11 +1,11 @@
 import 'dart:io' show Platform;
 
-import 'package:app_settings/app_settings.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../l10n/gen/app_localizations.dart';
 import '../../config/app_preferences.dart';
+import '../../utils/ajustes_sistema.dart';
 import '../widgets/pantalla_avisos.dart';
 
 /// Cómo está el permiso de notificaciones del sistema.
@@ -57,7 +57,7 @@ class PermisoNotificaciones {
 
   /// Abre los ajustes de notificaciones del sistema (los tests lo sustituyen).
   static Future<void> Function() abrirAjustes = () =>
-      AppSettings.openAppSettings(type: AppSettingsType.notification);
+      AjustesSistema.abrirNotificaciones();
 
   @visibleForTesting
   static DateTime Function() ahora = DateTime.now;
