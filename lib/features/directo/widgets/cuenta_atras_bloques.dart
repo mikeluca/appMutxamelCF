@@ -19,6 +19,9 @@ class CuentaAtrasBloques extends StatefulWidget {
   /// El ancho máximo de la fila con 4 bloques (con 3, proporcionalmente menos).
   static const double anchoMaximo = 230;
 
+  /// El relleno vertical de cada bloque (arriba y abajo): lo que separa las etiquetas del borde inferior del bloque.
+  static const double rellenoVertical = 4;
+
   final DateTime? dia;
   final String? hora;
 
@@ -199,7 +202,10 @@ class _Bloque extends StatelessWidget {
       children: [
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+          padding: const EdgeInsets.symmetric(
+            vertical: CuentaAtrasBloques.rellenoVertical,
+            horizontal: 4,
+          ),
           decoration: BoxDecoration(
             color: colores.primaryContainer.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(8),

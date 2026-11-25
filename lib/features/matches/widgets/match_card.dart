@@ -179,6 +179,11 @@ class MatchCard extends StatelessWidget {
   Widget _buildUpcomingMatchCard(BuildContext context) {
     final t = AppLocalizations.of(context);
 
+    // La tarjeta del Primer Equipo de Inicio: el mismo hueco vertical entre los nombres, la cuenta atrás y la fecha.
+    final conCuentaAtras =
+        mostrarPrimerEquipo && CuentaAtrasTexto.aplica(match.dia, match.hora);
+    final hueco = mostrarPrimerEquipo ? _huecoVertical(context) : null;
+
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: _shapeTipo,
@@ -230,10 +235,9 @@ class MatchCard extends StatelessWidget {
 
                   // La cuenta atrás de la tarjeta del Primer Equipo, en bloques (Días / Horas / Minutos / Segundos);
                   // en los últimos 30 minutos, "Calentando…" y "A punto de empezar". Sin hora, solo el día.
-                  if (mostrarPrimerEquipo &&
-                      CuentaAtrasTexto.aplica(match.dia, match.hora))
+                  if (conCuentaAtras)
                     Padding(
-                      padding: const EdgeInsets.only(top: 4),
+                      padding: EdgeInsets.only(top: hueco ?? 4),
                       child: CuentaAtrasBloques(
                         dia: match.dia,
                         hora: match.hora,
@@ -242,7 +246,15 @@ class MatchCard extends StatelessWidget {
                       ),
                     ),
 
-                  const SizedBox(height: 4),
+                  // Entre las etiquetas de la cuenta atrás y la fecha: el hueco, menos el relleno del propio bloque. Sin cuenta
+                  // atrás, un solo hueco entre los nombres y la fecha.
+                  SizedBox(
+                    height: hueco == null
+                        ? 4
+                        : conCuentaAtras
+                        ? hueco - CuentaAtrasBloques.rellenoVertical
+                        : hueco,
+                  ),
 
                   _buildMatchInformation(context),
 
@@ -699,6 +711,30 @@ class MatchCard extends StatelessWidget {
   // INFORMACIÓN DEL PARTIDO
   // ============================================================
 
+  /// El alto del botón de Cómo llegar (IconButton compacto: 48 de mínimo menos 8 de la densidad).
+  static const double altoBotonComoLlegar = 40;
+
+  /// El relleno inferior de cada fila de información (_buildInfoRow).
+  static const double rellenoFilaInfo = 3;
+
+  /// El hueco vertical entre la fecha y la línea del campo, tal como se pinta: el relleno de la fila de la fecha más lo que
+  /// sobra por encima del texto del campo, que va centrado en una fila tan alta como el botón de Cómo llegar. Es la
+  /// referencia: los huecos entre los nombres y la cuenta atrás, y entre la cuenta atrás y la fecha, miden lo mismo.
+  double _huecoVertical(BuildContext context) {
+    final texto = TextPainter(
+      text: TextSpan(
+        text: 'Ag',
+        style: DefaultTextStyle.of(context).style.copyWith(fontSize: 14),
+      ),
+      textDirection: TextDirection.ltr,
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout();
+
+    final sobra = (altoBotonComoLlegar - texto.height) / 2;
+
+    return rellenoFilaInfo + (sobra > 0 ? sobra : 0);
+  }
+
   Widget _buildMatchInformation(BuildContext context) {
     // Fecha y hora en una sola línea ("Domingo 22/11/2026 · 17:30"). La fecha se calcula en el cliente a partir de
     // match.dia (para anteponer el nombre del día y respetar el idioma activo); diaFormateado queda como respaldo si
@@ -733,7 +769,7 @@ class MatchCard extends StatelessWidget {
     Widget? trailing,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 3),
+      padding: const EdgeInsets.only(bottom: rellenoFilaInfo),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

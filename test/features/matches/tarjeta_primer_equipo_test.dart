@@ -64,6 +64,7 @@ Future<void> _pintar(
 double _arriba(WidgetTester tester, Finder f) => tester.getTopLeft(f).dy;
 
 void main() {
+  pruebasDeHuecos();
   setUpAll(() async => initializeDateFormatting('es'));
 
   group('Partidos: tarjeta del Primer Equipo con ficha', () {
@@ -299,14 +300,14 @@ void main() {
       },
     );
 
-    testWidgets('la tarjeta no es más alta que antes de los escudos grandes (421 con la letra de los tests)', (
+    testWidgets('la tarjeta crece solo lo que piden los huecos iguales (421 antes, 432 con la letra de los tests)', (
       tester,
     ) async {
       await inicio(tester);
 
       expect(
         tester.getSize(find.byType(Card).first).height,
-        lessThanOrEqualTo(421),
+        lessThanOrEqualTo(434),
       );
     });
 
@@ -349,5 +350,96 @@ void main() {
         expect(vs, lessThan(220));
       }
     });
+  });
+}
+
+/// Los tres huecos verticales de la tarjeta del próximo partido de Inicio (A nombres → cuenta atrás, B cuenta atrás →
+/// fecha, C fecha → campo): iguales.
+void pruebasDeHuecos() {
+  Future<Map<String, double>> medir(
+    WidgetTester tester, {
+    String? hora = '17:00',
+    bool conCampo = true,
+  }) async {
+    await _pintar(
+      tester,
+      MatchCard(
+        match: MatchModel(
+          id: 30,
+          equipoId: 1,
+          categoria: 'Primer Equipo',
+          equipo: 'Primer Equipo',
+          rival: 'Pego',
+          tipo: 'LIGA',
+          dia: DateTime(2099, 11, 22),
+          hora: hora,
+          campo: conCampo ? 'Camp Municipal' : null,
+        ),
+        mostrarPrimerEquipo: true,
+        ahora: () => DateTime.utc(2099, 11, 20, 12),
+      ),
+    );
+
+    Rect r(Finder f) => tester.getRect(f);
+
+    final nombres = [r(find.text('Pego')), r(find.text('Primer Equipo'))];
+    final nombreMasBajo = nombres.map((e) => e.bottom).reduce((a, b) => a > b ? a : b);
+    final fecha = r(find.textContaining('22/11/2099'));
+    final medidas = <String, double>{};
+    final bloques = find.byKey(const ValueKey('cuenta-atras-bloques'));
+
+    if (bloques.evaluate().isNotEmpty) {
+      medidas['A'] = r(bloques).top - nombreMasBajo;
+      medidas['B'] = fecha.top - r(find.text('Segundos')).bottom;
+    } else {
+      medidas['sin'] = fecha.top - nombreMasBajo;
+    }
+
+    if (conCampo) medidas['C'] = r(find.text('Camp Municipal')).top - fecha.bottom;
+
+    return medidas;
+  }
+
+  testWidgets('A, B y C miden lo mismo (390 dp, letra normal)', (tester) async {
+    final m = await medir(tester);
+
+    expect(m['C'], greaterThan(8));
+    expect(m['A']!, closeTo(m['C']!, 1));
+    expect(m['B']!, closeTo(m['C']!, 1));
+  });
+
+  testWidgets('sin cuenta atrás (sin hora), nombres → fecha mide lo mismo que C', (tester) async {
+    final m = await medir(tester, hora: null);
+
+    expect(m.containsKey('A'), isFalse);
+    expect(m['sin']!, closeTo(m['C']!, 1));
+  });
+
+  testWidgets('con el partido ya en juego (sin cuenta atrás), también', (tester) async {
+    // La hora ya pasada: la cuenta atrás no aplica.
+    await _pintar(
+      tester,
+      MatchCard(
+        match: MatchModel(
+          id: 30,
+          equipoId: 1,
+          categoria: 'Primer Equipo',
+          equipo: 'Primer Equipo',
+          rival: 'Pego',
+          tipo: 'LIGA',
+          dia: DateTime(2099, 11, 22),
+          campo: 'Camp Municipal',
+        ),
+        mostrarPrimerEquipo: true,
+        ahora: () => DateTime.utc(2099, 11, 20, 12),
+      ),
+    );
+
+    final nombre = tester.getRect(find.text('Primer Equipo')).bottom;
+    final fecha = tester.getRect(find.textContaining('22/11/2099'));
+    final campo = tester.getRect(find.text('Camp Municipal'));
+
+    expect(find.byKey(const ValueKey('cuenta-atras-bloques')), findsNothing);
+    expect(fecha.top - nombre, closeTo(campo.top - fecha.bottom, 1));
   });
 }
