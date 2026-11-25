@@ -22,6 +22,7 @@ import '../widgets/escena_cabezazos.dart';
 import '../widgets/escena_parejas.dart';
 import '../widgets/fin_de_partida.dart';
 import '../widgets/leyenda_atrapa.dart';
+import '../widgets/siluetas_juego.dart';
 import 'ranking_juego_page.dart';
 
 enum _FasePartida { leyenda, cuentaAtras, jugando, pausa, fin }
@@ -155,6 +156,13 @@ class _PartidaJuegoPageState extends State<PartidaJuegoPage>
 
     precacheImage(const AssetImage(ImagenesMutxigol.balon), context)
         .catchError((_) {});
+
+    // Cabezazos: las camisetas de los defensas (las de la equipación contraria), decodificadas una vez.
+    if (widget.juego == Juego.cabezazos) {
+      CamisetasDefensa.cargar(_equipacion.opuesta).then((_) {
+        if (mounted) setState(() {});
+      });
+    }
   }
 
   @override

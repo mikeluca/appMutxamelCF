@@ -152,7 +152,8 @@ class EscenaCabezazos extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final l = logica;
-    final defensa = DefensaPainter(equipacion: equipacion.opuesta);
+    final contraria = equipacion.opuesta;
+    final camiseta = CamisetasDefensa.de(contraria);
     const tam = CabezazosLogica.tamanoImagen;
 
     return Listener(
@@ -177,7 +178,13 @@ class EscenaCabezazos extends StatelessWidget {
                     top: r.top,
                     width: r.width,
                     height: r.height,
-                    child: CustomPaint(painter: defensa),
+                    child: CustomPaint(
+                      painter: DefensaPainter(
+                        equipacion: contraria,
+                        camiseta: camiseta,
+                        cacheada: CacheDefensas.obtener(contraria, r.height, camiseta),
+                      ),
+                    ),
                   ),
               MutxigolEnEscena(
                 equipacion: equipacion,

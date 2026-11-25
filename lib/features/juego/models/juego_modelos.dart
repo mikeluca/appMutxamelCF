@@ -73,6 +73,10 @@ class ImagenesMutxigol {
   /// El escudo del club (Atrapa lo deja caer como vida extra; Parejas lo pone en el reverso de las cartas).
   static const String escudoClub = 'assets/images/escudo.png';
 
+  /// La camiseta (frente en plano, 840 × 480) con la que van los defensas de Cabezazos: la de la equipación [equipacion].
+  static String camisetaDefensa(Equipacion equipacion) =>
+      '$_base/camiseta_defensa_${equipacion.carpeta}.webp';
+
   static String pose(Equipacion equipacion, PoseMutxigol pose) =>
       '$_base/${equipacion.carpeta}/${pose.fichero}.webp';
 }

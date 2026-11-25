@@ -57,6 +57,8 @@ flutter:
     - assets/images/patrocinador_frutas.png
     - assets/images/patrocinador_ud.png
     - assets/images/mutxigol/balon.webp
+    - assets/images/mutxigol/camiseta_defensa_azul.webp
+    - assets/images/mutxigol/camiseta_defensa_rosa.webp
     - assets/images/mutxigol/azul/
     - assets/images/mutxigol/rosa/
 

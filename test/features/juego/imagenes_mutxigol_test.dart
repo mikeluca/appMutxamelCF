@@ -45,6 +45,8 @@ void main() {
 
     final esperados = {
       'balon.webp',
+      // Las camisetas de los defensas de Cabezazos (con el escudo y el patrocinador).
+      for (final e in Equipacion.values) 'camiseta_defensa_${e.carpeta}.webp',
       for (final e in Equipacion.values)
         for (final p in PoseMutxigol.values) '${e.carpeta}/${p.fichero}.webp',
     };
