@@ -275,19 +275,77 @@ void main() {
       expect(campoCasaMapas, 'Poliesportiu Municipal de Mutxamel');
     });
 
-    test('destinoCampoPartido: en casa siempre el campo de mapas', () {
+    test('esCampoElsOms: la misma regla que el backend', () {
+      const siEs = [
+        'Camp Nou Los Olmos Mutxamel F-11',
+        'Camp Municipal Els Oms',
+        'C.F. Els Oms',
+        'CAMP NOU LOS OLMOS',
+        'Camp Municipal Els Òms',
+        '  Els   Oms  ',
+        'Els.Oms',
+        '',
+        '   ',
+      ];
+      const noEs = [
+        'Hogar Provincial',
+        'Campo Mpal. de Mutxamel',
+        'Romsa',
+        'Olmosa',
+        'Los Olmosa',
+        'Campo Mpal. Les Costeres F-11 Gata',
+      ];
+
+      for (final campo in siEs) {
+        expect(esCampoElsOms(campo), isTrue, reason: campo);
+      }
+
+      for (final campo in noEs) {
+        expect(esCampoElsOms(campo), isFalse, reason: campo);
+      }
+
+      expect(esCampoElsOms(null), isTrue);
+    });
+
+    test('destinoCampoPartido: solo es el campo de mapas si es local y en Els Oms', () {
+      // Sin enCasaElsOms del backend: local y campo de Els Oms.
       expect(
-        destinoCampoPartido('Camp Nou Los Olmos Mutxamel', local: true),
+        destinoCampoPartido('Camp Nou Los Olmos Mutxamel F-11', local: true),
         campoCasaMapas,
       );
-      expect(destinoCampoPartido('Otro campo', local: true), campoCasaMapas);
       expect(
-        destinoCampoPartido('Campo Pego F-11', local: false),
-        'Campo Pego F-11',
+        destinoCampoPartido('Hogar Provincial', local: true),
+        'Hogar Provincial',
+      );
+      expect(
+        destinoCampoPartido('Camp Municipal Els Oms', local: false),
+        'Camp Municipal Els Oms',
       );
       expect(destinoCampoPartido('Campo Pego', local: null), 'Campo Pego');
       expect(destinoCampoPartido('  ', local: true), '');
       expect(destinoCampoPartido(null, local: true), '');
+
+      // Con enCasaElsOms del backend, manda él.
+      expect(
+        destinoCampoPartido(
+          'Hogar Provincial',
+          local: true,
+          enCasaElsOms: true,
+        ),
+        campoCasaMapas,
+      );
+      expect(
+        destinoCampoPartido(
+          'Camp Municipal Els Oms',
+          local: true,
+          enCasaElsOms: false,
+        ),
+        'Camp Municipal Els Oms',
+      );
+      expect(
+        destinoCampoPartido('Hogar Provincial', local: true, enCasaElsOms: false),
+        'Hogar Provincial',
+      );
     });
 
     test('destinoLugarCitacion: Camp Nou Los Olmos, en casa y fuera', () {
@@ -317,44 +375,59 @@ void main() {
       );
     });
 
-    test(
-      'destinoLugarCitacion: igual al campo o vacío, solo si es de local',
-      () {
-        expect(
-          destinoLugarCitacion(
-            'Camp Municipal Pégo',
-            campo: 'camp municipal pego',
-            local: true,
-          ),
-          campoCasaMapas,
-        );
-        expect(
-          destinoLugarCitacion(
-            'Camp Municipal Pego',
-            campo: 'Camp Municipal Pego',
-            local: false,
-          ),
+    test('destinoLugarCitacion: igual al campo o vacío, casa solo si se juega en Els Oms', () {
+      // Local en Els Oms (sin dato del backend: se calcula con el campo).
+      expect(
+        destinoLugarCitacion('', campo: 'Camp Nou Los Olmos F-11', local: true),
+        campoCasaMapas,
+      );
+      expect(
+        destinoLugarCitacion(
+          'camp nou los olmos f-11',
+          campo: 'Camp Nou Los Olmos F-11',
+          local: true,
+        ),
+        campoCasaMapas,
+      );
+      expect(
+        destinoLugarCitacion(null, campo: 'Pego', local: true, enCasaElsOms: true),
+        campoCasaMapas,
+      );
+
+      // Local en otro campo: el campo del partido tal cual.
+      expect(
+        destinoLugarCitacion('', campo: 'Hogar Provincial', local: true),
+        'Hogar Provincial',
+      );
+      expect(
+        destinoLugarCitacion(
+          'hogar provincial',
+          campo: 'Hogar Provincial',
+          local: true,
+        ),
+        'Hogar Provincial',
+      );
+      expect(
+        destinoLugarCitacion(
+          null,
+          campo: 'Hogar Provincial',
+          local: true,
+          enCasaElsOms: false,
+        ),
+        'Hogar Provincial',
+      );
+
+      // Fuera: tal cual.
+      expect(
+        destinoLugarCitacion(
           'Camp Municipal Pego',
-        );
-        expect(
-          destinoLugarCitacion(
-            'Camp Municipal Pego',
-            campo: 'Camp Municipal Pego',
-          ),
-          'Camp Municipal Pego',
-        );
-        expect(
-          destinoLugarCitacion('', campo: 'Pego', local: true),
-          campoCasaMapas,
-        );
-        expect(
-          destinoLugarCitacion(null, campo: 'Pego', local: true),
-          campoCasaMapas,
-        );
-        expect(destinoLugarCitacion('', campo: 'Pego', local: false), '');
-        expect(destinoLugarCitacion(null, campo: 'Pego'), '');
-      },
-    );
+          campo: 'Camp Municipal Pego',
+          local: false,
+        ),
+        'Camp Municipal Pego',
+      );
+      expect(destinoLugarCitacion('', campo: 'Pego', local: false), 'Pego');
+    });
 
     test('destinoLugarCitacion: otro sitio, tal cual', () {
       expect(
@@ -486,6 +559,7 @@ void main() {
           lugar: 'Camp de Pego',
           campo: 'camp de pego',
           local: true,
+          enCasaElsOms: true,
         ),
       );
       expect(abiertas.single.toString(), contains('query=$casaMapas'));
@@ -505,20 +579,68 @@ void main() {
       );
     });
 
-    testWidgets('citación vacía y en casa: botón a mapas; fuera, sin botón', (
+    testWidgets('citación vacía: en Els Oms, a mapas; en otro campo o fuera, el campo', (
       tester,
     ) async {
       await tocar(
         tester,
-        const BotonComoLlegar.citacion(lugar: '', campo: 'Pego', local: true),
+        const BotonComoLlegar.citacion(
+          lugar: '',
+          campo: 'Camp Nou Los Olmos',
+          local: true,
+        ),
       );
       expect(abiertas.single.toString(), contains('query=$casaMapas'));
 
-      await _pintar(
+      abiertas.clear();
+      await tocar(
         tester,
-        const BotonComoLlegar.citacion(lugar: '', campo: 'Pego', local: false),
+        const BotonComoLlegar.citacion(
+          lugar: '',
+          campo: 'Hogar Provincial',
+          local: true,
+          enCasaElsOms: false,
+        ),
       );
-      expect(find.byIcon(Icons.directions), findsNothing);
+      expect(
+        abiertas.single.toString(),
+        contains('query=${Uri.encodeComponent('Hogar Provincial')}'),
+      );
+
+      abiertas.clear();
+      await tocar(
+        tester,
+        const BotonComoLlegar.citacion(
+          lugar: '',
+          campo: 'Pego',
+          local: false,
+        ),
+      );
+      expect(abiertas.single.toString(), contains('query=Pego'));
+    });
+
+    testWidgets('una tarjeta local en el Hogar Provincial abre el mapa con ese texto', (
+      tester,
+    ) async {
+      await tocar(
+        tester,
+        const BotonComoLlegar(lugar: 'Hogar Provincial', local: true),
+      );
+      expect(
+        abiertas.single.toString(),
+        contains('query=${Uri.encodeComponent('Hogar Provincial')}'),
+      );
+
+      abiertas.clear();
+      await tocar(
+        tester,
+        const BotonComoLlegar(
+          lugar: 'Hogar Provincial',
+          local: true,
+          enCasaElsOms: true,
+        ),
+      );
+      expect(abiertas.single.toString(), contains('query=$casaMapas'));
     });
 
     testWidgets('citación en otro sitio: tal cual', (tester) async {

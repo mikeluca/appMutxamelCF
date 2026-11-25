@@ -43,6 +43,9 @@ class ConvocatoriaPartidoModel {
 
   /// true si el Mutxamel juega como local.
   final bool local;
+
+  /// true si es local y se juega en Els Oms; null si el backend no lo manda.
+  final bool? enCasaElsOms;
   final String? horaCitacion;
   final String? lugarCitacion;
 
@@ -63,6 +66,7 @@ class ConvocatoriaPartidoModel {
     this.hora,
     this.campo,
     this.local = true,
+    this.enCasaElsOms,
     this.horaCitacion,
     this.lugarCitacion,
     required this.convocado,
@@ -79,6 +83,7 @@ class ConvocatoriaPartidoModel {
       hora: json['hora'] as String?,
       campo: json['campo'] as String?,
       local: json['local'] as bool? ?? true,
+      enCasaElsOms: json['enCasaElsOms'] as bool?,
       horaCitacion: json['horaCitacion'] as String?,
       lugarCitacion: json['lugarCitacion'] as String?,
       convocado: json['convocado'] as bool? ?? false,

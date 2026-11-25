@@ -322,6 +322,7 @@ class PartidoListaCard extends StatelessWidget {
                 trailing: BotonComoLlegar(
                   lugar: partido.campo,
                   local: partido.local,
+                  enCasaElsOms: partido.enCasaElsOms,
                 ),
               ),
 

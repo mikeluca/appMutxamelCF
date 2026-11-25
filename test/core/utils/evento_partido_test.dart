@@ -1,3 +1,4 @@
+import 'package:app_mutxamel_cf/core/utils/como_llegar.dart';
 import 'package:app_mutxamel_cf/core/utils/anadir_al_calendario.dart';
 import 'package:app_mutxamel_cf/core/utils/evento_partido.dart';
 import 'package:app_mutxamel_cf/features/convocatorias/model/convocatoria_partido_model.dart';
@@ -184,13 +185,27 @@ void main() {
   });
 
   group('lugar y notas', () {
-    test('el lugar es el campo tal cual', () {
+    test('el lugar sigue el criterio del mapa: Els Oms, el campo de casa; otro campo, el campo tal cual', () {
       expect(
         EventoPartido.desdeMatch(
           _partido(campo: ' Camp Nou Los Olmos '),
           es,
         )!.lugar,
-        'Camp Nou Los Olmos',
+        campoCasaMapas,
+      );
+      expect(
+        EventoPartido.desdeMatch(
+          _partido(campo: ' Hogar Provincial '),
+          es,
+        )!.lugar,
+        'Hogar Provincial',
+      );
+      expect(
+        EventoPartido.desdeMatch(
+          _partido(campo: ' Campo Pego ', local: false),
+          es,
+        )!.lugar,
+        'Campo Pego',
       );
       expect(
         EventoPartido.desdeMatch(_partido(campo: null), es)!.lugar,

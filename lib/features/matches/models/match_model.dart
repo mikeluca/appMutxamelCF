@@ -34,6 +34,9 @@ class MatchModel {
   /// en backends antiguos: se asume local, como se mostraba hasta ahora.
   final bool local;
 
+  /// true si es local y se juega en Els Oms (lo dice el backend); null si no lo manda (se calcula con el campo).
+  final bool? enCasaElsOms;
+
   /// El último partido ya se jugó y aún no tiene resultado. Ausente en backends
   /// antiguos: se asume false.
   final bool pendienteResultado;
@@ -98,6 +101,7 @@ class MatchModel {
     this.convocado,
     this.descansa = false,
     this.local = true,
+    this.enCasaElsOms,
     this.pendienteResultado = false,
     this.tieneConvocatoria,
     this.ausenciaJustificada = false,
@@ -134,6 +138,7 @@ class MatchModel {
       convocado: json['convocado'] as bool?,
       descansa: json['descansa'] as bool? ?? false,
       local: json['local'] as bool? ?? true,
+      enCasaElsOms: json['enCasaElsOms'] as bool?,
       pendienteResultado: json['pendienteResultado'] as bool? ?? false,
       tieneConvocatoria: json['tieneConvocatoria'] as bool?,
       ausenciaJustificada: json['ausenciaJustificada'] as bool? ?? false,

@@ -756,7 +756,11 @@ class MatchCard extends StatelessWidget {
             context,
             Icons.location_on_outlined,
             match.campo!,
-            trailing: BotonComoLlegar(lugar: match.campo, local: match.local),
+            trailing: BotonComoLlegar(
+              lugar: match.campo,
+              local: match.local,
+              enCasaElsOms: match.enCasaElsOms,
+            ),
           ),
       ],
     );

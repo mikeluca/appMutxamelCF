@@ -105,6 +105,9 @@ class CabeceraFicha {
   /// Lado del Mutxamel según el backend nuevo (cabecera.mutxamelLocal); null si no lo manda (backend antiguo).
   final bool? mutxamelLocal;
 
+  /// true si es local y se juega en Els Oms (cabecera.enCasaElsOms); null si el backend no lo manda.
+  final bool? enCasaElsOms;
+
   /// Nuestros goleadores, en el orden que da el backend; vacía sin datos o con un backend antiguo.
   final List<GoleadorFicha> goleadores;
 
@@ -129,6 +132,7 @@ class CabeceraFicha {
     this.escudoRivalUrl,
     this.rivalEsPropio = false,
     this.mutxamelLocal,
+    this.enCasaElsOms,
     this.goleadores = const [],
     this.campo,
     this.jornada,
@@ -150,6 +154,7 @@ class CabeceraFicha {
       escudoRivalUrl: json['escudoRivalUrl'] as String?,
       rivalEsPropio: json['rivalEsPropio'] as bool? ?? false,
       mutxamelLocal: json['mutxamelLocal'] as bool?,
+      enCasaElsOms: json['enCasaElsOms'] as bool?,
       goleadores: _lista(json['goleadores'], GoleadorFicha.fromJson),
       campo: _textoONull(json['campo']),
       jornada: (json['jornada'] as num?)?.toInt(),

@@ -2,6 +2,7 @@ import '../../features/convocatorias/model/convocatoria_partido_model.dart';
 import '../../features/ficha_partido/models/ficha_partido_model.dart';
 import '../../features/matches/models/match_model.dart';
 import '../../l10n/gen/app_localizations.dart';
+import 'como_llegar.dart';
 
 /// Un evento de calendario ya montado (lo que se le pasa al calendario del sistema).
 class EventoCalendario {
@@ -115,6 +116,7 @@ class EventoPartido {
       equipo: partido.equipo,
       rival: partido.rival,
       local: partido.local,
+      enCasaElsOms: partido.enCasaElsOms,
       dia: dia,
       hora: partido.hora,
       campo: partido.campo,
@@ -141,6 +143,7 @@ class EventoPartido {
       equipo: 'Primer Equipo',
       rival: local ? cabecera.equipoVisitante : cabecera.equipoLocal,
       local: local,
+      enCasaElsOms: cabecera.enCasaElsOms,
       dia: dia,
       hora: cabecera.hora,
       campo: cabecera.campo,
@@ -154,6 +157,7 @@ class EventoPartido {
     required String equipo,
     required String rival,
     required bool local,
+    bool? enCasaElsOms,
     required DateTime dia,
     String? hora,
     String? campo,
@@ -178,7 +182,13 @@ class EventoPartido {
       rival: rival,
       local: local,
     );
-    final lugar = campo?.trim().isNotEmpty == true ? campo!.trim() : null;
+    // La ubicación, con el mismo criterio que el mapa: en Els Oms, el campo de casa; en otro campo, el del partido.
+    final destino = destinoCampoPartido(
+      campo,
+      local: local,
+      enCasaElsOms: enCasaElsOms,
+    );
+    final lugar = destino.isEmpty ? null : destino;
     final descripcion = notas.isEmpty ? null : notas.join('\n');
     final partesHora = _leerHora(hora);
 

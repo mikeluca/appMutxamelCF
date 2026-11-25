@@ -256,11 +256,40 @@ void main() {
         abierta = url;
         return true;
       };
-      await _pintar(tester, _FakeCalendarioService(_calendario(local: true)));
-      expect(find.text('Campo Municipal de Pego'), findsOneWidget);
+      await _pintar(
+        tester,
+        _FakeCalendarioService(
+          _calendario(local: true, campo: 'Camp Nou Los Olmos Mutxamel F-11'),
+        ),
+      );
+      expect(find.text('Camp Nou Los Olmos Mutxamel F-11'), findsOneWidget);
       await tester.tap(find.byIcon(Icons.directions));
       await tester.pumpAndSettle();
       expect(abierta.toString(), contains(Uri.encodeComponent(campoCasaMapas)));
+    });
+
+    testWidgets('en casa pero en el Hogar Provincial el mapa recibe ese campo', (
+      tester,
+    ) async {
+      Uri? abierta;
+      ComoLlegar.esIos = () => false;
+      ComoLlegar.abrirUrl = (url) async {
+        abierta = url;
+        return true;
+      };
+      await _pintar(
+        tester,
+        _FakeCalendarioService(
+          _calendario(local: true, campo: 'Hogar Provincial'),
+        ),
+      );
+      expect(find.text('Hogar Provincial'), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.directions));
+      await tester.pumpAndSettle();
+      expect(
+        abierta.toString(),
+        contains(Uri.encodeComponent('Hogar Provincial')),
+      );
     });
     testWidgets('sin campo no hay botón Cómo llegar', (tester) async {
       await _pintar(tester, _FakeCalendarioService(_calendario(campo: '')));

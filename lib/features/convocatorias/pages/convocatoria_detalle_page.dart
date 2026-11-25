@@ -509,6 +509,7 @@ class _ConvocatoriaDetallePageState extends State<ConvocatoriaDetallePage> {
                 BotonComoLlegar(
                   lugar: _convocatoria.campo,
                   local: _convocatoria.local,
+                  enCasaElsOms: _convocatoria.enCasaElsOms,
                 ),
               ],
             ),
@@ -527,6 +528,7 @@ class _ConvocatoriaDetallePageState extends State<ConvocatoriaDetallePage> {
                   lugar: _convocatoria.lugarConvocatoria,
                   campo: _convocatoria.campo,
                   local: _convocatoria.local,
+                  enCasaElsOms: _convocatoria.enCasaElsOms,
                 ),
               ],
             ),

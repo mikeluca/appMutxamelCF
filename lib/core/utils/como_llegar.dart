@@ -47,30 +47,58 @@ String normalizarLugar(String? texto) {
 bool mismoLugar(String? a, String? b) =>
     normalizarLugar(a) == normalizarLugar(b);
 
-/// Lo que se envía al mapa para el campo de un partido: en casa ([local] true), siempre
-/// [campoCasaMapas]; fuera (o si no se sabe), el campo tal cual. No cambia lo que se muestra.
-String destinoCampoPartido(String? campo, {bool? local}) {
+/// Si el campo de un partido es Els Oms (el Camp Nou Los Olmos): la misma regla que el backend
+/// (docs/api-app-como-llegar-local.md). true si está vacío o si, normalizado (minúsculas, sin acentos, sin puntos y con
+/// los espacios simplificados), contiene la palabra completa "olmos" u "oms"; false en cualquier otro caso.
+bool esCampoElsOms(String? campo) {
+  if ((campo ?? '').trim().isEmpty) {
+    return true;
+  }
+
+  final texto = normalizarLugar(campo!.replaceAll('.', ' '));
+
+  return _palabrasElsOms.hasMatch(texto);
+}
+
+final RegExp _palabrasElsOms = RegExp(r'(?<![a-z0-9])(?:olmos|oms)(?![a-z0-9])');
+
+/// Si el partido se juega en Els Oms: [enCasaElsOms] del backend si viene; si no (respuestas antiguas o en caché),
+/// local y campo de Els Oms.
+bool _seJuegaEnElsOms(String? campo, bool? local, bool? enCasaElsOms) =>
+    enCasaElsOms ?? (local == true && esCampoElsOms(campo));
+
+/// Lo que se envía al mapa para el campo de un partido: [campoCasaMapas] solo si es local y se juega en Els Oms
+/// ([enCasaElsOms] del backend o, si no viene, [local] y [esCampoElsOms]); en cualquier otro caso (fuera, o en casa en
+/// otro campo como el Hogar Provincial), el campo tal cual. No cambia lo que se muestra.
+String destinoCampoPartido(String? campo, {bool? local, bool? enCasaElsOms}) {
   final texto = campo?.trim() ?? '';
 
   if (texto.isEmpty) {
     return '';
   }
 
-  return local == true ? campoCasaMapas : texto;
+  return _seJuegaEnElsOms(texto, local, enCasaElsOms) ? campoCasaMapas : texto;
 }
 
-/// Lo que se envía al mapa para el lugar de citación de una convocatoria: [campoCasaMapas] si el
-/// lugar es [campoCasaTexto] o si el partido es de local y el lugar está vacío o es el campo del
-/// partido; en cualquier otro caso, el lugar tal cual.
-String destinoLugarCitacion(String? lugar, {String? campo, bool? local}) {
+/// Lo que se envía al mapa para el lugar de citación de una convocatoria: [campoCasaMapas] si el lugar es
+/// [campoCasaTexto] o si el partido se juega en Els Oms y el lugar está vacío o es el campo del partido; si el partido
+/// es en otro campo y el lugar está vacío, el campo del partido; en cualquier otro caso, el lugar tal cual.
+String destinoLugarCitacion(
+  String? lugar, {
+  String? campo,
+  bool? local,
+  bool? enCasaElsOms,
+}) {
   final texto = lugar?.trim() ?? '';
 
   if (mismoLugar(texto, campoCasaTexto)) {
     return campoCasaMapas;
   }
 
-  if (local == true && (texto.isEmpty || mismoLugar(texto, campo))) {
-    return campoCasaMapas;
+  if (texto.isEmpty || mismoLugar(texto, campo)) {
+    return _seJuegaEnElsOms(campo, local, enCasaElsOms)
+        ? campoCasaMapas
+        : (campo?.trim() ?? texto);
   }
 
   return texto;
@@ -210,31 +238,48 @@ Future<void> abrirComoLlegar(BuildContext context, String lugar) async {
 /// Botón "Cómo llegar" (icono de direcciones) para el campo de un partido o el
 /// lugar de una citación. No se pinta si no hay nada que buscar.
 ///
-/// [local] (true si el Mutxamel juega en casa; null si el backend no lo manda) decide el destino en
-/// casa: [campoCasaMapas]. Con [BotonComoLlegar.citacion] el texto es el lugar de citación y
+/// [local] (true si el Mutxamel juega en casa) y [enCasaElsOms] (del backend; null si no lo manda) deciden si el destino
+/// es [campoCasaMapas]: solo si se juega en Els Oms. Con [BotonComoLlegar.citacion] el texto es el lugar de citación y
 /// [campo] el campo del partido.
 class BotonComoLlegar extends StatelessWidget {
   final String? lugar;
   final bool? local;
+
+  /// El `enCasaElsOms` del backend; null si no lo manda (se calcula con [local] y el campo).
+  final bool? enCasaElsOms;
   final String? campo;
   final bool _esCitacion;
 
-  const BotonComoLlegar({super.key, required this.lugar, this.local})
-    : campo = null,
-      _esCitacion = false;
+  const BotonComoLlegar({
+    super.key,
+    required this.lugar,
+    this.local,
+    this.enCasaElsOms,
+  }) : campo = null,
+       _esCitacion = false;
 
   const BotonComoLlegar.citacion({
     super.key,
     required this.lugar,
     this.campo,
     this.local,
+    this.enCasaElsOms,
   }) : _esCitacion = true;
 
   @override
   Widget build(BuildContext context) {
     final destino = _esCitacion
-        ? destinoLugarCitacion(lugar, campo: campo, local: local)
-        : destinoCampoPartido(lugar, local: local);
+        ? destinoLugarCitacion(
+            lugar,
+            campo: campo,
+            local: local,
+            enCasaElsOms: enCasaElsOms,
+          )
+        : destinoCampoPartido(
+            lugar,
+            local: local,
+            enCasaElsOms: enCasaElsOms,
+          );
 
     if (destino.isEmpty) {
       return const SizedBox.shrink();

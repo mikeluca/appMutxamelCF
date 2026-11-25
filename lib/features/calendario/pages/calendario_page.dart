@@ -774,6 +774,7 @@ class _CalendarioPageState extends State<CalendarioPage> {
                           BotonComoLlegar(
                             lugar: campoPartido,
                             local: item.partido?.local,
+                            enCasaElsOms: item.partido?.enCasaElsOms,
                           ),
                         ],
                       ),
