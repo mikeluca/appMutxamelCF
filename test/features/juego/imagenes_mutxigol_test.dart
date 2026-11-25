@@ -87,6 +87,6 @@ void main() {
     expect(pubspec, contains('assets/images/mutxigol/balon.webp'));
     expect(pubspec, contains('assets/images/mutxigol/azul/'));
     expect(pubspec, contains('assets/images/mutxigol/rosa/'));
-    expect(pubspec, contains('version: 1.0.16+25'));
+    expect(pubspec, contains('version: 1.0.16+26'));
   });
 }
