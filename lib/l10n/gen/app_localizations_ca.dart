@@ -4774,4 +4774,78 @@ class AppLocalizationsCa extends AppLocalizations {
   String gameModMarks(int catches, int heads, String pairs) {
     return 'Atrapa $catches · Cabdellades $heads · Parelles $pairs';
   }
+
+  @override
+  String get nextMatchTitle => 'El teu pròxim partit';
+
+  @override
+  String nextMatchCoachTeam(String team) {
+    return 'El teu equip · $team';
+  }
+
+  @override
+  String get nextMatchCalledUp => 'Convocat';
+
+  @override
+  String nextMatchCitation(String time, String place) {
+    return 'Citació $time a $place';
+  }
+
+  @override
+  String nextMatchCitationNoPlace(String time) {
+    return 'Citació $time';
+  }
+
+  @override
+  String nextMatchKit(String name) {
+    return 'Equipatge $name';
+  }
+
+  @override
+  String nextMatchBackpack(String name) {
+    return 'A la motxilla: $name';
+  }
+
+  @override
+  String nextMatchInvitedWith(String team) {
+    return 'Convidat amb $team';
+  }
+
+  @override
+  String get nextMatchNotCalledUp => 'No convocat';
+
+  @override
+  String get nextMatchAbsenceJustified => 'Absència justificada';
+
+  @override
+  String get nextMatchNoCallup => 'Convocatòria encara no publicada';
+
+  @override
+  String nextMatchCallupPublished(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Convocatòria publicada · $count convocats',
+      one: 'Convocatòria publicada · 1 convocat',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nextMatchCallupUnpublished => 'Convocatòria sense publicar';
+
+  @override
+  String get pendingTitle => 'Pendents';
+
+  @override
+  String get pendingAllDone => 'Tot al dia ✓';
+
+  @override
+  String get pendingSeeAll => 'Veure\'ls tots';
+
+  @override
+  String get matchesFilterAll => 'Tots';
+
+  @override
+  String get matchesFilterMine => 'Els meus equips';
 }

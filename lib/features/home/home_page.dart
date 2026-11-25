@@ -21,9 +21,13 @@ import '../directo/widgets/celebra_goles.dart';
 import '../auth/services/notificacion_service.dart';
 import '../../core/notifications/services/push_notification_service.dart';
 import '../auth/pages/notificaciones_page.dart';
+import '../../core/navigation/app_navigator.dart';
 import 'models/patrocinador.dart';
+import 'models/proximo_partido.dart';
 import 'services/patrocinador_service.dart';
+import 'services/proximos_partidos_service.dart';
 import 'widgets/patrocinadores_seccion.dart';
+import 'widgets/proximo_partido_seccion.dart';
 
 class HomePage extends StatefulWidget {
   /// Cada cuánto se vuelve a pedir la tarjeta del Primer Equipo mientras el partido está en juego.
@@ -33,6 +37,10 @@ class HomePage extends StatefulWidget {
   final MatchService? matchService;
   final NewsService? newsService;
   final PatrocinadorService? patrocinadorService;
+  final ProximosPartidosService? proximosPartidosService;
+
+  /// Solo para tests: qué se hace al tocar una tarjeta de "Tu próximo partido" (por defecto, abrir su pantalla).
+  final void Function(ProximoPartido entrada)? alTocarProximoPartido;
   final Stream<void>? avisosDeResultados;
   final Duration intervalo;
 
@@ -45,6 +53,8 @@ class HomePage extends StatefulWidget {
     this.matchService,
     this.newsService,
     this.patrocinadorService,
+    this.proximosPartidosService,
+    this.alTocarProximoPartido,
     this.avisosDeResultados,
     this.intervalo = intervaloEnDirecto,
     this.visible,
@@ -67,7 +77,15 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   late final PatrocinadorService _patrocinadorService =
       widget.patrocinadorService ?? PatrocinadorService();
 
+  late final ProximosPartidosService _proximosPartidosService =
+      widget.proximosPartidosService ?? const ProximosPartidosService();
+
   int _notificacionesNoLeidas = 0;
+
+  /// "Tu próximo partido": solo con sesión y solo en memoria. Si falla o viene vacía la sección no se muestra (sin
+  /// ningún error a la vista).
+  List<ProximoPartido> _proximosPartidos = const [];
+  int _peticionProximos = 0;
 
   /// Los patrocinadores del backend (solo en memoria). Si falla o viene vacía la sección no se muestra.
   List<Patrocinador> _patrocinadores = const [];
@@ -100,6 +118,10 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
     widget.visible?.addListener(_alCambiarVisibilidad);
+
+    // Al iniciar o cerrar sesión (o al restaurarla al arrancar) se vuelve a pedir "Tu próximo partido".
+    AuthManager.cambios.addListener(_cargarProximosPartidos);
+    _cargarProximosPartidos();
 
     // Un push del directo con la app abierta refresca la tarjeta al momento.
     _avisos =
@@ -137,8 +159,35 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     }
   }
 
+  /// Pide "Tu próximo partido". Sin sesión no se pide nada y la sección desaparece; un fallo también la oculta, sin
+  /// mensaje. Una respuesta que llega tarde (ya hay otra petición) se descarta.
+  Future<void> _cargarProximosPartidos() async {
+    final peticion = ++_peticionProximos;
+
+    if (!AuthManager.estaAutenticado) {
+      if (_proximosPartidos.isNotEmpty && mounted) {
+        setState(() => _proximosPartidos = const []);
+      }
+
+      return;
+    }
+
+    List<ProximoPartido> lista;
+
+    try {
+      lista = await _proximosPartidosService.obtener();
+    } catch (_) {
+      lista = const [];
+    }
+
+    if (!mounted || peticion != _peticionProximos) return;
+
+    setState(() => _proximosPartidos = lista);
+  }
+
   @override
   void dispose() {
+    AuthManager.cambios.removeListener(_cargarProximosPartidos);
     WidgetsBinding.instance.removeObserver(this);
     widget.visible?.removeListener(_alCambiarVisibilidad);
     _avisos?.cancel();
@@ -156,12 +205,22 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       _refrescarPortada();
     }
 
+    // Al volver a la app, "Tu próximo partido" puede haber cambiado (convocatoria publicada...).
+    if (_enPrimerPlano) {
+      _cargarProximosPartidos();
+    }
+
     _sincronizarTemporizador();
   }
 
   void _alCambiarVisibilidad() {
     if (_visible && _enJuego) {
       _refrescarPortada();
+    }
+
+    // Al entrar en Inicio con sesión.
+    if (_visible) {
+      _cargarProximosPartidos();
     }
 
     _sincronizarTemporizador();
@@ -261,6 +320,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
       _futureNews,
       _cargarPatrocinadores(),
       _cargarContadorNotificaciones(),
+      _cargarProximosPartidos(),
     ]);
   }
 
@@ -357,6 +417,14 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildTarjetaPrimerEquipo(),
+
+              // "Tu próximo partido": solo con sesión y con alguna entrada.
+              ProximoPartidoSeccion(
+                entradas: _proximosPartidos,
+                onTocar:
+                    widget.alTocarProximoPartido ??
+                    (entrada) => AppNavigator.abrirProximoPartido(entrada),
+              ),
 
               const SizedBox(height: 28),
 

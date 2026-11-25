@@ -13,18 +13,33 @@ import '../widgets/boton_anadir_calendario.dart';
 import '../../../core/utils/evento_partido.dart';
 import '../../teams/pages/team_standings_page.dart';
 import '../services/match_service.dart';
+import '../../auth/models/perfil_app.dart';
+import '../../auth/services/auth_manager.dart';
+import '../../auth/services/perfil_service.dart';
 
 class MatchesPage extends StatefulWidget {
-  const MatchesPage({super.key});
+  /// Solo para tests: sustituyen al servicio de partidos y a la carga del perfil (los equipos de la cuenta).
+  final MatchService? matchService;
+  final Future<PerfilApp> Function()? cargarPerfil;
+
+  const MatchesPage({super.key, this.matchService, this.cargarPerfil});
 
   @override
   State<MatchesPage> createState() => _MatchesPageState();
 }
 
 class _MatchesPageState extends State<MatchesPage> {
-  final MatchService _matchService = MatchService();
+  late final MatchService _matchService = widget.matchService ?? MatchService();
 
   late Future<List<MatchModel>> _matchesFuture;
+
+  /// El filtro de la fila de chips: null = "Todos". Dura mientras la app está abierta y no se guarda.
+  String? _categoriaElegida;
+  bool _soloMisEquipos = false;
+
+  /// Los equipos de la cuenta (los suyos como entrenador y los de sus jugadores e hijos), con sesión. Solo en memoria.
+  Set<int> _misEquipoIds = const {};
+  Set<String> _misEquipoNombres = const {};
 
   ColorScheme get _colors => Theme.of(context).colorScheme;
   AppLocalizations get _t => AppLocalizations.of(context);
@@ -34,7 +49,64 @@ class _MatchesPageState extends State<MatchesPage> {
     super.initState();
 
     _matchesFuture = _matchService.obtenerResultados();
+
+    AuthManager.cambios.addListener(_cargarMisEquipos);
+    _cargarMisEquipos();
   }
+
+  @override
+  void dispose() {
+    AuthManager.cambios.removeListener(_cargarMisEquipos);
+    super.dispose();
+  }
+
+  /// Pide los equipos de la cuenta para el chip "Mis equipos". Sin sesión o si falla, no hay chip.
+  Future<void> _cargarMisEquipos() async {
+    if (!AuthManager.estaAutenticado) {
+      if (mounted) _fijarMisEquipos(const {}, const {});
+
+      return;
+    }
+
+    try {
+      final perfil =
+          await (widget.cargarPerfil ?? PerfilService.obtenerPerfil)();
+
+      if (!mounted) return;
+
+      _fijarMisEquipos(
+        {
+          for (final e in perfil.equipos) e.id,
+          for (final j in perfil.jugadores)
+            if (j.equipoId != null) j.equipoId!,
+        },
+        {
+          for (final e in perfil.equipos) e.nombre,
+          for (final j in perfil.jugadores)
+            if (j.equipo != null) j.equipo!,
+        },
+      );
+    } catch (_) {
+      if (mounted) _fijarMisEquipos(const {}, const {});
+    }
+  }
+
+  void _fijarMisEquipos(Set<int> ids, Set<String> nombres) {
+    setState(() {
+      _misEquipoIds = ids;
+      _misEquipoNombres = nombres;
+
+      // Sin equipos (cierre de sesión...) el filtro "Mis equipos" ya no existe.
+      if (!_hayMisEquipos) _soloMisEquipos = false;
+    });
+  }
+
+  bool get _hayMisEquipos =>
+      _misEquipoIds.isNotEmpty || _misEquipoNombres.isNotEmpty;
+
+  bool _esMiEquipo(MatchModel p) => p.equipoId != null
+      ? _misEquipoIds.contains(p.equipoId)
+      : _misEquipoNombres.contains(p.equipo);
 
   Future<void> _recargar() async {
     setState(() {
@@ -65,46 +137,150 @@ class _MatchesPageState extends State<MatchesPage> {
             return Center(child: Text(_t.matchesNoMatchesAvailable));
           }
 
-          return RefreshIndicator(
-            onRefresh: _recargar,
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(
-                16,
-                16,
-                16,
-                16 + MediaQuery.paddingOf(context).bottom,
-              ),
-              children: [
-                Text(
-                  _t.matchesCalendarTitle,
-                  style: TextStyle(
-                    color: _colors.onSurface,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
+          final categorias = _categoriasEnOrden(partidos);
+          final categoria = categorias.contains(_categoriaElegida)
+              ? _categoriaElegida
+              : null;
+          final soloMios = _soloMisEquipos && _hayMisEquipos;
+          final visibles = partidos
+              .where(
+                (p) =>
+                    (categoria == null || p.categoria == categoria) &&
+                    (!soloMios || _esMiEquipo(p)),
+              )
+              .toList();
+
+          return Column(
+            children: [
+              // Fija arriba: la lista se desplaza por debajo.
+              _construirFiltros(categorias, categoria, soloMios),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: _recargar,
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      16,
+                      16,
+                      16 + MediaQuery.paddingOf(context).bottom,
+                    ),
+                    children: [
+                      Text(
+                        _t.matchesCalendarTitle,
+                        style: TextStyle(
+                          color: _colors.onSurface,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+
+                      const SizedBox(height: 6),
+
+                      Text(
+                        _t.matchesCalendarSubtitle,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // La lista ya llega del backend agrupada por
+                      // categoría y ordenada por fecha descendente dentro
+                      // de cada una: aquí solo detectamos los cambios de
+                      // categoría para insertar los encabezados de sección,
+                      // sin reordenar nada en el cliente.
+                      ..._construirListaPartidos(visibles),
+
+                      if (visibles.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 24),
+                          child: Center(
+                            child: Text(_t.matchesNoMatchesAvailable),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-
-                const SizedBox(height: 6),
-
-                Text(
-                  _t.matchesCalendarSubtitle,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-
-                const SizedBox(height: 20),
-
-                // La lista ya llega del backend agrupada por
-                // categoría y ordenada por fecha descendente dentro
-                // de cada una: aquí solo detectamos los cambios de
-                // categoría para insertar los encabezados de sección,
-                // sin reordenar nada en el cliente.
-                ..._construirListaPartidos(partidos),
-              ],
-            ),
+              ),
+            ],
           );
         },
+      ),
+    );
+  }
+
+  /// Las categorías que vienen en la lista, en el orden en que se agrupan (el de los encabezados).
+  List<String> _categoriasEnOrden(List<MatchModel> partidos) {
+    final categorias = <String>[];
+
+    for (final p in partidos) {
+      if (!categorias.contains(p.categoria)) categorias.add(p.categoria);
+    }
+
+    return categorias;
+  }
+
+  /// "Todos", "Mis equipos" (solo con sesión y con equipos) y una por categoría, en una fila que se desplaza en horizontal
+  /// (con letra grande no se cortan).
+  Widget _construirFiltros(
+    List<String> categorias,
+    String? categoria,
+    bool soloMios,
+  ) {
+    Widget chip(Key key, String texto, bool elegido, VoidCallback alElegir) {
+      return Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: ChoiceChip(
+          key: key,
+          label: Text(texto),
+          selected: elegido,
+          onSelected: (_) => alElegir(),
+        ),
+      );
+    }
+
+    return Material(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: SingleChildScrollView(
+        key: const ValueKey('filtro-categorias'),
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.fromLTRB(16, 8, 8, 4),
+        child: Row(
+          children: [
+            chip(
+              const ValueKey('chip-todos'),
+              _t.matchesFilterAll,
+              categoria == null && !soloMios,
+              () => setState(() {
+                _categoriaElegida = null;
+                _soloMisEquipos = false;
+              }),
+            ),
+
+            if (_hayMisEquipos)
+              chip(
+                const ValueKey('chip-mis-equipos'),
+                _t.matchesFilterMine,
+                soloMios,
+                () => setState(() {
+                  _categoriaElegida = null;
+                  _soloMisEquipos = true;
+                }),
+              ),
+
+            for (final c in categorias)
+              chip(
+                ValueKey('chip-categoria-$c'),
+                c.trim().isEmpty ? _t.matchesNoCategory : c,
+                categoria == c && !soloMios,
+                () => setState(() {
+                  _categoriaElegida = c;
+                  _soloMisEquipos = false;
+                }),
+              ),
+          ],
+        ),
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:material_ui/material_ui.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -9,6 +11,11 @@ import '../../familia/pages/pedir_acceso_jugador_page.dart';
 import '../../familia/pages/solicitudes_familia_page.dart';
 import '../../familia/services/solicitud_familia_service.dart';
 import '../../familia/widgets/tarjeta_solicitud_familia.dart';
+import '../../../core/navigation/app_navigator.dart';
+import '../../club/models/pendientes.dart';
+import '../../club/services/pendientes_service.dart';
+import '../../club/widgets/tarjeta_pendientes.dart';
+import '../models/auth_user.dart';
 import '../models/club_menu.dart';
 import '../services/auth_manager.dart';
 import '../services/comunicacion_service.dart';
@@ -20,10 +27,14 @@ class ClubPage extends StatefulWidget {
   /// Solo para tests: sustituye al servicio real de las solicitudes de familia.
   final SolicitudFamiliaService solicitudFamiliaService;
 
+  /// Solo para tests: sustituye al servicio real de "Pendientes".
+  final PendientesService pendientesService;
+
   const ClubPage({
     super.key,
     this.adminService,
     this.solicitudFamiliaService = const SolicitudFamiliaService(),
+    this.pendientesService = const PendientesService(),
   });
 
   @override
@@ -35,9 +46,97 @@ class _ClubPageState extends State<ClubPage> {
   int _reportesPendientes = 0;
   int _solicitudesFamiliaPendientes = 0;
 
+  /// "Pendientes": null mientras no se sabe (cargando, o si falla: la tarjeta no se muestra). Solo en memoria.
+  List<GrupoPendiente>? _pendientes;
+  int _peticionPendientes = 0;
+
+  /// Quien puede tener algo por hacer: entrenadores, coordinación, administración y Redes sociales. Las cuentas solo de
+  /// familia o jugador no ven la tarjeta.
+  static bool _veTarjetaPendientes(AuthUser? usuario) =>
+      usuario != null &&
+      (usuario.tieneRol('ENTRENADOR') ||
+          usuario.tieneRol('COORDINADOR') ||
+          usuario.tieneRol('ADMIN_APP') ||
+          usuario.tieneRol('RRSS'));
+
+  Future<void> _cargarPendientes() async {
+    final peticion = ++_peticionPendientes;
+
+    if (!_veTarjetaPendientes(AuthManager.usuarioActual)) {
+      if (_pendientes != null && mounted) setState(() => _pendientes = null);
+
+      return;
+    }
+
+    List<GrupoPendiente>? lista;
+
+    try {
+      lista = await widget.pendientesService.obtener();
+    } catch (_) {
+      // Si falla, la tarjeta no se muestra y no se ve ningún error.
+      lista = null;
+    }
+
+    if (!mounted || peticion != _peticionPendientes) return;
+
+    setState(() => _pendientes = lista);
+  }
+
+  /// Abre un elemento de "Pendientes" con la navegación de los avisos y, al volver, se refresca.
+  Future<void> _abrirPendiente(ElementoPendiente elemento) async {
+    await AppNavigator.abrirPendiente(elemento);
+
+    if (mounted) await _cargarPendientes();
+  }
+
+  /// "Ver todos": la pantalla completa de esa función.
+  Future<void> _verTodosPendientes(GrupoPendiente grupo) async {
+    final usuario = AuthManager.usuarioActual;
+    final gestionGlobal =
+        usuario?.tieneRol('COORDINADOR') == true ||
+        usuario?.tieneRol('ADMIN_APP') == true;
+
+    switch (grupo.codigo) {
+      case GrupoPendiente.usuariosCaducadas:
+        await AppNavigator.abrirUsuariosCaducadas();
+      case GrupoPendiente.imagenesPrevia:
+      case GrupoPendiente.imagenesResultados:
+        if (grupo.elementos.isNotEmpty) {
+          await AppNavigator.abrirPendiente(grupo.elementos.first);
+        } else {
+          await Navigator.pushNamed(context, AppRoutes.socialImages);
+        }
+      default:
+        final ruta = switch (grupo.codigo) {
+          GrupoPendiente.listasSinPasar => AppRoutes.myTeams,
+          GrupoPendiente.convocatoriasSinPublicar =>
+            gestionGlobal ? AppRoutes.weekend : AppRoutes.calendar,
+          GrupoPendiente.resultadosPendientes =>
+            gestionGlobal ? AppRoutes.weekend : AppRoutes.myMatches,
+          GrupoPendiente.solicitudesFamilia => AppRoutes.familyRequests,
+          GrupoPendiente.moderacion => AppRoutes.moderation,
+          _ => AppRoutes.invitations,
+        };
+
+        await Navigator.pushNamed(context, ruta);
+    }
+
+    if (mounted) await _cargarPendientes();
+  }
+
+  @override
+  void dispose() {
+    AuthManager.cambios.removeListener(_cargarPendientes);
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
+
+    // Al cambiar el usuario (o sus roles) se vuelve a decidir si hay tarjeta; se refresca al entrar en el Área Club.
+    AuthManager.cambios.addListener(_cargarPendientes);
+    _cargarPendientes();
 
     final usuario = AuthManager.usuarioActual;
 
@@ -86,6 +185,8 @@ class _ClubPageState extends State<ClubPage> {
 
     if (!mounted) return;
 
+    unawaited(_cargarPendientes());
+
     await _cargarContadorSolicitudesFamilia();
   }
 
@@ -97,6 +198,8 @@ class _ClubPageState extends State<ClubPage> {
             PedirAccesoJugadorPage(servicio: widget.solicitudFamiliaService),
       ),
     );
+
+    if (mounted) await _cargarPendientes();
   }
 
   Future<void> _cargarContadorModeracion() async {
@@ -118,6 +221,8 @@ class _ClubPageState extends State<ClubPage> {
     await Navigator.pushNamed(context, AppRoutes.moderation);
 
     if (!mounted) return;
+
+    unawaited(_cargarPendientes());
 
     await _cargarContadorModeracion();
   }
@@ -141,6 +246,8 @@ class _ClubPageState extends State<ClubPage> {
     await Navigator.pushNamed(context, AppRoutes.communication);
 
     if (!mounted) return;
+
+    unawaited(_cargarPendientes());
 
     await _cargarContadorComunicaciones();
   }
@@ -184,6 +291,16 @@ class _ClubPageState extends State<ClubPage> {
             padding: const EdgeInsets.all(20),
             children: [
               _construirCabecera(context, usuario),
+
+              // "Pendientes": solo para quien puede tener algo por hacer; si la petición falla, no se muestra.
+              if (_veTarjetaPendientes(usuario) && _pendientes != null) ...[
+                const SizedBox(height: 24),
+                TarjetaPendientes(
+                  grupos: _pendientes!,
+                  onAbrirElemento: _abrirPendiente,
+                  onVerTodos: _verTodosPendientes,
+                ),
+              ],
 
               // Una cuenta sin roles solo ve el estado de su solicitud.
               if (sinRoles) ...[
@@ -250,8 +367,11 @@ class _ClubPageState extends State<ClubPage> {
     ];
   }
 
-  void _navegar(OpcionClub opcion) {
-    Navigator.pushNamed(context, rutaDeOpcionClub(opcion)!);
+  /// Abre la pantalla de la opción y, al volver, refresca "Pendientes".
+  Future<void> _navegar(OpcionClub opcion) async {
+    await Navigator.pushNamed(context, rutaDeOpcionClub(opcion)!);
+
+    if (mounted) await _cargarPendientes();
   }
 
   Widget _construirOpcionClub(BuildContext context, OpcionClub opcion) {

@@ -8294,6 +8294,114 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Atrapa {catches} · Cabezazos {heads} · Parejas {pairs}'**
   String gameModMarks(int catches, int heads, String pairs);
+
+  /// No description provided for @nextMatchTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu próximo partido'**
+  String get nextMatchTitle;
+
+  /// No description provided for @nextMatchCoachTeam.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu equipo · {team}'**
+  String nextMatchCoachTeam(String team);
+
+  /// No description provided for @nextMatchCalledUp.
+  ///
+  /// In es, this message translates to:
+  /// **'Convocado'**
+  String get nextMatchCalledUp;
+
+  /// No description provided for @nextMatchCitation.
+  ///
+  /// In es, this message translates to:
+  /// **'Citación {time} en {place}'**
+  String nextMatchCitation(String time, String place);
+
+  /// No description provided for @nextMatchCitationNoPlace.
+  ///
+  /// In es, this message translates to:
+  /// **'Citación {time}'**
+  String nextMatchCitationNoPlace(String time);
+
+  /// No description provided for @nextMatchKit.
+  ///
+  /// In es, this message translates to:
+  /// **'Equipaje {name}'**
+  String nextMatchKit(String name);
+
+  /// No description provided for @nextMatchBackpack.
+  ///
+  /// In es, this message translates to:
+  /// **'En la mochila: {name}'**
+  String nextMatchBackpack(String name);
+
+  /// No description provided for @nextMatchInvitedWith.
+  ///
+  /// In es, this message translates to:
+  /// **'Invitado con {team}'**
+  String nextMatchInvitedWith(String team);
+
+  /// No description provided for @nextMatchNotCalledUp.
+  ///
+  /// In es, this message translates to:
+  /// **'No convocado'**
+  String get nextMatchNotCalledUp;
+
+  /// No description provided for @nextMatchAbsenceJustified.
+  ///
+  /// In es, this message translates to:
+  /// **'Ausencia justificada'**
+  String get nextMatchAbsenceJustified;
+
+  /// No description provided for @nextMatchNoCallup.
+  ///
+  /// In es, this message translates to:
+  /// **'Convocatoria aún no publicada'**
+  String get nextMatchNoCallup;
+
+  /// No description provided for @nextMatchCallupPublished.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{Convocatoria publicada · 1 convocado} other{Convocatoria publicada · {count} convocados}}'**
+  String nextMatchCallupPublished(int count);
+
+  /// No description provided for @nextMatchCallupUnpublished.
+  ///
+  /// In es, this message translates to:
+  /// **'Convocatoria sin publicar'**
+  String get nextMatchCallupUnpublished;
+
+  /// No description provided for @pendingTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendientes'**
+  String get pendingTitle;
+
+  /// No description provided for @pendingAllDone.
+  ///
+  /// In es, this message translates to:
+  /// **'Todo al día ✓'**
+  String get pendingAllDone;
+
+  /// No description provided for @pendingSeeAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver todos'**
+  String get pendingSeeAll;
+
+  /// No description provided for @matchesFilterAll.
+  ///
+  /// In es, this message translates to:
+  /// **'Todos'**
+  String get matchesFilterAll;
+
+  /// No description provided for @matchesFilterMine.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis equipos'**
+  String get matchesFilterMine;
 }
 
 class _AppLocalizationsDelegate

@@ -4740,4 +4740,78 @@ class AppLocalizationsEn extends AppLocalizations {
   String gameModMarks(int catches, int heads, String pairs) {
     return 'Catch $catches · Headers $heads · Pairs $pairs';
   }
+
+  @override
+  String get nextMatchTitle => 'Your next match';
+
+  @override
+  String nextMatchCoachTeam(String team) {
+    return 'Your team · $team';
+  }
+
+  @override
+  String get nextMatchCalledUp => 'Called up';
+
+  @override
+  String nextMatchCitation(String time, String place) {
+    return 'Meet at $time at $place';
+  }
+
+  @override
+  String nextMatchCitationNoPlace(String time) {
+    return 'Meet at $time';
+  }
+
+  @override
+  String nextMatchKit(String name) {
+    return 'Kit $name';
+  }
+
+  @override
+  String nextMatchBackpack(String name) {
+    return 'In the bag: $name';
+  }
+
+  @override
+  String nextMatchInvitedWith(String team) {
+    return 'Invited with $team';
+  }
+
+  @override
+  String get nextMatchNotCalledUp => 'Not called up';
+
+  @override
+  String get nextMatchAbsenceJustified => 'Absence justified';
+
+  @override
+  String get nextMatchNoCallup => 'Squad not published yet';
+
+  @override
+  String nextMatchCallupPublished(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Squad published · $count players',
+      one: 'Squad published · 1 player',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nextMatchCallupUnpublished => 'Squad not published';
+
+  @override
+  String get pendingTitle => 'To do';
+
+  @override
+  String get pendingAllDone => 'All caught up ✓';
+
+  @override
+  String get pendingSeeAll => 'See all';
+
+  @override
+  String get matchesFilterAll => 'All';
+
+  @override
+  String get matchesFilterMine => 'My teams';
 }

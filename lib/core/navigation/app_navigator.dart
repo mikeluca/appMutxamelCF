@@ -8,7 +8,12 @@ import '../../routing/app_routes.dart';
 import '../version/control_version.dart';
 import '../notifications/utils/convocatoria_notificacion.dart';
 import '../../features/auth/models/perfil_app.dart';
+import '../../features/admin/models/admin_model.dart';
 import '../../features/admin/pages/moderacion_page.dart';
+import '../../features/admin/pages/usuarios_admin_page.dart';
+import '../../features/club/models/pendientes.dart';
+import '../../features/club/utils/destino_pendiente.dart';
+import '../../features/home/models/proximo_partido.dart';
 import '../../features/auth/pages/notificaciones_page.dart';
 import '../../features/continuidad/pages/continuidad_page.dart';
 import '../../features/familia/pages/mi_solicitud_familia_page.dart';
@@ -671,6 +676,130 @@ class AppNavigator {
         ),
       );
     }
+  }
+
+  /// Solo para tests: sustituye a la pantalla de Usuarios (que pide datos a la red al abrirse).
+  @visibleForTesting
+  static Widget Function()? constructorUsuariosCaducadas;
+
+  /// Usuarios (ADMIN_APP) filtrado por las invitaciones caducadas.
+  static Future<void> abrirUsuariosCaducadas() async {
+    final navigatorState = navigator;
+
+    if (navigatorState == null || ControlVersion.bloqueada) {
+      return;
+    }
+
+    await navigatorState.push(
+      MaterialPageRoute(
+        builder: (_) =>
+            (constructorUsuariosCaducadas ??
+            () => const UsuariosAdminPage(
+              estadoInicial: EstadoCuenta.caducada,
+            ))(),
+      ),
+    );
+  }
+
+  /// Tocar un elemento de "Pendientes": abre su pantalla con la misma navegación que los avisos. Un destino que no se
+  /// conoce (una versión nueva del backend) no hace nada.
+  static Future<void> abrirPendiente(ElementoPendiente elemento) async {
+    if (esUsuariosCaducadas(elemento)) {
+      await abrirUsuariosCaducadas();
+      return;
+    }
+
+    final destino = destinoDePendiente(elemento);
+
+    if (destino != null) {
+      await abrirDestinoConvocatoria(destino);
+    }
+  }
+
+  /// Solo para tests: sustituye a la convocatoria de la familia.
+  @visibleForTesting
+  static Widget Function(ProximoPartido entrada, PerfilJugador? jugador)?
+  constructorConvocatoriaProximoPartido;
+
+  /// Tocar la tarjeta de "Tu próximo partido":
+  ///  * un partido del Primer Equipo con ficha: la ficha;
+  ///  * el entrenador: la convocatoria publicada, para editarla, o el formulario para crearla;
+  ///  * jugador o familia: el detalle de la convocatoria si existe; si no, el calendario en ese día.
+  static Future<void> abrirProximoPartido(ProximoPartido entrada) async {
+    final navigatorState = navigator;
+    final partido = entrada.partido;
+
+    if (navigatorState == null || ControlVersion.bloqueada || partido == null) {
+      return;
+    }
+
+    if (partido.tieneFicha) {
+      await abrirFichaPartido(partido.id!);
+      return;
+    }
+
+    final convocatoria = entrada.convocatoria;
+
+    if (entrada.esEntrenador) {
+      final convocatoriaId = convocatoria?.convocatoriaId;
+
+      if (convocatoria?.estado == ConvocatoriaProximoPartido.publicada &&
+          convocatoriaId != null) {
+        await abrirEdicionConvocatoria(convocatoriaId);
+      } else if (partido.id != null && entrada.equipoId != null) {
+        await abrirFormularioConvocatoria(
+          partido.id!,
+          entrada.equipoId!,
+          entrada.nombreEquipo,
+        );
+      }
+
+      return;
+    }
+
+    final jugadorId = entrada.jugadorId;
+
+    if (convocatoria == null ||
+        !convocatoria.existe ||
+        partido.id == null ||
+        jugadorId == null) {
+      await abrirCalendario(partido.dia);
+      return;
+    }
+
+    PerfilJugador? jugador;
+
+    try {
+      final perfil =
+          await (cargarPerfilParaAviso ?? PerfilService.obtenerPerfil)();
+
+      jugador = perfil.jugadores.where((j) => j.id == jugadorId).firstOrNull;
+    } catch (e) {
+      debugPrint('No se pudo cargar el perfil para abrir el partido: $e');
+    }
+
+    if (jugador == null ||
+        !navigatorState.mounted ||
+        ControlVersion.bloqueada) {
+      await abrirCalendario(partido.dia);
+      return;
+    }
+
+    final encontrado = jugador;
+
+    await navigatorState.push(
+      MaterialPageRoute(
+        builder: (_) =>
+            (constructorConvocatoriaProximoPartido ??
+            (e, j) => ConvocatoriaFamiliaPage(
+              partidoId: e.partido!.id!,
+              jugadorId: j!.id,
+              jugadorNombre: j.nombre,
+              jugadorApellidos: j.apellidos,
+              invitadoCon: e.convocatoria?.equipoInvita,
+            ))(entrada, encontrado),
+      ),
+    );
   }
 
   static Future<void> abrirChatPrivado(int contraparteId) async {
