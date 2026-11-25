@@ -48,6 +48,7 @@ import 'features/cuotas/pages/cuotas_page.dart';
 import 'core/navigation/app_navigator.dart';
 import 'core/notifications/services/push_notification_service.dart';
 import 'features/auth/services/idioma_service.dart';
+import 'features/auth/services/auth_manager.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -106,6 +107,10 @@ Future<void> main() async {
       instalacionNueva: instalacionNueva,
     ),
   );
+
+  // La sesión guardada se restaura una vez, en segundo plano y sin bloquear la portada: así las pestañas que dependen de
+  // ella (el juego) la tienen sin haber pasado por "Área Club". Un fallo de red no borra la sesión (FL-03).
+  unawaited(AuthManager.restaurarSesion().catchError((_) => false));
 }
 
 class MutxamelCfApp extends StatefulWidget {

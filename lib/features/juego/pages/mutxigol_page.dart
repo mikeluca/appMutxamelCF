@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../../core/utils/mensaje_error.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../l10n/gen/app_localizations.dart';
 import '../../auth/services/auth_manager.dart';
@@ -35,6 +36,12 @@ class _MutxigolPageState extends State<MutxigolPage> {
 
   bool _errorDeCarga = false;
 
+  /// El texto del fallo al cargar el perfil, según lo que contestó el servidor (null: el genérico).
+  String? _mensajeDeCarga;
+
+  /// Hay token guardado pero aún no usuario: se está restaurando la sesión (no se enseña "Inicia sesión").
+  bool _resolviendoSesion = false;
+
   /// Con sesión y con permiso para guardar puntuaciones.
   bool get _conSesion => AuthManager.estaAutenticado && !_sinPermiso;
 
@@ -46,6 +53,29 @@ class _MutxigolPageState extends State<MutxigolPage> {
 
     AuthManager.cambios.addListener(_alCambiarLaSesion);
 
+    if (AuthManager.estaAutenticado) {
+      _cargarPerfil();
+    } else {
+      _resolverSesion();
+    }
+  }
+
+  /// La pestaña vive desde el arranque: si hay token guardado y aún no hay usuario, se restaura la sesión antes de
+  /// decidir (al arrancar ya se pide en segundo plano; esto cubre abrir la pestaña antes de que acabe).
+  Future<void> _resolverSesion() async {
+    if (!await AuthManager.haySesionGuardada() || !mounted) return;
+
+    if (AuthManager.estaAutenticado) return _cargarPerfil();
+
+    setState(() => _resolviendoSesion = true);
+
+    await AuthManager.restaurarSesion();
+
+    if (!mounted) return;
+
+    setState(() => _resolviendoSesion = false);
+
+    // Si la restauración avisó por cambios, el listener ya lo cargó (_cargarPerfil no repite si ya está cargando).
     if (AuthManager.estaAutenticado) _cargarPerfil();
   }
 
@@ -57,6 +87,9 @@ class _MutxigolPageState extends State<MutxigolPage> {
 
   void _alCambiarLaSesion() {
     if (!mounted) return;
+
+    // Un cambio ya resuelve la sesión: no hay nada más que esperar.
+    _resolviendoSesion = false;
 
     if (AuthManager.estaAutenticado) {
       _cargarPerfil();
@@ -75,6 +108,7 @@ class _MutxigolPageState extends State<MutxigolPage> {
     setState(() {
       _cargando = true;
       _errorDeCarga = false;
+      _mensajeDeCarga = null;
     });
 
     try {
@@ -97,6 +131,9 @@ class _MutxigolPageState extends State<MutxigolPage> {
         _cargando = false;
         _sinPermiso = e is ApiException && e.statusCode == 403;
         _errorDeCarga = !_sinPermiso;
+        _mensajeDeCarga = _sinPermiso
+            ? null
+            : mensajeDeJuego(_t, e, sinRespuesta: _t.gameLoadError);
       });
     }
   }
@@ -112,12 +149,16 @@ class _MutxigolPageState extends State<MutxigolPage> {
       );
 
       if (mounted) setState(() => _perfil = perfil);
-    } catch (_) {
+    } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(_t.gameKitSaveError)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            mensajeDeJuego(_t, e, sinRespuesta: _t.gameKitSaveError),
+          ),
+        ),
+      );
     }
   }
 
@@ -240,6 +281,20 @@ class _MutxigolPageState extends State<MutxigolPage> {
   Widget _avisoDeAlias() {
     final t = _t;
 
+    if (!_conSesion && _resolviendoSesion) {
+      return const Center(
+        key: ValueKey('resolviendo-sesion'),
+        child: Padding(
+          padding: EdgeInsets.all(12),
+          child: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      );
+    }
+
     if (!_conSesion) {
       return _Aviso(
         key: const ValueKey('aviso-login'),
@@ -261,7 +316,7 @@ class _MutxigolPageState extends State<MutxigolPage> {
       return _Aviso(
         key: const ValueKey('aviso-error'),
         icono: Icons.error_outline,
-        texto: t.gameLoadError,
+        texto: _mensajeDeCarga ?? t.gameLoadError,
         accion: t.retry,
         onAccion: _cargarPerfil,
       );
@@ -357,21 +412,9 @@ class _TarjetaDeJuego extends StatelessWidget {
     final t = AppLocalizations.of(context);
 
     final (titulo, como, pose) = switch (juego) {
-      Juego.atrapa => (
-        t.gameCatchName,
-        t.gameCatchHow,
-        PoseMutxigol.atrapando,
-      ),
-      Juego.cabezazos => (
-        t.gameHeadName,
-        t.gameHeadHow,
-        PoseMutxigol.salto,
-      ),
-      Juego.parejas => (
-        t.gamePairsName,
-        t.gamePairsHow,
-        PoseMutxigol.cara,
-      ),
+      Juego.atrapa => (t.gameCatchName, t.gameCatchHow, PoseMutxigol.atrapando),
+      Juego.cabezazos => (t.gameHeadName, t.gameHeadHow, PoseMutxigol.salto),
+      Juego.parejas => (t.gamePairsName, t.gamePairsHow, PoseMutxigol.cara),
     };
 
     return Card(

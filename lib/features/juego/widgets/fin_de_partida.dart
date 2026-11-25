@@ -1,6 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../core/utils/mensaje_error.dart';
 import '../../../l10n/gen/app_localizations.dart';
+import '../../../routing/app_routes.dart';
 import '../envio_puntuacion.dart';
 import '../models/juego_modelos.dart';
 import '../tiempo_juego.dart';
@@ -74,9 +76,9 @@ class FinDePartida extends StatelessWidget {
             Text(
               record ? t.gameNewRecord : t.gameOverTitle,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(
@@ -136,6 +138,14 @@ class FinDePartida extends StatelessWidget {
       case EstadoEnvio.noAplica:
         return const SizedBox.shrink();
 
+      case EstadoEnvio.comprobandoSesion:
+        return const SizedBox(
+          key: ValueKey('comprobando-sesion'),
+          width: 18,
+          height: 18,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        );
+
       case EstadoEnvio.sinSesion:
         return Text(
           t.gameLoginBanner,
@@ -171,7 +181,9 @@ class FinDePartida extends StatelessWidget {
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
             const SizedBox(width: 10),
-            Flexible(child: Text(t.gameSaving, key: const ValueKey('guardando'))),
+            Flexible(
+              child: Text(t.gameSaving, key: const ValueKey('guardando')),
+            ),
           ],
         );
 
@@ -180,17 +192,28 @@ class FinDePartida extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              envio.mensajeError ?? t.gameSendError,
+              mensajeDeJuego(t, envio.error, sinRespuesta: t.gameSendError),
               key: const ValueKey('error-envio'),
               textAlign: TextAlign.center,
               style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
-            const SizedBox(height: 8),
-            OutlinedButton(
-              key: const ValueKey('reintentar-envio'),
-              onPressed: envio.reintentar,
-              child: Text(t.retry),
-            ),
+            if (esSesionCaducada(envio.error)) ...[
+              const SizedBox(height: 8),
+              FilledButton(
+                key: const ValueKey('ir-a-login'),
+                onPressed: () =>
+                    Navigator.of(context).pushNamed(AppRoutes.login),
+                child: Text(t.loginButton),
+              ),
+            ],
+            if (!esSesionCaducada(envio.error)) ...[
+              const SizedBox(height: 8),
+              OutlinedButton(
+                key: const ValueKey('reintentar-envio'),
+                onPressed: envio.reintentar,
+                child: Text(t.retry),
+              ),
+            ],
           ],
         );
 

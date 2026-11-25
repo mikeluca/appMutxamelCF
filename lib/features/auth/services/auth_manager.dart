@@ -55,28 +55,63 @@ class AuthManager {
     return usuario;
   }
 
-  static Future<bool> restaurarSesion() async {
+  /// Solo para tests: cómo se pide el usuario al backend al restaurar la sesión.
+  @visibleForTesting
+  static Future<AuthUser> Function() cargarUsuario =
+      AuthService.obtenerUsuarioActual;
+
+  static Future<bool>? _restauracion;
+
+  /// Hay un token guardado (sesión de una ejecución anterior). Un fallo del almacenamiento cuenta como que no.
+  static Future<bool> haySesionGuardada() async {
+    try {
+      return await AuthSession.estaAutenticado();
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Para quien necesita saber si hay sesión sin haber pasado por "Área Club": con usuario, true; sin usuario pero con
+  /// token guardado, restaura la sesión; sin token, false.
+  static Future<bool> asegurarSesion() async {
+    if (estaAutenticado) return true;
+
+    if (!await haySesionGuardada()) return false;
+
+    return restaurarSesion();
+  }
+
+  /// Restaura el usuario a partir del token guardado. Llamadas a la vez comparten la misma petición. Avisa por
+  /// [cambios] si con ello hay usuario (o deja de haberlo).
+  static Future<bool> restaurarSesion() =>
+      _restauracion ??= _restaurar().whenComplete(() => _restauracion = null);
+
+  static Future<bool> _restaurar() async {
+    final habiaUsuario = _usuarioActual != null;
+    bool restaurada;
+
     final token = await AuthSession.obtenerToken();
 
     if (token == null || token.isEmpty) {
       _usuarioActual = null;
-      return false;
+      restaurada = false;
+    } else {
+      try {
+        _usuarioActual = await cargarUsuario();
+        restaurada = true;
+      } catch (_) {
+        // FL-03: no se borra la sesión guardada aquí. Si el fallo fue un
+        // 401, ApiClient ya la ha limpiado (ver _enviar); si fue un fallo
+        // de red o timeout, el token sigue siendo válido y no hay que
+        // expulsar al usuario por abrir la app sin cobertura.
+        _usuarioActual = null;
+        restaurada = false;
+      }
     }
 
-    try {
-      final usuario = await AuthService.obtenerUsuarioActual();
+    if (habiaUsuario != (_usuarioActual != null)) cambios.value++;
 
-      _usuarioActual = usuario;
-
-      return true;
-    } catch (_) {
-      // FL-03: no se borra la sesión guardada aquí. Si el fallo fue un
-      // 401, ApiClient ya la ha limpiado (ver _enviar); si fue un fallo
-      // de red o timeout, el token sigue siendo válido y no hay que
-      // expulsar al usuario por abrir la app sin cobertura.
-      _usuarioActual = null;
-      return false;
-    }
+    return restaurada;
   }
 
   static Future<void> establecerUsuario(AuthUser usuario) async {

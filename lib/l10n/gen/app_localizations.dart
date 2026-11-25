@@ -7953,6 +7953,18 @@ abstract class AppLocalizations {
   /// **'No se ha podido guardar tu puntuación.'**
   String get gameSendError;
 
+  /// No description provided for @gameSessionExpired.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu sesión ha caducado. Vuelve a iniciar sesión en el Área Club'**
+  String get gameSessionExpired;
+
+  /// No description provided for @gameUnavailable.
+  ///
+  /// In es, this message translates to:
+  /// **'El juego no está disponible ahora mismo. Inténtalo más tarde'**
+  String get gameUnavailable;
+
   /// No description provided for @gameAliasToSave.
   ///
   /// In es, this message translates to:

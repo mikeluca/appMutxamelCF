@@ -54,3 +54,33 @@ String mensajeDeAdmin(AppLocalizations t, Object? error) {
 
   return t.connectionError;
 }
+
+/// El texto para un fallo de las llamadas del juego de Mutxigol, según lo que haya contestado el servidor:
+/// 401 sesión caducada; 400, 409 y 429 el mensaje del servidor; 403 sin permiso; 404, 5xx y cualquier otro código
+/// "el juego no está disponible". Solo sin respuesta (sin red o tiempo agotado) es [sinRespuesta] (por defecto, el
+/// error de conexión).
+String mensajeDeJuego(
+  AppLocalizations t,
+  Object? error, {
+  String? sinRespuesta,
+}) {
+  if (error is! ApiException || error.statusCode == null) {
+    return sinRespuesta ?? t.connectionError;
+  }
+
+  final codigo = error.statusCode!;
+  final mensaje = error.message.trim();
+
+  if (codigo == 401) return t.gameSessionExpired;
+  if (codigo == 403) return t.noPermission;
+
+  if ((codigo == 400 || codigo == 409 || codigo == 429) && mensaje.isNotEmpty) {
+    return mensaje;
+  }
+
+  return t.gameUnavailable;
+}
+
+/// Si el fallo es un 401 del juego (la sesión ya no vale): la pantalla ofrece ir al login.
+bool esSesionCaducada(Object? error) =>
+    error is ApiException && error.statusCode == 401;

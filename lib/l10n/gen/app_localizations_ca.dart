@@ -4580,6 +4580,14 @@ class AppLocalizationsCa extends AppLocalizations {
   String get gameSendError => 'No s\'ha pogut guardar la teua puntuació.';
 
   @override
+  String get gameSessionExpired =>
+      'La teua sessió ha caducat. Torna a iniciar sessió a l\'Àrea Club';
+
+  @override
+  String get gameUnavailable =>
+      'El joc no està disponible ara mateix. Torna-ho a provar més tard';
+
+  @override
   String get gameAliasToSave => 'Tria un àlies per a guardar esta puntuació';
 
   @override

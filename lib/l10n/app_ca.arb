@@ -1636,6 +1636,8 @@
   "gamePositionAllTime": "Històric: lloc {position}",
   "@gamePositionAllTime": { "placeholders": { "position": { "type": "int" } } },
   "gameSendError": "No s'ha pogut guardar la teua puntuació.",
+  "gameSessionExpired": "La teua sessió ha caducat. Torna a iniciar sessió a l'Àrea Club",
+  "gameUnavailable": "El joc no està disponible ara mateix. Torna-ho a provar més tard",
   "gameAliasToSave": "Tria un àlies per a guardar esta puntuació",
 
   "gameRankingTitle": "Rànquing",

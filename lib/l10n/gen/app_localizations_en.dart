@@ -4548,6 +4548,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameSendError => 'Your score could not be saved.';
 
   @override
+  String get gameSessionExpired =>
+      'Your session has expired. Sign in again in the Club Area';
+
+  @override
+  String get gameUnavailable =>
+      'The game is not available right now. Please try again later';
+
+  @override
   String get gameAliasToSave => 'Choose an alias to save this score';
 
   @override

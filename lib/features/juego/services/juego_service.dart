@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../../../core/network/api_client.dart';
 import '../models/juego_modelos.dart';
 
@@ -12,11 +14,37 @@ class JuegoService {
   /// El código de un 409 de alias repetido.
   static const String codigoAliasEnUso = 'ALIAS_EN_USO';
 
+  /// En debug, anota en la consola el método, la ruta, el código y el cuerpo de la respuesta de una llamada del juego que
+  /// falla, para ver la causa. Después el error sigue su camino.
+  @visibleForTesting
+  static Future<T> registrando<T>(
+    String metodo,
+    String ruta,
+    Future<T> Function() llamada,
+  ) async {
+    try {
+      return await llamada();
+    } catch (e) {
+      if (kDebugMode) {
+        if (e is ApiException) {
+          debugPrint(
+            '[juego] $metodo $ruta -> ${e.statusCode ?? "sin respuesta"} '
+            '${e.datos ?? e.message}',
+          );
+        } else {
+          debugPrint('[juego] $metodo $ruta -> sin respuesta ($e)');
+        }
+      }
+
+      rethrow;
+    }
+  }
+
   /// GET /public/juego/ranking: los 50 mejores (sin sesión).
   Future<List<FilaRanking>> ranking(Juego juego, PeriodoRanking periodo) async {
-    final datos = await ApiClient.get(
-      '/public/juego/ranking?juego=${juego.codigo}&periodo=${periodo.codigo}',
-    );
+    final ruta =
+        '/public/juego/ranking?juego=${juego.codigo}&periodo=${periodo.codigo}';
+    final datos = await registrando('GET', ruta, () => ApiClient.get(ruta));
 
     return (datos as List)
         .map(
@@ -30,7 +58,8 @@ class JuegoService {
 
   /// GET /public/juego/escudos?cantidad=: clubes con escudo, al azar, para las cartas de Parejas (sin sesión).
   Future<List<EscudoJuego>> escudos({int cantidad = 8}) async {
-    final datos = await ApiClient.get('/public/juego/escudos?cantidad=$cantidad');
+    final ruta = '/public/juego/escudos?cantidad=$cantidad';
+    final datos = await registrando('GET', ruta, () => ApiClient.get(ruta));
 
     return (datos as List)
         .map((e) => EscudoJuego.fromJson(Map<String, dynamic>.from(e as Map)))
@@ -39,7 +68,11 @@ class JuegoService {
 
   /// GET /app/juego/perfil.
   Future<PerfilJuego> perfil() async {
-    final datos = await ApiClient.get('/app/juego/perfil', autenticado: true);
+    final datos = await registrando(
+      'GET',
+      '/app/juego/perfil',
+      () => ApiClient.get('/app/juego/perfil', autenticado: true),
+    );
 
     return PerfilJuego.fromJson(Map<String, dynamic>.from(datos as Map));
   }
@@ -50,13 +83,14 @@ class JuegoService {
     String? alias,
     Equipacion? equipacion,
   }) async {
-    final datos = await ApiClient.put(
+    final datos = await registrando(
+      'PUT',
       '/app/juego/perfil',
-      body: {
-        'alias': ?alias,
-        'equipacion': ?equipacion?.codigo,
-      },
-      autenticado: true,
+      () => ApiClient.put(
+        '/app/juego/perfil',
+        body: {'alias': ?alias, 'equipacion': ?equipacion?.codigo},
+        autenticado: true,
+      ),
     );
 
     return PerfilJuego.fromJson(Map<String, dynamic>.from(datos as Map));
@@ -68,17 +102,23 @@ class JuegoService {
     required int puntos,
     required int duracionMs,
   }) async {
-    final datos = await ApiClient.post(
+    final datos = await registrando(
+      'POST',
       '/app/juego/puntuacion',
-      body: {
-        'juego': juego.codigo,
-        'puntos': puntos,
-        'duracionMs': duracionMs,
-      },
-      autenticado: true,
+      () => ApiClient.post(
+        '/app/juego/puntuacion',
+        body: {
+          'juego': juego.codigo,
+          'puntos': puntos,
+          'duracionMs': duracionMs,
+        },
+        autenticado: true,
+      ),
     );
 
-    return ResultadoPuntuacion.fromJson(Map<String, dynamic>.from(datos as Map));
+    return ResultadoPuntuacion.fromJson(
+      Map<String, dynamic>.from(datos as Map),
+    );
   }
 
   // ---- Moderación (solo ADMIN_APP) ----

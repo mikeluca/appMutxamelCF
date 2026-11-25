@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 
 import '../../core/network/api_client.dart';
+import '../auth/services/auth_manager.dart';
 import 'models/juego_modelos.dart';
 import 'services/juego_service.dart';
 
@@ -10,6 +11,9 @@ import 'services/juego_service.dart';
 enum EstadoEnvio {
   /// Nada que enviar (0 puntos).
   noAplica,
+
+  /// Hay token guardado pero aún no usuario: se restaura la sesión antes de decidir (sin aviso de "inicia sesión").
+  comprobandoSesion,
 
   /// Sin sesión: no se guarda; se le dice que inicie sesión en el Área Club.
   sinSesion,
@@ -52,6 +56,7 @@ class EnvioPuntuacion extends ChangeNotifier {
   EstadoEnvio _estado = EstadoEnvio.noAplica;
   ResultadoPuntuacion? _resultado;
   String? _mensajeError;
+  Object? _error;
   bool _descartado = false;
 
   EstadoEnvio get estado => _estado;
@@ -62,13 +67,26 @@ class EnvioPuntuacion extends ChangeNotifier {
   /// El motivo del error cuando el servidor lo ha explicado (null: fallo de conexión).
   String? get mensajeError => _mensajeError;
 
+  /// El último fallo tal cual (un ApiException con su código, o cualquier otro si no hubo respuesta).
+  Object? get error => _error;
+
   /// Decide qué hacer con la puntuación y, si toca, la envía.
   Future<void> iniciar() async {
     if (puntos <= 0) {
       return _cambiar(EstadoEnvio.noAplica);
     }
 
-    if (!conSesion) {
+    var sesion = conSesion;
+
+    // La sesión guardada puede no haberse restaurado aún (no se ha pasado por "Área Club"): se resuelve antes de decir
+    // que hay que iniciar sesión. Con usuario pero sin permiso (403) no hay nada que restaurar.
+    if (!sesion && !AuthManager.estaAutenticado) {
+      _cambiar(EstadoEnvio.comprobandoSesion);
+
+      sesion = await AuthManager.asegurarSesion();
+    }
+
+    if (!sesion) {
       return _cambiar(EstadoEnvio.sinSesion);
     }
 
@@ -101,8 +119,10 @@ class EnvioPuntuacion extends ChangeNotifier {
 
       _resultado = resultado;
       _mensajeError = null;
+      _error = null;
       _cambiar(EstadoEnvio.enviado);
     } on ApiException catch (e) {
+      _error = e;
       final datos = e.datos;
 
       if (e.statusCode == 409 &&
@@ -114,15 +134,17 @@ class EnvioPuntuacion extends ChangeNotifier {
         return;
       }
 
-      // Un 4xx del juego trae el motivo (límite de envíos...); el resto es un fallo de conexión.
+      // Un 400, 409 o 429 trae el motivo (límite de envíos...); el resto lo explica la pantalla según el código.
       final codigo = e.statusCode;
 
       _mensajeError =
-          codigo != null && codigo >= 400 && codigo < 500 && codigo != 403
+          (codigo == 400 || codigo == 409 || codigo == 429) &&
+              e.message.isNotEmpty
           ? e.message
           : null;
       _cambiar(EstadoEnvio.error);
-    } catch (_) {
+    } catch (e) {
+      _error = e;
       _mensajeError = null;
       _cambiar(EstadoEnvio.error);
     }

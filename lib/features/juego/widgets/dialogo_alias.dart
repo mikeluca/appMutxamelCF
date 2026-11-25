@@ -1,8 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../../core/network/api_client.dart';
 import '../../../core/utils/mensaje_error.dart';
 import '../../../l10n/gen/app_localizations.dart';
+import '../../../routing/app_routes.dart';
 import '../services/juego_service.dart';
 
 /// El diálogo para elegir o cambiar el alias del ranking: enseña las reglas del backend y, si el servidor rechaza el
@@ -37,6 +37,7 @@ class _DialogoAliasState extends State<DialogoAlias> {
 
   bool _guardando = false;
   String? _error;
+  bool _sesionCaducada = false;
 
   @override
   void dispose() {
@@ -64,14 +65,11 @@ class _DialogoAliasState extends State<DialogoAlias> {
     } catch (e) {
       if (!mounted) return;
 
-      final codigo = e is ApiException ? e.statusCode : null;
-
       setState(() {
         _guardando = false;
-        // 400 (el alias no vale) y 409 (en uso) traen el motivo del servidor.
-        _error = codigo == 400 || codigo == 409
-            ? (e as ApiException).message
-            : mensajeDeError(t, e);
+        _sesionCaducada = esSesionCaducada(e);
+        // Cada código con su mensaje: 400 y 409 traen el motivo del servidor; 401, 403 y 5xx tienen el suyo.
+        _error = mensajeDeJuego(t, e);
       });
     }
   }
@@ -107,6 +105,17 @@ class _DialogoAliasState extends State<DialogoAlias> {
         ),
       ),
       actions: [
+        if (_sesionCaducada)
+          TextButton(
+            key: const ValueKey('ir-a-login'),
+            onPressed: () {
+              final navegador = Navigator.of(context);
+
+              navegador.pop();
+              navegador.pushNamed(AppRoutes.login);
+            },
+            child: Text(t.loginButton),
+          ),
         TextButton(
           onPressed: _guardando ? null : () => Navigator.pop(context),
           child: Text(t.cancel),

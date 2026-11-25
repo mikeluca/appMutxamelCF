@@ -4589,6 +4589,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get gameSendError => 'No se ha podido guardar tu puntuación.';
 
   @override
+  String get gameSessionExpired =>
+      'Tu sesión ha caducado. Vuelve a iniciar sesión en el Área Club';
+
+  @override
+  String get gameUnavailable =>
+      'El juego no está disponible ahora mismo. Inténtalo más tarde';
+
+  @override
   String get gameAliasToSave => 'Elige un alias para guardar esta puntuación';
 
   @override

@@ -57,11 +57,29 @@ class _RankingJuegoPageState extends State<RankingJuegoPage>
 
     _perfil = widget.perfil;
 
-    if (_perfil == null && _conSesion) _cargarPerfil();
+    AuthManager.cambios.addListener(_alCambiarLaSesion);
+
+    if (_perfil == null && _conSesion) {
+      _cargarPerfil();
+    } else if (_perfil == null && widget.conSesion == null) {
+      // Sin haber pasado por "Área Club": si hay token guardado, se restaura la sesión (avisa por cambios).
+      AuthManager.asegurarSesion();
+    }
+  }
+
+  void _alCambiarLaSesion() {
+    if (!mounted) return;
+
+    if (_conSesion) {
+      if (_perfil == null) _cargarPerfil();
+    } else {
+      setState(() => _perfil = null);
+    }
   }
 
   @override
   void dispose() {
+    AuthManager.cambios.removeListener(_alCambiarLaSesion);
     _pestanas.dispose();
     super.dispose();
   }
@@ -76,10 +94,10 @@ class _RankingJuegoPageState extends State<RankingJuegoPage>
     }
   }
 
-  Future<List<FilaRanking>> _filas(Juego juego) => _cargas.putIfAbsent(
-    (juego, _periodo),
-    () => widget.servicio.ranking(juego, _periodo),
-  );
+  Future<List<FilaRanking>> _filas(Juego juego) => _cargas.putIfAbsent((
+    juego,
+    _periodo,
+  ), () => widget.servicio.ranking(juego, _periodo));
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +174,7 @@ class _RankingJuegoPageState extends State<RankingJuegoPage>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    mensajeDeError(t, snapshot.error),
+                    mensajeDeJuego(t, snapshot.error),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 12),

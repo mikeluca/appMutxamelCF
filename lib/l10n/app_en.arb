@@ -1636,6 +1636,8 @@
   "gamePositionAllTime": "All time: position {position}",
   "@gamePositionAllTime": { "placeholders": { "position": { "type": "int" } } },
   "gameSendError": "Your score could not be saved.",
+  "gameSessionExpired": "Your session has expired. Sign in again in the Club Area",
+  "gameUnavailable": "The game is not available right now. Please try again later",
   "gameAliasToSave": "Choose an alias to save this score",
 
   "gameRankingTitle": "Ranking",

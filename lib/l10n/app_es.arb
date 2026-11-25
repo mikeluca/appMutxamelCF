@@ -1650,6 +1650,8 @@
   "gamePositionAllTime": "Histórico: puesto {position}",
   "@gamePositionAllTime": { "placeholders": { "position": { "type": "int" } } },
   "gameSendError": "No se ha podido guardar tu puntuación.",
+  "gameSessionExpired": "Tu sesión ha caducado. Vuelve a iniciar sesión en el Área Club",
+  "gameUnavailable": "El juego no está disponible ahora mismo. Inténtalo más tarde",
   "gameAliasToSave": "Elige un alias para guardar esta puntuación",
 
   "gameRankingTitle": "Ranking",
