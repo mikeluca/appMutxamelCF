@@ -3773,6 +3773,10 @@ class AppLocalizationsCa extends AppLocalizations {
   String get familyRegisterButton => 'Sóc familiar d\'un jugador';
 
   @override
+  String get familyRegisterComingSoon =>
+      'Pròximament. Mentrestant, demana la invitació al teu entrenador o al club.';
+
+  @override
   String get familyRegisterTitle => 'Sóc familiar d\'un jugador';
 
   @override

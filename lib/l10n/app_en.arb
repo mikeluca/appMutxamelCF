@@ -1359,6 +1359,7 @@
   "shareToggleHashtags": "Hashtags",
   "shareButton": "Share",
   "familyRegisterButton": "I'm a relative of a player",
+  "familyRegisterComingSoon": "Coming soon. In the meantime, ask your coach or the club for an invitation.",
   "familyRegisterTitle": "I'm a relative of a player",
   "familyRegisterIntro": "Ask for access to your child's information. The club will review your request before giving you access.",
   "familyStepOf": "Step {n} of {total}",

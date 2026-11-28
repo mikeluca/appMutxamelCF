@@ -1373,6 +1373,7 @@
   "shareToggleHashtags": "Hashtags",
   "shareButton": "Compartir",
   "familyRegisterButton": "Soy familiar de un jugador",
+  "familyRegisterComingSoon": "Próximamente. Mientras tanto, pide la invitación a tu entrenador o al club.",
   "familyRegisterTitle": "Soy familiar de un jugador",
   "familyRegisterIntro": "Pide acceso a la información de tu hijo o hija. El club revisará tu solicitud antes de darte acceso.",
   "familyStepOf": "Paso {n} de {total}",

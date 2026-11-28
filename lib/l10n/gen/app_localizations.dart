@@ -6561,6 +6561,12 @@ abstract class AppLocalizations {
   /// **'Soy familiar de un jugador'**
   String get familyRegisterButton;
 
+  /// No description provided for @familyRegisterComingSoon.
+  ///
+  /// In es, this message translates to:
+  /// **'Próximamente. Mientras tanto, pide la invitación a tu entrenador o al club.'**
+  String get familyRegisterComingSoon;
+
   /// No description provided for @familyRegisterTitle.
   ///
   /// In es, this message translates to:

@@ -1359,6 +1359,7 @@
   "shareToggleHashtags": "Hashtags",
   "shareButton": "Compartir",
   "familyRegisterButton": "Sóc familiar d'un jugador",
+  "familyRegisterComingSoon": "Pròximament. Mentrestant, demana la invitació al teu entrenador o al club.",
   "familyRegisterTitle": "Sóc familiar d'un jugador",
   "familyRegisterIntro": "Demana accés a la informació del teu fill o filla. El club revisarà la teua sol·licitud abans de donar-te accés.",
   "familyStepOf": "Pas {n} de {total}",

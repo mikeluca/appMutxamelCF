@@ -3782,6 +3782,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get familyRegisterButton => 'Soy familiar de un jugador';
 
   @override
+  String get familyRegisterComingSoon =>
+      'Próximamente. Mientras tanto, pide la invitación a tu entrenador o al club.';
+
+  @override
   String get familyRegisterTitle => 'Soy familiar de un jugador';
 
   @override

@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../services/auth_service.dart';
 import '../services/auth_manager.dart';
+import '../services/funciones_app_service.dart';
 import '../../../routing/app_routes.dart';
 import '../../../core/widget/club_app_bar_title.dart';
 import '../../../core/notifications/services/permiso_notificaciones.dart';
@@ -31,6 +32,24 @@ class _LoginPageState extends State<LoginPage> {
   bool _mostrarPassword = false;
   bool _cargando = false;
   String? _error;
+
+  /// Solo en memoria, mientras la pantalla está abierta. Hasta que responde el servidor (o si falla), el registro de
+  /// familias cuenta como deshabilitado.
+  FuncionesApp _funciones = FuncionesApp.deshabilitadas;
+
+  @override
+  void initState() {
+    super.initState();
+    _consultarFunciones();
+  }
+
+  Future<void> _consultarFunciones() async {
+    final funciones = await FuncionesApp.consultar();
+
+    if (mounted) {
+      setState(() => _funciones = funciones);
+    }
+  }
 
   @override
   void dispose() {
@@ -251,7 +270,8 @@ class _LoginPageState extends State<LoginPage> {
                       height: 52,
                       child: OutlinedButton(
                         key: const ValueKey('login-soy-familiar'),
-                        onPressed: _cargando
+                        onPressed:
+                            _cargando || !_funciones.registroFamiliasHabilitado
                             ? null
                             : () => Navigator.push(
                                 context,
@@ -262,6 +282,18 @@ class _LoginPageState extends State<LoginPage> {
                         child: Text(t.familyRegisterButton),
                       ),
                     ),
+                    if (!_funciones.registroFamiliasHabilitado) ...[
+                      const SizedBox(height: 8),
+                      // Un nodo propio de accesibilidad: el lector anuncia el botón como no disponible y luego lo lee.
+                      Text(
+                        t.familyRegisterComingSoon,
+                        key: const ValueKey('login-soy-familiar-proximamente'),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

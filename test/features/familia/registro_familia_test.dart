@@ -4,6 +4,7 @@ import 'package:app_mutxamel_cf/core/notifications/services/permiso_notificacion
 import 'package:app_mutxamel_cf/features/auth/pages/activar_cuenta_page.dart';
 import 'package:app_mutxamel_cf/features/auth/pages/login_page.dart';
 import 'package:app_mutxamel_cf/features/auth/services/auth_manager.dart';
+import 'package:app_mutxamel_cf/features/auth/services/funciones_app_service.dart';
 import 'package:app_mutxamel_cf/features/familia/pages/codigo_familia_page.dart';
 import 'package:app_mutxamel_cf/features/familia/pages/registro_familia_page.dart';
 import 'package:flutter/services.dart';
@@ -146,11 +147,18 @@ void main() {
     testWidgets(
       'el login ofrece "Soy familiar de un jugador" junto a Activar cuenta',
       (tester) async {
+        final original = FuncionesApp.leerDelServidor;
+        FuncionesApp.leerDelServidor = () async => {
+          'registroFamiliasHabilitado': true,
+        };
+        addTearDown(() => FuncionesApp.leerDelServidor = original);
+
         await pintarFamilia(
           tester,
           const LoginPage(),
           tamano: const Size(390, 900),
         );
+        await tester.pumpAndSettle();
 
         expect(_clave('login-soy-familiar'), findsOneWidget);
         expect(find.text('Soy familiar de un jugador'), findsOneWidget);
@@ -497,6 +505,24 @@ void main() {
       },
     );
 
+    testWidgets(
+      'un 403 REGISTRO_NO_DISPONIBLE enseña su mensaje, sin pasos siguientes',
+      (tester) async {
+        const mensaje =
+            'El registro de familias estará disponible próximamente. Mientras tanto, pide la invitación a tu entrenador o al club.';
+        backend.registro = () =>
+            json({'estado': 'REGISTRO_NO_DISPONIBLE', 'mensaje': mensaje}, 403);
+        await conRegistro(tester, () async {
+          await _hastaCasillas(tester);
+          await _marcarCasillas(tester);
+          await _siguiente(tester);
+          expect(find.text(mensaje), findsOneWidget);
+          expect(find.text('No tienes permiso para hacer esto.'), findsNothing);
+          expect(find.byType(CodigoFamiliaPage), findsNothing);
+          expect(backend.veces('/solicitudes-familia'), 1);
+        });
+      },
+    );
     testWidgets('demasiados intentos', (tester) async {
       backend.registro = () => json({
         'codigo': 'DEMASIADOS_INTENTOS',

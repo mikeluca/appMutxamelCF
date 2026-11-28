@@ -379,5 +379,15 @@ String mensajeErrorFamilia(AppLocalizations t, Object? error) {
     return t.familyTooManyAttempts;
   }
 
+  // El registro está cerrado en el servidor (403 REGISTRO_NO_DISPONIBLE): su mensaje, que no es un "sin permiso".
+  if (error is ApiException &&
+      error.statusCode == 403 &&
+      error.datos is Map<String, dynamic> &&
+      (error.datos as Map<String, dynamic>)['estado'] ==
+          'REGISTRO_NO_DISPONIBLE' &&
+      error.message.isNotEmpty) {
+    return error.message;
+  }
+
   return mensajeDeAccion(t, error);
 }

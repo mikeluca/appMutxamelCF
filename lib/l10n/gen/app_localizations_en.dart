@@ -3744,6 +3744,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get familyRegisterButton => 'I\'m a relative of a player';
 
   @override
+  String get familyRegisterComingSoon =>
+      'Coming soon. In the meantime, ask your coach or the club for an invitation.';
+
+  @override
   String get familyRegisterTitle => 'I\'m a relative of a player';
 
   @override
